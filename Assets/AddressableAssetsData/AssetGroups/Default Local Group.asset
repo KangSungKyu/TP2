@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Default Local Group
+  m_GUID: 5c99c82a5ecb66446b25d40cf9c578fb
+  m_SerializeEntries:
+  - m_GUID: 00fb93d0edd1b7644bdb9f9ce10fab23
+    m_Address: InitScene
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d8fdf270f839674a85c7fa062b89e35
+    m_Address: WaveHeavy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fd025f20559e3e48b94409388d85c52
+    m_Address: Player
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 314c81d4a869f1f48911fd43e3dd9b96
+    m_Address: PlayerAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51350a998367f62489c050d8416be6e5
+    m_Address: ShadowStalkerAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64147eb8612d5954e8353a71edbd0c22
+    m_Address: GaronAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 674a0d228d9e1c241b0b787e922312a0
+    m_Address: WaveHeavyAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
+    m_Address: Garon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b40044c2b0b2d148afd84f9a274fe78
+    m_Address: MainScene
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91125c5cab621dd4a9503cdc3bf5cc38
+    m_Address: HubScene
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8e2dda5f4ca4ed45bcbf0d85e28f596
+    m_Address: LoadingScene
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b36ba15ad225931409971d86e8fc9273
+    m_Address: SpearSentryAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed5e5a0d511904e4990e34356127574b
+    m_Address: SkillData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: efcc78ce0053609458447ae694eaacc6
+    m_Address: bosspattern
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0cc493149cf2e94cb92a267c688a733
+    m_Address: SpearSentry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f31a9194d73d26c4d8ebdf4623f6c5a1
+    m_Address: ShadowStalker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0ff3917703be9a14399f1ca1843a4f19, type: 2}
+    - {fileID: 11400000, guid: c538771447c34e4419d97aba9a3402db, type: 2}

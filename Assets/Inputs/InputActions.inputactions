@@ -1,0 +1,47 @@
+{
+  "name": "InputActions",
+  "maps": [
+    {
+      "name": "Player",
+      "id": "1",
+      "actions": [
+        {
+          "name": "Move",
+          "type": "Value",
+          "id": "move",
+          "expectedControlType": "Vector2",
+          "processors": "",
+          "interactions": ""
+        }
+      ],
+      "bindings": [
+        {
+          "name": "WASD",
+          "id": "wasd",
+          "path": "2DVector",
+          "action": "Move",
+          "isComposite": true,
+          "bindings": [
+            { "name": "up", "path": "<Keyboard>/w", "isPartOfComposite": true },
+            { "name": "down", "path": "<Keyboard>/s", "isPartOfComposite": true },
+            { "name": "left", "path": "<Keyboard>/a", "isPartOfComposite": true },
+            { "name": "right", "path": "<Keyboard>/d", "isPartOfComposite": true }
+          ]
+        },
+        {
+          "name": "Arrows",
+          "id": "arrows",
+          "path": "2DVector",
+          "action": "Move",
+          "isComposite": true,
+          "bindings": [
+            { "name": "up", "path": "<Keyboard>/upArrow", "isPartOfComposite": true },
+            { "name": "down", "path": "<Keyboard>/downArrow", "isPartOfComposite": true },
+            { "name": "left", "path": "<Keyboard>/leftArrow", "isPartOfComposite": true },
+            { "name": "right", "path": "<Keyboard>/rightArrow", "isPartOfComposite": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

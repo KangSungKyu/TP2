@@ -1,0 +1,3 @@
+1,Name,AnimationClip,Range,CastTime,CooldownSec,MpCost,DamageMultiplier,IsBasicAttack
+1,BasicAttack,Skill_01,1.5,0.0,0.5,5,1.0,true
+2,Fireball,Skill_Fireball,5.0,0.2,3.0,20,2.5,false

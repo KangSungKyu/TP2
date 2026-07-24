@@ -1,0 +1,11 @@
+idx,path
+1001,Player
+1002,Garon
+1003,SpearSentry
+1004,ShadowStalker
+1005,WaveHeavy
+1010,PlayerAnimatorController
+1011,GaronAnimatorController
+1012,SpearSentryAnimatorController
+1013,ShadowStalkerAnimatorController
+1014,WaveHeavyAnimatorController
