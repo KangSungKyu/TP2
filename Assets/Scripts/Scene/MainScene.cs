@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -6,8 +7,11 @@ using UnityEngine;
 /// </summary>
 public class MainScene : MonoBehaviour
 {
-    private void Start()
+    private async void Start()
     {
+        // 0. 매니저 부트스트랩 안전장치 (InitScene을 거치지 않고 직접 실행 시 대비)
+        await this.ensureManagersReadyAsync();
+
         // 1. 카메라 위치 및 앵글 설정
         if (Camera.main != null)
         {
@@ -27,6 +31,36 @@ public class MainScene : MonoBehaviour
         hudObj.AddComponent<CoreTestHUD>();
 
         Debug.Log("<color=cyan><b>[MainScene] UnitBase 아키텍처 & CSV 데이터 기반 2D 환경 구축 완료!</b></color>");
+    }
+
+    private async UniTask ensureManagersReadyAsync()
+    {
+        // ResourceManager 보장
+        if (FindObjectOfType<ResourceManager>() == null)
+        {
+            var go = new GameObject("ResourceManager");
+            go.AddComponent<ResourceManager>();
+        }
+
+        // DataTableManager 보장
+        if (FindObjectOfType<DataTableManager>() == null)
+        {
+            var go = new GameObject("DataTableManager");
+            go.AddComponent<DataTableManager>();
+        }
+
+        // ResourceManager 초기화 대기
+        if (ResourceManager.Instance != null)
+        {
+            await ResourceManager.Instance.InitAsync(null, this.GetCancellationTokenOnDestroy());
+        }
+
+        // DataTableManager CSV 로드 완료 대기
+        if (DataTableManager.Instance != null)
+        {
+            await DataTableManager.Instance.EnsureDataLoadedAsync();
+            Debug.Log("<color=green>[MainScene] DataTableManager CSV 데이터 로드 완료 확인.</color>");
+        }
     }
 
     private void setupPlayerFromPrefab()
