@@ -36,9 +36,9 @@ public class Player : UnitBase
     // 3. PUBLIC METHODS (PascalCase)
     // =========================================================================
 
-    public override void InitUnit(uint unitIdx)
+    public override async UniTask InitUnitAsync(uint unitIdx)
     {
-        base.InitUnit(unitIdx);
+        await base.InitUnitAsync(unitIdx);
 
         if (this.UnitData != null && this.UnitData.MoveSpeed > 0f)
         {
@@ -72,7 +72,7 @@ public class Player : UnitBase
     {
         base.Awake();
         // 플레이어 기본 UnitBaseData Idx: 3001
-        this.InitUnit(3001);
+        this.InitUnitAsync(3001).Forget();
     }
 
     private void Update()

@@ -25,9 +25,9 @@ public static class PlayerPrefabBuilder
         stats.MaxPosture = 100f;
 
         SkillExecutor skillExecutor = playerRoot.AddComponent<SkillExecutor>();
-        PlayerController playerController = playerRoot.AddComponent<PlayerController>();
-        playerController.Speed = 5f;
-        playerController.DodgeDashSpeed = 12f;
+        Player playerComp = playerRoot.AddComponent<Player>();
+        playerComp.Speed = 5f;
+        playerComp.DodgeDashSpeed = 12f;
 
         // 2. [Visual 하위 GameObject] - Pure 2D 렌더링 전담 객체 (SpriteRenderer + Animator)
         GameObject visualObj = new GameObject("Visual");

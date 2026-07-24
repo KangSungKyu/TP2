@@ -15,11 +15,9 @@ public class MonsterPatternDataTable : IDataLoad
 
     public void LoadData(string csvText)
     {
-        this.dataDict.Clear();
-        using (var reader = new StringReader(csvText))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        var records = Util.ParseFromCSV<MonsterPatternData>(csvText);
+        if (records != null)
         {
-            var records = csv.GetRecords<MonsterPatternData>();
             foreach (var item in records)
             {
                 this.dataDict[item.Idx] = item;

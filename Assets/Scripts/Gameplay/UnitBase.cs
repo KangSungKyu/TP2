@@ -34,8 +34,9 @@ public class UnitBase : MonoBehaviour
 
     /// <summary>
     /// unitIdx (Type 3: 3001~)로 공용 데이터를 조회하고 유닛을 초기화합니다.
+    /// async UniTask를 반환하여 상속 체인에서 await가 보장됩니다.
     /// </summary>
-    public virtual async void InitUnit(uint unitIdx)
+    public virtual async UniTask InitUnitAsync(uint unitIdx)
     {
         if (DataTableManager.Instance != null)
         {
@@ -48,10 +49,11 @@ public class UnitBase : MonoBehaviour
             this.UnitData = data;
             this.applyBaseStats(data);
             this.loadResourceAndAnimator(data);
+            Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' Idx {unitIdx} 데이터 바인딩 완료! (HP: {data.MaxHp}, ATK: {data.Atk})</color>");
         }
         else
         {
-            Debug.LogWarning($"[UnitBase] UnitBaseData에서 Idx {unitIdx}를 찾을 수 없습니다.");
+            Debug.LogWarning($"[UnitBase] UnitBaseData에서 Idx {unitIdx}를 찾을 수 없습니다. (DataTableManager.isLoaded: {DataTableManager.Instance != null})");
         }
     }
 
@@ -110,6 +112,7 @@ public class UnitBase : MonoBehaviour
             this.stats.MaxHp = data.MaxHp;
             this.stats.MaxMp = data.MaxMp;
             this.stats.MaxPosture = data.MaxPosture;
+            this.stats.InitStats();
         }
 
         // 지면 피벗 오프셋 지정

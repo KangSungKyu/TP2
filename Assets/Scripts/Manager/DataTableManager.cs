@@ -127,25 +127,29 @@ public class DataTableManager : Singleton<DataTableManager>
 
     private void parseAndCacheCsv(string assetName, string csvText)
     {
-        using (var reader = new StringReader(csvText))
+        DataTableType dtt = this.getDataTableTypeFromAssetName(assetName);
+        if (dtt != DataTableType.None && this.dataList.TryGetValue(dtt, out var loader))
         {
-            string firstLine = reader.ReadLine();
-            if (string.IsNullOrEmpty(firstLine)) return;
-
-            string secondLine = reader.ReadLine();
-            if (string.IsNullOrEmpty(secondLine)) return;
-
-            var cols = secondLine.Split(',');
-            if (cols.Length > 0 && uint.TryParse(cols[0], out var firstIdx))
-            {
-                DataTableType dtt = Util.GetDataTableType(firstIdx);
-                if (this.dataList.TryGetValue(dtt, out var loader))
-                {
-                    loader.LoadData(csvText);
-                    Debug.Log($"<color=green>[DataTableManager] 데이터 캐싱 성공: {assetName} (Type: {dtt}, Count: {loader.GetDataCount()})</color>");
-                }
-            }
+            loader.LoadData(csvText);
+            Debug.Log($"<color=green>[DataTableManager] 데이터 캐싱 성공: {assetName} (Type: {dtt}, Count: {loader.GetDataCount()})</color>");
         }
+        else
+        {
+            Debug.LogWarning($"[DataTableManager] {assetName}에 해당하는 DataTableType 매핑을 찾지 못했습니다.");
+        }
+    }
+
+    private DataTableType getDataTableTypeFromAssetName(string assetName)
+    {
+        string name = assetName.ToLowerInvariant();
+        if (name.Contains("resource")) return DataTableType.Resource;
+        if (name.Contains("text")) return DataTableType.Text;
+        if (name.Contains("unitbase")) return DataTableType.UnitBase;
+        if (name.Contains("monsterbase") || name.Contains("monsterdata")) return DataTableType.MonsterData;
+        if (name.Contains("monsterpattern") || name.Contains("bosspattern")) return DataTableType.MonsterPattern;
+        if (name.Contains("skill")) return DataTableType.Skill;
+
+        return DataTableType.None;
     }
 
     private void fallbackLoadFromResources()
@@ -158,5 +162,18 @@ public class DataTableManager : Singleton<DataTableManager>
                 this.parseAndCacheCsv(asset.name, asset.text);
             }
         }
+
+#if UNITY_EDITOR
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:TextAsset", new[] { "Assets/datas" });
+        foreach (var guid in guids)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+            if (asset != null)
+            {
+                this.parseAndCacheCsv(asset.name, asset.text);
+            }
+        }
+#endif
     }
 }

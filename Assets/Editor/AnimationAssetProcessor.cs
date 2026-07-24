@@ -22,6 +22,9 @@ public static class AnimationAssetProcessor
         // 2. 일반 몬스터 3종 애니메이션 클립 & AnimatorController 가공
         ProcessMonsterAssets();
 
+        // 2-1. Animator State 파라미터 기반 Transition (조건) 완벽 복구
+        AnimatorTransitionBuilder.RebuildAllAnimatorTransitions();
+
         // 3. Addressable 규격 맞춤 자동 등록
         AddressableAutoRegister.RegisterAllAddressables();
 

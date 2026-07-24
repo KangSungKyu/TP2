@@ -31,14 +31,9 @@ public class Monster : UnitBase
     // 3. PUBLIC METHODS (PascalCase)
     // =========================================================================
 
-    public override async void InitUnit(uint unitIdx)
+    public override async UniTask InitUnitAsync(uint unitIdx)
     {
-        base.InitUnit(unitIdx);
-
-        if (DataTableManager.Instance != null)
-        {
-            await DataTableManager.Instance.EnsureDataLoadedAsync();
-        }
+        await base.InitUnitAsync(unitIdx);
 
         var monsterDB = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<MonsterDataTable>(DataTableType.MonsterData) : null;
         if (monsterDB != null && monsterDB.TryGetMonsterData(unitIdx, out var mData))

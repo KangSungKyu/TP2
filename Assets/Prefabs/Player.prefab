@@ -86,9 +86,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 758ce62e1ad9a104da3d0ee4878b7b56, type: 3}
+  m_Script: {fileID: 11500000, guid: 582cf07a51498ad4d89d96aafa5a6e8a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  m_EditorClassIdentifier: Assembly-CSharp::Player
   Speed: 5
   DodgeDashSpeed: 12
 --- !u!1 &5561306966581775118
@@ -131,7 +131,6 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5561306966581775118}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0

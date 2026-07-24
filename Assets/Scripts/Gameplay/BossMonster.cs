@@ -15,7 +15,7 @@ public class BossMonster : Monster
     {
         base.Awake();
         // 철위병 가론 보스 UnitBaseData Idx: 3201
-        this.InitUnit(3201);
+        this.InitUnitAsync(3201).Forget();
     }
 
     protected override void Start()
