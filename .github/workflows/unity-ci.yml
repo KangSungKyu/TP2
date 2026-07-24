@@ -2,9 +2,9 @@ name: Unity CI
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "portfolio" ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "portfolio" ]
 
 jobs:
   lint-and-validate:
