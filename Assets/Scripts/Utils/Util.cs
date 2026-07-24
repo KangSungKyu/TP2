@@ -25,18 +25,22 @@ public partial class Util
         return ((uint)type * 1000) + (innerId);
     }
 
+    public static CsvConfiguration GetCsvConfiguration()
+    {
+        return new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            Delimiter = ",",
+            PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
+            HeaderValidated = null,
+            MissingFieldFound = null
+        };
+    }
+
     public static List<T> ParseFromCSV<T>(string csvText)
     {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            Delimiter = ",", // 구분자 설정
-            PrepareHeaderForMatch = args => args.Header,
-        };
-
         using (var reader = new StringReader(csvText))
-        using (var csv = new CsvReader(reader, config))
+        using (var csv = new CsvReader(reader, GetCsvConfiguration()))
         {
-            // GetRecords는 스트리밍 방식으로 데이터를 읽어 객체 리스트로 반환
             return csv.GetRecords<T>().ToList();
         }
     }
