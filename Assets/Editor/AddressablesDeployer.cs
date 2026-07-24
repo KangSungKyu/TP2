@@ -9,6 +9,33 @@ public class AddressablesDeployer
     [MenuItem("Addressables/Build and Deploy to Local Server")]
     public static void BuildAndDeploy()
     {
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        if (settings == null)
+        {
+            settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+        }
+
+        if (settings != null)
+        {
+            // Active Profile ID 검증 및 안전 자동 바인딩 (ProfileValueReference empty id 방어)
+            if (string.IsNullOrEmpty(settings.activeProfileId))
+            {
+                string defaultProfileId = settings.profileSettings.GetProfileId("Default");
+                if (string.IsNullOrEmpty(defaultProfileId) && settings.profileSettings.GetAllProfileNames().Count > 0)
+                {
+                    string firstProfileName = settings.profileSettings.GetAllProfileNames()[0];
+                    defaultProfileId = settings.profileSettings.GetProfileId(firstProfileName);
+                }
+
+                if (!string.IsNullOrEmpty(defaultProfileId))
+                {
+                    settings.activeProfileId = defaultProfileId;
+                    EditorUtility.SetDirty(settings);
+                    Debug.Log($"[AddressablesDeployer] Active Profile ID가 '{settings.activeProfileId}'로 자동 설정되었습니다.");
+                }
+            }
+        }
+
         // 1. Addressables 빌드 수행
         Debug.Log("Building Addressables...");
         AddressableAssetSettings.BuildPlayerContent();
