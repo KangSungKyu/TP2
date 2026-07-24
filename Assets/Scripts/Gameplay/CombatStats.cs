@@ -158,11 +158,16 @@ public class CombatStats : MonoBehaviour
         // 4. PRIVATE METHODS (camelCase)
         // =========================================================================
 
-        private void Awake()
+        public void InitStats()
         {
             this.CurrentHp = this.MaxHp;
             this.CurrentMp = this.MaxMp;
-            this.CurrentPosture = 0f; // 0에서 시작하여 100까지 차오르면 Groggy
+            this.CurrentPosture = 0f;
+        }
+
+        private void Awake()
+        {
+            this.InitStats();
         }
 
         private void Update()

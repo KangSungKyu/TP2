@@ -112,6 +112,7 @@ public class UnitBase : MonoBehaviour
             this.stats.MaxHp = data.MaxHp;
             this.stats.MaxMp = data.MaxMp;
             this.stats.MaxPosture = data.MaxPosture;
+            this.stats.InitStats();
         }
 
         // 지면 피벗 오프셋 지정
