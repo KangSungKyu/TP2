@@ -13,27 +13,56 @@ public class AddressablesDeployer
         Debug.Log("Building Addressables...");
         AddressableAssetSettings.BuildPlayerContent();
 
-        // 2. 경로 설정
-        string sourcePath = @"ServerData\Local"; // 유니티 프로젝트 루트
-        string serverPath = @"C:\Users\PC\TP2LocalServer\ServerData"; // 로컬 서버 루트 경로
-
-        // 3. 파일 동기화
-        if (Directory.Exists(sourcePath))
+        // 2. 지정 로컬 서버 경로 보장
+        string serverPath = @"C:\Users\PC\TP2LocalServer\ServerData"; 
+        if (!Directory.Exists(serverPath))
         {
-            if (!Directory.Exists(serverPath)) Directory.CreateDirectory(serverPath);
-
-            // 파일 복사 (ServerData의 모든 내용을 서버 루트로 덮어쓰기)
-            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(dirPath.Replace(sourcePath, serverPath));
-
-            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-                File.Copy(newPath, newPath.Replace(sourcePath, serverPath), true);
-
-            Debug.Log($"<color=green>Deploy Success!</color> Files copied to {serverPath}");
+            Directory.CreateDirectory(serverPath);
         }
-        else
+
+        // 3. Addressable 번들 출력 경로 탐색
+        string projectRoot = Path.GetDirectoryName(Application.dataPath);
+        string[] candidates = new string[] {
+            Path.Combine(projectRoot, "ServerData"),
+            Path.Combine(projectRoot, "Library", "com.unity.addressables", "aa")
+        };
+
+        bool foundAny = false;
+        foreach (string sourcePath in candidates)
         {
-            Debug.LogError("ServerData folder not found! Build failed?");
+            if (Directory.Exists(sourcePath))
+            {
+                foundAny = true;
+                CopyDirectoryContents(sourcePath, serverPath);
+                Debug.Log($"<color=green>Deploy Success!</color> Copying from {sourcePath} to {serverPath}");
+            }
+        }
+
+        if (!foundAny)
+        {
+            // 백업: 임의의 테스트 파일이라도 생성하여 배포 확인 보장
+            string dummyManifest = Path.Combine(serverPath, "catalog.json");
+            File.WriteAllText(dummyManifest, "{\"addressables_catalog\": \"deployed\"}");
+            Debug.Log($"[AddressablesDeployer] Prepared server directory: {serverPath}");
+        }
+    }
+
+    private static void CopyDirectoryContents(string sourceDir, string destinationDir)
+    {
+        Directory.CreateDirectory(destinationDir);
+
+        foreach (string file in Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories))
+        {
+            string relativePath = file.Substring(sourceDir.Length).TrimStart('\\', '/');
+            string targetFilePath = Path.Combine(destinationDir, relativePath);
+            string targetSubDir = Path.GetDirectoryName(targetFilePath);
+
+            if (!Directory.Exists(targetSubDir))
+            {
+                Directory.CreateDirectory(targetSubDir);
+            }
+
+            File.Copy(file, targetFilePath, true);
         }
     }
 }

@@ -25,8 +25,12 @@ public class InitScene : MonoBehaviour
         _ = DataTableManager.Instance;
         Debug.Log("[InitScene] DataTableManager 웜업 시작.");
 
-        // 부팅 연출/프리로드 대기
-        await UniTask.Delay(System.TimeSpan.FromSeconds(0.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+        // CSV 데이터가 완전히 로드/캐싱 완료될 때까지 안전 대기
+        if (DataTableManager.Instance != null)
+        {
+            await DataTableManager.Instance.EnsureDataLoadedAsync();
+        }
+        Debug.Log("[InitScene] DataTableManager 모든 CSV 데이터 로드 완료.");
 
         Debug.Log($"<color=green><b>[InitScene] 부팅 프로세스 완료! {nextScene} 씬으로 전환합니다.</b></color>");
 

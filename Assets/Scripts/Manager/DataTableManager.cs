@@ -158,5 +158,18 @@ public class DataTableManager : Singleton<DataTableManager>
                 this.parseAndCacheCsv(asset.name, asset.text);
             }
         }
+
+#if UNITY_EDITOR
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:TextAsset", new[] { "Assets/datas" });
+        foreach (var guid in guids)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+            if (asset != null)
+            {
+                this.parseAndCacheCsv(asset.name, asset.text);
+            }
+        }
+#endif
     }
 }
