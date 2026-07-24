@@ -78,14 +78,33 @@ public class SkillExecutor : MonoBehaviour
             // ResourceManager를 사용하여 Addressable 파티클 프리팹 비동기 로드 (Key: "Particle")
             if (ResourceManager.Instance != null)
             {
-                ResourceManager.Instance.LoadAssetAsync<GameObject>("Particle", prefab =>
+                try
                 {
-                    if (prefab != null)
+                    ResourceManager.Instance.LoadAssetAsync<GameObject>("Particle", prefab =>
                     {
-                        this.particlePrefab = prefab;
-                        Debug.Log("[SkillExecutor] ResourceManager를 통해 파티클 프리팹('Particle') 로드 완료.");
-                    }
-                });
+                        if (prefab != null)
+                        {
+                            this.particlePrefab = prefab;
+                            Debug.Log("[SkillExecutor] ResourceManager를 통해 파티클 프리팹('Particle') 로드 완료.");
+                        }
+                    });
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[SkillExecutor] Addressable 'Particle' 키 로드 예외 발생, Fallback 로딩 시도: {ex.Message}");
+                }
+            }
+
+            // Fallback 로딩 (Resources / Editor)
+            if (this.particlePrefab == null)
+            {
+                this.particlePrefab = Resources.Load<GameObject>("prefabs/Particle");
+#if UNITY_EDITOR
+                if (this.particlePrefab == null)
+                {
+                    this.particlePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/prefabs/Particle.prefab");
+                }
+#endif
             }
         }
 
