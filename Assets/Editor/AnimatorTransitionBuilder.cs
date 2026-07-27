@@ -5,7 +5,7 @@ using UnityEngine;
 using System.IO;
 
 /// <summary>
-/// AnimatorController의 Int 파라미터 "State" (0=None, 1=Idle, 2=Run, 3=Jump, 4=Parry, 5=Guard, 6=Dodge, 7=Attack, 8=Execution)에 
+/// AnimatorController의 Int 파라미터 "State" (1=Idle, 2=Run, 3=Jump, 4=Parry, 5=Guard, 6=Dodge, 7=Attack_Hit1, 8=Execution, 9=Attack_Hit2, 10=Attack_Hit3)에 
 /// 대응되는 State Transition(조건: State Equals N, ExitTime=false, Duration=0.1s)을 완벽하게 자동 연결 및 복구해 주는 유틸리티.
 /// </summary>
 public static class AnimatorTransitionBuilder
@@ -15,7 +15,7 @@ public static class AnimatorTransitionBuilder
     {
         Debug.Log("<color=yellow><b>[AnimatorTransitionBuilder] AnimatorController State 트랜지션 자동 복구 시작...</b></color>");
 
-        // 1. Player AnimatorController 트랜지션 구축
+        // 1. Player AnimatorController 트랜지션 구축 (10종 전신 애니메이션)
         RebuildPlayerTransitions();
 
         // 2. Garon (보스) AnimatorController 트랜지션 구축
@@ -40,7 +40,7 @@ public static class AnimatorTransitionBuilder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
-        // 기존 트랜지션 정제 후 맵핑
+        // 10종 전신 애니메이션 스테이트 맵핑
         var stateMap = new System.Collections.Generic.Dictionary<int, string>()
         {
             { 1, "Player_Idle" },
@@ -49,8 +49,10 @@ public static class AnimatorTransitionBuilder
             { 4, "Player_Parry" },
             { 5, "Player_Guard" },
             { 6, "Player_Dodge" },
-            { 7, "Player_ComboAttack" },
-            { 8, "Player_Execution" }
+            { 7, "Player_Attack_Hit1" },
+            { 8, "Player_Execution" },
+            { 9, "Player_Attack_Hit2" },
+            { 10, "Player_Attack_Hit3" }
         };
 
         SetupStateMachineTransitions(controller, stateMachine, stateMap, "Assets/Anims/Player");
@@ -114,14 +116,12 @@ public static class AnimatorTransitionBuilder
 
     private static void SetupStateMachineTransitions(AnimatorController controller, AnimatorStateMachine stateMachine, System.Collections.Generic.Dictionary<int, string> stateMap, string animFolder)
     {
-        // 1. 기존 States 탐색 및 딕셔너리 구성
         System.Collections.Generic.Dictionary<string, AnimatorState> existingStates = new System.Collections.Generic.Dictionary<string, AnimatorState>();
         foreach (var childState in stateMachine.states)
         {
             existingStates[childState.state.name] = childState.state;
         }
 
-        // 2. 필요 스테이트 생성 및 몽땅 바인딩
         foreach (var kvp in stateMap)
         {
             int stateVal = kvp.Key;
@@ -145,14 +145,12 @@ public static class AnimatorTransitionBuilder
                 stateMachine.defaultState = targetState;
             }
 
-            // AnyState -> TargetState Transition 존재 여부 확인 후 추가
             bool hasTransition = false;
             foreach (var trans in stateMachine.anyStateTransitions)
             {
                 if (trans.destinationState == targetState)
                 {
                     hasTransition = true;
-                    // 조건 갱신
                     trans.conditions = new AnimatorCondition[0];
                     trans.AddCondition(AnimatorConditionMode.Equals, stateVal, "State");
                     trans.hasExitTime = false;

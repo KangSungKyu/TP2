@@ -105,6 +105,9 @@ public class Player : UnitBase
             PlayerState.Guard => "Player_Guard",
             PlayerState.Dodge => "Player_Dodge",
             PlayerState.Execution => "Player_Execution",
+            PlayerState.Attack => "Player_Attack_Hit1",
+            PlayerState.Attack2 => "Player_Attack_Hit2",
+            PlayerState.Attack3 => "Player_Attack_Hit3",
             _ => "Player_Idle"
         };
     }
@@ -201,16 +204,27 @@ public class Player : UnitBase
         this.isAttacking = true;
         this.hasQueuedAttack = false;
         
-        // 공격 상태로 돌입 (내부 애니메이터 처리를 위해)
-        this.SetState(PlayerState.Attack, true);
+        PlayerState attackState = this.comboStep switch
+        {
+            1 => PlayerState.Attack,
+            2 => PlayerState.Attack2,
+            3 => PlayerState.Attack3,
+            _ => PlayerState.Attack
+        };
 
-        // 단계에 맞는 애니메이션 재생 (추후 분리된 애니메이션 클립 연동)
-        string animClipName = $"Player_Attack_{this.comboStep}";
+        // 공격 상태로 돌입
+        this.SetState(attackState, true);
+
+        string animClipName = this.comboStep switch
+        {
+            1 => "Player_Attack_Hit1",
+            2 => "Player_Attack_Hit2",
+            3 => "Player_Attack_Hit3",
+            _ => "Player_Attack_Hit1"
+        };
         
         if (this.animator != null)
         {
-            // 만약 현재 분리된 애니메이션이 없고 Player_ComboAttack 하나만 쓴다면 아래 로직을 조정해야 함.
-            // 일단 논리적 확장을 위해 Attack_1, 2, 3으로 호출 시도.
             this.animator.Play(animClipName, 0, 0f);
         }
 

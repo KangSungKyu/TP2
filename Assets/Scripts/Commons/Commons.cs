@@ -20,8 +20,10 @@ public enum PlayerState
     Parry = 4,      // 패링 윈도우 (0.15s)
     Guard = 5,      // 가드 유지
     Dodge = 6,      // 관통 회피 대시
-    Attack = 7,     // 검술 콤보 공격 및 스킬
+    Attack = 7,     // 검술 콤보 1타 및 기본 스킬
     Execution = 8,  // 보스 무방비 처형
+    Attack2 = 9,    // 검술 콤보 2타
+    Attack3 = 10,   // 검술 콤보 3타
     PlayerState_End
 }
 

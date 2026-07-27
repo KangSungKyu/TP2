@@ -22,9 +22,9 @@ namespace QA.Tests
 
             Assert.Greater(controller.layers.Length, 0, "AnimatorController에 레이어가 존재하지 않습니다.");
             var stateMachine = controller.layers[0].stateMachine;
-            Assert.GreaterOrEqual(stateMachine.states.Length, 8, "PlayerAnimatorController 상태 개수가 최소 8개 이상이어야 합니다.");
+            Assert.GreaterOrEqual(stateMachine.states.Length, 10, "PlayerAnimatorController 상태 개수가 최소 10개 이상이어야 합니다 (State 1~10).");
 
-            // 8종 애니메이션 모션 클립 바인딩 및 Motion non-null 검증
+            // 10종 애니메이션 모션 클립 바인딩 및 Motion non-null 검증
             foreach (var childState in stateMachine.states)
             {
                 Assert.IsNotNull(childState.state.motion, $"Player State '{childState.state.name}'의 AnimationClip Motion 참조가 null입니다!");
