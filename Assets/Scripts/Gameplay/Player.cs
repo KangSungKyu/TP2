@@ -155,15 +155,17 @@ public class Player : UnitBase
 
     private void handleDefensiveActions(Keyboard keyboard)
     {
-        if (this.isAttacking) return; // 공격 중 방어 행동 차단 (또는 추후 캔슬 로직 추가 가능)
+        if (this.isAttacking || this.IsJumping) return;
 
-        bool defenseKeyPressedThisFrame = keyboard.leftShiftKey.wasPressedThisFrame || keyboard.jKey.wasPressedThisFrame || keyboard.qKey.wasPressedThisFrame;
+        // Space Bar 키: 가드 / 패링 통합 입력
+        bool defenseKeyPressedThisFrame = keyboard.spaceKey.wasPressedThisFrame;
         if (defenseKeyPressedThisFrame)
         {
             this.guardParrySequenceAsync(keyboard, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        if (keyboard.leftCtrlKey.wasPressedThisFrame || keyboard.lKey.wasPressedThisFrame)
+        // Left Shift 키: 대시 / 회피 입력
+        if (keyboard.leftShiftKey.wasPressedThisFrame)
         {
             Vector3 dodgeDir = this.currentMoveDir.sqrMagnitude > 0.001f ? this.currentMoveDir : (this.facingDir.x >= 0 ? Vector3.left : Vector3.right);
             this.dodgeAsync(dodgeDir, this.GetCancellationTokenOnDestroy()).Forget();
@@ -228,11 +230,18 @@ public class Player : UnitBase
             this.animator.Play(animClipName, 0, 0f);
         }
 
-        // [TODO] 콤보 단계에 따라 데미지나 범위, 딜레이를 다르게 설정 가능
-        float attackDuration = 0.4f; // 1,2,3타 애니메이션 지속 시간 및 딜레이
-        
-        // 1. 공격 모션 진행 대기
-        await UniTask.Delay(System.TimeSpan.FromSeconds(attackDuration), cancellationToken: cancellationToken);
+        // 1. 공격 모션 진행 및 타격 타이밍(0.12s)에 독립 SkillEffect 스폰
+        await UniTask.Delay(System.TimeSpan.FromSeconds(0.12f), cancellationToken: cancellationToken);
+
+        if (this.skillExecutor != null)
+        {
+            Vector3 spawnOffset = (this.spriteRenderer != null && this.spriteRenderer.flipX) ? Vector3.right * 1.0f : Vector3.left * 1.0f;
+            Vector3 spawnPos = transform.position + spawnOffset + Vector3.up * 0.8f;
+            Color effectColor = new Color(0f, 1f, 0.4f, 0.4f); // 초록 반투명 검기 이펙트
+            this.skillExecutor.SpawnSkillEffect($"Player_Hit{this.comboStep}", spawnPos, new Vector2(1.2f, 1.5f), 15f * this.comboStep, 0.15f, FactionType.PlayerAlly, effectColor);
+        }
+
+        await UniTask.Delay(System.TimeSpan.FromSeconds(0.28f), cancellationToken: cancellationToken);
 
         // 2. 공격 창(Combo Window) 대기 
         // 애니메이션이 끝나갈 무렵, 선입력(hasQueuedAttack)이 들어왔는지 확인
@@ -283,13 +292,13 @@ public class Player : UnitBase
         await UniTask.Delay(150, cancellationToken: cancellationToken);
         this.stats.SetParrying(false);
 
-        bool isDefenseKeyPressed = keyboard.leftShiftKey.isPressed || keyboard.jKey.isPressed || keyboard.qKey.isPressed;
+        bool isDefenseKeyPressed = keyboard.spaceKey.isPressed;
         if (isDefenseKeyPressed)
         {
             this.stats.SetGuarding(true);
             this.SetState(PlayerState.Guard);
 
-            while ((keyboard.leftShiftKey.isPressed || keyboard.jKey.isPressed || keyboard.qKey.isPressed) && !cancellationToken.IsCancellationRequested)
+            while (keyboard.spaceKey.isPressed && !cancellationToken.IsCancellationRequested)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             }

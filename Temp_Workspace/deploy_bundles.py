@@ -1,5 +1,4 @@
-import os
-import shutil
+import os, shutil
 
 project_root = r"c:\Users\PC\Projects\TP2"
 target_dir = r"C:\Users\PC\TP2LocalServer\ServerData"

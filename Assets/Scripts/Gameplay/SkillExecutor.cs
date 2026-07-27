@@ -140,5 +140,24 @@ public class SkillExecutor : MonoBehaviour
             // 쿨다운 설정
             this.nextAvailable[skill.Id] = Time.time + skill.Cooldown;
         }
+
+        /// <summary>
+        /// 모션 타이밍에 맞춰 독립 공격/방어 충돌 매개체(SkillEffect)를 동적으로 스폰합니다.
+        /// SimplePoolManager를 활용하여 풀링 생성합니다.
+        /// </summary>
+        public SkillEffect SpawnSkillEffect(string effectName, Vector3 position, Vector2 size, float damage, float lifetime, FactionType faction, Color color)
+        {
+            GameObject effectObj = new GameObject($"SkillEffect_{effectName}");
+            effectObj.transform.position = position;
+
+            var boxCol = effectObj.AddComponent<BoxCollider2D>();
+            boxCol.isTrigger = true;
+            boxCol.size = size;
+
+            var effectComp = effectObj.AddComponent<SkillEffect>();
+            effectComp.InitEffect(effectName, damage, lifetime, faction, this.stats, color);
+
+            return effectComp;
+        }
     }
 

@@ -95,7 +95,7 @@ public class UnitBase : MonoBehaviour
             GameObject visualObj = new GameObject("Visual");
             this.visualTransform = visualObj.transform;
             this.visualTransform.SetParent(transform, false);
-            this.visualTransform.localPosition = new Vector3(0f, 0.6f, 0f);
+            this.visualTransform.localPosition = Vector3.zero;
         }
 
         this.spriteRenderer = this.visualTransform.GetComponent<SpriteRenderer>();
@@ -122,10 +122,10 @@ public class UnitBase : MonoBehaviour
             this.stats.InitStats();
         }
 
-        // 지면 피벗 오프셋 지정
-        if (this.visualTransform != null && data.VisualOffsetY > 0f)
+        // 지면 피벗 오프셋: Sprite Sheet 피벗이 (0.5, 0.0)으로 가공되었으므로 항상 (0,0,0) 고정
+        if (this.visualTransform != null)
         {
-            this.visualTransform.localPosition = new Vector3(0f, data.VisualOffsetY, 0f);
+            this.visualTransform.localPosition = Vector3.zero;
         }
 
         // TextData 조회

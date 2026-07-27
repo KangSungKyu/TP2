@@ -20,54 +20,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0d8fdf270f839674a85c7fa062b89e35
-    m_Address: WaveHeavy
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2fd025f20559e3e48b94409388d85c52
-    m_Address: Player
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 314c81d4a869f1f48911fd43e3dd9b96
-    m_Address: PlayerAnimatorController
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4ea9c71b289748d419e21d933ad0f605
-    m_Address: Particle
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 51350a998367f62489c050d8416be6e5
-    m_Address: ShadowStalkerAnimatorController
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 64147eb8612d5954e8353a71edbd0c22
-    m_Address: GaronAnimatorController
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 674a0d228d9e1c241b0b787e922312a0
-    m_Address: WaveHeavyAnimatorController
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
-    m_Address: Garon
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b40044c2b0b2d148afd84f9a274fe78
     m_Address: MainScene
     m_ReadOnly: 0
@@ -82,66 +34,6 @@ MonoBehaviour:
     m_Address: LoadingScene
     m_ReadOnly: 0
     m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b25a4000b4f874042afc7cb1962d1054
-    m_Address: BossPatternData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b36ba15ad225931409971d86e8fc9273
-    m_Address: SpearSentryAnimatorController
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d2c70d21e96b1ea468be06c70629687b
-    m_Address: UnitBaseData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d3a9ad5926f7f3345acf9b41b6987b8e
-    m_Address: MonsterPatternData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d3f3d2309ea036a4086312a95c883f33
-    m_Address: MonsterBaseData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d4385f8a50e422043837c8feaaa35867
-    m_Address: TextData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d7aebc67a8a48b04fb3a3bd8447461d7
-    m_Address: ResourceData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ed5e5a0d511904e4990e34356127574b
-    m_Address: SkillData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Datas
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f0cc493149cf2e94cb92a267c688a733
-    m_Address: SpearSentry
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f31a9194d73d26c4d8ebdf4623f6c5a1
-    m_Address: ShadowStalker
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}
