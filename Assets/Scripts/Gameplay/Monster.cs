@@ -190,46 +190,75 @@ public class Monster : UnitBase
 
     private async UniTask executePatternAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
     {
-        // 전조시간 (PreDelay)
+        if (this.playerTarget == null) return;
+
+        // 1. 공격 사거리(attackRange) 판단
+        bool isDistanceOverPattern = (PatternTriggerType)pattern.TriggerType == PatternTriggerType.DistanceOver;
+        float attackRange = pattern.TriggerValue > 0f ? pattern.TriggerValue : 1.8f;
+        float currentDist = Vector3.Distance(transform.position, this.playerTarget.position);
+
+        // 2. 사거리 밖이고 원거리 시전 패턴이 아닐 경우 ➔ 타겟을 향해 추적 이동 (State = Move)
+        if (!isDistanceOverPattern && currentDist > attackRange)
+        {
+            this.SetFacingRight(this.playerTarget.position.x >= transform.position.x);
+            // Move 상태 (State = 2) 연결
+            if (this.animator != null)
+            {
+                this.animator.SetInteger("State", 2);
+            }
+
+            float moveSpeed = (this.UnitData != null && this.UnitData.MoveSpeed > 0f) ? this.UnitData.MoveSpeed : 3.5f;
+
+            while (currentDist > attackRange && !cancellationToken.IsCancellationRequested)
+            {
+                currentDist = Vector3.Distance(transform.position, this.playerTarget.position);
+                Vector3 moveDir = (this.playerTarget.position - transform.position).normalized;
+                this.SetFacingRight(moveDir.x >= 0);
+
+                transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+        }
+
+        // 3. 사거리 진입 시 ➔ 타겟 바라보기 및 전조시간 (PreDelay) 대기
+        this.SetFacingRight(this.playerTarget.position.x >= transform.position.x);
         if (pattern.PreDelay > 0f)
         {
             int preMs = Mathf.RoundToInt(pattern.PreDelay * 1000f);
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
         }
 
-        // 타겟 바라보기
-        if (this.playerTarget != null)
-        {
-            this.SetFacingRight(this.playerTarget.position.x >= transform.position.x);
-        }
-
-        // 애니메이션 재생
+        // 4. 애니메이션 시전 및 State 세팅
         if (this.animator != null && !string.IsNullOrEmpty(pattern.AnimClipName))
         {
             this.animator.Play(pattern.AnimClipName);
         }
 
-        // 데미지 판정
+        // 5. 데미지 판정
         if (this.playerTarget != null)
         {
             var pStats = this.playerTarget.GetComponent<CombatStats>();
-            if (pStats != null && Vector3.Distance(transform.position, this.playerTarget.position) <= pattern.Damage)
+            if (pStats != null && Vector3.Distance(transform.position, this.playerTarget.position) <= (attackRange + 0.5f))
             {
                 pStats.TakeDamage(pattern.Damage, isGroundAttack: false, isJumped: false, attacker: this.stats);
             }
         }
 
-        // 쿨다운 등록
+        // 6. 쿨다운 및 후딜레이 (PostDelay) 대기 후 Idle 복귀
         if (pattern.Cooldown > 0f)
         {
             this.patternCooldowns[pattern.Idx] = Time.time + pattern.Cooldown;
         }
 
-        // 후딜레이 (PostDelay)
         if (pattern.PostDelay > 0f)
         {
             int postMs = Mathf.RoundToInt(pattern.PostDelay * 1000f);
             await UniTask.Delay(postMs, cancellationToken: cancellationToken);
+        }
+
+        if (this.animator != null)
+        {
+            this.animator.SetInteger("State", 1); // Idle 복귀
         }
     }
 

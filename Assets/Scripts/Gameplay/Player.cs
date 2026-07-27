@@ -155,15 +155,17 @@ public class Player : UnitBase
 
     private void handleDefensiveActions(Keyboard keyboard)
     {
-        if (this.isAttacking) return; // 공격 중 방어 행동 차단 (또는 추후 캔슬 로직 추가 가능)
+        if (this.isAttacking || this.IsJumping) return;
 
-        bool defenseKeyPressedThisFrame = keyboard.leftShiftKey.wasPressedThisFrame || keyboard.jKey.wasPressedThisFrame || keyboard.qKey.wasPressedThisFrame;
+        // Space Bar 키: 가드 / 패링 통합 입력
+        bool defenseKeyPressedThisFrame = keyboard.spaceKey.wasPressedThisFrame;
         if (defenseKeyPressedThisFrame)
         {
             this.guardParrySequenceAsync(keyboard, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        if (keyboard.leftCtrlKey.wasPressedThisFrame || keyboard.lKey.wasPressedThisFrame)
+        // Left Shift 키: 대시 / 회피 입력
+        if (keyboard.leftShiftKey.wasPressedThisFrame)
         {
             Vector3 dodgeDir = this.currentMoveDir.sqrMagnitude > 0.001f ? this.currentMoveDir : (this.facingDir.x >= 0 ? Vector3.left : Vector3.right);
             this.dodgeAsync(dodgeDir, this.GetCancellationTokenOnDestroy()).Forget();
@@ -283,13 +285,13 @@ public class Player : UnitBase
         await UniTask.Delay(150, cancellationToken: cancellationToken);
         this.stats.SetParrying(false);
 
-        bool isDefenseKeyPressed = keyboard.leftShiftKey.isPressed || keyboard.jKey.isPressed || keyboard.qKey.isPressed;
+        bool isDefenseKeyPressed = keyboard.spaceKey.isPressed;
         if (isDefenseKeyPressed)
         {
             this.stats.SetGuarding(true);
             this.SetState(PlayerState.Guard);
 
-            while ((keyboard.leftShiftKey.isPressed || keyboard.jKey.isPressed || keyboard.qKey.isPressed) && !cancellationToken.IsCancellationRequested)
+            while (keyboard.spaceKey.isPressed && !cancellationToken.IsCancellationRequested)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             }
