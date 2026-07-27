@@ -26,9 +26,10 @@ public class MainScene : MonoBehaviour
         // 3. ----- BossMonster (철위병 가론 - UnitBase/Monster 상속) 스폰 -----
         this.setupBossMonsterObject();
 
-        // 4. ----- OnGUI HUD 생성 -----
+        // 4. ----- OnGUI HUD 및 테스트 플레이어 HUD 생성 -----
         var hudObj = new GameObject("CoreTestHUD");
         hudObj.AddComponent<CoreTestHUD>();
+        hudObj.AddComponent<TestPlayerHUDUI>();
 
         Debug.Log("<color=cyan><b>[MainScene] UnitBase 아키텍처 & CSV 데이터 기반 2D 환경 구축 완료!</b></color>");
     }
