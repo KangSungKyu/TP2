@@ -59,15 +59,19 @@ public class UnitBase : MonoBehaviour
 
     public virtual void SetFacingRight(bool isRight)
     {
+        // 정책: 원본 스프라이트(Texture)는 왼쪽을 바라보는 형태가 기본값.
+        // 따라서 유닛이 오른쪽(isRight = true)을 바라보게 하려면 flipX를 true로 반전시켜야 함.
         if (this.spriteRenderer != null)
         {
-            this.spriteRenderer.flipX = !isRight;
+            this.spriteRenderer.flipX = isRight;
         }
+        
+        // flipX로 방향을 처리하므로, visualTransform의 Scale은 1f로 유지 (이중 반전 방지)
         if (this.visualTransform != null)
         {
             float scaleY = this.visualTransform.localScale.y;
             float scaleZ = this.visualTransform.localScale.z;
-            this.visualTransform.localScale = new Vector3(isRight ? 1f : -1f, scaleY, scaleZ);
+            this.visualTransform.localScale = new Vector3(1f, scaleY, scaleZ);
         }
     }
 
