@@ -1,5 +1,0 @@
-SkillId,Name,AnimationClip,Range,CastTime,CooldownSec,MpCost,DamageMultiplier,IsBasicAttack
-1,BasicAttack,Skill_01,1.5,0.0,0.5,5,1.0,true
-2,Fireball,Skill_Fireball,5.0,0.2,3.0,20,2.5,false
-3,IceSpike,Skill_IceSpike,4.5,0.3,4.0,25,3.0,false
-4,Lightning,Skill_Lightning,6.0,0.25,5.0,30,3.5,false

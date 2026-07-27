@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Anims
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Anims
+  m_GUID: 6d4a9e3ef80af3f489a75b92e4bd6fc9
+  m_SerializeEntries:
+  - m_GUID: 10265852de0b42c4ba750cf5ca519a23
+    m_Address: GaronAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec48c6e870a7f61448316638807d3ba6
+    m_Address: PlayerAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}
+  m_SchemaSet:
+    m_Schemas: []

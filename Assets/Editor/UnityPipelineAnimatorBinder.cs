@@ -7,33 +7,31 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Unity 6 (6000.4.8f1) 2D Animation Pipeline 표준 유틸리티.
-/// 메인 프로그래머의 State Int 매핑 사양 및 아트 디자이너1의 FPS / Looping 사양을 
-/// 유니티 C# AssetDatabase & AnimationUtility 직렬화 엔진으로 100% 무결점 바인딩해 주는 파이프라인.
+/// 유니티 C# TextureImporter.spritesheet API를 직접 사용하여 Sprite Editor 내 슬라이스 데이터를 100% 무결점으로 재정합 및 Reimport 해줍니다.
 /// </summary>
 public static class UnityPipelineAnimatorBinder
 {
-    [InitializeOnLoadMethod]
     [MenuItem("TP2/Execute Unity Pipeline Full Animator Binding (유니티 CLI 표준 바인딩)")]
     public static void ExecuteFullPipelineBinding()
     {
-        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity 6 CLI & Pipeline 애니메이터 정식 바인딩 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity 6 CLI & Pipeline 애니메이터 정식 바인딩 및 Sprite Slicing 시작...</b></color>");
 
-        // 1. 플레이어 10종 애니메이션 클립 & PlayerAnimatorController 바인딩
+        // 1. 플레이어 10종 애니메이션 클립 & PlayerAnimatorController 바인딩 (128x256px)
         BindPlayerPipeline();
 
-        // 2. 철위병 가론 보스 8종 애니메이션 클립 & GaronAnimatorController 바인딩
+        // 2. 철위병 가론 보스 8종 애니메이션 클립 & GaronAnimatorController 바인딩 (256x512px)
         BindGaronPipeline();
 
-        // 3. 일반 몬스터 3종 애니메이션 클립 & Controllers 바인딩
+        // 3. 일반 몬스터 3종 애니메이션 클립 & Controllers 바인딩 (64x64px)
         BindMonsterPipeline();
 
         // 4. Addressables 전수 자동 등록 및 로컬 배포
-        AddressableAutoRegister.RegisterAllAddressables();
-        AddressablesDeployer.BuildAndDeploy();
+        AddressablePipeline.RegisterAllAddressables();
+        AddressablePipeline.BuildAndDeploy();
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("<color=green><b>[UnityPipelineAnimatorBinder] 모든 Animator & AnimationClip 유니티 엔진 정식 바인딩 및 배포 완료!</b></color>");
+        Debug.Log("<color=green><b>[UnityPipelineAnimatorBinder] 모든 Sprite Slicing, Animator & AnimationClip 유니티 엔진 정식 바인딩 완료!</b></color>");
     }
 
     private static void BindPlayerPipeline()
@@ -49,7 +47,6 @@ public static class UnityPipelineAnimatorBinder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
-        // 플레이어 10종 (메인프로그래머 State Int & 아트디자이너1 FPS/Looping 사양)
         var playerMap = new Dictionary<int, (string animName, string texName, float fps, bool loop)>()
         {
             { 1, ("Player_Idle", "Player_Idle.png", 12f, true) },
@@ -77,7 +74,8 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{playerTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop);
+            // Player Frame Size: 128 x 256 px
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 128, 256);
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -113,7 +111,6 @@ public static class UnityPipelineAnimatorBinder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
-        // 가론 보스 8종 (메인프로그래머 State Int & 아트디자이너1 FPS/Looping 사양)
         var garonMap = new Dictionary<int, (string animName, string texName, float fps, bool loop)>()
         {
             { 1, ("Garon_Idle", "Garon_Idle.png", 8f, true) },
@@ -139,7 +136,8 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{garonTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop);
+            // Boss Garon Frame Size: 256 x 512 px
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 256, 512);
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -188,7 +186,8 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop);
+                // Monster Frame Size: 64 x 64 px
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64);
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -212,38 +211,38 @@ public static class UnityPipelineAnimatorBinder
         }
     }
 
-    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping)
+    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight)
     {
-        // Texture Importer 설정 (128x128 Grid, Point Filter, Bottom-Center Pivot)
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer != null)
         {
-            bool changed = false;
-            if (importer.textureType != TextureImporterType.Sprite)
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+            importer.filterMode = FilterMode.Point;
+            importer.spritePixelsPerUnit = 128;
+
+            // Texture 크기 정보 로드
+            Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            if (tex != null)
             {
-                importer.textureType = TextureImporterType.Sprite;
-                changed = true;
-            }
-            if (importer.spriteImportMode != SpriteImportMode.Multiple && importer.spriteImportMode != SpriteImportMode.Single)
-            {
-                importer.spriteImportMode = SpriteImportMode.Multiple;
-                changed = true;
-            }
-            if (importer.filterMode != FilterMode.Point)
-            {
-                importer.filterMode = FilterMode.Point;
-                changed = true;
-            }
-            if (importer.spritePixelsPerUnit != 128)
-            {
-                importer.spritePixelsPerUnit = 128;
-                changed = true;
+                int cols = tex.width / frameWidth;
+                if (cols > 0)
+                {
+                    List<SpriteMetaData> metaList = new List<SpriteMetaData>();
+                    for (int i = 0; i < cols; i++)
+                    {
+                        SpriteMetaData meta = new SpriteMetaData();
+                        meta.name = $"{clipName}_{i}";
+                        meta.rect = new Rect(i * frameWidth, 0, frameWidth, frameHeight);
+                        meta.alignment = (int)SpriteAlignment.BottomCenter;
+                        meta.pivot = new Vector2(0.5f, 0.0f);
+                        metaList.Add(meta);
+                    }
+                    importer.spritesheet = metaList.ToArray();
+                }
             }
 
-            if (changed)
-            {
-                importer.SaveAndReimport();
-            }
+            importer.SaveAndReimport();
         }
 
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath(texturePath);
@@ -280,7 +279,6 @@ public static class UnityPipelineAnimatorBinder
 
         clip.frameRate = fps;
 
-        // Looping 설정
         AnimationClipSettings clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
         clipSettings.loopTime = isLooping;
         AnimationUtility.SetAnimationClipSettings(clip, clipSettings);
