@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// 플레이어 유닛 클래스 (UnitBase 상속).
-/// Unity InputSystem 조작, 4대 공수 선택지, 스킬 연동 및 PlayerState 동기화를 전담합니다.
+/// Unity InputSystem 조작, 4대 공수 선택지, 3타 콤보 공격, 스킬 연동 및 PlayerState 동기화를 전담합니다.
 /// </summary>
 public class Player : UnitBase
 {
@@ -31,6 +31,12 @@ public class Player : UnitBase
     private Vector3 currentMoveDir = Vector3.zero;
     private Vector3 facingDir = Vector3.right;
 
+    // 콤보 공격 관련 변수
+    private int comboStep = 0; // 0: 공격안함, 1: 1타, 2: 2타, 3: 3타
+    private bool isAttacking = false;
+    private bool hasQueuedAttack = false;
+    private float comboWindow = 0.5f; // 각 타격 후 다음 입력을 기다리는 허용 시간 (기본값)
+
 
     // =========================================================================
     // 3. PUBLIC METHODS (PascalCase)
@@ -46,9 +52,6 @@ public class Player : UnitBase
         }
     }
 
-    /// <summary>
-    /// 플레이어 상태(PlayerState)를 변경하고 Animator 상태 파라미터("State") 및 애니메이션을 동기화합니다.
-    /// </summary>
     public void SetState(PlayerState newState, bool forceUpdate = false)
     {
         if (this.CurrentState == newState && !forceUpdate) return;
@@ -58,8 +61,12 @@ public class Player : UnitBase
         if (this.animator != null && this.animator.runtimeAnimatorController != null)
         {
             this.animator.SetInteger("State", (int)newState);
-            string animName = this.getAnimNameByState(newState);
-            this.animator.Play(animName);
+            // 콤보 공격 상태일 때는 getAnimNameByState에서 예외처리 하지 않고 AttackAsync에서 직접 Play 호출
+            if (newState != PlayerState.Attack)
+            {
+                string animName = this.getAnimNameByState(newState);
+                this.animator.Play(animName);
+            }
         }
     }
 
@@ -71,7 +78,6 @@ public class Player : UnitBase
     protected override void Awake()
     {
         base.Awake();
-        // 플레이어 기본 UnitBaseData Idx: 3001
         this.InitUnitAsync(3001).Forget();
     }
 
@@ -82,6 +88,7 @@ public class Player : UnitBase
 
         this.handleMovement(keyboard);
         this.handleDefensiveActions(keyboard);
+        this.handleBasicAttack(keyboard);
         this.handleSkills(keyboard);
         this.updateIdleState();
     }
@@ -97,7 +104,6 @@ public class Player : UnitBase
             PlayerState.Parry => "Player_Parry",
             PlayerState.Guard => "Player_Guard",
             PlayerState.Dodge => "Player_Dodge",
-            PlayerState.Attack => "Player_ComboAttack",
             PlayerState.Execution => "Player_Execution",
             _ => "Player_Idle"
         };
@@ -105,6 +111,10 @@ public class Player : UnitBase
 
     private void handleMovement(Keyboard keyboard)
     {
+        // 공격 중이거나 방어 행동 중일 때는 이동 불가 처리
+        if (this.isAttacking || this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
+            return;
+
         this.currentMoveDir = Vector3.zero;
 
         if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) this.currentMoveDir.z += 1f;
@@ -120,7 +130,7 @@ public class Player : UnitBase
             this.SetFacingRight(this.facingDir.x >= 0);
             transform.Translate(this.currentMoveDir * this.Speed * Time.deltaTime, Space.World);
 
-            if (!this.IsJumping && !this.stats.IsDodging && !this.stats.IsGuarding && !this.stats.IsParrying)
+            if (!this.IsJumping)
             {
                 this.SetState(PlayerState.Run);
             }
@@ -129,7 +139,12 @@ public class Player : UnitBase
 
     private void updateIdleState()
     {
-        if (this.currentMoveDir.sqrMagnitude <= 0.001f && !this.IsJumping && !this.stats.IsDodging && !this.stats.IsGuarding && !this.stats.IsParrying && this.CurrentState != PlayerState.Attack)
+        if (this.currentMoveDir.sqrMagnitude <= 0.001f && 
+            !this.IsJumping && 
+            !this.stats.IsDodging && 
+            !this.stats.IsGuarding && 
+            !this.stats.IsParrying && 
+            !this.isAttacking)
         {
             this.SetState(PlayerState.Idle);
         }
@@ -137,6 +152,8 @@ public class Player : UnitBase
 
     private void handleDefensiveActions(Keyboard keyboard)
     {
+        if (this.isAttacking) return; // 공격 중 방어 행동 차단 (또는 추후 캔슬 로직 추가 가능)
+
         bool defenseKeyPressedThisFrame = keyboard.leftShiftKey.wasPressedThisFrame || keyboard.jKey.wasPressedThisFrame || keyboard.qKey.wasPressedThisFrame;
         if (defenseKeyPressedThisFrame)
         {
@@ -145,10 +162,103 @@ public class Player : UnitBase
 
         if (keyboard.leftCtrlKey.wasPressedThisFrame || keyboard.lKey.wasPressedThisFrame)
         {
-            Vector3 dodgeDir = this.currentMoveDir.sqrMagnitude > 0.001f ? this.currentMoveDir : -this.facingDir;
+            Vector3 dodgeDir = this.currentMoveDir.sqrMagnitude > 0.001f ? this.currentMoveDir : (this.facingDir.x >= 0 ? Vector3.left : Vector3.right);
             this.dodgeAsync(dodgeDir, this.GetCancellationTokenOnDestroy()).Forget();
         }
     }
+
+    // =========================================================================
+    // 5. ATTACK & COMBO SYSTEM (New)
+    // =========================================================================
+
+    private void handleBasicAttack(Keyboard keyboard)
+    {
+        // 방어/회피 중에는 공격 불가
+        if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying) return;
+
+        // X 키가 이번 프레임에 눌렸을 때
+        if (keyboard.xKey.wasPressedThisFrame)
+        {
+            if (!this.isAttacking)
+            {
+                // 공격 중이 아니면 1타 시작
+                this.comboStep = 1;
+                this.performAttackStepAsync(this.GetCancellationTokenOnDestroy()).Forget();
+            }
+            else
+            {
+                // 이미 공격 중이고 3타 미만이면 다음 타격 예약(선입력)
+                if (this.comboStep < 3)
+                {
+                    this.hasQueuedAttack = true;
+                }
+            }
+        }
+    }
+
+    private async UniTaskVoid performAttackStepAsync(CancellationToken cancellationToken)
+    {
+        this.isAttacking = true;
+        this.hasQueuedAttack = false;
+        
+        // 공격 상태로 돌입 (내부 애니메이터 처리를 위해)
+        this.SetState(PlayerState.Attack, true);
+
+        // 단계에 맞는 애니메이션 재생 (추후 분리된 애니메이션 클립 연동)
+        string animClipName = $"Player_Attack_{this.comboStep}";
+        
+        if (this.animator != null)
+        {
+            // 만약 현재 분리된 애니메이션이 없고 Player_ComboAttack 하나만 쓴다면 아래 로직을 조정해야 함.
+            // 일단 논리적 확장을 위해 Attack_1, 2, 3으로 호출 시도.
+            this.animator.Play(animClipName, 0, 0f);
+        }
+
+        // [TODO] 콤보 단계에 따라 데미지나 범위, 딜레이를 다르게 설정 가능
+        float attackDuration = 0.4f; // 1,2,3타 애니메이션 지속 시간 및 딜레이
+        
+        // 1. 공격 모션 진행 대기
+        await UniTask.Delay(System.TimeSpan.FromSeconds(attackDuration), cancellationToken: cancellationToken);
+
+        // 2. 공격 창(Combo Window) 대기 
+        // 애니메이션이 끝나갈 무렵, 선입력(hasQueuedAttack)이 들어왔는지 확인
+        float windowElapsed = 0f;
+        bool nextComboTriggered = false;
+
+        while (windowElapsed < this.comboWindow)
+        {
+            windowElapsed += Time.deltaTime;
+
+            if (this.hasQueuedAttack)
+            {
+                nextComboTriggered = true;
+                this.comboStep++;
+                break;
+            }
+
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
+
+        // 3. 다음 콤보로 이행하거나 종료
+        if (nextComboTriggered && this.comboStep <= 3)
+        {
+            // 재귀적으로 다음 타격 실행 (Forget 처리된 루프 형태)
+            this.performAttackStepAsync(cancellationToken).Forget();
+        }
+        else
+        {
+            // 콤보 종료 및 초기화
+            this.isAttacking = false;
+            this.hasQueuedAttack = false;
+            this.comboStep = 0;
+            this.SetState(PlayerState.Idle, true);
+        }
+    }
+
+
+    // =========================================================================
+    // 6. SKILLS & DEFENSIVE TASKS
+    // =========================================================================
 
     private async UniTaskVoid guardParrySequenceAsync(Keyboard keyboard, CancellationToken cancellationToken)
     {
@@ -201,6 +311,8 @@ public class Player : UnitBase
 
     private void handleSkills(Keyboard keyboard)
     {
+        if (this.isAttacking) return; // 공격 중 스킬 불가
+
         if (keyboard.digit1Key.wasPressedThisFrame || keyboard.fKey.wasPressedThisFrame)
         {
             this.SetState(PlayerState.Attack);
