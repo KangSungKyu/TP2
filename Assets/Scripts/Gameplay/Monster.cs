@@ -197,11 +197,23 @@ public class Monster : UnitBase
         float attackRange = pattern.TriggerValue > 0f ? pattern.TriggerValue : 1.8f;
         float currentDist = Vector3.Distance(transform.position, this.playerTarget.position);
 
-        // 2. 사거리 밖이고 원거리 시전 패턴이 아닐 경우 ➔ 타겟을 향해 추적 이동 (State = Move)
+        // 2. 패턴별 추격 제한 시간 (ChaseTimeout) 차등 책정
+        float chaseTimeout = pattern.AnimClipName switch
+        {
+            "Garon_Pattern_ComboSlash" => 2.5f,
+            "Garon_Pattern_OverheadSmash" => 2.0f,
+            "Garon_Pattern_Charge" => 1.5f,
+            "Garon_Pattern_Shockwave" => 0.5f,
+            _ => 1.0f // 기본 공격 패턴 1초
+        };
+
+        float chaseElapsed = 0f;
+        bool chaseTimedOut = false;
+
+        // 3. 사거리 밖이고 원거리 시전 패턴이 아닐 경우 ➔ 타겟을 향해 추적 이동 (State = Move)
         if (!isDistanceOverPattern && currentDist > attackRange)
         {
             this.SetFacingRight(this.playerTarget.position.x >= transform.position.x);
-            // Move 상태 (State = 2) 연결
             if (this.animator != null)
             {
                 this.animator.SetInteger("State", 2);
@@ -211,6 +223,14 @@ public class Monster : UnitBase
 
             while (currentDist > attackRange && !cancellationToken.IsCancellationRequested)
             {
+                chaseElapsed += Time.deltaTime;
+                if (chaseElapsed >= chaseTimeout)
+                {
+                    chaseTimedOut = true;
+                    Debug.Log($"<color=yellow>[Monster] '{this.gameObject.name}' 패턴 '{pattern.AnimClipName}' 추격 타임아웃 ({chaseTimeout:F1}s) 발생! 추격 중단!</color>");
+                    break;
+                }
+
                 currentDist = Vector3.Distance(transform.position, this.playerTarget.position);
                 Vector3 moveDir = (this.playerTarget.position - transform.position).normalized;
                 this.SetFacingRight(moveDir.x >= 0);
@@ -220,7 +240,14 @@ public class Monster : UnitBase
             }
         }
 
-        // 3. 사거리 진입 시 ➔ 타겟 바라보기 및 전조시간 (PreDelay) 대기
+        // 4. 추격 타임아웃 발생 시 ➔ 공격 포기 후 Idle 복귀
+        if (chaseTimedOut)
+        {
+            if (this.animator != null) this.animator.SetInteger("State", 1);
+            return;
+        }
+
+        // 5. 사거리 진입 시 ➔ 타겟 바라보기 및 전조시간 (PreDelay) 대기
         this.SetFacingRight(this.playerTarget.position.x >= transform.position.x);
         if (pattern.PreDelay > 0f)
         {
@@ -228,10 +255,18 @@ public class Monster : UnitBase
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
         }
 
-        // 4. 애니메이션 시전 및 State 세팅
+        // 6. 애니메이션 시전 및 독립 SkillEffect 충돌 매개체 스폰
         if (this.animator != null && !string.IsNullOrEmpty(pattern.AnimClipName))
         {
             this.animator.Play(pattern.AnimClipName);
+        }
+
+        if (this.skillExecutor != null)
+        {
+            Vector3 offset = (this.spriteRenderer != null && this.spriteRenderer.flipX) ? Vector3.right * 1.5f : Vector3.left * 1.5f;
+            Vector3 spawnPos = transform.position + offset + Vector3.up * 1.0f;
+            Color effectColor = new Color(1f, 0f, 0f, 0.4f); // 붉은 반투명 더미 이펙트
+            this.skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
         }
 
         // 5. 데미지 판정

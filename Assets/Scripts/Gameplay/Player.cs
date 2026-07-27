@@ -230,11 +230,18 @@ public class Player : UnitBase
             this.animator.Play(animClipName, 0, 0f);
         }
 
-        // [TODO] 콤보 단계에 따라 데미지나 범위, 딜레이를 다르게 설정 가능
-        float attackDuration = 0.4f; // 1,2,3타 애니메이션 지속 시간 및 딜레이
-        
-        // 1. 공격 모션 진행 대기
-        await UniTask.Delay(System.TimeSpan.FromSeconds(attackDuration), cancellationToken: cancellationToken);
+        // 1. 공격 모션 진행 및 타격 타이밍(0.12s)에 독립 SkillEffect 스폰
+        await UniTask.Delay(System.TimeSpan.FromSeconds(0.12f), cancellationToken: cancellationToken);
+
+        if (this.skillExecutor != null)
+        {
+            Vector3 spawnOffset = (this.spriteRenderer != null && this.spriteRenderer.flipX) ? Vector3.right * 1.0f : Vector3.left * 1.0f;
+            Vector3 spawnPos = transform.position + spawnOffset + Vector3.up * 0.8f;
+            Color effectColor = new Color(0f, 1f, 0.4f, 0.4f); // 초록 반투명 검기 이펙트
+            this.skillExecutor.SpawnSkillEffect($"Player_Hit{this.comboStep}", spawnPos, new Vector2(1.2f, 1.5f), 15f * this.comboStep, 0.15f, FactionType.PlayerAlly, effectColor);
+        }
+
+        await UniTask.Delay(System.TimeSpan.FromSeconds(0.28f), cancellationToken: cancellationToken);
 
         // 2. 공격 창(Combo Window) 대기 
         // 애니메이션이 끝나갈 무렵, 선입력(hasQueuedAttack)이 들어왔는지 확인
