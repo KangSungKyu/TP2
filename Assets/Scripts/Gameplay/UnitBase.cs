@@ -149,7 +149,9 @@ public class UnitBase : MonoBehaviour
                 if (controller != null && this.animator != null)
                 {
                     this.animator.runtimeAnimatorController = controller;
-                    Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' 하위 Visual 객체에 '{animatorKey}' 바인딩 완료!</color>");
+                    // Controller 연결 직후 기본 Idle 애니메이션 즉시 재생을 강제하여 스프라이트 미출력 방지
+                    this.animator.Play("Player_Idle", 0, 0f);
+                    Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' 하위 Visual 객체에 '{animatorKey}' 바인딩 및 애니메이션 재생 개시 완료!</color>");
                 }
             });
         }
@@ -181,8 +183,55 @@ public class UnitBase : MonoBehaviour
         this.hitCollider.offset = new Vector2(0f, height * 0.5f); // 발바닥 피벗 기준 위쪽 오프셋
         this.hitCollider.direction = CapsuleDirection2D.Vertical;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // 3. Game View에서도 항시 뚜렷하게 보이도록 LineRenderer 기반 Hitbox Visualizer 생성
+        this.setupGameViewHitboxLine(data, radius * 2f, height, new Vector2(0f, height * 0.5f));
+#endif
+
         Debug.Log($"<color=cyan>[Hitbox] '{this.gameObject.name}' Trigger Hitbox 생성 완료 (Radius: {radius}, Size: {this.hitCollider.size})</color>");
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private void setupGameViewHitboxLine(UnitBaseData data, float width, float height, Vector2 offset)
+    {
+        Transform debugObj = transform.Find("DebugHitboxLine");
+        LineRenderer line;
+        if (debugObj == null)
+        {
+            GameObject go = new GameObject("DebugHitboxLine");
+            go.transform.SetParent(transform, false);
+            line = go.AddComponent<LineRenderer>();
+        }
+        else
+        {
+            line = debugObj.GetComponent<LineRenderer>();
+        }
+
+        line.useWorldSpace = false;
+        line.loop = true;
+        line.positionCount = 4;
+        line.startWidth = 0.05f;
+        line.endWidth = 0.05f;
+        line.material = new Material(Shader.Find("Sprites/Default"));
+
+        Color col = (data != null && data.Faction == 1) ? Color.green : Color.red;
+        line.startColor = col;
+        line.endColor = col;
+
+        float hw = width * 0.5f;
+        float hh = height * 0.5f;
+
+        Vector3 p1 = new Vector3(-hw, offset.y - hh, -0.1f);
+        Vector3 p2 = new Vector3(-hw, offset.y + hh, -0.1f);
+        Vector3 p3 = new Vector3(hw, offset.y + hh, -0.1f);
+        Vector3 p4 = new Vector3(hw, offset.y - hh, -0.1f);
+
+        line.SetPosition(0, p1);
+        line.SetPosition(1, p2);
+        line.SetPosition(2, p3);
+        line.SetPosition(3, p4);
+    }
+#endif
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     /// <summary>
