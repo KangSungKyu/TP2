@@ -26,6 +26,8 @@ public class UnitBase : MonoBehaviour
     protected Animator animator;
     protected SpriteRenderer spriteRenderer;
     protected Transform visualTransform;
+    protected CapsuleCollider2D hitCollider;
+    protected Rigidbody2D rb2d;
 
 
     // =========================================================================
@@ -48,6 +50,7 @@ public class UnitBase : MonoBehaviour
         {
             this.UnitData = data;
             this.applyBaseStats(data);
+            this.setupHitbox(data);
             this.loadResourceAndAnimator(data);
             Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' Idx {unitIdx} 데이터 바인딩 완료! (HP: {data.MaxHp}, ATK: {data.Atk})</color>");
         }
@@ -150,5 +153,34 @@ public class UnitBase : MonoBehaviour
                 }
             });
         }
+    }
+
+    private void setupHitbox(UnitBaseData data)
+    {
+        // 1. Trigger 이벤트를 안정적으로 감지하기 위한 Kinematic Rigidbody2D 부착
+        this.rb2d = GetComponent<Rigidbody2D>();
+        if (this.rb2d == null)
+        {
+            this.rb2d = this.gameObject.AddComponent<Rigidbody2D>();
+        }
+        this.rb2d.bodyType = RigidbodyType2D.Kinematic;
+        this.rb2d.simulated = true;
+
+        // 2. 피격(Hitbox) 전용 CapsuleCollider2D 설정 (isTrigger = true 로 설정하여 물리 겹침 허용)
+        this.hitCollider = GetComponent<CapsuleCollider2D>();
+        if (this.hitCollider == null)
+        {
+            this.hitCollider = this.gameObject.AddComponent<CapsuleCollider2D>();
+        }
+
+        float radius = data.HitboxRadius > 0f ? data.HitboxRadius : 0.5f;
+        float height = radius * 4f;
+
+        this.hitCollider.isTrigger = true;
+        this.hitCollider.size = new Vector2(radius * 2f, height);
+        this.hitCollider.offset = new Vector2(0f, height * 0.5f); // 발바닥 피벗 기준 위쪽 오프셋
+        this.hitCollider.direction = CapsuleDirection2D.Vertical;
+
+        Debug.Log($"<color=cyan>[Hitbox] '{this.gameObject.name}' Trigger Hitbox 생성 완료 (Radius: {radius}, Size: {this.hitCollider.size})</color>");
     }
 }
