@@ -21,8 +21,8 @@ public class CoreTestHUD : MonoBehaviour
         GUI.skin.box.fontSize = 13;
         GUI.skin.label.fontSize = 12;
 
-        // 1. 조작 설명 가이드 윈도우 (좌측 하단 배치: Rect(10, 210, 320, 260) - 플레이어 HUD 상자 바로 아래)
-        GUILayout.BeginArea(new Rect(10, 210, 320, 260), "<b>[ 코어 테스트 조작 가이드 ]</b>", GUI.skin.window);
+        // 1. 조작 설명 가이드 윈도우 (좌측 하단 배치: Rect(10, 235, 320, 290) - 플레이어 HUD 상자 바로 아래)
+        GUILayout.BeginArea(new Rect(10, 235, 320, 290), "<b>[ 코어 테스트 조작 가이드 ]</b>", GUI.skin.window);
         GUILayout.Label("• <b>이동</b>: WASD / 화살표 키");
         GUILayout.Label("• <b>점프 (Jump)</b>: Space");
         GUILayout.Label("• <b>통합 방어 (패링/가드)</b>: Left Shift / J / Q");

@@ -55,8 +55,8 @@ public class TestPlayerHUDUI : MonoBehaviour
 
         // 좌상단 HUD 박스 영역 렌더링
         float width = 320f;
-        float height = 180f;
-        float margin = 15f;
+        float height = 215f;
+        float margin = 10f;
 
         Rect boxRect = new Rect(margin, margin, width, height);
 
