@@ -6,24 +6,25 @@ using System.IO;
 using System.Collections.Generic;
 
 /// <summary>
-/// Unity CLI 및 Unity Pipeline 표준 API(TextureImporter, AssetDatabase, AnimatorController API)를 활용하여 
-/// 플레이어 10종 전신 애니메이션 및 철위병 가론 보스 8종 애니메이션 클립과 컨트롤러를 
-/// 유니티 엔진 직렬화 엔진으로 100% 무결점 바인딩 및 보장해 주는 에디터 파이프라인 유틸리티.
+/// Unity 6 (6000.4.8f1) 2D Animation Pipeline 표준 유틸리티.
+/// 메인 프로그래머의 State Int 매핑 사양 및 아트 디자이너1의 FPS / Looping 사양을 
+/// 유니티 C# AssetDatabase & AnimationUtility 직렬화 엔진으로 100% 무결점 바인딩해 주는 파이프라인.
 /// </summary>
 public static class UnityPipelineAnimatorBinder
 {
+    [InitializeOnLoadMethod]
     [MenuItem("TP2/Execute Unity Pipeline Full Animator Binding (유니티 CLI 표준 바인딩)")]
     public static void ExecuteFullPipelineBinding()
     {
-        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity CLI & Pipeline 애니메이터 정식 바인딩 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity 6 CLI & Pipeline 애니메이터 정식 바인딩 시작...</b></color>");
 
-        // 1. 플레이어 10종 전신 애니메이션 클립 및 AnimatorController 유니티 정식 바인딩
+        // 1. 플레이어 10종 애니메이션 클립 & PlayerAnimatorController 바인딩
         BindPlayerPipeline();
 
-        // 2. 철위병 가론 보스 8종 애니메이션 클립 및 AnimatorController 유니티 정식 바인딩
+        // 2. 철위병 가론 보스 8종 애니메이션 클립 & GaronAnimatorController 바인딩
         BindGaronPipeline();
 
-        // 3. 몬스터 3종 15종 애니메이션 클립 및 AnimatorController 유니티 정식 바인딩
+        // 3. 일반 몬스터 3종 애니메이션 클립 & Controllers 바인딩
         BindMonsterPipeline();
 
         // 4. Addressables 전수 자동 등록 및 로컬 배포
@@ -48,19 +49,19 @@ public static class UnityPipelineAnimatorBinder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
-        // 플레이어 10종 전신 모션 맵 (State 1~10)
-        var playerMap = new Dictionary<int, (string animName, string texName, float fps)>()
+        // 플레이어 10종 (메인프로그래머 State Int & 아트디자이너1 FPS/Looping 사양)
+        var playerMap = new Dictionary<int, (string animName, string texName, float fps, bool loop)>()
         {
-            { 1, ("Player_Idle", "Player_Idle.png", 8f) },
-            { 2, ("Player_Run", "Player_Run.png", 8f) },
-            { 3, ("Player_Jump", "Player_Jump.png", 16f) },
-            { 4, ("Player_Parry", "Player_Parry.png", 16f) },
-            { 5, ("Player_Guard", "Player_Guard.png", 8f) },
-            { 6, ("Player_Dodge", "Player_Dodge.png", 16f) },
-            { 7, ("Player_Attack_Hit1", "Player_Attack_Hit1.png", 16f) },
-            { 8, ("Player_Execution", "Player_Execution.png", 16f) },
-            { 9, ("Player_Attack_Hit2", "Player_Attack_Hit2.png", 16f) },
-            { 10, ("Player_Attack_Hit3", "Player_Attack_Hit3.png", 16f) }
+            { 1, ("Player_Idle", "Player_Idle.png", 12f, true) },
+            { 2, ("Player_Run", "Player_Run.png", 12f, true) },
+            { 3, ("Player_Jump", "Player_Jump.png", 16f, false) },
+            { 4, ("Player_Parry", "Player_Parry.png", 24f, false) },
+            { 5, ("Player_Guard", "Player_Guard.png", 12f, true) },
+            { 6, ("Player_Dodge", "Player_Dodge.png", 20f, false) },
+            { 7, ("Player_Attack_Hit1", "Player_Attack_Hit1.png", 24f, false) },
+            { 8, ("Player_Execution", "Player_Execution.png", 16f, false) },
+            { 9, ("Player_Attack_Hit2", "Player_Attack_Hit2.png", 24f, false) },
+            { 10, ("Player_Attack_Hit3", "Player_Attack_Hit3.png", 20f, false) }
         };
 
         string playerTexDir = "Assets/Textures/Characters/Player";
@@ -71,11 +72,12 @@ public static class UnityPipelineAnimatorBinder
             string animName = kvp.Value.animName;
             string texName = kvp.Value.texName;
             float fps = kvp.Value.fps;
+            bool loop = kvp.Value.loop;
 
             string texPath = $"{playerTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps);
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop);
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -111,16 +113,17 @@ public static class UnityPipelineAnimatorBinder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
-        var garonMap = new Dictionary<int, (string animName, string texName, float fps)>()
+        // 가론 보스 8종 (메인프로그래머 State Int & 아트디자이너1 FPS/Looping 사양)
+        var garonMap = new Dictionary<int, (string animName, string texName, float fps, bool loop)>()
         {
-            { 1, ("Garon_Idle", "Garon_Idle.png", 8f) },
-            { 2, ("Garon_Move", "Garon_Move.png", 8f) },
-            { 3, ("Garon_Jump", "Garon_Jump.png", 8f) },
-            { 4, ("Garon_Pattern_OverheadSmash", "Garon_Pattern_OverheadSmash.png", 8f) },
-            { 5, ("Garon_Pattern_ComboSlash", "Garon_Pattern_ComboSlash.png", 8f) },
-            { 6, ("Garon_Pattern_Charge", "Garon_Pattern_Charge.png", 8f) },
-            { 7, ("Garon_Pattern_Shockwave", "Garon_Pattern_Shockwave.png", 8f) },
-            { 8, ("Garon_Death", "Garon_Death.png", 8f) }
+            { 1, ("Garon_Idle", "Garon_Idle.png", 8f, true) },
+            { 2, ("Garon_Move", "Garon_Move.png", 10f, true) },
+            { 3, ("Garon_Jump", "Garon_Jump.png", 10f, false) },
+            { 4, ("Garon_Pattern_OverheadSmash", "Garon_Pattern_OverheadSmash.png", 16f, false) },
+            { 5, ("Garon_Pattern_ComboSlash", "Garon_Pattern_ComboSlash.png", 16f, false) },
+            { 6, ("Garon_Pattern_Charge", "Garon_Pattern_Charge.png", 16f, false) },
+            { 7, ("Garon_Pattern_Shockwave", "Garon_Pattern_Shockwave.png", 16f, false) },
+            { 8, ("Garon_Death", "Garon_Death.png", 8f, false) }
         };
 
         string garonTexDir = "Assets/Textures/Characters/Bosses/Garon";
@@ -131,11 +134,12 @@ public static class UnityPipelineAnimatorBinder
             string animName = kvp.Value.animName;
             string texName = kvp.Value.texName;
             float fps = kvp.Value.fps;
+            bool loop = kvp.Value.loop;
 
             string texPath = $"{garonTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps);
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop);
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -163,9 +167,9 @@ public static class UnityPipelineAnimatorBinder
         string animsDir = "Assets/Anims/Monster";
         string monsterTexDir = "Assets/Textures/Characters/Monsters";
         string[] monsters = new string[] { "SpearSentry", "ShadowStalker", "WaveHeavy" };
-        var monsterMap = new Dictionary<int, string>()
+        var monsterMap = new Dictionary<int, (string actName, bool loop)>()
         {
-            { 1, "Idle" }, { 2, "Move" }, { 3, "Jump" }, { 7, "Attack" }, { 8, "Death" }
+            { 1, ("Idle", true) }, { 2, ("Move", true) }, { 3, ("Jump", false) }, { 7, ("Attack", false) }, { 8, ("Death", false) }
         };
 
         foreach (string mName in monsters)
@@ -178,12 +182,13 @@ public static class UnityPipelineAnimatorBinder
             foreach (var kvp in monsterMap)
             {
                 int stateVal = kvp.Key;
-                string actName = kvp.Value;
+                string actName = kvp.Value.actName;
+                bool loop = kvp.Value.loop;
                 string animName = $"{mName}_{actName}";
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f);
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop);
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -207,9 +212,9 @@ public static class UnityPipelineAnimatorBinder
         }
     }
 
-    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps)
+    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping)
     {
-        // Texture Importer 설정 검증 및 정합
+        // Texture Importer 설정 (128x128 Grid, Point Filter, Bottom-Center Pivot)
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer != null)
         {
@@ -241,7 +246,6 @@ public static class UnityPipelineAnimatorBinder
             }
         }
 
-        // All Sprites 로드
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath(texturePath);
         List<Sprite> sprites = new List<Sprite>();
         if (assets != null)
@@ -255,7 +259,6 @@ public static class UnityPipelineAnimatorBinder
             }
         }
 
-        // 단일 스프라이트 예외 처리
         if (sprites.Count == 0)
         {
             Sprite single = AssetDatabase.LoadAssetAtPath<Sprite>(texturePath);
@@ -276,6 +279,11 @@ public static class UnityPipelineAnimatorBinder
         }
 
         clip.frameRate = fps;
+
+        // Looping 설정
+        AnimationClipSettings clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
+        clipSettings.loopTime = isLooping;
+        AnimationUtility.SetAnimationClipSettings(clip, clipSettings);
 
         EditorCurveBinding curveBinding = new EditorCurveBinding();
         curveBinding.type = typeof(SpriteRenderer);
