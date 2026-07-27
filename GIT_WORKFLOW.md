@@ -32,7 +32,16 @@
 
 ---
 
-## 🚀 3. Branch 생성 및 Flow 수칙
+## 📂 3. 임시 생성 파일(Temp_Workspace) 관리 규칙
+
+1. **임시 작업용 폴더 통합**:
+   - 테스트나 유틸리티용 파이썬 스크립트 등 모든 임시 생성 파일은 반드시 `C:\Users\PC\Projects\TP2\Temp_Workspace` 폴더 내에만 생성합니다. (기존 `scratch` 폴더 폐기 및 통합)
+2. **자동 수명 주기 관리**:
+   - 해당 폴더 내의 임시 파일들은 30일 경과 시 삭제 대기(`Pending_Deletion`) 폴더로 이동하며, 90일 경과 시 영구 삭제됩니다.
+
+---
+
+## 🚀 4. Branch 생성 및 Flow 수칙
 
 1. **브랜치 흐름 (Branch Flow)**:
    - **`feature/*` / `fix/*` ➔ `portfolio`**: 메인 프로그래머 지시로 작업 브랜치 생성 ➔ 개발 및 QA 완료 후 `portfolio`로 Merge ➔ 작업 브랜치 삭제.
@@ -54,7 +63,7 @@
 
 ---
 
-## 🔄 4. Multi-Conversation (다중 세션) 협업 지침
+## 🔄 5. Multi-Conversation (다중 세션) 협업 지침
 
 - `pull`, `push` 요청은 **다른 Conversation 세션에서도 발생**할 수 있습니다.
 - **작업 시작 전**: 반드시 `git fetch` 및 `git pull origin <작업브랜치>`를 수행하여 최신 원격 변경 사항을 반영합니다.
