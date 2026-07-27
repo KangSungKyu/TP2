@@ -183,4 +183,45 @@ public class UnitBase : MonoBehaviour
 
         Debug.Log($"<color=cyan>[Hitbox] '{this.gameObject.name}' Trigger Hitbox 생성 완료 (Radius: {radius}, Size: {this.hitCollider.size})</color>");
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    /// <summary>
+    /// 테스트 및 디버그 환경에서 피격 Hitbox(CapsuleCollider2D)의 영역을 시각화합니다.
+    /// </summary>
+    protected virtual void OnDrawGizmos()
+    {
+        var col = this.hitCollider != null ? this.hitCollider : GetComponent<CapsuleCollider2D>();
+        if (col == null) return;
+
+        // 진영(Faction) 및 유닛 타입에 따른 기즈모 색상 구분
+        // Player (1): 초록색, Enemy/Boss (2,3): 빨간색, 기타: 하늘색
+        Color fillColor = new Color(0f, 1f, 1f, 0.25f);
+        Color wireColor = new Color(0f, 1f, 1f, 0.9f);
+
+        if (this.UnitData != null)
+        {
+            if (this.UnitData.Faction == 1) // Player
+            {
+                fillColor = new Color(0f, 1f, 0f, 0.25f);
+                wireColor = new Color(0f, 1f, 0f, 0.9f);
+            }
+            else if (this.UnitData.Faction == 2 || this.UnitData.UnitType == 3) // Enemy / Boss
+            {
+                fillColor = new Color(1f, 0f, 0f, 0.25f);
+                wireColor = new Color(1f, 0f, 0f, 0.9f);
+            }
+        }
+
+        Vector3 center = transform.position + (Vector3)col.offset;
+        Vector3 size = new Vector3(col.size.x, col.size.y, 0.1f);
+
+        // 1. Hitbox 채우기 영역 (반투명)
+        Gizmos.color = fillColor;
+        Gizmos.DrawCube(center, size);
+
+        // 2. Hitbox 외곽 테두리 (선명함)
+        Gizmos.color = wireColor;
+        Gizmos.DrawWireCube(center, size);
+    }
+#endif
 }
