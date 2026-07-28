@@ -6,32 +6,35 @@ using System.IO;
 using System.Collections.Generic;
 
 /// <summary>
-/// Unity 6 (6000.4.8f1) 2D Animation Pipeline 표준 유틸리티.
-/// 유니티 C# TextureImporter.spritesheet API를 직접 사용하여 Sprite Editor 내 슬라이스 데이터를 100% 무결점으로 재정합 및 Reimport 해줍니다.
+/// Unity 6 (6000.4.8f1) 2D Animation & VFX Pipeline 표준 유틸리티.
+/// 메인 프로그래머의 최신 State Int 매핑 사양 (보스 가론 패턴 10~13번 할당) 반영.
 /// </summary>
 public static class UnityPipelineAnimatorBinder
 {
     [MenuItem("TP2/Execute Unity Pipeline Full Animator Binding (유니티 CLI 표준 바인딩)")]
     public static void ExecuteFullPipelineBinding()
     {
-        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity 6 CLI & Pipeline 애니메이터 정식 바인딩 및 Sprite Slicing 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[UnityPipelineAnimatorBinder] Unity 6 CLI & Pipeline 애니메이터 및 VFX 이펙트 바인딩 시작...</b></color>");
 
         // 1. 플레이어 10종 애니메이션 클립 & PlayerAnimatorController 바인딩 (128x256px)
         BindPlayerPipeline();
 
-        // 2. 철위병 가론 보스 8종 애니메이션 클립 & GaronAnimatorController 바인딩 (256x512px)
+        // 2. 철위병 가론 보스 8종 애니메이션 클립 & GaronAnimatorController 바인딩 (패턴 10~13번 최신 사양)
         BindGaronPipeline();
 
         // 3. 일반 몬스터 3종 애니메이션 클립 & Controllers 바인딩 (64x64px)
         BindMonsterPipeline();
 
-        // 4. Addressables 전수 자동 등록 및 로컬 배포
+        // 4. 실제 게임용 VFX 이펙트 11종 클립 & 슬라이싱 바인딩
+        BindEffectsPipeline();
+
+        // 5. Addressables 전수 자동 등록 및 로컬 배포
         AddressablePipeline.RegisterAllAddressables();
         AddressablePipeline.BuildAndDeploy();
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("<color=green><b>[UnityPipelineAnimatorBinder] 모든 Sprite Slicing, Animator & AnimationClip 유니티 엔진 정식 바인딩 완료!</b></color>");
+        Debug.Log("<color=green><b>[UnityPipelineAnimatorBinder] 모든 Animator, AnimationClip & VFX 이펙트 정식 바인딩 완료!</b></color>");
     }
 
     private static void BindPlayerPipeline()
@@ -74,8 +77,7 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{playerTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            // Player Frame Size: 128 x 256 px
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 128, 256);
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 128, 256, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -111,16 +113,17 @@ public static class UnityPipelineAnimatorBinder
         EnsureIntParameter(controller, "State");
         var stateMachine = controller.layers[0].stateMachine;
 
+        // 메인 프로그래머 최신 사양 (공용 1~8번, 특수 패턴 10~13번 할당)
         var garonMap = new Dictionary<int, (string animName, string texName, float fps, bool loop)>()
         {
             { 1, ("Garon_Idle", "Garon_Idle.png", 8f, true) },
             { 2, ("Garon_Move", "Garon_Move.png", 10f, true) },
             { 3, ("Garon_Jump", "Garon_Jump.png", 10f, false) },
-            { 4, ("Garon_Pattern_OverheadSmash", "Garon_Pattern_OverheadSmash.png", 16f, false) },
-            { 5, ("Garon_Pattern_ComboSlash", "Garon_Pattern_ComboSlash.png", 16f, false) },
-            { 6, ("Garon_Pattern_Charge", "Garon_Pattern_Charge.png", 16f, false) },
-            { 7, ("Garon_Pattern_Shockwave", "Garon_Pattern_Shockwave.png", 16f, false) },
-            { 8, ("Garon_Death", "Garon_Death.png", 8f, false) }
+            { 8, ("Garon_Death", "Garon_Death.png", 8f, false) },
+            { 10, ("Garon_Pattern_OverheadSmash", "Garon_Pattern_OverheadSmash.png", 16f, false) },
+            { 11, ("Garon_Pattern_ComboSlash", "Garon_Pattern_ComboSlash.png", 16f, false) },
+            { 12, ("Garon_Pattern_Charge", "Garon_Pattern_Charge.png", 16f, false) },
+            { 13, ("Garon_Pattern_Shockwave", "Garon_Pattern_Shockwave.png", 16f, false) }
         };
 
         string garonTexDir = "Assets/Textures/Characters/Bosses/Garon";
@@ -136,8 +139,7 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{garonTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            // Boss Garon Frame Size: 256 x 512 px
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 256, 512);
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 256, 512, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -186,8 +188,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                // Monster Frame Size: 64 x 64 px
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64);
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -211,7 +212,38 @@ public static class UnityPipelineAnimatorBinder
         }
     }
 
-    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight)
+    private static void BindEffectsPipeline()
+    {
+        string animsDir = "Assets/Anims/Effects";
+        if (!AssetDatabase.IsValidFolder("Assets/Anims")) AssetDatabase.CreateFolder("Assets", "Anims");
+        if (!AssetDatabase.IsValidFolder(animsDir)) AssetDatabase.CreateFolder("Assets/Anims", "Effects");
+
+        var effectSpecs = new List<(string texPath, string clipName, int frameW, int frameH, float fps, bool loop)>()
+        {
+            ("Assets/Textures/Effects/Player/Player_Attack_Hit1_Effect.png", "Player_Attack_Hit1_Effect", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Player/Player_Attack_Hit2_Effect.png", "Player_Attack_Hit2_Effect", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Player/Player_Attack_Hit3_Effect.png", "Player_Attack_Hit3_Effect", 160, 160, 8f, false),
+            ("Assets/Textures/Effects/Bosses/Garon/Garon_ComboSlash_Effect.png", "Garon_ComboSlash_Effect", 256, 256, 8f, false),
+            ("Assets/Textures/Effects/Bosses/Garon/Garon_OverheadSmash_Effect.png", "Garon_OverheadSmash_Effect", 256, 128, 8f, false),
+            ("Assets/Textures/Effects/Bosses/Garon/Garon_Shockwave_Effect.png", "Garon_Shockwave_Effect", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Bosses/Garon/Garon_Charge_Effect.png", "Garon_Charge_Effect", 256, 256, 8f, false),
+            ("Assets/Textures/Effects/Placeholder_Parry.png", "Placeholder_Parry", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Placeholder_Guard.png", "Placeholder_Guard", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Placeholder_Dodge.png", "Placeholder_Dodge", 128, 128, 8f, false),
+            ("Assets/Textures/Effects/Placeholder_Hit.png", "Placeholder_Hit", 128, 128, 8f, false)
+        };
+
+        foreach (var eff in effectSpecs)
+        {
+            if (File.Exists(eff.texPath))
+            {
+                string saveClipPath = $"{animsDir}/{eff.clipName}.anim";
+                CreateAndSaveAnimationClip(eff.texPath, saveClipPath, eff.clipName, eff.fps, eff.loop, eff.frameW, eff.frameH, SpriteAlignment.Center, new Vector2(0.5f, 0.5f));
+            }
+        }
+    }
+
+    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight, SpriteAlignment alignment, Vector2 pivot)
     {
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer != null)
@@ -221,7 +253,6 @@ public static class UnityPipelineAnimatorBinder
             importer.filterMode = FilterMode.Point;
             importer.spritePixelsPerUnit = 128;
 
-            // Texture 크기 정보 로드
             Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
             if (tex != null)
             {
@@ -234,8 +265,8 @@ public static class UnityPipelineAnimatorBinder
                         SpriteMetaData meta = new SpriteMetaData();
                         meta.name = $"{clipName}_{i}";
                         meta.rect = new Rect(i * frameWidth, 0, frameWidth, frameHeight);
-                        meta.alignment = (int)SpriteAlignment.BottomCenter;
-                        meta.pivot = new Vector2(0.5f, 0.0f);
+                        meta.alignment = (int)alignment;
+                        meta.pivot = pivot;
                         metaList.Add(meta);
                     }
                     importer.spritesheet = metaList.ToArray();

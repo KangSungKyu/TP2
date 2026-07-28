@@ -9,3 +9,10 @@ idx,path
 1012,SpearSentryAnimatorController
 1013,ShadowStalkerAnimatorController
 1014,WaveHeavyAnimatorController
+1020,Player_Attack_Hit1_Effect
+1021,Player_Attack_Hit2_Effect
+1022,Player_Attack_Hit3_Effect
+1030,Placeholder_Parry
+1031,Placeholder_Guard
+1032,Placeholder_Dodge
+1033,Placeholder_Hit

@@ -37,6 +37,18 @@ public class Player : UnitBase
     private bool hasQueuedAttack = false;
     private float comboWindow = 0.5f; // 각 타격 후 다음 입력을 기다리는 허용 시간 (기본값)
 
+    // 메트로배니아 물리 점프 관련 변수
+    [SerializeField]
+    private float jumpForce = 11.5f;
+    [SerializeField]
+    private float gravity = 28f;
+    private float verticalVelocity = 0f;
+    private bool isGrounded = true;
+    private float coyoteTime = 0.12f;
+    private float coyoteTimeCounter = 0f;
+    private float jumpBufferTime = 0.12f;
+    private float jumpBufferCounter = 0f;
+
 
     // =========================================================================
     // 3. PUBLIC METHODS (PascalCase)
@@ -86,12 +98,136 @@ public class Player : UnitBase
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
+        this.updateGroundCheck();
         this.handleMovement(keyboard);
+        this.handleJump(keyboard); // 'C' 키 메트로배니아 점프 처리
         this.handleDefensiveActions(keyboard);
         this.handleBasicAttack(keyboard);
+        this.handleExecutionAction(keyboard);
         this.handleSkills(keyboard);
         this.updateIdleState();
     }
+
+    private OneWayPlatformPassThrough currentOneWayPlatform;
+
+    /// <summary>
+    /// 발바닥 지면 충돌 검사 (Ground Check) 및 지형 통과 방지 스냅 정밀 관리
+    /// </summary>
+    private void updateGroundCheck()
+    {
+        // 레이 출발점을 무릎 높이(Y+0.5f)로 높여 지면 파묻힘 상황에서도 지상 감지 보장
+        Vector2 checkOrigin = (Vector2)transform.position + Vector2.up * 0.5f;
+        Vector2 checkSize = new Vector2(0.4f, 0.1f);
+        
+        // 발바닥 아래 2D BoxCast로 지면 감지 (자기 자신의 Trigger Collider 제외)
+        RaycastHit2D hit = Physics2D.BoxCast(checkOrigin, checkSize, 0f, Vector2.down, 0.6f);
+        bool wasGrounded = this.isGrounded;
+        this.isGrounded = hit.collider != null && hit.collider != this.hitCollider && !hit.collider.isTrigger;
+
+        if (this.isGrounded)
+        {
+            this.coyoteTimeCounter = this.coyoteTime;
+            this.currentOneWayPlatform = hit.collider.GetComponent<OneWayPlatformPassThrough>();
+            
+            // 하강 중 지면/발판 표면 접지 시 충돌체의 정밀 상단 표면(bounds.max.y)에 발바닥 고정
+            if (this.verticalVelocity <= 0f)
+            {
+                this.verticalVelocity = -0.1f; // 지면 밀착
+                float groundTopY = hit.collider.bounds.max.y;
+                transform.position = new Vector3(transform.position.x, groundTopY, transform.position.z);
+            }
+
+            if (!wasGrounded && this.IsJumping)
+            {
+                // 착지 완료
+                this.IsJumping = false;
+                if (this.stats != null)
+                {
+                    this.stats.SetJumped(false);
+                }
+                this.updateIdleState();
+            }
+        }
+        else
+        {
+            this.currentOneWayPlatform = null;
+            this.coyoteTimeCounter -= Time.deltaTime;
+            this.verticalVelocity -= this.gravity * Time.deltaTime;
+        }
+
+        // 수직 속도를 Transform Y 이동으로 반영 (메트로배니아 물리 점프)
+        transform.Translate(Vector3.up * this.verticalVelocity * Time.deltaTime, Space.World);
+    }
+
+    private void handleJump(Keyboard keyboard)
+    {
+        if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
+            return;
+
+        // 1. 아래 키 (S / DownArrow) + 점프 키 (C / Space) 입력 시 1-Way 발판 하향 점프 (Drop Through)
+        bool isDownPressed = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+        if (isDownPressed && keyboard.cKey.wasPressedThisFrame && this.isGrounded && this.currentOneWayPlatform != null)
+        {
+            this.currentOneWayPlatform.PassThroughAsync(this.hitCollider, 0.25f, this.GetCancellationTokenOnDestroy()).Forget();
+            this.isGrounded = false;
+            this.coyoteTimeCounter = 0f;
+            this.verticalVelocity = -2f; // 하향 통과 가속도
+            return;
+        }
+
+        // 2. 일반 점프 버퍼 타이머 (Pre-Input)
+        if (keyboard.cKey.wasPressedThisFrame)
+        {
+            this.jumpBufferCounter = this.jumpBufferTime;
+        }
+        else
+        {
+            this.jumpBufferCounter -= Time.deltaTime;
+        }
+
+        // 3. 가변 점프 (Variable Jump Height): 상승 중 버튼을 떼면 속도 감쇄하여 소점프 구현
+        if (keyboard.cKey.wasReleasedThisFrame && this.verticalVelocity > 0f)
+        {
+            this.verticalVelocity *= 0.4f;
+        }
+
+        // 4. 점프 실행 (Coyote Time & Jump Buffer 조합)
+        if (this.jumpBufferCounter > 0f && this.coyoteTimeCounter > 0f)
+        {
+            this.verticalVelocity = this.jumpForce;
+            this.IsJumping = true;
+            if (this.stats != null)
+            {
+                this.stats.SetJumped(true); // 지면 충격파 회피 판정 활성화
+            }
+
+            this.SetState(PlayerState.Jump); // State = 3 (Jump)
+            this.jumpBufferCounter = 0f;
+            this.coyoteTimeCounter = 0f;
+        }
+    }
+
+
+    private void handleExecutionAction(Keyboard keyboard)
+    {
+        // Left Ctrl 키 입력 시 사거리 내 Groggy 상태 몬스터 탐색 후 공용 처형 실행
+        if (keyboard.leftCtrlKey.wasPressedThisFrame)
+        {
+            var monsters = GameObject.FindObjectsOfType<Monster>();
+            foreach (var monster in monsters)
+            {
+                if (monster != null && Vector3.Distance(transform.position, monster.transform.position) <= 2.5f)
+                {
+                    if (this.TryExecuteTarget(monster, executionMultiplier: 5.0f))
+                    {
+                        this.SetState(PlayerState.Execution, forceUpdate: true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     private string getAnimNameByState(PlayerState state)
     {
@@ -114,14 +250,17 @@ public class Player : UnitBase
 
     private void handleMovement(Keyboard keyboard)
     {
-        // 공격 중이거나 방어 행동 중일 때는 이동 불가 처리
-        if (this.isAttacking || this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
+        // 지상/공중 방어 행동 중일 때는 이동 불가 처리
+        if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
+            return;
+
+        // 공격 중 이동: 지상 공격 중에는 정지, 공중 공격 시에도 수평 조작 허용
+        if (this.isAttacking && !this.IsJumping)
             return;
 
         this.currentMoveDir = Vector3.zero;
 
-        if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) this.currentMoveDir.z += 1f;
-        if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) this.currentMoveDir.z -= 1f;
+        // 2D 사이드뷰 횡스크롤: X축 좌우 이동 (A/D 및 방향키)
         if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) this.currentMoveDir.x -= 1f;
         if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) this.currentMoveDir.x += 1f;
 
@@ -133,7 +272,7 @@ public class Player : UnitBase
             this.SetFacingRight(this.facingDir.x >= 0);
             transform.Translate(this.currentMoveDir * this.Speed * Time.deltaTime, Space.World);
 
-            if (!this.IsJumping)
+            if (!this.IsJumping && !this.isAttacking)
             {
                 this.SetState(PlayerState.Run);
             }
@@ -173,7 +312,7 @@ public class Player : UnitBase
     }
 
     // =========================================================================
-    // 5. ATTACK & COMBO SYSTEM (New)
+    // 5. ATTACK & COMBO SYSTEM (Ground & Air Attack)
     // =========================================================================
 
     private void handleBasicAttack(Keyboard keyboard)
@@ -186,7 +325,7 @@ public class Player : UnitBase
         {
             if (!this.isAttacking)
             {
-                // 공격 중이 아니면 1타 시작
+                // 공격 중이 아니면 1타 시작 (지상/공중 공용)
                 this.comboStep = 1;
                 this.performAttackStepAsync(this.GetCancellationTokenOnDestroy()).Forget();
             }
@@ -214,20 +353,13 @@ public class Player : UnitBase
             _ => PlayerState.Attack
         };
 
-        // 공격 상태로 돌입
+        // 공격 상태로 돌입 (지상/공중 공용 모션 재생)
         this.SetState(attackState, true);
 
-        string animClipName = this.comboStep switch
+        uint currentSkillId = Util.CreateDataIdx(DataTableType.Skill, (uint)this.comboStep); // Util 유틸 함수로 DataTableType.Skill Idx 생성
+        if (this.skillExecutor != null)
         {
-            1 => "Player_Attack_Hit1",
-            2 => "Player_Attack_Hit2",
-            3 => "Player_Attack_Hit3",
-            _ => "Player_Attack_Hit1"
-        };
-        
-        if (this.animator != null)
-        {
-            this.animator.Play(animClipName, 0, 0f);
+            this.skillExecutor.TryPlaySkillAnimation(this.animator, currentSkillId);
         }
 
         // 1. 공격 모션 진행 및 타격 타이밍(0.12s)에 독립 SkillEffect 스폰
@@ -238,7 +370,12 @@ public class Player : UnitBase
             Vector3 spawnOffset = (this.spriteRenderer != null && this.spriteRenderer.flipX) ? Vector3.right * 1.0f : Vector3.left * 1.0f;
             Vector3 spawnPos = transform.position + spawnOffset + Vector3.up * 0.8f;
             Color effectColor = new Color(0f, 1f, 0.4f, 0.4f); // 초록 반투명 검기 이펙트
+
+            // 1) 2D Trigger Hitbox 스폰 (데미지 및 충돌 판정)
             this.skillExecutor.SpawnSkillEffect($"Player_Hit{this.comboStep}", spawnPos, new Vector2(1.2f, 1.5f), 15f * this.comboStep, 0.15f, FactionType.PlayerAlly, effectColor);
+
+            // 2) SkillData -> EffectData -> ResourceData -> InstantiateAsyncTask 비주얼 이펙트 비동기 스폰
+            this.skillExecutor.SpawnSkillEffectFromDataAsync(currentSkillId, spawnPos).Forget();
         }
 
         await UniTask.Delay(System.TimeSpan.FromSeconds(0.28f), cancellationToken: cancellationToken);
@@ -274,7 +411,15 @@ public class Player : UnitBase
             this.isAttacking = false;
             this.hasQueuedAttack = false;
             this.comboStep = 0;
-            this.SetState(PlayerState.Idle, true);
+
+            if (!this.IsJumping)
+            {
+                this.SetState(PlayerState.Idle, true);
+            }
+            else
+            {
+                this.SetState(PlayerState.Jump, true);
+            }
         }
     }
 

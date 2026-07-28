@@ -78,6 +78,32 @@ public class UnitBase : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
+    /// 플레이어뿐만 아니라 몬스터/보스 AI도 호출 가능한 공용 기능입니다.
+    /// </summary>
+    public virtual bool TryExecuteTarget(UnitBase target, float executionMultiplier = 5.0f)
+    {
+        if (target == null || target.stats == null || this.stats == null) return false;
+
+        // 1. 대상이 Groggy 상태인지 검사
+        if (!target.stats.IsGroggy)
+        {
+            Debug.Log($"[TryExecuteTarget] 대상 '{target.gameObject.name}' 은 Groggy 상태가 아닙니다.");
+            return false;
+        }
+
+        // 2. 처형 데미지 계산 (시전자의 Atk * 배율)
+        float executionDamage = this.stats.Atk * executionMultiplier;
+
+        // 3. 대상 유닛에게 처형 데미지 적용
+        target.stats.TakeExecutionDamage(executionDamage, attacker: this.stats);
+
+        Debug.Log($"<color=yellow>[Execution Success] '{gameObject.name}' 이(가) '{target.gameObject.name}' 에 처형 공격 성공! (Damage: {executionDamage})</color>");
+        return true;
+    }
+
+
 
     // =========================================================================
     // 4. PROTECTED & PRIVATE METHODS (camelCase)
@@ -149,8 +175,15 @@ public class UnitBase : MonoBehaviour
                 if (controller != null && this.animator != null)
                 {
                     this.animator.runtimeAnimatorController = controller;
-                    // Controller 연결 직후 기본 Idle 애니메이션 즉시 재생을 강제하여 스프라이트 미출력 방지
-                    this.animator.Play("Player_Idle", 0, 0f);
+                    // Controller 연결 직후 기본 Idle 애니메이션 재생을 안전하게 시도하여 스프라이트 미출력 방지
+                    if (this.animator.HasState(0, Animator.StringToHash("Player_Idle")))
+                    {
+                        this.animator.Play("Player_Idle", 0, 0f);
+                    }
+                    else
+                    {
+                        this.animator.Play(0, 0, 0f); // Default State 0번 레이어 재생
+                    }
                     Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' 하위 Visual 객체에 '{animatorKey}' 바인딩 및 애니메이션 재생 개시 완료!</color>");
                 }
             });

@@ -1,98 +1,117 @@
 #if UNITY_EDITOR
-using System.IO;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using System.IO;
 
 /// <summary>
-/// Addressables 전수 자동 등록 및 로컬 배포 서버(C:\Users\PC\TP2LocalServer\ServerData) 빌드/동기화 통합 유틸리티.
+/// Addressables 자동 등록 & 로컬 배포 파이프라인 (대문자 P 표준 경로 Assets/Prefabs 반영).
 /// </summary>
 public static class AddressablePipeline
 {
-    [MenuItem("Addressables/Register All Addressables")]
+    [MenuItem("TP2/Register All Addressables (Addressables 전수 등록)")]
     public static void RegisterAllAddressables()
     {
-        var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-        if (settings == null) return;
-
-        var animGroup = GetOrCreateGroup(settings, "Anims");
-        var prefabGroup = GetOrCreateGroup(settings, "Prefabs");
-        var dataGroup = GetOrCreateGroup(settings, "Datas");
-
-        // 1. .controller -> Anims
-        foreach (var file in Directory.GetFiles("Assets", "*.controller", SearchOption.AllDirectories))
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        if (settings == null)
         {
-            RegisterFile(settings, animGroup, file, "Anims");
+            Debug.LogError("[AddressablePipeline] AddressableAssetSettings를 찾을 수 없습니다.");
+            return;
         }
 
-        // 2. .prefab -> Prefabs
-        foreach (var file in Directory.GetFiles("Assets", "*.prefab", SearchOption.AllDirectories))
+        var prefabsGroup = settings.FindGroup("Prefabs") ?? settings.CreateGroup("Prefabs", false, false, true, null);
+        var animsGroup = settings.FindGroup("Anims") ?? settings.CreateGroup("Anims", false, false, true, null);
+        var datasGroup = settings.FindGroup("Datas") ?? settings.CreateGroup("Datas", false, false, true, null);
+
+        // 1. Prefabs 하위 전체 (.prefab) 서치 (대문자 P 경로 Assets/Prefabs 및 서브 폴더 Rooms 등 포함)
+        string prefabsDir = "Assets/Prefabs";
+        if (Directory.Exists(prefabsDir))
         {
-            RegisterFile(settings, prefabGroup, file, "Prefabs");
+            string[] prefabFiles = Directory.GetFiles(prefabsDir, "*.prefab", SearchOption.AllDirectories);
+            foreach (string file in prefabFiles)
+            {
+                string assetPath = file.Replace('\\', '/');
+                string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                if (!string.IsNullOrEmpty(guid))
+                {
+                    string addressKey = Path.GetFileNameWithoutExtension(assetPath);
+                    var entry = settings.CreateOrMoveEntry(guid, prefabsGroup);
+                    entry.address = addressKey;
+                    Debug.Log($"Addressable Registered [Prefabs]: {addressKey} -> {assetPath}");
+                }
+            }
         }
 
-        // 3. .csv -> Datas
-        foreach (var file in Directory.GetFiles("Assets", "*.csv", SearchOption.AllDirectories))
+        // 2. Anims 하위 전체 (.controller, .anim)
+        string animsDir = "Assets/Anims";
+        if (Directory.Exists(animsDir))
         {
-            RegisterFile(settings, dataGroup, file, "Datas");
+            string[] animFiles = Directory.GetFiles(animsDir, "*.*", SearchOption.AllDirectories);
+            foreach (string file in animFiles)
+            {
+                if (file.EndsWith(".controller") || file.EndsWith(".anim"))
+                {
+                    string assetPath = file.Replace('\\', '/');
+                    string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                    if (!string.IsNullOrEmpty(guid))
+                    {
+                        string addressKey = Path.GetFileNameWithoutExtension(assetPath);
+                        var entry = settings.CreateOrMoveEntry(guid, animsGroup);
+                        entry.address = addressKey;
+                    }
+                }
+            }
         }
 
+        // 3. Datas (.csv)
+        string datasDir = "Assets/Datas";
+        if (Directory.Exists(datasDir))
+        {
+            string[] csvFiles = Directory.GetFiles(datasDir, "*.csv", SearchOption.AllDirectories);
+            foreach (string file in csvFiles)
+            {
+                string assetPath = file.Replace('\\', '/');
+                string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                if (!string.IsNullOrEmpty(guid))
+                {
+                    string addressKey = Path.GetFileNameWithoutExtension(assetPath);
+                    var entry = settings.CreateOrMoveEntry(guid, datasGroup);
+                    entry.address = addressKey;
+                }
+            }
+        }
+
+        settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, null, true);
         AssetDatabase.SaveAssets();
+        Debug.Log("<color=green><b>[AddressablePipeline] Addressables 대문자 Prefabs 전수 등록 완결!</b></color>");
     }
 
-    [MenuItem("Addressables/Build and Deploy to Local Server")]
+    [MenuItem("TP2/Build & Deploy Addressables (Addressables 빌드 및 배포)")]
     public static void BuildAndDeploy()
     {
         RegisterAllAddressables();
+
+        var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+        if (settings != null && string.IsNullOrEmpty(settings.activeProfileId))
+        {
+            string defaultProfileId = settings.profileSettings.GetProfileId("Default");
+            if (string.IsNullOrEmpty(defaultProfileId))
+            {
+                var profileNames = settings.profileSettings.GetAllProfileNames();
+                if (profileNames != null && profileNames.Count > 0)
+                {
+                    defaultProfileId = settings.profileSettings.GetProfileId(profileNames[0]);
+                }
+            }
+            if (!string.IsNullOrEmpty(defaultProfileId))
+            {
+                settings.activeProfileId = defaultProfileId;
+            }
+        }
+
         AddressableAssetSettings.BuildPlayerContent();
-
-        string projectServerData = Path.Combine(Application.dataPath, "..", "ServerData");
-        string localServerData = @"C:\Users\PC\TP2LocalServer\ServerData";
-
-        if (Directory.Exists(projectServerData))
-        {
-            Directory.CreateDirectory(localServerData);
-            CopyDirectory(projectServerData, localServerData);
-            Debug.Log($"<color=green>[AddressablePipeline] Successfully deployed bundles to {localServerData}</color>");
-        }
-    }
-
-    private static AddressableAssetGroup GetOrCreateGroup(AddressableAssetSettings settings, string groupName)
-    {
-        var group = settings.FindGroup(groupName);
-        if (group == null)
-        {
-            group = settings.CreateGroup(groupName, false, false, true, null);
-        }
-        return group;
-    }
-
-    private static void RegisterFile(AddressableAssetSettings settings, AddressableAssetGroup group, string path, string label)
-    {
-        string assetPath = path.Replace("\\", "/");
-        string guid = AssetDatabase.AssetPathToGUID(assetPath);
-        if (string.IsNullOrEmpty(guid)) return;
-
-        var entry = settings.CreateOrMoveEntry(guid, group);
-        if (entry != null)
-        {
-            string key = Path.GetFileNameWithoutExtension(assetPath);
-            entry.address = key;
-            entry.SetLabel(label, true);
-        }
-    }
-
-    private static void CopyDirectory(string sourceDir, string targetDir)
-    {
-        Directory.CreateDirectory(targetDir);
-        foreach (string file in Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories))
-        {
-            string relPath = file.Substring(sourceDir.Length + 1);
-            string destFile = Path.Combine(targetDir, relPath);
-            Directory.CreateDirectory(Path.GetDirectoryName(destFile));
-            File.Copy(file, destFile, true);
-        }
+        Debug.Log("<color=green><b>[AddressablePipeline] Addressable Player Content Build Complete!</b></color>");
     }
 }
 #endif

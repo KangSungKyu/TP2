@@ -11,161 +11,206 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.U2D;
 
-// Resource manager using Commons.Singleton<T>
+/// <summary>
+/// Addressables 기반 리소스 관리자 (Singleton)
+/// TP1의 카탈로그 검사, 의존성 다운로드 및 SpriteAtlas 연동 구조를 표준 채택하였습니다.
+/// 예외 발생 시 Fallback 없이 strict 에러 처리를 수행합니다.
+/// </summary>
 public class ResourceManager : Singleton<ResourceManager>
 {
-    // Keep track of handles to allow safe release
-    private readonly static string labelName = "Remote";
+    // =========================================================================
+    // 1. CONST & PRIVATE FIELDS (camelCase, No '_' prefix)
+    // =========================================================================
+
+    private const string TargetLabel = "Datas";
     private readonly Dictionary<string, AsyncOperationHandle> loadHandles = new Dictionary<string, AsyncOperationHandle>();
     private readonly List<AsyncOperationHandle> instantiateHandles = new List<AsyncOperationHandle>();
+    private bool isInitialized = false;
 
+
+    // =========================================================================
+    // 2. PUBLIC METHODS (PascalCase)
+    // =========================================================================
+
+    /// <summary>
+    /// InitScene의 부팅 단계에서 호출되는 Addressables 초기화, 카탈로그 검사 및 다운로드 프로세스입니다.
+    /// </summary>
     public async UniTask InitAsync(Action onComplete = null, CancellationToken cancellationToken = default)
     {
-        await Addressables.InitializeAsync().ToUniTask(cancellationToken: cancellationToken);
-
-        var updateHandle = Addressables.CheckForCatalogUpdates(false);
-
-        await updateHandle;
-
-        if (updateHandle.Status == AsyncOperationStatus.Succeeded)
+        if (this.isInitialized)
         {
-            var catalogs = updateHandle.Result;
-
-            if (catalogs.Count > 0)
-            {
-                await Addressables.UpdateCatalogs(catalogs).ToUniTask(cancellationToken: cancellationToken);
-            }
-        }
-
-        if(updateHandle.IsValid())
-        {
-            Addressables.Release(updateHandle);
-        }
-
-        await StartDownloadAsync(onComplete, cancellationToken);
-    }
-
-
-    public void LoadAssetAsync<T>(string key, Action<T> onLoaded) where T : class
-    {
-        if(loadHandles.ContainsKey(key))
-        {
-            onLoaded?.Invoke((T)loadHandles[key].Result);
-        }
-        else
-        {
-            try
-            {
-                var handle = Addressables.LoadAssetAsync<T>(key);
-
-                handle.Completed += (AsyncOperationHandle<T> op) =>
-                {
-                    if (op.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        if(!loadHandles.ContainsKey(key))
-                        {
-                            loadHandles.Add(key, handle);
-                        }
-
-                        onLoaded?.Invoke(op.Result);
-                    }
-                    else
-                    {
-                        Debug.LogError($"LoadAssetAsync<{typeof(T).Name}> failed for key={key}: {op.OperationException}");
-                        onLoaded?.Invoke(null);
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"LoadAssetAsync<{typeof(T).Name}> threw for key={key}: {ex}");
-                onLoaded?.Invoke(null);
-            }
-        }
-    }
-
-    public T GetResource<T>(string key) where T : class
-    {
-        T resource = null;
-
-        if(loadHandles.ContainsKey(key))
-        {
-            resource = (T)loadHandles[key].Result;
-        }
-
-        return resource;
-    }
-
-    public Sprite GetSpriteFromAtlas(string atlasKey, string key)
-    {
-        Sprite resource = null;
-
-        if(loadHandles.ContainsKey(atlasKey))
-        {
-            SpriteAtlas atlas = loadHandles[atlasKey].Result as SpriteAtlas;
-
-            resource = atlas.GetSprite(key);
-        }
-
-        return resource;
-    }
-
-    public Task<T> LoadAssetAsyncTask<T>(string key) where T : class
-    {
-        if(loadHandles.ContainsKey(key))
-        {
-            return Task.FromResult((T)loadHandles[key].Result);
-        }
-        else
-        {
-            var tcs = new TaskCompletionSource<T>();
-            try
-            {
-                var handle = Addressables.LoadAssetAsync<T>(key);
-
-                handle.Completed += (AsyncOperationHandle<T> op) =>
-                {
-                    if (op.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        loadHandles.Add(key, handle);
-                        tcs.SetResult(op.Result);
-                    }
-                    else
-                    {
-                        tcs.SetException(op.OperationException ?? new Exception("Addressables load failed"));
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                tcs.SetException(ex);
-            }
-
-            return tcs.Task;
-        }
-    }
-
-    public async void LoadAssetsAsync<T>(IList<IResourceLocation> locList, Action<T> onComp, CancellationToken cancellationToken = default)
-    {
-        if (locList == null || locList.Count < 0)
+            onComplete?.Invoke();
             return;
-
-        var loadHandle = Addressables.LoadAssetsAsync<T>(locList, onComp);
+        }
 
         try
         {
-            var resultList = await loadHandle.ToUniTask(cancellationToken: cancellationToken);
-        }
-        catch(System.Exception ex)
-        {
-            Debug.LogError(ex);
-        }
-        finally
-        {
-            if(loadHandle.IsValid())
+            // 1. Addressables 시스템 비동기 초기화
+            await Addressables.InitializeAsync().ToUniTask(cancellationToken: cancellationToken);
+
+            // 2. 최신 원격 카탈로그 검사
+            var updateHandle = Addressables.CheckForCatalogUpdates(false);
+            await updateHandle.ToUniTask(cancellationToken: cancellationToken);
+
+            if (updateHandle.Status == AsyncOperationStatus.Succeeded)
             {
-                Addressables.Release(loadHandle);
+                var catalogs = updateHandle.Result;
+                if (catalogs != null && catalogs.Count > 0)
+                {
+                    Debug.Log($"[ResourceManager] 카탈로그 업데이트 발견 ({catalogs.Count}개). 업데이트를 진행합니다.");
+                    await Addressables.UpdateCatalogs(catalogs).ToUniTask(cancellationToken: cancellationToken);
+                }
             }
+
+            if (updateHandle.IsValid())
+            {
+                Addressables.Release(updateHandle);
+            }
+
+            // 3. 라벨 기반 의존성 다운로드 및 준비
+            await this.startDownloadAsync(onComplete, cancellationToken);
+
+            this.isInitialized = true;
+            Debug.Log("<color=green><b>[ResourceManager] Addressables 초기화 및 카탈로그 동기화 완결!</b></color>");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[ResourceManager Error] InitAsync 초기화 실패: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void LoadAssetAsync<T>(string key, Action<T> onLoaded) where T : class
+    {
+        if (this.loadHandles.TryGetValue(key, out var handle))
+        {
+            onLoaded?.Invoke(handle.Result as T);
+            return;
+        }
+
+        try
+        {
+            var loadHandle = Addressables.LoadAssetAsync<T>(key);
+            loadHandle.Completed += (AsyncOperationHandle<T> op) =>
+            {
+                if (op.Status == AsyncOperationStatus.Succeeded)
+                {
+                    if (!this.loadHandles.ContainsKey(key))
+                    {
+                        this.loadHandles.Add(key, loadHandle);
+                    }
+                    onLoaded?.Invoke(op.Result);
+                }
+                else
+                {
+                    Debug.LogWarning($"[ResourceManager Warning] Addressables Key '{key}' 로드 실패: {op.OperationException?.Message}");
+                    onLoaded?.Invoke(null);
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[ResourceManager Warning] Addressables Key '{key}' 유효하지 않음 (InvalidKey): {ex.Message}");
+            onLoaded?.Invoke(null);
+        }
+    }
+
+    public async UniTask<T> LoadAssetAsync<T>(string key) where T : UnityEngine.Object
+    {
+        if (this.loadHandles.TryGetValue(key, out var handle))
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                return handle.Result as T;
+            }
+        }
+
+        var loadHandle = Addressables.LoadAssetAsync<T>(key);
+        await loadHandle.Task;
+
+        if (loadHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            if (!this.loadHandles.ContainsKey(key))
+            {
+                this.loadHandles.Add(key, loadHandle);
+            }
+            return loadHandle.Result;
+        }
+
+        Debug.LogError($"[ResourceManager Error] LoadAssetAsync 실패 (Key: {key}): {loadHandle.OperationException}");
+        return null;
+    }
+
+    public async Task<T> LoadAssetAsyncTask<T>(string key) where T : class
+    {
+        if (this.loadHandles.TryGetValue(key, out var handle))
+        {
+            return (T)handle.Result;
+        }
+
+        var tcs = new TaskCompletionSource<T>();
+        try
+        {
+            var loadHandle = Addressables.LoadAssetAsync<T>(key);
+            loadHandle.Completed += (op) =>
+            {
+                if (op.Status == AsyncOperationStatus.Succeeded)
+                {
+                    if (!this.loadHandles.ContainsKey(key))
+                    {
+                        this.loadHandles.Add(key, loadHandle);
+                    }
+                    tcs.SetResult(op.Result);
+                }
+                else
+                {
+                    Debug.LogError($"[ResourceManager Error] LoadAssetAsyncTask<{typeof(T).Name}> 실패 (Key: {key}): {op.OperationException}");
+                    tcs.SetException(op.OperationException ?? new Exception($"Addressables load failed for key={key}"));
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            tcs.SetException(ex);
+        }
+
+        return await tcs.Task;
+    }
+
+    public void LoadAssetsAsync<T>(IList<IResourceLocation> locList, Action<T> onComp, CancellationToken cancellationToken = default) where T : UnityEngine.Object
+    {
+        if (locList == null || locList.Count == 0) return;
+
+        foreach (var location in locList)
+        {
+            if (cancellationToken.IsCancellationRequested) break;
+
+            string key = location.PrimaryKey;
+            if (this.loadHandles.TryGetValue(key, out var handle))
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    onComp?.Invoke(handle.Result as T);
+                    continue;
+                }
+            }
+
+            var loadHandle = Addressables.LoadAssetAsync<T>(location);
+            loadHandle.Completed += (op) =>
+            {
+                if (op.Status == AsyncOperationStatus.Succeeded)
+                {
+                    if (!this.loadHandles.ContainsKey(key))
+                    {
+                        this.loadHandles.Add(key, op);
+                    }
+                    onComp?.Invoke(op.Result);
+                }
+                else
+                {
+                    Debug.LogError($"[ResourceManager Error] LoadAssetsAsync 위치 로드 실패 (Location: {key}): {op.OperationException}");
+                }
+            };
         }
     }
 
@@ -188,179 +233,184 @@ public class ResourceManager : Singleton<ResourceManager>
 
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
-                instantiateHandles.Add(handle);
-
+                this.instantiateHandles.Add(handle);
                 return handle.Result;
             }
-            else
-            {
-                throw handle.OperationException ?? new Exception("Addressables instantiate failed");
-            }
+
+            throw handle.OperationException ?? new Exception($"Addressables instantiate failed for key={key}");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"InstantiateAsyncTask threw for key={key}: {ex}");
+            Debug.LogError($"[ResourceManager Error] InstantiateAsyncTask 에셋 로드 실패 (Key: {key}): {ex.Message}");
             return null;
         }
     }
 
+    public T GetResource<T>(string key) where T : class
+    {
+        if (this.loadHandles.TryGetValue(key, out var handle))
+        {
+            return handle.Result as T;
+        }
+        return null;
+    }
+
+    public Sprite GetSpriteFromAtlas(string atlasKey, string key)
+    {
+        if (this.loadHandles.TryGetValue(atlasKey, out var handle))
+        {
+            if (handle.Result is SpriteAtlas atlas)
+            {
+                return atlas.GetSprite(key);
+            }
+        }
+        return null;
+    }
+
     public void ReleaseInstance(GameObject go)
     {
-        if (go == null) 
-            return;
+        if (go == null) return;
 
         try
         {
-            int idx = instantiateHandles.FindIndex((o) => (GameObject)o.Result == go);
-
+            int idx = this.instantiateHandles.FindIndex(o => o.Result == (object)go);
             Addressables.ReleaseInstance(go);
-
-            if(idx > -1)
+            if (idx > -1)
             {
-                instantiateHandles.RemoveAt(idx);
+                this.instantiateHandles.RemoveAt(idx);
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError($"ReleaseInstance threw: {ex}");
+            Debug.LogError($"[ResourceManager Error] ReleaseInstance 실패: {ex}");
         }
     }
 
     public void Release(string key)
     {
-        AsyncOperationHandle handle = default;
-
-        if(loadHandles.ContainsKey(key))
+        if (this.loadHandles.TryGetValue(key, out var handle))
         {
-            handle = loadHandles[key];
-
             try
             {
                 if (handle.IsValid())
                 {
                     Addressables.Release(handle);
-                    loadHandles.Remove(key);
                 }
+                this.loadHandles.Remove(key);
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Release(handle) threw: {ex}");
+                Debug.LogError($"[ResourceManager Error] Release 실패 (Key: {key}): {ex}");
             }
         }
     }
 
     public void ReleaseAll()
     {
-        foreach(var pair in loadHandles)
+        foreach (var pair in this.loadHandles)
         {
-            var h = pair.Value;
-
             try
             {
-                if (h.IsValid())
-                { 
-                    Addressables.Release(h);
+                if (pair.Value.IsValid())
+                {
+                    Addressables.Release(pair.Value);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"ReleaseAll: failed to release handle: {ex}");
+                Debug.LogError($"[ResourceManager Error] ReleaseAll 로드 핸들 해제 실패: {ex}");
             }
         }
+        this.loadHandles.Clear();
 
-        loadHandles.Clear();
-
-        try
+        foreach (var handle in this.instantiateHandles)
         {
-            foreach (var h in instantiateHandles)
+            try
             {
-                ReleaseInstance(h.Result as GameObject);
+                if (handle.IsValid() && handle.Result != null)
+                {
+                    Addressables.ReleaseInstance(handle.Result as GameObject);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ResourceManager Error] ReleaseAll 인스턴스 핸들 해제 실패: {ex}");
             }
         }
-        catch(Exception ex)
-        {
-            Debug.LogError($"ReleaseAll: failed to release inst handle:{ex}");
-        }
-
-        instantiateHandles.Clear();
+        this.instantiateHandles.Clear();
     }
+
+
+    // =========================================================================
+    // 3. PROTECTED & PRIVATE METHODS (camelCase)
+    // =========================================================================
 
     protected override void OnSingletonAwake()
     {
         base.OnSingletonAwake();
-        Debug.Log("ResourceMgr initialized");
-
-        SpriteAtlasManager.atlasRequested += OnAtlasRequested;
+        SpriteAtlasManager.atlasRequested += this.onAtlasRequested;
     }
 
     protected override void OnSingletonDestroyed()
     {
-        SpriteAtlasManager.atlasRequested -= OnAtlasRequested;
-
+        SpriteAtlasManager.atlasRequested -= this.onAtlasRequested;
+        this.ReleaseAll();
         base.OnSingletonDestroyed();
-        //ReleaseAll();
     }
 
-    private async UniTask StartDownloadAsync(System.Action onResourceLoad, CancellationToken cancellationToken = default)
+    private async UniTask startDownloadAsync(Action onResourceLoad, CancellationToken cancellationToken = default)
     {
-        var locationHandle = Addressables.LoadResourceLocationsAsync(labelName, typeof(object));
-
-        await locationHandle;
+        var locationHandle = Addressables.LoadResourceLocationsAsync(TargetLabel, typeof(object));
+        await locationHandle.ToUniTask(cancellationToken: cancellationToken);
 
         if (locationHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            Debug.Log($"찾은 결과 개수: {locationHandle.Result.Count}");
-            // 2. 다운로드 시작
-            AsyncOperationHandle handle = Addressables.DownloadDependenciesAsync(locationHandle.Result);
-
-            try
+            if (locationHandle.Result != null && locationHandle.Result.Count > 0)
             {
-                await handle.ToUniTask(progress: Progress.Create<float>((progress) =>
+                var downloadHandle = Addressables.DownloadDependenciesAsync(locationHandle.Result);
+                try
                 {
-                    Debug.Log($"다운로드 중: {progress * 100}%");
-                }), cancellationToken: cancellationToken);
+                    await downloadHandle.ToUniTask(progress: Progress.Create<float>(p =>
+                    {
+                        Debug.Log($"[ResourceManager] Addressables 의존성 다운로드 중: {p * 100:F1}%");
+                    }), cancellationToken: cancellationToken);
 
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    Debug.Log("다운로드 완료!");
-                    // 이제 리소스를 로드해도 됩니다.
-                    onResourceLoad?.Invoke();
+                    if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.Log("[ResourceManager] 의존성 다운로드 완결!");
+                        onResourceLoad?.Invoke();
+                    }
+                    else
+                    {
+                        Debug.LogError($"[ResourceManager Error] 의존성 다운로드 실패: {downloadHandle.OperationException}");
+                    }
                 }
-                else
+                finally
                 {
-                    Debug.LogError("다운로드 실패: " + handle.OperationException);
+                    if (downloadHandle.IsValid())
+                    {
+                        Addressables.Release(downloadHandle);
+                    }
                 }
             }
-            finally
+            else
             {
-                if(handle.IsValid())
-                {
-                    Addressables.Release(handle);
-                }
+                onResourceLoad?.Invoke();
             }
         }
         else
         {
-            Debug.LogError($"그룹을 찾을 수 없습니다. (상태: {locationHandle.Status})");
-            // 발견된 모든 그룹을 출력해서 이름이 일치하는지 확인
-            foreach (var location in locationHandle.Result)
-            {
-                Debug.Log($"발견된 키: {location.PrimaryKey}");
-            }
+            Debug.LogError($"[ResourceManager Error] 라벨 '{TargetLabel}' 리소스 위치 탐색 실패 (상태: {locationHandle.Status})");
         }
 
-        if(locationHandle.IsValid())
+        if (locationHandle.IsValid())
         {
             Addressables.Release(locationHandle);
         }
     }
 
-    private void OnAtlasRequested(string tag, Action<SpriteAtlas> onComplete)
+    private void onAtlasRequested(string tag, Action<SpriteAtlas> onComplete)
     {
-        string addrKey = tag;
-
-        Debug.Log($"atlas requested: addrKey: {addrKey}");
-
-        LoadAssetAsync(addrKey, onComplete);
+        this.LoadAssetAsync(tag, onComplete);
     }
 }

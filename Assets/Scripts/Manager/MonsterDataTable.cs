@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-using CsvHelper;
-using System.IO;
-using System.Globalization;
 using UnityEngine;
 
 /// <summary>
@@ -29,7 +26,11 @@ public class MonsterDataTable : IDataLoad
 
     public bool TryGetMonsterData(uint idx, out MonsterBaseData data)
     {
-        return this.dataDict.TryGetValue(idx, out data);
+        if (this.dataDict.TryGetValue(idx, out data)) return true;
+
+        // 3000번대 UnitBase Idx (3101 등)로 5000번대 MonsterBaseData (5101 등) 조회 지원
+        uint monsterDataIdx = 5000 + Util.GetDataInnerId(idx);
+        return this.dataDict.TryGetValue(monsterDataIdx, out data);
     }
 
     public void Release() => this.dataDict.Clear();

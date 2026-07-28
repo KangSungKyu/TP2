@@ -1,7 +1,7 @@
-idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage
-6001,2010,SpearSentry_Attack,1,3,2.0,100,0.4,0.6,2.0,15
-6002,2011,SpearSentry_Move,1,0,0.0,0,0.0,0.5,0.0,0
-6100,2010,Garon_Pattern_Charge,4,2,8.0,50,0.8,0.8,6.0,25
-6101,2011,Garon_Pattern_ComboSlash,2,0,0.0,30,0.6,0.6,4.0,10
-6102,2012,Garon_Pattern_OverheadSmash,3,0,0.0,70,1.0,1.0,5.0,35
-6103,2013,Garon_Pattern_Shockwave,4,3,4.0,40,0.8,0.8,5.0,20
+idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx
+6001,2010,SpearSentry_Attack,1,3,2.0,100,0.4,0.6,2.0,15,1.0,7001
+6002,2011,SpearSentry_Move,1,0,0.0,0,0.0,0.5,0.0,0,1.0,7001
+6100,2010,Garon_Pattern_Charge,4,2,8.0,50,0.8,0.8,6.0,25,1.5,7012
+6101,2011,Garon_Pattern_ComboSlash,2,0,0.0,30,0.6,0.6,4.0,10,2.5,7011
+6102,2012,Garon_Pattern_OverheadSmash,3,0,0.0,70,1.0,1.0,5.0,35,2.0,7010
+6103,2013,Garon_Pattern_Shockwave,4,3,4.0,40,0.8,0.8,5.0,20,0.5,7013

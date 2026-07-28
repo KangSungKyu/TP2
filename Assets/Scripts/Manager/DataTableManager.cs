@@ -10,6 +10,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// 데이터 테이블 매니저 (Singleton)
 /// CSV 데이터 테이블 전반의 비동기 로드, 파싱 및 캐싱을 총괄 관리합니다.
+/// 데이터 식별 및 검증은 오직 idx 기반(Util.GetDataTableType)으로만 수행합니다.
 /// </summary>
 public class DataTableManager : Singleton<DataTableManager>
 {
@@ -72,6 +73,7 @@ public class DataTableManager : Singleton<DataTableManager>
         this.dataList[DataTableType.MonsterData] = new MonsterDataTable();
         this.dataList[DataTableType.MonsterPattern] = new MonsterPatternDataTable();
         this.dataList[DataTableType.Skill] = new SkillDataTable();
+        this.dataList[DataTableType.EffectData] = new EffectDataTable();
 
         this.preloadDataTablesAsync().Forget();
     }
@@ -116,7 +118,7 @@ public class DataTableManager : Singleton<DataTableManager>
         else
         {
             // Addressables 미준비 시 Resources Fallback 캐싱
-            Debug.LogWarning($"[DataTableManager] Addressables '{targetLabel}' 라벨을 찾지 못함. Resources Fallback 실행.");
+            Debug.LogWarning($"[DataTableManager] Addressables '{targetLabel}' 라벨을 찾지 못함. Fallback 로드 실행.");
             this.fallbackLoadFromResources();
             this.isLoaded = true;
             this.loadCompletionSource.TrySetResult();
@@ -127,29 +129,54 @@ public class DataTableManager : Singleton<DataTableManager>
 
     private void parseAndCacheCsv(string assetName, string csvText)
     {
-        DataTableType dtt = this.getDataTableTypeFromAssetName(assetName);
-        if (dtt != DataTableType.None && this.dataList.TryGetValue(dtt, out var loader))
+        if (string.IsNullOrWhiteSpace(csvText))
         {
-            loader.LoadData(csvText);
-            Debug.Log($"<color=green>[DataTableManager] 데이터 캐싱 성공: {assetName} (Type: {dtt}, Count: {loader.GetDataCount()})</color>");
+            Debug.LogError($"[DataTableManager Error] {assetName} CSV 내용이 비어있습니다.");
+            return;
         }
-        else
+
+        // 오직 idx 기반으로만 DataTableType 식별 (파일명 검사 없음)
+        uint firstIdx = this.extractFirstRowIdx(csvText);
+        DataTableType dtt = Util.GetDataTableType(firstIdx);
+
+        if (dtt == DataTableType.None)
         {
-            Debug.LogWarning($"[DataTableManager] {assetName}에 해당하는 DataTableType 매핑을 찾지 못했습니다.");
+            Debug.LogError($"[DataTableManager Error] {assetName}의 첫 번째 Idx({firstIdx})에 해당하는 올바른 DataTableType을 찾을 수 없습니다! (idx 규칙 위반)");
+            return;
         }
+
+        if (!this.dataList.TryGetValue(dtt, out var loader))
+        {
+            Debug.LogError($"[DataTableManager Error] DataTableType.{dtt} (에셋: {assetName}) 에 매핑된 파서(IDataLoad)가 dataList에 등록되지 않았습니다.");
+            return;
+        }
+
+        loader.LoadData(csvText);
+        Debug.Log($"<color=green>[DataTableManager] 데이터 캐싱 성공: {assetName} (Type: {dtt}, Count: {loader.GetDataCount()})</color>");
     }
 
-    private DataTableType getDataTableTypeFromAssetName(string assetName)
+    private uint extractFirstRowIdx(string csvText)
     {
-        string name = assetName.ToLowerInvariant();
-        if (name.Contains("resource")) return DataTableType.Resource;
-        if (name.Contains("text")) return DataTableType.Text;
-        if (name.Contains("unitbase")) return DataTableType.UnitBase;
-        if (name.Contains("monsterbase") || name.Contains("monsterdata")) return DataTableType.MonsterData;
-        if (name.Contains("monsterpattern") || name.Contains("bosspattern")) return DataTableType.MonsterPattern;
-        if (name.Contains("skill")) return DataTableType.Skill;
+        using (var reader = new StringReader(csvText))
+        {
+            string headerLine = reader.ReadLine();
+            if (headerLine == null) return 0;
 
-        return DataTableType.None;
+            string firstDataLine = reader.ReadLine();
+            while (firstDataLine != null && string.IsNullOrWhiteSpace(firstDataLine))
+            {
+                firstDataLine = reader.ReadLine();
+            }
+
+            if (firstDataLine == null) return 0;
+
+            string[] cols = firstDataLine.Split(',');
+            if (cols.Length > 0 && uint.TryParse(cols[0].Trim(), out uint idx))
+            {
+                return idx;
+            }
+        }
+        return 0;
     }
 
     private void fallbackLoadFromResources()

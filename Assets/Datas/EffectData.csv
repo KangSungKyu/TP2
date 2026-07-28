@@ -1,0 +1,8 @@
+idx,effectname,prefabidx,duration,scale,loopcount
+8001,SlashEffect,1020,0.3,1.0,1
+8002,FireballEffect,1021,0.8,1.2,1
+8003,HeavySlashEffect,1022,0.5,1.2,1
+8010,Common_Parry,1030,0.3,1.0,1
+8011,Common_Guard,1031,0.3,1.0,1
+8012,Common_Dodge,1032,0.3,1.0,1
+8013,Common_Hit,1033,0.3,1.0,1
