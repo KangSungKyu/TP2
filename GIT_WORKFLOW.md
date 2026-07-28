@@ -4,7 +4,14 @@
 
 ---
 
-## 🏛️ 1. Branch 구조 및 역할
+## 🏛️ 1. Git 관리 전담 지정 (Git Dedicated Operator)
+
+- **전담 관리자**: **CI 프로그래머 (Client CI Programmer)**
+- **역할**: TP2 프로젝트의 **모든 Git 작업(브랜치 생성, 커밋, 푸시, 머지, CI/CD 원격 동기화 관리 등)은 전부 CI 프로그래머가 전담**하여 일관성과 무결성을 유지합니다.
+
+---
+
+## 🌿 2. Branch 구조 및 역할
 
 - **`portfolio`**:
   - 실제로 모든 Request-Merge가 일어나는 **실질적 메인 통합 브랜치**.
@@ -20,7 +27,7 @@
 
 ---
 
-## 🎨 2. 아트 리소스 표준 사양 및 동기화 수칙
+## 🎨 3. 아트 리소스 표준 사양 및 동기화 수칙
 
 1. **아트 파이프라인 동기화**:
    - 아트 리소스 업데이트 수령 시 `art` 브랜치를 `fetch`/`pull` 하여 `portfolio` 브랜치에 병합(Merge).
@@ -32,7 +39,7 @@
 
 ---
 
-## 📂 3. 임시 생성 파일(Temp_Workspace) 관리 규칙
+## 📂 4. 임시 생성 파일(Temp_Workspace) 관리 규칙
 
 1. **임시 작업용 폴더 통합**:
    - 테스트나 유틸리티용 파이썬 스크립트 등 모든 임시 생성 파일은 반드시 `C:\Users\PC\Projects\TP2\Temp_Workspace` 폴더 내에만 생성합니다. (기존 `scratch` 폴더 폐기 및 통합)
@@ -41,18 +48,14 @@
 
 ---
 
-## 🚀 4. Branch 생성 및 Flow 수칙
+## 🚀 5. Branch 생성 및 Flow 수칙
 
 1. **브랜치 흐름 (Branch Flow)**:
-   - **`feature/*` / `fix/*` ➔ `portfolio`**: 메인 프로그래머 지시로 작업 브랜치 생성 ➔ 개발 및 QA 완료 후 `portfolio`로 Merge ➔ 작업 브랜치 삭제.
+   - **`feature/*` / `fix/*` ➔ `portfolio`**: 지시 수령 후 CI 프로그래머가 작업 브랜치 생성 ➔ 개발 및 QA 완료 후 `portfolio`로 Merge ➔ 작업 브랜치 삭제.
    - **`art` ➔ `portfolio`**: 아트 업데이트 수령 ➔ `art` 브랜치 최신화 ➔ `portfolio` 브랜치로 병합.
    - **`portfolio` ➔ `main`**: `portfolio` 브랜치의 최신화 및 검증이 완결되면 `main`으로 PR / Merge Request를 전달하여 `main` 브랜치를 최신화 동기화.
 
-2. **브랜치 생성 주체**:
-   - **브랜치 생성은 메인 프로그래머가 주로 지시**합니다.
-   - 메인 프로그래머의 지시가 있을 때 브랜치를 생성합니다.
-
-3. **브랜치 생성 보고 규칙**:
+2. **브랜치 생성 보고 규칙**:
    - 브랜치를 생성했을 경우, 아래 템플릿에 따라 대화창에 보고합니다:
      ```text
      📢 [브랜치 생성 보고]
@@ -63,7 +66,7 @@
 
 ---
 
-## 🔄 5. Multi-Conversation (다중 세션) 협업 지침
+## 🔄 6. Multi-Conversation (다중 세션) 협업 지침
 
 - `pull`, `push` 요청은 **다른 Conversation 세션에서도 발생**할 수 있습니다.
 - **작업 시작 전**: 반드시 `git fetch` 및 `git pull origin <작업브랜치>`를 수행하여 최신 원격 변경 사항을 반영합니다.
