@@ -108,6 +108,8 @@ public class Player : UnitBase
         this.updateIdleState();
     }
 
+    private OneWayPlatformPassThrough currentOneWayPlatform;
+
     /// <summary>
     /// 발바닥 지면 충돌 검사 (Ground Check) 및 지형 통과 방지 스냅 정밀 관리
     /// </summary>
@@ -125,6 +127,7 @@ public class Player : UnitBase
         if (this.isGrounded)
         {
             this.coyoteTimeCounter = this.coyoteTime;
+            this.currentOneWayPlatform = hit.collider.GetComponent<OneWayPlatformPassThrough>();
             
             // 하강 중 지면/발판 표면 접지 시 충돌체의 정밀 상단 표면(bounds.max.y)에 발바닥 고정
             if (this.verticalVelocity <= 0f)
@@ -147,6 +150,7 @@ public class Player : UnitBase
         }
         else
         {
+            this.currentOneWayPlatform = null;
             this.coyoteTimeCounter -= Time.deltaTime;
             this.verticalVelocity -= this.gravity * Time.deltaTime;
         }
@@ -160,7 +164,18 @@ public class Player : UnitBase
         if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
             return;
 
-        // 1. 점프 버퍼 타이머 (Pre-Input)
+        // 1. 아래 키 (S / DownArrow) + 점프 키 (C / Space) 입력 시 1-Way 발판 하향 점프 (Drop Through)
+        bool isDownPressed = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+        if (isDownPressed && keyboard.cKey.wasPressedThisFrame && this.isGrounded && this.currentOneWayPlatform != null)
+        {
+            this.currentOneWayPlatform.PassThroughAsync(this.hitCollider, 0.25f, this.GetCancellationTokenOnDestroy()).Forget();
+            this.isGrounded = false;
+            this.coyoteTimeCounter = 0f;
+            this.verticalVelocity = -2f; // 하향 통과 가속도
+            return;
+        }
+
+        // 2. 일반 점프 버퍼 타이머 (Pre-Input)
         if (keyboard.cKey.wasPressedThisFrame)
         {
             this.jumpBufferCounter = this.jumpBufferTime;
@@ -170,13 +185,13 @@ public class Player : UnitBase
             this.jumpBufferCounter -= Time.deltaTime;
         }
 
-        // 2. 가변 점프 (Variable Jump Height): 상승 중 버튼을 떼면 속도 감쇄하여 소점프 구현
+        // 3. 가변 점프 (Variable Jump Height): 상승 중 버튼을 떼면 속도 감쇄하여 소점프 구현
         if (keyboard.cKey.wasReleasedThisFrame && this.verticalVelocity > 0f)
         {
             this.verticalVelocity *= 0.4f;
         }
 
-        // 3. 점프 실행 (Coyote Time & Jump Buffer 조합)
+        // 4. 점프 실행 (Coyote Time & Jump Buffer 조합)
         if (this.jumpBufferCounter > 0f && this.coyoteTimeCounter > 0f)
         {
             this.verticalVelocity = this.jumpForce;

@@ -15,11 +15,141 @@ MonoBehaviour:
   m_GroupName: Anims
   m_GUID: 6d4a9e3ef80af3f489a75b92e4bd6fc9
   m_SerializeEntries:
+  - m_GUID: 072c5f7e7b0577c43b1531080287a6a5
+    m_Address: Garon_Pattern_OverheadSmash
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0de987a99e05f2748836699c20b65dd2
+    m_Address: Garon_Pattern_ComboSlash
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 10265852de0b42c4ba750cf5ca519a23
     m_Address: GaronAnimatorController
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e7d01fab561cf74dae834c82f75be53
+    m_Address: Player_Dodge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a1c682ec97013b45bba030dff4f0277
+    m_Address: Player_Attack_Hit3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5974a0e21ca30d242807c64b2fcc01b9
+    m_Address: Player_Parry
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5acbcef6ffe85a84eb8237e55367930c
+    m_Address: Player_Jump
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6eb24e023a4df484291cf20c9c51d4ce
+    m_Address: Garon_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87c241a9ae661704daca3fe82b48c62c
+    m_Address: Player_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e2c431091ea1c949861c7175fdbcf60
+    m_Address: Player_Guard
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3362bae99dc5c8479645dcba36e9e37
+    m_Address: Player_Execution
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc261f6b92b0fa346a20d523b5f62728
+    m_Address: Player_Attack_HIt1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2dc829044c1e234880c6ac00ee82af1
+    m_Address: Player_Run
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6ad7994a46eec24c967d10266a725df
+    m_Address: Garon_Pattern_Shockwave
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc7dfa5492406d841b4cc7b614fa89a1
+    m_Address: Garon_Death
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0000000000000002040949844e0ef09
+    m_Address: Garon_Charge_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000290e8b0fb4943da2
+    m_Address: Player_Attack_Hit1_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000526b3d056bac953e
+    m_Address: Player_Attack_Hit2_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0000000000000005d77a75ecd351117
+    m_Address: Player_Attack_Hit3_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0000000000000006e0036cf043655b7
+    m_Address: Garon_OverheadSmash_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0000000000000007afd7590463839a6
+    m_Address: Placeholder_Guard
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0000000000000007ec781f68dae7ffc
+    m_Address: Placeholder_Hit
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000a3f62620450e4777
+    m_Address: Placeholder_Dodge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000a737dc3d099b7d24
+    m_Address: Garon_Shockwave_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000b02435f9de4d9b5c
+    m_Address: Placeholder_Parry
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e000000000000000fd6480ade4930f28
+    m_Address: Garon_ComboSlash_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e09174ac3b494ec48a570515b8467ae4
+    m_Address: Garon_Jump
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ec48c6e870a7f61448316638807d3ba6
     m_Address: PlayerAnimatorController
@@ -92,6 +222,21 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4c9a236099632649899bd5ad343a0a0
+    m_Address: Player_Attack_Hit2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f745c24d564a5e04ea1b22e849e167b7
+    m_Address: Garon_Pattern_Charge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fbf94e40fc70a184896e7030edb22f73
+    m_Address: Garon_Move
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}

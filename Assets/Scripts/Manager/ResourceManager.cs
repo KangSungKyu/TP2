@@ -103,14 +103,14 @@ public class ResourceManager : Singleton<ResourceManager>
                 }
                 else
                 {
-                    Debug.LogError($"[ResourceManager Error] LoadAssetAsync<{typeof(T).Name}> 실패 (Key: {key}): {op.OperationException}");
+                    Debug.LogWarning($"[ResourceManager Warning] Addressables Key '{key}' 로드 실패: {op.OperationException?.Message}");
                     onLoaded?.Invoke(null);
                 }
             };
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[ResourceManager Error] LoadAssetAsync 예외 발생 (Key: {key}): {ex}");
+            Debug.LogWarning($"[ResourceManager Warning] Addressables Key '{key}' 유효하지 않음 (InvalidKey): {ex.Message}");
             onLoaded?.Invoke(null);
         }
     }
