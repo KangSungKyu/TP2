@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +8,8 @@ public interface IPool
     public void Clear();
 }
 
-public class SimplePool<T> : IPool where T : MonoBehaviour
+public class SimplePool<T> : IPool where T : Component
+
 {
     // Optional helpers
     public int Available => pool.Count;

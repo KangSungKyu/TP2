@@ -197,15 +197,8 @@ public class Monster : UnitBase
         float attackRange = pattern.TriggerValue > 0f ? pattern.TriggerValue : 1.8f;
         float currentDist = Vector3.Distance(transform.position, this.playerTarget.position);
 
-        // 2. 패턴별 추격 제한 시간 (ChaseTimeout) 차등 책정
-        float chaseTimeout = pattern.AnimClipName switch
-        {
-            "Garon_Pattern_ComboSlash" => 2.5f,
-            "Garon_Pattern_OverheadSmash" => 2.0f,
-            "Garon_Pattern_Charge" => 1.5f,
-            "Garon_Pattern_Shockwave" => 0.5f,
-            _ => 1.0f // 기본 공격 패턴 1초
-        };
+        // 2. CSV 데이터 기반 추격 제한 시간 (ChaseTimeout) 참조
+        float chaseTimeout = pattern.ChaseTimeout > 0f ? pattern.ChaseTimeout : 1.0f;
 
         float chaseElapsed = 0f;
         bool chaseTimedOut = false;
@@ -240,10 +233,10 @@ public class Monster : UnitBase
             }
         }
 
-        // 4. 추격 타임아웃 발생 시 ➔ 공격 포기 후 Idle 복귀
+        // 4. 추격 타임아웃 발생 시 ➔ 공격 포기 후 Idle 복귀 (State = 1)
         if (chaseTimedOut)
         {
-            if (this.animator != null) this.animator.SetInteger("State", 1);
+            this.SetAnimState(1);
             return;
         }
 
@@ -255,11 +248,21 @@ public class Monster : UnitBase
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
         }
 
-        // 6. 애니메이션 시전 및 독립 SkillEffect 충돌 매개체 스폰
-        if (this.animator != null && !string.IsNullOrEmpty(pattern.AnimClipName))
+        // 6. CSV 데이터 기반 연동 SkillData Idx 참조 및 AnimState (int) 파라미터 검사 시전
+        uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
+
+
+
+        if (this.skillExecutor != null)
         {
-            this.animator.Play(pattern.AnimClipName);
+            bool played = this.skillExecutor.TryPlaySkillAnimation(this.animator, patternSkillId);
+            if (!played)
+            {
+                Debug.LogError($"[Monster Error] '{gameObject.name}' 유닛의 애니메이터에서 패턴 스킬 {patternSkillId} ({pattern.AnimClipName})의 모션/State를 찾을 수 없습니다!");
+                return;
+            }
         }
+
 
         if (this.skillExecutor != null)
         {
@@ -269,7 +272,7 @@ public class Monster : UnitBase
             this.skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
         }
 
-        // 5. 데미지 판정
+        // 7. 데미지 판정
         if (this.playerTarget != null)
         {
             var pStats = this.playerTarget.GetComponent<CombatStats>();
@@ -279,7 +282,7 @@ public class Monster : UnitBase
             }
         }
 
-        // 6. 쿨다운 및 후딜레이 (PostDelay) 대기 후 Idle 복귀
+        // 8. 쿨다운 및 후딜레이 (PostDelay) 대기 후 Idle 복귀 (State = 1)
         if (pattern.Cooldown > 0f)
         {
             this.patternCooldowns[pattern.Idx] = Time.time + pattern.Cooldown;
@@ -291,11 +294,9 @@ public class Monster : UnitBase
             await UniTask.Delay(postMs, cancellationToken: cancellationToken);
         }
 
-        if (this.animator != null)
-        {
-            this.animator.SetInteger("State", 1); // Idle 복귀
-        }
+        this.SetAnimState(1); // Idle 복귀
     }
+
 
     protected virtual async UniTask executeSimpleAiAsync(CancellationToken cancellationToken)
     {
@@ -307,8 +308,8 @@ public class Monster : UnitBase
 
         if (dist <= attackRange)
         {
-            // 기본 공격
-            if (this.animator != null) this.animator.Play("Attack");
+            // 기본 공격 (State = 7)
+            this.SetAnimState(7);
             var pStats = this.playerTarget.GetComponent<CombatStats>();
             if (pStats != null)
             {
@@ -318,12 +319,31 @@ public class Monster : UnitBase
         }
         else if (dist <= detectRange)
         {
-            // 추적 이동
+            // 추적 이동 (State = 2)
             Vector3 dir = (this.playerTarget.position - transform.position).normalized;
             this.SetFacingRight(dir.x >= 0);
             float moveSpeed = (this.UnitData != null && this.UnitData.MoveSpeed > 0f) ? this.UnitData.MoveSpeed : 3.0f;
             transform.Translate(dir * moveSpeed * Time.deltaTime, Space.World);
-            if (this.animator != null) this.animator.Play("Move");
+            this.SetAnimState(2);
+        }
+        else
+        {
+            // 대기 (State = 1)
+            this.SetAnimState(1);
+        }
+    }
+
+    /// <summary>
+    /// Animator의 int 파라미터 'State'를 변경하여 트랜지션을 제어합니다.
+    /// (1: Idle, 2: Move, 3: Jump, 4~6: Pattern, 7: Attack, 8: Death, 9: Groggy)
+    /// </summary>
+    protected void SetAnimState(int stateValue)
+    {
+        if (this.animator != null)
+        {
+            this.animator.SetInteger("State", stateValue);
         }
     }
 }
+
+

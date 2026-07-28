@@ -11,6 +11,8 @@ public static class BatchFullProcessor
     {
         Debug.Log("<color=yellow><b>[BatchFullProcessor] Full Unity Pipeline Executing...</b></color>");
         UnityPipelineAnimatorBinder.ExecuteFullPipelineBinding();
+        EffectPrefabBuilder.BuildAllEffectPrefabs();
+        StageResourcePipeline.BuildStageEnvironmentResources();
         AddressablePipeline.BuildAndDeploy();
         Debug.Log("<color=green><b>[BatchFullProcessor] Full Unity Pipeline Complete!</b></color>");
     }

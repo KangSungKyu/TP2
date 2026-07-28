@@ -10,35 +10,45 @@ using UnityEngine;
 /// </summary>
 public static class AddressablePipeline
 {
+    [InitializeOnLoadMethod]
     [MenuItem("Addressables/Register All Addressables")]
     public static void RegisterAllAddressables()
     {
-        var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-        if (settings == null) return;
-
-        var animGroup = GetOrCreateGroup(settings, "Anims");
-        var prefabGroup = GetOrCreateGroup(settings, "Prefabs");
-        var dataGroup = GetOrCreateGroup(settings, "Datas");
-
-        // 1. .controller -> Anims
-        foreach (var file in Directory.GetFiles("Assets", "*.controller", SearchOption.AllDirectories))
+        EditorApplication.delayCall += () =>
         {
-            RegisterFile(settings, animGroup, file, "Anims");
-        }
+            if (AddressableAssetSettingsDefaultObject.Settings == null)
+            {
+                var loadedSettings = AddressableAssetSettingsDefaultObject.GetSettings(false);
+                if (loadedSettings == null) return;
+            }
 
-        // 2. .prefab -> Prefabs
-        foreach (var file in Directory.GetFiles("Assets", "*.prefab", SearchOption.AllDirectories))
-        {
-            RegisterFile(settings, prefabGroup, file, "Prefabs");
-        }
+            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+            if (settings == null) return;
 
-        // 3. .csv -> Datas
-        foreach (var file in Directory.GetFiles("Assets", "*.csv", SearchOption.AllDirectories))
-        {
-            RegisterFile(settings, dataGroup, file, "Datas");
-        }
+            var animGroup = GetOrCreateGroup(settings, "Anims");
+            var prefabGroup = GetOrCreateGroup(settings, "Prefabs");
+            var dataGroup = GetOrCreateGroup(settings, "Datas");
 
-        AssetDatabase.SaveAssets();
+            // 1. .controller -> Anims
+            foreach (var file in Directory.GetFiles("Assets", "*.controller", SearchOption.AllDirectories))
+            {
+                RegisterFile(settings, animGroup, file, "Anims");
+            }
+
+            // 2. .prefab -> Prefabs
+            foreach (var file in Directory.GetFiles("Assets", "*.prefab", SearchOption.AllDirectories))
+            {
+                RegisterFile(settings, prefabGroup, file, "Prefabs");
+            }
+
+            // 3. .csv -> Datas
+            foreach (var file in Directory.GetFiles("Assets", "*.csv", SearchOption.AllDirectories))
+            {
+                RegisterFile(settings, dataGroup, file, "Datas");
+            }
+
+            AssetDatabase.SaveAssets();
+        };
     }
 
     [MenuItem("Addressables/Build and Deploy to Local Server")]

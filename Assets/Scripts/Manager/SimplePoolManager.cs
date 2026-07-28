@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ public class SimplePoolManager : Singleton<SimplePoolManager>
 {
     private readonly Dictionary<string, IPool> poolContainer = new Dictionary<string, IPool>();
 
-    public async UniTask<bool> CreatePoolAsync<T>(string addressableKey, int capacity, int prewarmCount, Transform parent = null, Action<T> onGet = null, Action<T> onRelease = null) where T : MonoBehaviour
+    public async UniTask<bool> CreatePoolAsync<T>(string addressableKey, int capacity, int prewarmCount, Transform parent = null, Action<T> onGet = null, Action<T> onRelease = null) where T : Component
     {
         if (poolContainer.ContainsKey(addressableKey))
             return true;
@@ -29,7 +29,7 @@ public class SimplePoolManager : Singleton<SimplePoolManager>
         }
     }
 
-    public T Get<T>(string addressableKey) where T : MonoBehaviour
+    public T Get<T>(string addressableKey) where T : Component
     {
         if (poolContainer.TryGetValue(addressableKey, out var poolObj))
         {
@@ -41,7 +41,7 @@ public class SimplePoolManager : Singleton<SimplePoolManager>
         return null;
     }
 
-    public void Release<T>(string addressableKey, T instance) where T : MonoBehaviour
+    public void Release<T>(string addressableKey, T instance) where T : Component
     {
         if (poolContainer.TryGetValue(addressableKey, out var poolObj))
         {
@@ -71,7 +71,7 @@ public class SimplePoolManager : Singleton<SimplePoolManager>
         poolContainer.Clear();
     }
 
-    public bool TryGetPool<T>(string addressableKey, out SimplePool<T> pool) where T : MonoBehaviour
+    public bool TryGetPool<T>(string addressableKey, out SimplePool<T> pool) where T : Component
     {
         if (poolContainer.TryGetValue(addressableKey, out var p) && p is SimplePool<T> typed)
         {

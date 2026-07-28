@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: Prefabs
   m_GUID: 7e1fc94225183164c823d4d951014df0
   m_SerializeEntries:
-  - m_GUID: 0d8fdf270f839674a85c7fa062b89e35
-    m_Address: WaveHeavy
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 173222196f3e1f0448b383f260df7d44
     m_Address: Sample13_ToDoItem
     m_ReadOnly: 0
@@ -45,14 +39,68 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f0cc493149cf2e94cb92a267c688a733
-    m_Address: SpearSentry
+  - m_GUID: d00000000000000014f4cd8e24935f91
+    m_Address: Placeholder_Dodge
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f31a9194d73d26c4d8ebdf4623f6c5a1
-    m_Address: ShadowStalker
+  - m_GUID: d0000000000000002b344f1e889209ca
+    m_Address: Garon_Charge_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d00000000000000033c94764c1455ef8
+    m_Address: Player_Attack_Hit3_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d000000000000000358b6a2c6e26dfb8
+    m_Address: Garon_ComboSlash_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0000000000000003c89d8ce5ff0813f
+    m_Address: Player_Attack_Hit1_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0000000000000005178879b04bd4187
+    m_Address: Placeholder_Hit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d00000000000000076970f202c4c09fc
+    m_Address: Placeholder_Guard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0000000000000008447f566313a596a
+    m_Address: Garon_OverheadSmash_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0000000000000008dfc6155b98ae77e
+    m_Address: Placeholder_Parry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d000000000000000acec49a1a30d2eaf
+    m_Address: Player_Attack_Hit2_Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d000000000000000f693e182c7128230
+    m_Address: Garon_Shockwave_Effect
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

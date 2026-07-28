@@ -95,6 +95,7 @@ public enum DataTableType : uint
     MonsterData = 5,      // 5순위: 몬스터 파생 데이터 (5001~)
     MonsterPattern = 6,   // 6순위: 몬스터 패턴 데이터 (6001~)
     Skill = 7,            // 7순위: 스킬 데이터 (7001~)
+    EffectData = 8,       // 8순위: 스킬 이펙트 연동 데이터 (8001~)
     
     DataTableType_End
 }
@@ -284,4 +285,87 @@ public class MonsterPatternData
 
     [Name("damage")]
     public float Damage { get; set; }
+
+    [Name("chasetimeout")]
+    public float ChaseTimeout { get; set; } // 추격 제한 시간 (초)
+
+    [Name("skillidx")]
+    public uint SkillIdx { get; set; } // 연동 SkillData Idx (Type 7: 7001~)
 }
+
+
+/// <summary>
+/// 스킬 이펙트 연동 데이터 (EffectData.csv 1:1 매핑, Type 8: 8001~)
+/// </summary>
+[Serializable]
+public class EffectData
+{
+    [Name("idx")]
+    public uint Idx { get; set; }
+
+    [Name("effectname")]
+    public string EffectName { get; set; } // 디버그용 이름
+
+    [Name("prefabidx")]
+    public uint PrefabIdx { get; set; } // ResourceData.csv Idx 참조 (Type 1: 1001~)
+
+    [Name("duration")]
+    public float Duration { get; set; } // 이펙트 존속 시간 (초)
+
+    [Name("scale")]
+    public float Scale { get; set; } // 스케일 배율
+
+    [Name("loopcount")]
+    public int LoopCount { get; set; } // 반복 횟수 (0: 무한)
+}
+
+/// <summary>
+/// 스킬 마스터 데이터 (SkillData.csv 1:1 매핑, Type 7: 7001~)
+/// </summary>
+[Serializable]
+public class SkillData
+{
+    [Name("skillid")]
+    public uint SkillId { get; set; } // Idx 역할 (7001~)
+
+    [Name("name")]
+    public string Name { get; set; }
+
+    [Name("animationclip")]
+    public string AnimationClip { get; set; }
+
+    [Name("range")]
+    public float Range { get; set; }
+
+    [Name("casttime")]
+    public float CastTime { get; set; }
+
+    [Name("cooldownsec")]
+    public float CooldownSec { get; set; }
+
+    [Name("mpcost")]
+    public float MpCost { get; set; }
+
+    [Name("damagemultiplier")]
+    public float DamageMultiplier { get; set; }
+
+    [Name("isbasicattack")]
+    public bool IsBasicAttack { get; set; }
+
+    [Name("hitcount")]
+    public int HitCount { get; set; }
+
+    [Name("hittimings"), TypeConverter(typeof(FloatArrayConverter))]
+    public float[] HitTimings { get; set; } // _ 구분자 float 배열
+
+    [Name("activeduration")]
+    public float ActiveDuration { get; set; }
+
+    [Name("effectidx")]
+    public uint EffectIdx { get; set; } // EffectData.csv Idx 참조 (Type 8: 8001~)
+
+    [Name("animstate")]
+    public int AnimState { get; set; } // Animator 'State' (int) 파라미터 제어 값
+}
+
+

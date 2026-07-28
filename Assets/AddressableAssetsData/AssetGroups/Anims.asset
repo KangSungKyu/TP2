@@ -27,6 +27,72 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0000000000000000dfa17edd07f1132
+    m_Address: Player_Attack_Hit1_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000264194a40ed122f7
+    m_Address: Placeholder_Dodge_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0000000000000004e298a309b70bd84
+    m_Address: Garon_OverheadSmash_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f00000000000000051b3be3aba49c375
+    m_Address: Player_Attack_Hit3_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0000000000000007a6cb824e9c4dbfb
+    m_Address: Garon_ComboSlash_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0000000000000008d7b0574b19eb6b5
+    m_Address: Placeholder_Hit_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000b6e8d2d2906bac45
+    m_Address: Garon_Shockwave_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000c7fe05e3d823fc2e
+    m_Address: Placeholder_Guard_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000fa9c726012db6ca6
+    m_Address: Placeholder_Parry_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000fb92cb7f25ab282e
+    m_Address: Garon_Charge_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f000000000000000ffb69435320ef384
+    m_Address: Player_Attack_Hit2_Effect_Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}
   m_SchemaSet:
