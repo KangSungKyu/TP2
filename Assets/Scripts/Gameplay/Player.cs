@@ -87,9 +87,16 @@ public class Player : UnitBase
     // 4. PROTECTED & PRIVATE METHODS (camelCase)
     // =========================================================================
 
+    private KinematicMotor2D motor;
+
     protected override void Awake()
     {
         base.Awake();
+        this.motor = GetComponent<KinematicMotor2D>();
+        if (this.motor == null)
+        {
+            this.motor = gameObject.AddComponent<KinematicMotor2D>();
+        }
         this.InitUnitAsync(3001).Forget();
     }
 
@@ -98,9 +105,17 @@ public class Player : UnitBase
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
-        this.updateGroundCheck();
+        bool isJumpingInput = keyboard.cKey.isPressed;
         this.handleMovement(keyboard);
-        this.handleJump(keyboard); // 'C' 키 메트로배니아 점프 처리
+        this.handleJump(keyboard);
+
+        // 100% Non-Physics 커스텀 2D 모터 구동 (Swept BoxCast 지형 차단 및 가변 중력)
+        if (this.motor != null)
+        {
+            this.motor.UpdateMotor(Time.deltaTime, isJumpingInput);
+            this.isGrounded = this.motor.IsGrounded;
+        }
+
         this.handleDefensiveActions(keyboard);
         this.handleBasicAttack(keyboard);
         this.handleExecutionAction(keyboard);
@@ -164,14 +179,16 @@ public class Player : UnitBase
         if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
             return;
 
+        bool isGroundedNow = this.motor != null ? this.motor.IsGrounded : this.isGrounded;
+
         // 1. 아래 키 (S / DownArrow) + 점프 키 (C / Space) 입력 시 1-Way 발판 하향 점프 (Drop Through)
         bool isDownPressed = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
-        if (isDownPressed && keyboard.cKey.wasPressedThisFrame && this.isGrounded && this.currentOneWayPlatform != null)
+        if (isDownPressed && keyboard.cKey.wasPressedThisFrame && isGroundedNow)
         {
-            this.currentOneWayPlatform.PassThroughAsync(this.hitCollider, 0.25f, this.GetCancellationTokenOnDestroy()).Forget();
-            this.isGrounded = false;
-            this.coyoteTimeCounter = 0f;
-            this.verticalVelocity = -2f; // 하향 통과 가속도
+            if (this.motor != null)
+            {
+                this.motor.PassThroughOneWayPlatformAsync(0.25f, this.GetCancellationTokenOnDestroy()).Forget();
+            }
             return;
         }
 
@@ -185,23 +202,36 @@ public class Player : UnitBase
             this.jumpBufferCounter -= Time.deltaTime;
         }
 
-        // 3. 가변 점프 (Variable Jump Height): 상승 중 버튼을 떼면 속도 감쇄하여 소점프 구현
-        if (keyboard.cKey.wasReleasedThisFrame && this.verticalVelocity > 0f)
+        if (isGroundedNow)
         {
-            this.verticalVelocity *= 0.4f;
+            this.coyoteTimeCounter = this.coyoteTime;
+            this.IsJumping = false;
+        }
+        else
+        {
+            this.coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // 3. 가변 점프 (Variable Jump Height): 상승 중 버튼을 떼면 속도 감쇄하여 소점프 구현
+        if (keyboard.cKey.wasReleasedThisFrame && this.motor != null && this.motor.Velocity.y > 0f)
+        {
+            this.motor.SetVelocityY(this.motor.Velocity.y * 0.4f);
         }
 
         // 4. 점프 실행 (Coyote Time & Jump Buffer 조합)
         if (this.jumpBufferCounter > 0f && this.coyoteTimeCounter > 0f)
         {
-            this.verticalVelocity = this.jumpForce;
+            if (this.motor != null)
+            {
+                this.motor.SetVelocityY(this.jumpForce);
+            }
             this.IsJumping = true;
             if (this.stats != null)
             {
-                this.stats.SetJumped(true); // 지면 충격파 회피 판정 활성화
+                this.stats.SetJumped(true);
             }
 
-            this.SetState(PlayerState.Jump); // State = 3 (Jump)
+            this.SetState(PlayerState.Jump);
             this.jumpBufferCounter = 0f;
             this.coyoteTimeCounter = 0f;
         }
@@ -248,33 +278,40 @@ public class Player : UnitBase
         };
     }
 
+    private readonly RaycastHit2D[] wallHitBuffer = new RaycastHit2D[4];
+
     private void handleMovement(Keyboard keyboard)
     {
-        // 지상/공중 방어 행동 중일 때는 이동 불가 처리
         if (this.stats.IsDodging || this.stats.IsGuarding || this.stats.IsParrying)
             return;
 
-        // 공격 중 이동: 지상 공격 중에는 정지, 공중 공격 시에도 수평 조작 허용
         if (this.isAttacking && !this.IsJumping)
             return;
 
-        this.currentMoveDir = Vector3.zero;
+        float moveX = 0f;
+        if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) moveX -= 1f;
+        if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) moveX += 1f;
 
-        // 2D 사이드뷰 횡스크롤: X축 좌우 이동 (A/D 및 방향키)
-        if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) this.currentMoveDir.x -= 1f;
-        if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) this.currentMoveDir.x += 1f;
-
-        if (this.currentMoveDir.sqrMagnitude > 0.001f)
+        if (Mathf.Abs(moveX) > 0.01f)
         {
-            this.currentMoveDir.Normalize();
-            this.facingDir = this.currentMoveDir;
+            this.facingDir = new Vector3(moveX, 0f, 0f);
+            this.SetFacingRight(moveX >= 0);
 
-            this.SetFacingRight(this.facingDir.x >= 0);
-            transform.Translate(this.currentMoveDir * this.Speed * Time.deltaTime, Space.World);
+            if (this.motor != null)
+            {
+                this.motor.SetVelocityX(moveX * this.Speed);
+            }
 
             if (!this.IsJumping && !this.isAttacking)
             {
                 this.SetState(PlayerState.Run);
+            }
+        }
+        else
+        {
+            if (this.motor != null)
+            {
+                this.motor.SetVelocityX(0f);
             }
         }
     }

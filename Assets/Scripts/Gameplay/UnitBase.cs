@@ -109,10 +109,17 @@ public class UnitBase : MonoBehaviour
     // 4. PROTECTED & PRIVATE METHODS (camelCase)
     // =========================================================================
 
+    protected KinematicMotor2D motor;
+
     protected virtual void Awake()
     {
         this.stats = GetComponent<CombatStats>();
         this.skillExecutor = GetComponent<SkillExecutor>();
+        this.motor = GetComponent<KinematicMotor2D>();
+        if (this.motor == null)
+        {
+            this.motor = gameObject.AddComponent<KinematicMotor2D>();
+        }
 
         // [Root & Visual 계층 아키텍처 세팅]
         this.visualTransform = transform.Find("Visual");
@@ -135,6 +142,16 @@ public class UnitBase : MonoBehaviour
         if (this.animator == null)
         {
             this.animator = this.visualTransform.gameObject.AddComponent<Animator>();
+        }
+    }
+
+    protected bool isGrounded => this.motor != null ? this.motor.IsGrounded : false;
+
+    protected virtual void updateGroundCheck()
+    {
+        if (this.motor != null)
+        {
+            this.motor.UpdateMotor(Time.deltaTime);
         }
     }
 

@@ -90,7 +90,7 @@ SpriteRenderer:
   m_Size: {x: 1.27, y: 1.19}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2950973123246124568
 Animator:
@@ -123,6 +123,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8551284207668217409}
+  - component: {fileID: 1829679728968497481}
+  - component: {fileID: 5071705618642394890}
+  - component: {fileID: 5808096204481644943}
+  - component: {fileID: 3821506474121794492}
+  - component: {fileID: 477297025365712570}
   m_Layer: 0
   m_Name: Garon
   m_TagString: Untagged
@@ -146,3 +151,137 @@ Transform:
   - {fileID: 3009838809449400772}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &1829679728968497481
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758112700004800644}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &5071705618642394890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758112700004800644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70279453eea71bc4286e953363f03a2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatStats
+  MaxHp: 100
+  MaxMp: 50
+  MaxPosture: 100
+  Atk: 10
+  IsSuperArmorActive: 0
+  OnHpChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMpChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPostureChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnParrySuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGroggyState:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGroggyEnded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5808096204481644943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758112700004800644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4fc21455a6f6c49984ae513ee951a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossMonster
+--- !u!70 &3821506474121794492
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758112700004800644}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.5, y: 1}
+  m_Direction: 0
+--- !u!114 &477297025365712570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758112700004800644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7d6361d6476c8d4c82f648f465e70d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KinematicMotor2D
+  Gravity: 30
+  MaxFallSpeed: 25
+  FallGravityMultiplier: 1.7
+  ApexGravityMultiplier: 0.5
+  SkinWidth: 0.01
+  SolidGroundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  OneWayPlatformLayer:
+    serializedVersion: 2
+    m_Bits: 0

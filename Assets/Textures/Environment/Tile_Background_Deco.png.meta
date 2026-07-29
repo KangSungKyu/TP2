@@ -66,9 +66,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -109,148 +109,106 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-  m_Sprites:
-  - serializedVersion: 2
-    name: Tile_Background_Deco_0
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Background_Deco_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Background_Deco_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Tile_Background_Deco_3
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Background_Deco_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Background_Deco_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Tile_Background_Deco_3
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Tile_Background_Deco_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46fc9d33325c1a530800000000000000
-      internalID: 3864586710245035876
+      spriteID: 24851481b7daf2d4ba6138d82ef10761
+      internalID: 1994236972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Background_Deco_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 790e63ff2802cd74d97b864aac461f30
+      internalID: 2097725730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Background_Deco_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 370285f6e14ac3c408c019c85023533a
+      internalID: 1331047860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Background_Deco_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4da2b592e87f4a47bc80cd3c144b96e
+      internalID: -1247847996
       vertices: []
       indices: 
       edges: []
@@ -259,7 +217,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 21472aa22f42bd34ba33eea7511e1399
     internalID: 0
     vertices: []
     indices: 
@@ -267,9 +225,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Tile_Background_Deco_0: 3864586710245035876
+      Tile_Background_Deco_0: 1994236972
+      Tile_Background_Deco_1: 2097725730
+      Tile_Background_Deco_2: 1331047860
+      Tile_Background_Deco_3: -1247847996
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
