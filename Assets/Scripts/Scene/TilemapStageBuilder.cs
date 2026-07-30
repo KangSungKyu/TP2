@@ -19,11 +19,6 @@ public class TilemapStageBuilder : MonoBehaviour
 
     private CanvasGroup fadeOverlayCanvasGroup;
 
-    private void Start()
-    {
-        this.BuildTilemapStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
-    }
-
     public async UniTask BuildTilemapStageAsync(CancellationToken cancellationToken = default)
     {
         // 1. 화면 암전 처리 (Black Curtain Overlay)

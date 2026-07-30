@@ -35,6 +35,10 @@ public class KinematicMotor2D : MonoBehaviour
 
     private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[8];
     private bool isPassThroughActive = false;
+    // 최근 착지한 표면 Y 좌표 (간헐적 파묻힘 보정용)
+    private float lastPlatformTopY = float.NaN;
+    // 이번 프레임에 새로 착지했는지 플래그
+    private bool landedThisFrame = false;
 
     private void Awake()
     {
@@ -108,6 +112,30 @@ public class KinematicMotor2D : MonoBehaviour
         // 4. 수직 Swept BoxCast 탐지 및 지면/천장 착지 밀착
         deltaPosition.y = this.resolveVerticalCollision(deltaPosition.y);
 
+        // 5-a. 착지 보정: 새로 착지한 프레임에만 소량의 보정을 적용하여
+        // 지속적인 오실레이션을 방지한다.
+        if (this.landedThisFrame && !float.IsNaN(this.lastPlatformTopY) && deltaPosition.y <= 0f)
+        {
+            float feetYBefore = this.bodyCollider.bounds.min.y;
+            float feetYAfter = feetYBefore + deltaPosition.y;
+
+            // 플랫폼 상단과 이동 후 발바닥 간의 간격 (양수면 발이 플랫폼보다 아래에 있음)
+            float penetration = this.lastPlatformTopY - feetYAfter;
+
+            if (penetration > 0.0001f)
+            {
+                // 보정 허용치: SkinWidth 기반의 작은 값으로 제한
+                float maxCorrection = Mathf.Max(this.SkinWidth * 2f, 0.02f);
+                float correction = Mathf.Min(penetration, maxCorrection);
+
+                // 발바닥을 플랫폼 상단으로 맞추기 위해 상향 보정(음수 delta를 덜 음수로 만듦)
+                deltaPosition.y += correction;
+            }
+
+            // 보정은 한 번만 적용
+            this.landedThisFrame = false;
+        }
+
         // 5. 최종 100% 안전 이동 좌표 반영
         transform.position += (Vector3)deltaPosition;
     }
@@ -179,7 +207,10 @@ public class KinematicMotor2D : MonoBehaviour
 
     private float resolveVerticalCollision(float deltaY)
     {
+        // 이전 상태를 보존하여 새로 착지한 프레임을 감지
+        bool prevGrounded = this.IsGrounded;
         this.IsGrounded = false;
+        this.landedThisFrame = false;
 
         float directionY = Mathf.Sign(deltaY);
         float distance = Mathf.Abs(deltaY) + this.SkinWidth;
@@ -223,11 +254,23 @@ public class KinematicMotor2D : MonoBehaviour
                     if (directionY <= 0f)
                     {
                         this.IsGrounded = true;
+                        // 착지 시 플랫폼 상단 Y를 기록, 이전 프레임에 비지상 이었다면 landedThisFrame=true
+                        this.lastPlatformTopY = hit.collider.bounds.max.y;
+                        if (!prevGrounded)
+                        {
+                            this.landedThisFrame = true;
+                        }
                     }
 
                     break;
                 }
             }
+        }
+
+        // 지상에 있지 않다면 기록된 플랫폼 정보를 초기화
+        if (!this.IsGrounded)
+        {
+            this.lastPlatformTopY = float.NaN;
         }
 
         return deltaY;

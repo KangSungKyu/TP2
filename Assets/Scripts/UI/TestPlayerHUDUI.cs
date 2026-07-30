@@ -5,10 +5,9 @@ using UnityEngine.UI;
 /// 테스트 및 디버그 환경에서 플레이어의 상태 정보(이름, HP, MP, Posture, PlayerState)를
 /// 화면 좌상단에 실시간으로 선명하게 표출해주는 테스트 HUD UI 컴포넌트.
 /// </summary>
-public class TestPlayerHUDUI : MonoBehaviour
+public class TestPlayerHUDUI : Singleton<TestPlayerHUDUI>
 {
-    private static TestPlayerHUDUI instance;
-    public static TestPlayerHUDUI Instance => instance;
+
 
     private Player targetPlayer;
     private CombatStats playerStats;
@@ -29,19 +28,7 @@ public class TestPlayerHUDUI : MonoBehaviour
     private GUIStyle stateStyle;
     private bool stylesInitialized = false;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
+
 
     private void Update()
     {

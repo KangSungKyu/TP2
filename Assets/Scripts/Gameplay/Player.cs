@@ -87,7 +87,7 @@ public class Player : UnitBase
     // 4. PROTECTED & PRIVATE METHODS (camelCase)
     // =========================================================================
 
-    private KinematicMotor2D motor;
+
 
     protected override void Awake()
     {

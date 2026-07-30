@@ -7,36 +7,8 @@ using UnityEngine;
 /// 동일한 몬스터 데이터라도 스폰 위치(SpawnType.Boss vs SpawnType.Monster)에 따라
 /// 상단 대형 보스 HUD vs 오버레이 HP HUD 및 드롭 보상을 차등 연동합니다.
 /// </summary>
-public class UnitSpawner : MonoBehaviour
+public class UnitSpawner : Singleton<UnitSpawner>
 {
-    private static UnitSpawner instance;
-    public static UnitSpawner Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                var go = new GameObject("UnitSpawner");
-                instance = go.AddComponent<UnitSpawner>();
-                DontDestroyOnLoad(go);
-            }
-            return instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-    }
-
     /// <summary>
     /// 스폰된 룸 청크 내부의 SpawnPointMarker 목록을 탐색하여 플레이어 및 몬스터/보스 동적 스폰 수행
     /// </summary>
