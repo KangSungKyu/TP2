@@ -9,7 +9,6 @@ public interface IPool
 }
 
 public class SimplePool<T> : IPool where T : Component
-
 {
     // Optional helpers
     public int Available => pool.Count;

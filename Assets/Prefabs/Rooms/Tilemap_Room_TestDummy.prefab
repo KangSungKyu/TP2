@@ -1008,10 +1008,10 @@ Tilemap:
   m_TileColorArray:
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {r: 0.8583416, g: 0.5405981, b: 0.5679154, a: 1}
+    m_Data: {r: 0.7616247, g: 0.30910715, b: 0.45883736, a: 1}
   - serializedVersion: 2
     m_RefCount: 66
-    m_Data: {r: 0.9391371, g: 0.42635834, b: 0.5625415, a: 1}
+    m_Data: {r: 0.8794539, g: 0.43552694, b: 0.55769455, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1167,7 +1167,7 @@ CompositeCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: aba6c1a939752da46926cf6de85bdfd7, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1506,10 +1506,10 @@ Tilemap:
   m_TileColorArray:
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {r: 0.8962053, g: 0.45531014, b: 0.46636656, a: 1}
+    m_Data: {r: 0.86198926, g: 0.5621599, b: 0.5671951, a: 1}
   - serializedVersion: 2
     m_RefCount: 10
-    m_Data: {r: 0.71581954, g: 0.33121768, b: 0.40207133, a: 1}
+    m_Data: {r: 0.98357636, g: 0.5500667, b: 0.601586, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}

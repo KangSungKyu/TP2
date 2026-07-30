@@ -24,8 +24,8 @@ public class BossMonster : Monster
         Debug.Log($"<color=red><b>[BossMonster] 보스 '{this.UnitName}' (철위병 가론) 참전 완료!</b></color>");
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
-        this.updateGroundCheck();
+        base.Update();
     }
 }

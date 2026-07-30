@@ -40,10 +40,6 @@ public class Player : UnitBase
     // 메트로배니아 물리 점프 관련 변수
     [SerializeField]
     private float jumpForce = 11.5f;
-    [SerializeField]
-    private float gravity = 28f;
-    private float verticalVelocity = 0f;
-    private bool isGrounded = true;
     private float coyoteTime = 0.12f;
     private float coyoteTimeCounter = 0f;
     private float jumpBufferTime = 0.12f;
@@ -109,11 +105,10 @@ public class Player : UnitBase
         this.handleMovement(keyboard);
         this.handleJump(keyboard);
 
-        // 100% Non-Physics 커스텀 2D 모터 구동 (Swept BoxCast 지형 차단 및 가변 중력)
+        // 모터 상태 전달 (모터는 FixedUpdate에서 자체 구동, isGrounded는 UnitBase 프로퍼티가 motor에서 직접 읽음)
         if (this.motor != null)
         {
-            this.motor.UpdateMotor(Time.deltaTime, isJumpingInput);
-            this.isGrounded = this.motor.IsGrounded;
+            this.motor.SetJumpHeld(isJumpingInput);
         }
 
         this.handleDefensiveActions(keyboard);
@@ -125,54 +120,6 @@ public class Player : UnitBase
 
     private OneWayPlatformPassThrough currentOneWayPlatform;
 
-    /// <summary>
-    /// 발바닥 지면 충돌 검사 (Ground Check) 및 지형 통과 방지 스냅 정밀 관리
-    /// </summary>
-    private void updateGroundCheck()
-    {
-        // 레이 출발점을 무릎 높이(Y+0.5f)로 높여 지면 파묻힘 상황에서도 지상 감지 보장
-        Vector2 checkOrigin = (Vector2)transform.position + Vector2.up * 0.5f;
-        Vector2 checkSize = new Vector2(0.4f, 0.1f);
-        
-        // 발바닥 아래 2D BoxCast로 지면 감지 (자기 자신의 Trigger Collider 제외)
-        RaycastHit2D hit = Physics2D.BoxCast(checkOrigin, checkSize, 0f, Vector2.down, 0.6f);
-        bool wasGrounded = this.isGrounded;
-        this.isGrounded = hit.collider != null && hit.collider != this.hitCollider && !hit.collider.isTrigger;
-
-        if (this.isGrounded)
-        {
-            this.coyoteTimeCounter = this.coyoteTime;
-            this.currentOneWayPlatform = hit.collider.GetComponent<OneWayPlatformPassThrough>();
-            
-            // 하강 중 지면/발판 표면 접지 시 충돌체의 정밀 상단 표면(bounds.max.y)에 발바닥 고정
-            if (this.verticalVelocity <= 0f)
-            {
-                this.verticalVelocity = -0.1f; // 지면 밀착
-                float groundTopY = hit.collider.bounds.max.y;
-                transform.position = new Vector3(transform.position.x, groundTopY, transform.position.z);
-            }
-
-            if (!wasGrounded && this.IsJumping)
-            {
-                // 착지 완료
-                this.IsJumping = false;
-                if (this.stats != null)
-                {
-                    this.stats.SetJumped(false);
-                }
-                this.updateIdleState();
-            }
-        }
-        else
-        {
-            this.currentOneWayPlatform = null;
-            this.coyoteTimeCounter -= Time.deltaTime;
-            this.verticalVelocity -= this.gravity * Time.deltaTime;
-        }
-
-        // 수직 속도를 Transform Y 이동으로 반영 (메트로배니아 물리 점프)
-        transform.Translate(Vector3.up * this.verticalVelocity * Time.deltaTime, Space.World);
-    }
 
     private void handleJump(Keyboard keyboard)
     {
@@ -294,12 +241,14 @@ public class Player : UnitBase
 
         if (Mathf.Abs(moveX) > 0.01f)
         {
-            this.facingDir = new Vector3(moveX, 0f, 0f);
+            Vector2 dir = new Vector3(moveX, 0f, 0f);
+            this.currentMoveDir = dir;
+            this.facingDir = dir;
             this.SetFacingRight(moveX >= 0);
 
             if (this.motor != null)
             {
-                this.motor.SetVelocityX(moveX * this.Speed);
+                this.motor.SetTargetVelocityX(moveX * this.Speed);
             }
 
             if (!this.IsJumping && !this.isAttacking)
@@ -309,9 +258,11 @@ public class Player : UnitBase
         }
         else
         {
+            this.currentMoveDir = Vector2.zero;
+
             if (this.motor != null)
             {
-                this.motor.SetVelocityX(0f);
+                this.motor.SetTargetVelocityX(0f);
             }
         }
     }
@@ -343,7 +294,16 @@ public class Player : UnitBase
         // Left Shift 키: 대시 / 회피 입력
         if (keyboard.leftShiftKey.wasPressedThisFrame)
         {
-            Vector3 dodgeDir = this.currentMoveDir.sqrMagnitude > 0.001f ? this.currentMoveDir : (this.facingDir.x >= 0 ? Vector3.left : Vector3.right);
+            // 이동 중: 이동 방향으로 회피 / 정지 중: 바라보는 방향 반대(뒤)로 회피
+            Vector3 dodgeDir;
+            if (this.currentMoveDir.sqrMagnitude > 0.001f)
+            {
+                dodgeDir = this.currentMoveDir.normalized;
+            }
+            else
+            {
+                dodgeDir = this.facingDir.x >= 0 ? Vector3.left : Vector3.right;
+            }
             this.dodgeAsync(dodgeDir, this.GetCancellationTokenOnDestroy()).Forget();
         }
     }
@@ -392,6 +352,11 @@ public class Player : UnitBase
 
         // 공격 상태로 돌입 (지상/공중 공용 모션 재생)
         this.SetState(attackState, true);
+
+        if (this.motor != null)
+        {
+            this.motor.SetTargetVelocityX(0);
+        }
 
         uint currentSkillId = Util.CreateDataIdx(DataTableType.Skill, (uint)this.comboStep); // Util 유틸 함수로 DataTableType.Skill Idx 생성
         if (this.skillExecutor != null)
@@ -467,6 +432,11 @@ public class Player : UnitBase
 
     private async UniTaskVoid guardParrySequenceAsync(Keyboard keyboard, CancellationToken cancellationToken)
     {
+        if (this.motor != null)
+        {
+            this.motor.SetTargetVelocityX(0);
+        }
+
         this.stats.SetParrying(true);
         this.stats.SetGuarding(false);
         this.SetState(PlayerState.Parry);
@@ -505,9 +475,20 @@ public class Player : UnitBase
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            transform.Translate(dodgeDir * this.DodgeDashSpeed * Time.deltaTime, Space.World);
+
+            // 모터를 경유하여 Swept BoxCast 충돌 검사를 거친 안전한 이동
+            if (this.motor != null)
+            {
+                this.motor.SetTargetVelocityX(dodgeDir.x * this.DodgeDashSpeed);
+            }
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
+
+        // 회피 종료: 수평 속도 정지
+        if (this.motor != null)
+        {
+            this.motor.SetTargetVelocityX(0f);
         }
 
         this.stats.SetDodging(false);

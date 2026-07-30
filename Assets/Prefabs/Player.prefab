@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   Speed: 10
   DodgeDashSpeed: 12
-  jumpForce: 11.5
+  jumpForce: 15
   gravity: 28
 --- !u!50 &5837903626141983593
 Rigidbody2D:

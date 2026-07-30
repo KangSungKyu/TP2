@@ -147,13 +147,6 @@ public class UnitBase : MonoBehaviour
 
     protected bool isGrounded => this.motor != null ? this.motor.IsGrounded : false;
 
-    protected virtual void updateGroundCheck()
-    {
-        if (this.motor != null)
-        {
-            this.motor.UpdateMotor(Time.deltaTime);
-        }
-    }
 
     private void applyBaseStats(UnitBaseData data)
     {

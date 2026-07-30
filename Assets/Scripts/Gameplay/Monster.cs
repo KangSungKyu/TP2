@@ -65,6 +65,7 @@ public class Monster : UnitBase
             var player = GameObject.FindWithTag("Player");
             if (player != null) this.playerTarget = player.transform;
         }
+        // 모터는 FixedUpdate에서 자체적으로 이동을 처리하므로 여기서는 아무 작업도 하지 않음.
     }
 
     private void loadPatterns(MonsterBaseData mData)
@@ -228,8 +229,22 @@ public class Monster : UnitBase
                 Vector3 moveDir = (this.playerTarget.position - transform.position).normalized;
                 this.SetFacingRight(moveDir.x >= 0);
 
-                transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+                if (this.motor != null)
+                {
+                    // 수평 추격은 모터의 target 속도로 적용
+                    this.motor.SetTargetVelocityX(moveDir.x * moveSpeed);
+                }
+                else
+                {
+                    transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+                }
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+
+            // 추적 종료 시 모터 속도 정지
+            if (this.motor != null)
+            {
+                this.motor.SetTargetVelocityX(0f);
             }
         }
 
@@ -323,7 +338,14 @@ public class Monster : UnitBase
             Vector3 dir = (this.playerTarget.position - transform.position).normalized;
             this.SetFacingRight(dir.x >= 0);
             float moveSpeed = (this.UnitData != null && this.UnitData.MoveSpeed > 0f) ? this.UnitData.MoveSpeed : 3.0f;
-            transform.Translate(dir * moveSpeed * Time.deltaTime, Space.World);
+            if (this.motor != null)
+            {
+                this.motor.SetTargetVelocityX(dir.x * moveSpeed);
+            }
+            else
+            {
+                transform.Translate(dir * moveSpeed * Time.deltaTime, Space.World);
+            }
             this.SetAnimState(2);
         }
         else
