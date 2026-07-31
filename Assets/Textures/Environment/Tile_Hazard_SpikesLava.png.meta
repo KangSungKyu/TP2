@@ -66,9 +66,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -109,112 +109,84 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-  m_Sprites:
-  - serializedVersion: 2
-    name: Tile_Hazard_SpikesLava_0
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Hazard_SpikesLava_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Hazard_SpikesLava_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Hazard_SpikesLava_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Hazard_SpikesLava_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Tile_Hazard_SpikesLava_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4462203aaa83ffa60800000000000000
-      internalID: 7709943392612001348
+      spriteID: 18dea7c840d2a9548aabd88798735e7f
+      internalID: 2081726640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Hazard_SpikesLava_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2a7fba17a2169e45a3ac5f1a7a1d0d5
+      internalID: 1403312706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Hazard_SpikesLava_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e393608b7cc3d21408aa33a68fa32fc1
+      internalID: -1232968975
       vertices: []
       indices: 
       edges: []
@@ -223,7 +195,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a1b65dd95492d03418aa7412a386bf28
     internalID: 0
     vertices: []
     indices: 
@@ -231,9 +203,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Tile_Hazard_SpikesLava_0: 7709943392612001348
+      Tile_Hazard_SpikesLava_0: 2081726640
+      Tile_Hazard_SpikesLava_1: 1403312706
+      Tile_Hazard_SpikesLava_2: -1232968975
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

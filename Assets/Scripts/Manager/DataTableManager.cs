@@ -74,6 +74,7 @@ public class DataTableManager : Singleton<DataTableManager>
         this.dataList[DataTableType.MonsterPattern] = new MonsterPatternDataTable();
         this.dataList[DataTableType.Skill] = new SkillDataTable();
         this.dataList[DataTableType.EffectData] = new EffectDataTable();
+        this.dataList[DataTableType.StageData] = new StageDataTable();
 
         this.preloadDataTablesAsync().Forget();
     }

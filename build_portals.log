@@ -1,0 +1,1158 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.4/staging' branch; Version is '6000.4.8f1 (f8b72d3d7343) revision 16299821'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) Professional' Language: 'ko' Physical Memory: 32471 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08" at "2026-07-31T07:04:57.1314403Z"
+System  architecture: x64
+Process architecture: x64
+Date: 2026-07-31T07:04:57Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Unity.exe
+-batchmode
+-nographics
+-projectPath
+C:\Users\PC\Projects\TP2
+-executeMethod
+PortalPrefabBuilder.BuildPortalPrefabs
+-logFile
+build_portals.log
+Successfully changed project path to: C:\Users\PC\Projects\TP2
+C:/Users/PC/Projects/TP2
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Player connection [6824]  Target information:
+
+Player connection [6824]  * "[IP] 192.168.0.33 [Port] 55504 [Flags] 2 [Guid] 3263810358 [EditorId] 3263810358 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-3J0UFVG) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [6824] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [6824] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-15796" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Error: HandshakeResponse reported an error:
+	ResponseCode: 505
+	ResponseStatus: Unsupported protocol version '1.18.1'.
+[Licensing::Module] Error: Failed to handshake to channel: "LicenseClient-403-08"
+[Licensing::IpcConnector] LicenseClient-403-08 channel disconnected successfully.
+[Licensing::IpcConnector] Channel LicenseClient-403-08-6000.4.8 doesn't exist
+[Licensing::Module] Successfully launched the LicensingClient (PId: 16580)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8" at "2026-07-31T07:04:58.3002143Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 16580, path: "C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              4926d815bc204e6cb2a61e72fbab580c
+  Correlation Id:          a43ddc51ce41cfb515c488123bcf7967
+  External correlation Id: 5126478011525875757
+  Machine Id:              Cmy02f24/rcD46FhG7FY6Icn93g=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-403-08-6000.4.8" (connect: 0.37s, validation: 0.06s, handshake: 0.00s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8-notifications" at "2026-07-31T07:04:58.3657935Z"
+[Licensing::Module] Connected to LicensingClient (PId: 16580, launch time: 0.00, total connection time: 0.44s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14568547130648-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 1.27s
+[Licensing::Module] Licensing is initialized (took 0.84s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Active build profile path: `Assets/Settings/Build Profiles/Windows.asset`
+Got setting from build profile YAML, name `m_BuildTarget`, value `19`
+Got setting from build profile YAML, name `m_Subtarget`, value `2`
+Initialize engine version: 6000.4.8f1 (f8b72d3d7343)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/PC/Projects/TP2/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56796
+CodeReloadManager initialized
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001379 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.325 seconds
+Domain Reload Profiling: 762ms
+	BeginReloadAssembly (149ms)
+		CreateAndSetChildDomain (4ms)
+	RebuildCommonClasses (31ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (52ms)
+	LoadAllAssembliesAndSetupDomain (193ms)
+		LoadAssemblies (143ms)
+		AnalyzeDomain (185ms)
+			TypeCache.Refresh (185ms)
+				TypeCache.ScanAssembly (150ms)
+	FinalizeReload (327ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (42ms)
+			BeforeProcessingInitializeOnLoad (68ms)
+			ProcessInitializeOnLoadAttributes (92ms)
+			ProcessInitializeOnLoadMethodAttributes (72ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 72 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.2d.animation@14.0.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.animation@011d329ac58b)
+    com.unity.2d.aseprite@4.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.aseprite@ccedfadacc51)
+    com.unity.2d.psdimporter@13.0.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.psdimporter@e58d0a2c1d48)
+    com.unity.2d.spriteshape@14.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.spriteshape@da3647ffbbd7)
+    com.unity.2d.tilemap.extras@7.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tilemap.extras@66df903b3633)
+    com.unity.2d.tooling@2.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tooling@9d6aff712598)
+    com.unity.addressables@2.9.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.addressables@8460f1c9c927)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.collab-proxy@2.12.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.ide.rider@3.0.40 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.rider@e4950c6d131b)
+    com.unity.ide.visualstudio@2.0.27 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.visualstudio@dc1ddd4f09b6)
+    com.unity.inputsystem@1.19.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.pipeline@0.3.1-exp.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.pipeline@58c16695e488)
+    com.unity.timeline@1.8.12 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.burst@1.8.29 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.6.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.scriptablebuildpipeline@36e3b5898ee2)
+    com.unity.2d.common@13.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.common@edfe77495b67)
+    com.unity.mathematics@1.3.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.searcher@4.9.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.test-framework.performance@3.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.test-framework.performance@aa81a99c4a75)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.sprite@b95cc7beb645)
+    com.unity.2d.tilemap@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tilemap@191c90975efd)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.universal@13e5115b98bf)
+    com.unity.test-framework@1.6.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.test-framework@76560ee600cb)
+    com.unity.ugui@2.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ugui@a9ea81766fbd)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.core@6f62546dd936)
+    com.unity.shadergraph@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.shadergraph@33f3b0a71b9a)
+    com.unity.render-pipelines.universal-config@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.universal-config@0db4263b9e6b)
+    com.unity.collections@6.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collections@5b6ebd78ccc0)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.02 seconds
+The GUID inside 'Assets/Prefabs/Structures/Portal_Gate.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/Prefabs/Structures/Portal.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/Prefabs/Structures/Door.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The .meta file Assets/Prefabs/Structures/Door.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/Prefabs/Structures/Portal.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/Prefabs/Structures/Portal_Gate.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/PC/Projects/TP2
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s268ms
+[1141/1496  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (0.24 seconds), 1 items updated, 1496 evaluated
+AssetDatabase: script compilation time: 0.659084s
+Begin MonoManager ReloadAssembly
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Assembly Assembly-CSharp-Editor-firstpass.dll at Library/ScriptAssemblies/Assembly-CSharp-Editor-firstpass.dll not valid. Loading of assembly skipped.
+Assembly DocCodeExamples.dll at Library/ScriptAssemblies/DocCodeExamples.dll not valid. Loading of assembly skipped.
+Assembly TestNewCustomAssembly.dll at Library/ScriptAssemblies/TestNewCustomAssembly.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Animation.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Animation.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Aseprite.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Aseprite.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Common.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Common.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Psdimporter.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Psdimporter.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Sprite.Package.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Sprite.Package.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.SpriteShape.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.SpriteShape.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Tilemap.Package.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Tilemap.Package.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Addressables.Editor.Tests.dll at Library/ScriptAssemblies/Unity.Addressables.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Addressables.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.Addressables.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.AppUI.Editor.Tests.dll at Library/ScriptAssemblies/Unity.AppUI.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.AppUI.Tests.dll at Library/ScriptAssemblies/Unity.AppUI.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.BurstCompatibilityGen.dll at Library/ScriptAssemblies/Unity.Collections.BurstCompatibilityGen.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.DocCodeSamples.dll at Library/ScriptAssemblies/Unity.Collections.DocCodeSamples.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.PerformanceTests.dll at Library/ScriptAssemblies/Unity.Collections.PerformanceTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.Tests.dll at Library/ScriptAssemblies/Unity.Collections.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.Tests.Playmode.dll at Library/ScriptAssemblies/Unity.Collections.Tests.Playmode.dll not valid. Loading of assembly skipped.
+Assembly Unity.InputSystem.IntegrationTests.dll at Library/ScriptAssemblies/Unity.InputSystem.IntegrationTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Mathematics.Tests.dll at Library/ScriptAssemblies/Unity.Mathematics.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Multiplayer.Center.Editor.Tests.dll at Library/ScriptAssemblies/Unity.Multiplayer.Center.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Multiplayer.Center.Tests.dll at Library/ScriptAssemblies/Unity.Multiplayer.Center.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Nuget.Mono-Cecil.dll at Library/ScriptAssemblies/Unity.Nuget.Mono-Cecil.dll not valid. Loading of assembly skipped.
+Assembly Unity.PathTracing.Editor.Tests.dll at Library/ScriptAssemblies/Unity.PathTracing.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.PathTracing.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.PathTracing.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Pipeline.Tests.Editor.dll at Library/ScriptAssemblies/Unity.Pipeline.Tests.Editor.dll not valid. Loading of assembly skipped.
+Assembly Unity.Pipeline.Tests.Runtime.dll at Library/ScriptAssemblies/Unity.Pipeline.Tests.Runtime.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Core.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Core.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Config.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Config.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ResourceManager.Tests.dll at Library/ScriptAssemblies/Unity.ResourceManager.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipeline.Editor.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipeline.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Searcher.EditorTests.dll at Library/ScriptAssemblies/Unity.Searcher.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ShaderGraph.Editor.Tests.dll at Library/ScriptAssemblies/Unity.ShaderGraph.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.TextMeshPro.Editor.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.TextMeshPro.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.UnifiedRayTracing.Editor.Tests.dll at Library/ScriptAssemblies/Unity.UnifiedRayTracing.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly UnityEditor.UI.Common.Tests.dll at Library/ScriptAssemblies/UnityEditor.UI.Common.Tests.dll not valid. Loading of assembly skipped.
+Assembly UnityEditor.UI.EditorTests.dll at Library/ScriptAssemblies/UnityEditor.UI.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly UnityEngine.UI.Tests.dll at Library/ScriptAssemblies/UnityEngine.UI.Tests.dll not valid. Loading of assembly skipped.
+Refreshing native plugins compatible for Editor in 4.51 ms, found 6 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 2.78 ms, found 6 plugins.
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Start HTTP server: port:7800
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.623 seconds
+Domain Reload Profiling: 2709ms
+	BeginReloadAssembly (289ms)
+		DisableScriptedObjects (21ms)
+		CreateAndSetChildDomain (150ms)
+	RebuildCommonClasses (31ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (54ms)
+	LoadAllAssembliesAndSetupDomain (703ms)
+		LoadAssemblies (380ms)
+		AnalyzeDomain (394ms)
+			TypeCache.Refresh (299ms)
+				TypeCache.ScanAssembly (283ms)
+			BuildScriptInfoCaches (82ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (1623ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (21ms)
+			BeforeProcessingInitializeOnLoad (188ms)
+			ProcessInitializeOnLoadAttributes (1075ms)
+			ProcessInitializeOnLoadMethodAttributes (153ms)
+			AfterProcessingInitializeOnLoad (4ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+(Values over 0.050ms)
+Asset Pipeline Refresh (id=049f5072c5975b1478af652703902c5b): Total: 4.003 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2147 ms
+		Asset DB Callback time: managed=24 ms, native=18 ms
+		Scripting: domain reloads=1, domain reload time=1090 ms, compile time=661 ms, other=60 ms
+		Project Asset Count: scripts=2052, non-scripts=5691
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 19.395ms
+	ApplyChangesToAssetFolders: 0.569ms
+	Scan: 125.701ms
+	CategorizeScriptCompilationAssets: 58.858ms
+	ProcessAssetsWithTransientArtifactChanges: 87.145ms
+	CategorizeAssets: 74.956ms
+	CompileScripts: 660.752ms
+	ImportOutOfDateAssets: 1640.128ms (1636.823ms without children)
+		UnloadImportedAssets: 1.608ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.937ms
+		OnDemandSchedulerStart: 0.708ms
+	PostProcessAllAssets: 24.390ms
+		MonoPostProcessAllAssets: 24.338ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 8.711ms
+			SyncVS.PostprocessSyncProject 2.556ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.644ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 1.644ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.602ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.264ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.213ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.173ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.139ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.115ms
+	UnloadStreamsBegin: 3.043ms
+	PersistCurrentRevisions: 0.425ms
+	GenerateScriptTypeHashes: 3.508ms
+	GenerateScriptTypeSerializationHashes: 6.306ms
+	Untracked: 1302.632ms
+
+Application.AssetDatabase Initial Refresh End
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Scanning for USB devices : 3.229ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-TP2
+Unloading 69 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10190 unused Assets / (4.0 MB). Loaded Objects now: 11100.
+Memory consumption went from 252.0 MB to 248.0 MB.
+Total: 12.218900 ms (FindLiveObjects: 0.658700 ms CreateObjectMapping: 0.637000 ms MarkObjects: 6.966700 ms  DeleteObjects: 3.952800 ms)
+
+<color=cyan><b>[PortalPrefabBuilder] 관문 포탈 & 문 프리팹 패키징 시작...</b></color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:15)
+
+(Filename: Assets/Editor/PortalPrefabBuilder.cs Line: 15)
+
+The GUID inside 'Assets/Prefabs/Structures/Portal.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:35)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 35]
+
+The .meta file Assets/Prefabs/Structures/Portal.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:35)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 35]
+
+The GUID inside 'Assets/Prefabs/Structures/Portal.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:35)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 35]
+
+The .meta file Assets/Prefabs/Structures/Portal.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:35)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 35]
+
+Asset Pipeline Refresh (id=3ebb7f3803952d94d95278aae02c118d): Total: 0.166 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+The GUID inside 'Assets/Prefabs/Structures/Door.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:47)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 47]
+
+The .meta file Assets/Prefabs/Structures/Door.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.PrefabUtility:SaveAsPrefabAsset_Internal (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string,bool&)
+UnityEditor.PrefabUtility:SaveAsPrefabAsset (UnityEngine.GameObject,string)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:47)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 47]
+
+Asset Pipeline Refresh (id=a989291faf650e9429aea81f22a50803): Total: 0.029 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (Import Result ID: '24bec6481420421bf60c7c11d38a02c5') in 0.0075057 seconds [static dependencies only]. Details - ImportResultOutputID=d777934f36c664454d62eda103573334 DependenciesID=e046d43a93c0a907fcdddd9a1a7d4337 StaticDependenciesID=823d6c9442bc600624d428cc5ce54657 
+Refreshing native plugins compatible for Editor in 2.84 ms, found 6 plugins.
+Asset Pipeline Refresh (id=f792743e28122424d81ad9a23d5a5f06): Total: 0.193 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+The GUID inside 'Assets/Prefabs/Structures/Portal.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/Prefabs/Structures/Door.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The .meta file Assets/Prefabs/Structures/Door.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.AssetDatabase:Refresh ()
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:51)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 51]
+
+The .meta file Assets/Prefabs/Structures/Portal.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.AssetDatabase:Refresh ()
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:51)
+
+[Assets/Editor/PortalPrefabBuilder.cs line 51]
+
+Asset Pipeline Refresh (id=f00c9f4248196234f81064b04f34ec9e): Total: 0.010 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+<color=green>Created Portal & Door Prefabs in Assets/Prefabs/Structures</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:53)
+
+(Filename: Assets/Editor/PortalPrefabBuilder.cs Line: 53)
+
+Addressable Registered [Prefabs]: Garon -> Assets/Prefabs/Garon.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Particle -> Assets/Prefabs/Particle.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Player -> Assets/Prefabs/Player.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Garon_Charge_Effect -> Assets/Prefabs/Effects/Garon_Charge_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Garon_ComboSlash_Effect -> Assets/Prefabs/Effects/Garon_ComboSlash_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Garon_OverheadSmash_Effect -> Assets/Prefabs/Effects/Garon_OverheadSmash_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Garon_Shockwave_Effect -> Assets/Prefabs/Effects/Garon_Shockwave_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Placeholder_Dodge -> Assets/Prefabs/Effects/Placeholder_Dodge.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Placeholder_Guard -> Assets/Prefabs/Effects/Placeholder_Guard.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Placeholder_Hit -> Assets/Prefabs/Effects/Placeholder_Hit.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Placeholder_Parry -> Assets/Prefabs/Effects/Placeholder_Parry.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Player_Attack_Hit1_Effect -> Assets/Prefabs/Effects/Player_Attack_Hit1_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Player_Attack_Hit2_Effect -> Assets/Prefabs/Effects/Player_Attack_Hit2_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Player_Attack_Hit3_Effect -> Assets/Prefabs/Effects/Player_Attack_Hit3_Effect.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Tilemap_Room_TestDummy -> Assets/Prefabs/Rooms/Tilemap_Room_TestDummy.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Door -> Assets/Prefabs/Structures/Door.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Addressable Registered [Prefabs]: Portal -> Assets/Prefabs/Structures/Portal.prefab
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:41)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 41)
+
+Start importing Assets/AddressableAssetsData/AssetGroups/Anims.asset using Guid(1295f76a306573d43981b1a0121280db) (NativeFormatImporter) -> (Import Result ID: '8cb8b7f0a8c1c98126c81c0f98f6d3db') in 0.0017887 seconds [static dependencies only]. Details - ImportResultOutputID=8b7898b5272d12fdd3d6868d68375897 DependenciesID=7fbb1fbc7307ceb660bdfc67ef0cc06a StaticDependenciesID=730111a093fbdee0e1ed2bc1751084e5 
+Start importing Assets/AddressableAssetsData/AssetGroups/Prefabs.asset using Guid(c2df0a4d4d9a3c04b9a90b4f6371839a) (NativeFormatImporter) -> (Import Result ID: '22ac13aaaac189093b32ed46c8d00fa2') in 0.0013263 seconds [static dependencies only]. Details - ImportResultOutputID=016c24b55231776f75b71ca6ace913bc DependenciesID=a4ecd69d444ac937c0fac8bfdf42495d StaticDependenciesID=6d31614b66fb2168abce84c575713f02 
+Start importing Assets/AddressableAssetsData/AssetGroups/Datas.asset using Guid(2362ba43dcc9d0d47bcb8c1bea7a6161) (NativeFormatImporter) -> (Import Result ID: '53456fde9c351354aae3824bf1131b09') in 0.0023632 seconds [static dependencies only]. Details - ImportResultOutputID=9206667383a288d57be28aa5a700c399 DependenciesID=33b6c1fb83c2a62c1644592dd614ea2c StaticDependenciesID=57bf8eb9cb7d2136da84d42827c98fa4 
+Refreshing native plugins compatible for Editor in 2.18 ms, found 6 plugins.
+Asset Pipeline Refresh (id=762e62adac62e054ca5c75a63ba66f0c): Total: 0.052 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+<color=green><b>[AddressablePipeline] Addressables 대문자 Prefabs 전수 등록 완결!</b></color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:RegisterAllAddressables () (at Assets/Editor/AddressablePipeline.cs:87)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:93)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 87)
+
+DisplayProgressbar: Processing Addressable Group
+Anims does not have any associated AddressableAssetGroupSchemas. Data from this group will not be included in the build. If this is unexpected the AddressableGroup may have become corrupted.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UnityEngine.AddressableAssets.AddressablesImpl:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs:198)
+UnityEngine.AddressableAssets.Addressables:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/Addressables.cs:901)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:ProcessGroup (UnityEditor.AddressableAssets.Settings.AddressableAssetGroup,UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:1078)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:ProcessAllGroups (UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:174)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:BuildDataImplementation<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:134)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:BuildData<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:103)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3131)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs Line: 198)
+
+Prefabs does not have any associated AddressableAssetGroupSchemas. Data from this group will not be included in the build. If this is unexpected the AddressableGroup may have become corrupted.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UnityEngine.AddressableAssets.AddressablesImpl:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs:198)
+UnityEngine.AddressableAssets.Addressables:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/Addressables.cs:901)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:ProcessGroup (UnityEditor.AddressableAssets.Settings.AddressableAssetGroup,UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:1078)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:ProcessAllGroups (UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:174)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:BuildDataImplementation<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:134)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:BuildData<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:103)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3131)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs Line: 198)
+
+Datas does not have any associated AddressableAssetGroupSchemas. Data from this group will not be included in the build. If this is unexpected the AddressableGroup may have become corrupted.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UnityEngine.AddressableAssets.AddressablesImpl:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs:198)
+UnityEngine.AddressableAssets.Addressables:LogWarning (string) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/Addressables.cs:901)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:ProcessGroup (UnityEditor.AddressableAssets.Settings.AddressableAssetGroup,UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:1078)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:ProcessAllGroups (UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:174)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:BuildDataImplementation<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:134)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:BuildData<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:103)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3131)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Runtime/AddressablesImpl.cs Line: 198)
+
+Start importing Assets/Settings/UniversalRP.asset using Guid(681886c5eb7344803b6206f758bf0b1c) (NativeFormatImporter) -> (Import Result ID: 'a92e5b6980bd49c2b5bc3fbaf6f04814') in 0.0015665 seconds [static dependencies only]. Details - ImportResultOutputID=c76afcf7d9fc85b72a702b1189f2a845 DependenciesID=88fcb8f976203990b96626b86390f219 StaticDependenciesID=578bc7fbcca90f30003e713095d3091b 
+Refreshing native plugins compatible for Editor in 2.29 ms, found 6 plugins.
+Asset Pipeline Refresh (id=64b0bb55c5236014a9384b22417dbeed): Total: 0.019 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+DisplayProgressbar: Switch To Build Platform
+DisplayProgressbar: Rebuild Sprite Atlas Cache
+SpriteAtlasPacking completed in 0.004473 sec
+DisplayProgressbar: Build Player Scripts
+[ScriptCompilation] Requested script compilation because: Recompiling all scripts before compiling player scripts because Auto Refresh is disabled.
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/PC/Projects/TP2
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.ExitCode: 0 Duration: 0s243ms
+[1141/1496  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (0.22 seconds), 1 items updated, 1496 evaluated
+[ScriptCompilation] Requested script compilation because: Compiling scripts for player
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/Users/PC/Projects/TP2
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Total cache size 268431120
+Total cache size after purge 268431120, took 00:00:00.1848885
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 3s218ms
+[526/838    0s] WriteResponseFile Library/Bee/artifacts/rsp/4747638433968585886.rsp
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aP-inputdata.json
+[687/838    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (3.20 seconds), 3 items updated, 686 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aP.dag.json" "Library/Bee/1900b0aP-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/PC/Projects/TP2
+ExitCode: 0 Duration: 0s639ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aP.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/Users/PC/Projects/TP2
+ExitCode: 0 Duration: 6s553ms
+Finished compiling graph: 839 nodes, 10623 flattened edges (8399 ToBuild, 118 ToUse), maximum node priority 495
+[526/838    0s] WriteText Library/Bee/artifacts/1900b0aP.dag/Assembly-CSharp.rsp
+[687/838    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[736/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ScriptableBuildPipeline.dll
+[737/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Shared.dll
+[738/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.dll
+[739/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.dll
+[740/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Addressables.dll
+[741/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniRx.dll
+[742/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ResourceManager.dll
+[743/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.DOTween.dll
+[744/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.RenderPipelines.Core.Runtime.Shared.dll
+[745/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Animation.Runtime.dll
+[746/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.dll
+[747/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll
+[748/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.SurfaceCache.Runtime.dll
+[749/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.PathTracing.Runtime.dll
+[750/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.dll
+[751/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll
+[752/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.Tokenization.dll
+[753/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll
+[754/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.SpriteShape.Runtime.dll
+[755/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.dll
+[756/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll
+[757/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Mathematics.dll
+[758/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Common.Runtime.dll
+[759/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.dll
+[760/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.Linq.dll
+[761/838    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.dll
+[762/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.dll
+[763/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll
+[764/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.dll
+[765/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.Addressables.dll
+[766/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.TextMeshPro.dll
+[767/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.UnifiedRayTracing.Runtime.dll
+[768/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.dll
+[769/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.2D.Runtime.dll
+[770/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.IK.Runtime.dll
+[771/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.001.dll
+[772/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Collections.dll
+[773/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.dll
+[774/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Burst.dll
+[775/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Mathematics.pdb
+[776/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Tilemap.Extras.dll
+[777/838    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp-firstpass.dll
+[778/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.pdb
+[779/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.Tokenization.pdb
+[780/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.dll
+[781/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.dll
+[782/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.dll
+[783/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.pdb
+[784/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.pdb
+[785/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.dll
+[786/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Common.Runtime.pdb
+[787/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Profiling.Core.dll
+[788/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.DOTween.pdb
+[789/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.Linq.pdb
+[790/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ScriptableBuildPipeline.pdb
+[791/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll
+[792/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.SurfaceCache.Runtime.pdb
+[793/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.RenderPipelines.Core.Runtime.Shared.pdb
+[794/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.Addressables.pdb
+[795/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.pdb
+[796/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Pipeline.dll
+[797/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.pdb
+[798/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniRx.pdb
+[799/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Addressables.pdb
+[800/838    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.pdb
+[801/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.pdb
+[802/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.2D.Runtime.pdb
+[803/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Animation.Runtime.pdb
+[804/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ResourceManager.pdb
+[805/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.pdb
+[806/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.pdb
+[807/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.PathTracing.Runtime.pdb
+[808/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.Tilemap.Extras.pdb
+[809/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Burst.pdb
+[810/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Collections.pdb
+[811/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.pdb
+[812/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.pdb
+[813/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Profiling.Core.pdb
+[814/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.UnifiedRayTracing.Runtime.pdb
+[815/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Shared.pdb
+[816/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.pdb
+[817/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.SpriteShape.Runtime.pdb
+[818/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.pdb
+[819/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.pdb
+[820/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.pdb
+[821/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.2D.IK.Runtime.pdb
+[822/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.pdb
+[823/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.pdb
+[824/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.pdb
+[825/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.pdb
+[826/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Pipeline.pdb
+[827/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.pdb
+[828/838    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp-firstpass.pdb
+[829/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.001.pdb
+[830/838    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.pdb
+[831/838    0s] CopyFiles Library/PlayerScriptAssemblies/UniTask.TextMeshPro.pdb
+[832/838    0s] Csc Library/Bee/artifacts/1900b0aP.dag/Assembly-CSharp.dll (+2 others)
+Assets\Scripts\Gameplay\MetroidvaniaCamera2D.cs(33,26): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Gameplay\Player.cs(237,28): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\Scripts\Manager\UnitSpawner.cs(32,29): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\Scripts\Manager\UnitSpawner.cs(40,23): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\Scripts\Scene\InitScene.cs(44,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\UI\CoreTestHUD.cs(13,24): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\TilemapStageBuilder.cs(52,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\TilemapStageBuilder.cs(62,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Manager\UnitSpawner.cs(76,25): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\UI\TestPlayerHUDUI.cs(38,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Manager\UnitSpawner.cs(146,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\TilemapStageBuilder.cs(166,22): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\MainScene.cs(36,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\MainScene.cs(43,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Gameplay\Player.cs(520,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+[833/838    0s] ILPostProcess Library/Bee/artifacts/1900b0aP.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aP.dag/Assembly-CSharp.dll, with 129 defines and 261 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[834/838    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp.pdb
+[835/838    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp.dll
+[837/838    1s] BuildPlayerDataGenerator Library/BuildPlayerData/Player/RuntimeInitializeOnLoads.json (+1 other)
+*** Tundra build success (6.53 seconds), 103 items updated, 838 evaluated
+Assets\Scripts\Gameplay\MetroidvaniaCamera2D.cs(33,26): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Gameplay\Player.cs(237,28): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\Scripts\Manager\UnitSpawner.cs(32,29): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\Scripts\Manager\UnitSpawner.cs(40,23): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\Scripts\Scene\InitScene.cs(44,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\UI\CoreTestHUD.cs(13,24): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Scene\TilemapStageBuilder.cs(52,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Scene\TilemapStageBuilder.cs(62,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Manager\UnitSpawner.cs(76,25): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\UI\TestPlayerHUDUI.cs(38,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Manager\UnitSpawner.cs(146,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Scene\TilemapStageBuilder.cs(166,22): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Scene\MainScene.cs(36,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Scene\MainScene.cs(43,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Scripts\Gameplay\Player.cs(520,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/Users/PC/Projects/TP2
+Total cache size 268431120
+Total cache size after purge 268431120, took 00:00:00.1729835
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.ExitCode: 0 Duration: 2s72ms
+[ 601/1499  0s] WriteResponseFile Library/Bee/artifacts/rsp/4747638433968585886.rsp
+[1142/1499  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1498/1499  1s] BuildPlayerDataGenerator Library/BuildPlayerData/Editor/TypeDb-All.json
+*** Tundra build success (2.03 seconds), 3 items updated, 1499 evaluated
+DisplayProgressbar: Post Scripts Callback
+DisplayProgressbar: Calculate Scene Dependency Data
+Total cache size 268431120
+Total cache size after purge 268431120, took 00:00:00.1421842
+Opening scene 'Assets/Scenes/MainScene.unity'
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Scenes/MainScene.unity'
+	Deserialize:            0.883 ms
+	Integration:            8.036 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.012 ms
+	Total Operation Time:   8.934 ms
+Unloading 66 unused Assets / (Unknown). Loaded Objects now: 11115.
+Memory consumption went from 241.6 MB to 241.6 MB.
+Total: 6.860300 ms (FindLiveObjects: 0.390100 ms CreateObjectMapping: 0.393300 ms MarkObjects: 6.012200 ms  DeleteObjects: 0.064100 ms)
+
+Opening scene 'Assets/Scenes/HubScene.unity'
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Scenes/HubScene.unity'
+	Deserialize:            18.740 ms
+	Integration:            35.286 ms
+	Integration of assets:  0.541 ms
+	Thread Wait Time:       0.117 ms
+	Total Operation Time:   54.684 ms
+Unloading 1 unused Assets / (0.5 KB). Loaded Objects now: 11156.
+Memory consumption went from 243.3 MB to 243.3 MB.
+Total: 6.809500 ms (FindLiveObjects: 0.409100 ms CreateObjectMapping: 0.286100 ms MarkObjects: 6.082100 ms  DeleteObjects: 0.031200 ms)
+
+Opening scene 'Assets/Scenes/LoadingScene.unity'
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Scenes/LoadingScene.unity'
+	Deserialize:            1.031 ms
+	Integration:            7.277 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.046 ms
+	Total Operation Time:   8.356 ms
+Unloading 1 unused Assets / (0.5 KB). Loaded Objects now: 11164.
+Memory consumption went from 243.1 MB to 243.1 MB.
+Total: 6.931600 ms (FindLiveObjects: 0.361100 ms CreateObjectMapping: 0.229600 ms MarkObjects: 6.310400 ms  DeleteObjects: 0.029200 ms)
+
+DisplayProgressbar: Calculate Asset Dependency Data
+DisplayProgressbar: Add Hash To Bundle Name Task
+DisplayProgressbar: Strip Unused Sprite Sources
+DisplayProgressbar: Create Built In Bundle
+DisplayProgressbar: Create Mono Script Bundle
+DisplayProgressbar: Post Dependency Callback
+DisplayProgressbar: Generate Bundle Packing
+DisplayProgressbar: Update Bundle Object Layout
+DisplayProgressbar: Generate Bundle Commands
+DisplayProgressbar: Generate Sub Asset Path Maps
+DisplayProgressbar: Generate Bundle Maps
+DisplayProgressbar: Post Packing Callback
+DisplayProgressbar: Write Serialized Files
+DisplayProgressbar: Archive And Compress Bundles
+DisplayProgressbar: Generate Location Lists Task
+DisplayProgressbar: Post Writing Callback
+DisplayProgressbar: Extract Data Task
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 14 unused Assets / (1.8 KB). Loaded Objects now: 11119.
+Memory consumption went from 244.2 MB to 244.2 MB.
+Total: 7.279000 ms (FindLiveObjects: 0.424300 ms CreateObjectMapping: 0.289400 ms MarkObjects: 6.459600 ms  DeleteObjects: 0.104200 ms)
+
+DisplayProgressbar: Post Processing AssetBundles
+DisplayProgressbar: Post Processing Catalog Entries
+DisplayProgressbar: Generating Build Layout
+DisplayProgressbar: Build Layout Generation Task
+ProfileValueReference: GetValue called with empty id.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UnityEditor.AddressableAssets.Settings.ProfileValueReference:GetValue (UnityEditor.AddressableAssets.Settings.AddressableAssetProfileSettings,string,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/ProfileValueReference.cs:96)
+UnityEditor.AddressableAssets.Settings.ProfileValueReference:GetValue (UnityEditor.AddressableAssets.Settings.AddressableAssetSettings,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/ProfileValueReference.cs:55)
+UnityEditor.AddressableAssets.Settings.ProfileValueReference:GetValue (UnityEditor.AddressableAssets.Settings.AddressableAssetSettings) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/ProfileValueReference.cs:38)
+UnityEditor.AddressableAssets.Build.BuildPipelineTasks.BuildLayoutGenerationTask:GenerateBuildLayout (UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext,UnityEditor.AddressableAssets.Build.Layout.LayoutLookupTables) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/BuildPipelineTasks/BuildLayoutGenerationTask.cs:775)
+UnityEditor.AddressableAssets.Build.BuildPipelineTasks.BuildLayoutGenerationTask:CreateBuildLayout () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/BuildPipelineTasks/BuildLayoutGenerationTask.cs:214)
+UnityEditor.AddressableAssets.Build.BuildPipelineTasks.BuildLayoutGenerationTask:Run () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/BuildPipelineTasks/BuildLayoutGenerationTask.cs:1275)
+UnityEditor.Build.Pipeline.BuildTasksRunner:Run (System.Collections.Generic.IList`1<UnityEditor.Build.Pipeline.Interfaces.IBuildTask>,UnityEditor.Build.Pipeline.Interfaces.IBuildContext) (at ./Library/PackageCache/com.unity.scriptablebuildpipeline@36e3b5898ee2/Editor/Shared/BuildTasksRunner.cs:56)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:DoBuild<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:630)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:BuildDataImplementation<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:141)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:BuildData<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:103)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3131)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/ProfileValueReference.cs Line: 96)
+
+Json build layout written to Library/com.unity.addressables/buildlayout.json
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.AddressableAssets.Build.BuildPipelineTasks.BuildLayoutGenerationTask:Run () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/BuildPipelineTasks/BuildLayoutGenerationTask.cs:1301)
+UnityEditor.Build.Pipeline.BuildTasksRunner:Run (System.Collections.Generic.IList`1<UnityEditor.Build.Pipeline.Interfaces.IBuildTask>,UnityEditor.Build.Pipeline.Interfaces.IBuildContext) (at ./Library/PackageCache/com.unity.scriptablebuildpipeline@36e3b5898ee2/Editor/Shared/BuildTasksRunner.cs:56)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:DoBuild<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,UnityEditor.AddressableAssets.Build.DataBuilders.AddressableAssetsBuildContext) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:630)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptPackedMode:BuildDataImplementation<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptPackedMode.cs:141)
+UnityEditor.AddressableAssets.Build.DataBuilders.BuildScriptBase:BuildData<UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult> (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/DataBuilders/BuildScriptBase.cs:103)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3131)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Build/BuildPipelineTasks/BuildLayoutGenerationTask.cs Line: 1301)
+
+Addressable content successfully built (duration : 0:00:13.953)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContentImpl (UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput,bool) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3138)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&,UnityEditor.AddressableAssets.Build.AddressablesDataBuilderInput) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3040)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent (UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult&) (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:3017)
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent () (at ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs:2959)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:139)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: ./Library/PackageCache/com.unity.addressables@8460f1c9c927/Editor/Settings/AddressableAssetSettings.cs Line: 3138)
+
+Asset Pipeline Refresh (id=1369f1bc56d162f4b83883c3011a572b): Total: 0.012 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+<color=green><b>[AddressablePipeline] Addressable Player Content Build Complete!</b></color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:140)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:56)
+
+(Filename: Assets/Editor/AddressablePipeline.cs Line: 140)
+
+<color=green><b>[PortalPrefabBuilder] Portal & Door 프리팹 제작 및 Addressables 배포 완결!</b></color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PortalPrefabBuilder:BuildPortalPrefabs () (at Assets/Editor/PortalPrefabBuilder.cs:58)
+
+(Filename: Assets/Editor/PortalPrefabBuilder.cs Line: 58)
+
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+[Project] Loading completed in 22.079 seconds
+	Project init time: 				7.161 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		1.041 seconds
+		Asset Database init time: 		0.791 seconds
+		Global illumination init time: 	0.002 seconds
+		Assemblies load time: 			0.790 seconds
+		Unity extensions init time: 	0.010 seconds
+		Asset Database refresh time: 	4.003 seconds
+	Scene opening time: 			14.719 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1785481519204,"processId":15796,"projectLoad":22.079409400000004,"projectInit":7.1612838,"templateInit":0.0,"packageManagerInit":1.0410496,"assetDatabaseInit":0.7905912,"globalIlluminationInit":0.0018995,"assembliesLoad":0.7901565,"unityExtensionsInit":0.0099153,"assetDatabaseRefresh":4.0032537,"sceneOpening":14.7193948}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1785481519204,"processId":15796,"editorVersion":"6000.4.8f1 (f8b72d3d7343)","branch":"6000.4/staging","buildType":"Release","platform":"Windows"}
+[Licensing::Client] Successfully resolved entitlement details
+Start Indexing on Editor startup
+[Indexing] Starting Initial Indexing for Assets
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Created GICache directory at C:/Users/PC/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.006s, timestamps: [22.083 - 22.089]
+[Licensing::Client] Successfully resolved entitlement details

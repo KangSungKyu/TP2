@@ -1,0 +1,40 @@
+# 유니티 빌드 및 엔진 캐시 (무조건 제외)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Obj]/
+/[Bb]uild/
+/[Bb]uilds/
+/[Cc]apture[Vv]ideo/
+/[Mm]emory[Cc]aptures/
+/[Logs]/
+/[Vv]alidation[Cc]ache/
+
+# 유니티 프로젝트 설정 및 패키지 캐시 제외
+/[Pp]ackages/
+/[P]roject[S]ettings/
+/[U]ser[S]ettings/
+
+# 에셋 내부의 무거운 미디어/바이너리 제외 (스크립트만 남김)
+*.meta
+*.unity
+*.asset
+*.prefab
+*.mat
+*.fbx
+*.obj
+*.png
+*.jpg
+*.jpeg
+*.tga
+*.wav
+*.mp3
+*.controller
+*.anim
+
+# Visual Studio 및 개발 도구 캐시
+.vs/
+.idea/
+*.sln
+*.csproj
+*.user
+*.suo

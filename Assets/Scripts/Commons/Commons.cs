@@ -96,6 +96,7 @@ public enum DataTableType : uint
     MonsterPattern = 6,   // 6순위: 몬스터 패턴 데이터 (6001~)
     Skill = 7,            // 7순위: 스킬 데이터 (7001~)
     EffectData = 8,       // 8순위: 스킬 이펙트 연동 데이터 (8001~)
+    StageData = 9,        // 9순위: 스테이지 및 룸 시퀀스 데이터 (9001~)
     
     DataTableType_End
 }
@@ -367,5 +368,34 @@ public class SkillData
     [Name("animstate")]
     public int AnimState { get; set; } // Animator 'State' (int) 파라미터 제어 값
 }
+
+/// <summary>
+/// 스테이지 및 룸 시퀀스 데이터 (StageData.csv 1:1 매핑, Type 9: 9001~)
+/// </summary>
+[Serializable]
+public class StageBaseData
+{
+    [Name("idx")]
+    public uint Idx { get; set; } // 9001~
+
+    [Name("nametextidx")]
+    public uint NameTextIdx { get; set; }
+
+    [Name("chapter")]
+    public int Chapter { get; set; }
+
+    [Name("themetype")]
+    public string ThemeType { get; set; }
+
+    [Name("startroomkey")]
+    public string StartRoomKey { get; set; }
+
+    [Name("bossroomkey")]
+    public string BossRoomKey { get; set; }
+
+    [Name("roomsequence")]
+    public string RoomSequence { get; set; }
+}
+
 
 

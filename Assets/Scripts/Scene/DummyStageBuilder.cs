@@ -4,8 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 메트로배니아/로그라이트 더미 스테이지 생성 클래스.
-/// Room Chunk Prefab (Room_TestDummy)을 ResourceManager를 통해 비동기로 통째 스폰하여 정돈된 스테이지 아키텍처를 구동하며,
-/// 생성 완료 후 0.5초 버퍼 시간(Buffer Time)과 페이드 인 연출을 거쳐 깨끗한 화면을 전개시킵니다.
+/// Room Chunk Prefab (Room_TestDummy) 및 다채로운 벽점프 테스트 지형을 동적으로 셋업합니다.
 /// </summary>
 public class DummyStageBuilder : MonoBehaviour
 {
@@ -14,26 +13,24 @@ public class DummyStageBuilder : MonoBehaviour
     public Vector2 RoomSize = new Vector2(30f, 18f);
 
     [Header("Buffer & Fade Settings")]
-    public float BufferTimeSec = 0.5f; // 스테이지 구성 완료 후 렌더링 정돈 대기 버퍼 시간 (초)
-    public float FadeDurationSec = 0.4f; // 화면 페이드 인 연출 시간 (초)
+    public float BufferTimeSec = 0.5f;
+    public float FadeDurationSec = 0.4f;
 
     private CanvasGroup fadeOverlayCanvasGroup;
 
     private void Start()
     {
-        this.BuildDummyStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        BuildDummyStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
     public async UniTask BuildDummyStageAsync(CancellationToken cancellationToken = default)
     {
-        // 1. 화면 암전 처리 (Black Curtain Overlay)
-        this.setupFadeOverlay();
-        if (this.fadeOverlayCanvasGroup != null)
+        setupFadeOverlay();
+        if (fadeOverlayCanvasGroup != null)
         {
-            this.fadeOverlayCanvasGroup.alpha = 1f;
+            fadeOverlayCanvasGroup.alpha = 1f;
         }
 
-        // 2. 기존 스테이지 오브젝트가 있다면 정리
         GameObject existingStage = GameObject.Find("DummyTestStage");
         if (existingStage != null)
         {
@@ -41,13 +38,10 @@ public class DummyStageBuilder : MonoBehaviour
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
 
-        // 3. Room Chunk Prefab 비동기 로드 & 스폰 (ResourceManager 및 에디터 직통 로더)
         GameObject rootObj = new GameObject("DummyTestStage");
-
         GameObject chunkPrefab = null;
 
 #if UNITY_EDITOR
-        // 에디터 Play 시 Addressables 번들 미갱신 상태에서도 실물 Room_TestDummy.prefab 100% 우선 로드
         chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Room_TestDummy.prefab");
 #endif
 
@@ -56,7 +50,7 @@ public class DummyStageBuilder : MonoBehaviour
             try
             {
                 var tcs = new UniTaskCompletionSource<GameObject>();
-                ResourceManager.Instance.LoadAssetAsync<GameObject>(this.RoomChunkAddressableKey, prefab =>
+                ResourceManager.Instance.LoadAssetAsync<GameObject>(RoomChunkAddressableKey, prefab =>
                 {
                     tcs.TrySetResult(prefab);
                 });
@@ -65,7 +59,7 @@ public class DummyStageBuilder : MonoBehaviour
             }
             catch (System.Exception ex)
             {
-                Debug.LogWarning($"[DummyStageBuilder] Addressables Key '{this.RoomChunkAddressableKey}' 미등록 감지: {ex.Message}");
+                Debug.LogWarning($"[DummyStageBuilder] Addressables Key '{RoomChunkAddressableKey}' 미등록 감지: {ex.Message}");
             }
         }
 
@@ -76,26 +70,21 @@ public class DummyStageBuilder : MonoBehaviour
             spawnedChunk.name = "Room_Chunk_Instance";
             loadedFromPrefab = true;
 
-            // 청크 프리팹 내부의 m_Sprite가 {fileID: 0}으로 비어있는 경우 자동 수선 및 바인딩 보장
-            this.fixChunkSpritesIfNeeded(spawnedChunk);
-
-            Debug.Log($"<color=green>[DummyStageBuilder] '{this.RoomChunkAddressableKey}' 청크 프리팹 로드, 수선 & 스폰 완결!</color>");
+            fixChunkSpritesIfNeeded(spawnedChunk);
+            Debug.Log($"<color=green>[DummyStageBuilder] '{RoomChunkAddressableKey}' 청크 프리팹 로드 & 스폰 완결!</color>");
         }
 
-        // 3-1. 청크 프리팹 미생성 대비 세이프티 폴백 (지면, 발판 3종, 벽, 가시, 문, 상자 무결점 동적 보완)
         if (!loadedFromPrefab)
         {
-            this.buildFallbackRoomChunk(rootObj.transform);
+            buildFallbackRoomChunk(rootObj.transform);
         }
 
-        // 4. 버퍼 시간 (Buffer Time) 대기 (물리/카메라/프레임 안정을 위한 0.5초 버퍼)
-        if (this.BufferTimeSec > 0f)
+        if (BufferTimeSec > 0f)
         {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(this.BufferTimeSec), cancellationToken: cancellationToken);
+            await UniTask.Delay(System.TimeSpan.FromSeconds(BufferTimeSec), cancellationToken: cancellationToken);
         }
 
-        // 6. 화면 페이드 인 연출 (Black Overlay Fade Out)
-        await this.fadeInScreenAsync(cancellationToken);
+        await fadeInScreenAsync(cancellationToken);
 
         Debug.Log("<color=green>[DummyStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
     }
@@ -103,33 +92,61 @@ public class DummyStageBuilder : MonoBehaviour
     private void buildFallbackRoomChunk(Transform parent)
     {
         // Ground Base
-        GameObject groundObj = this.createPoolableObject("Ground_Base", parent, new Vector3(0f, -0.5f, 0f));
-        var groundCol = this.getOrAddComponent<BoxCollider2D>(groundObj);
-        groundCol.size = new Vector2(this.RoomSize.x, 1.0f);
-        var groundSprite = this.getOrAddComponent<SpriteRenderer>(groundObj);
+        GameObject groundObj = createPoolableObject("Ground_Base", parent, new Vector3(0f, -0.5f, 0f));
+        var groundCol = getOrAddComponent<BoxCollider2D>(groundObj);
+        groundCol.size = new Vector2(RoomSize.x, 1.0f);
+        var groundSprite = getOrAddComponent<SpriteRenderer>(groundObj);
         groundSprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
         groundSprite.color = new Color(0.25f, 0.28f, 0.32f, 1.0f);
 
-        // Walls
-        GameObject leftWall = this.createPoolableObject("Wall_Left", parent, new Vector3(-this.RoomSize.x * 0.5f, this.RoomSize.y * 0.5f, 0f));
-        var leftCol = this.getOrAddComponent<BoxCollider2D>(leftWall);
-        leftCol.size = new Vector2(1.0f, this.RoomSize.y);
+        // 1. Left Wall (표준 벽점프: 동일 벽 연속 점프 허용)
+        GameObject leftWall = createPoolableObject("Wall_Left_Standard", parent, new Vector3(-RoomSize.x * 0.5f, RoomSize.y * 0.5f, 0f));
+        var leftCol = getOrAddComponent<BoxCollider2D>(leftWall);
+        leftCol.size = new Vector2(1.0f, RoomSize.y);
+        var leftSurf = getOrAddComponent<WallJumpSurface>(leftWall);
+        leftSurf.CanWallJump = true;
+        leftSurf.AllowSameWall = true;
 
-        GameObject rightWall = this.createPoolableObject("Wall_Right", parent, new Vector3(this.RoomSize.x * 0.5f, this.RoomSize.y * 0.5f, 0f));
-        var rightCol = this.getOrAddComponent<BoxCollider2D>(rightWall);
-        rightCol.size = new Vector2(1.0f, this.RoomSize.y);
+        // 2. Right Wall (교차 벽점프 전용: 동일 벽 연속 점프 불가)
+        GameObject rightWall = createPoolableObject("Wall_Right_AlternateOnly", parent, new Vector3(RoomSize.x * 0.5f, RoomSize.y * 0.5f, 0f));
+        var rightCol = getOrAddComponent<BoxCollider2D>(rightWall);
+        rightCol.size = new Vector2(1.0f, RoomSize.y);
+        var rightSurf = getOrAddComponent<WallJumpSurface>(rightWall);
+        rightSurf.CanWallJump = true;
+        rightSurf.AllowSameWall = false;
 
-        // Step Platforms with Effector & PassThrough
-        this.createPlatform(parent, "Platform_Low", new Vector3(-5f, 2.5f, 0f), new Vector2(4f, 0.4f));
-        this.createPlatform(parent, "Platform_Mid", new Vector3(0f, 5.0f, 0f), new Vector2(4f, 0.4f));
-        this.createPlatform(parent, "Platform_High", new Vector3(5f, 7.5f, 0f), new Vector2(4f, 0.4f));
+        // 3. Center Red Wall (벽점프 금지 구역)
+        GameObject noJumpWall = createPoolableObject("Wall_Center_NoJump", parent, new Vector3(-7f, 5.0f, 0f));
+        var noJumpCol = getOrAddComponent<BoxCollider2D>(noJumpWall);
+        noJumpCol.size = new Vector2(1.0f, 8.0f);
+        var noJumpSurf = getOrAddComponent<WallJumpSurface>(noJumpWall);
+        noJumpSurf.CanWallJump = false;
+        var noJumpSprite = getOrAddComponent<SpriteRenderer>(noJumpWall);
+        noJumpSprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
+        noJumpSprite.color = new Color(0.85f, 0.2f, 0.2f, 0.9f); // 빨간색: 벽점프 불가
+
+        // 4. Center Cyan Wall (얼음 미끄럼 벽: 빠른 슬라이딩 배율 2.5x)
+        GameObject iceWall = createPoolableObject("Wall_Center_IceSlide", parent, new Vector3(7f, 5.0f, 0f));
+        var iceCol = getOrAddComponent<BoxCollider2D>(iceWall);
+        iceCol.size = new Vector2(1.0f, 8.0f);
+        var iceSurf = getOrAddComponent<WallJumpSurface>(iceWall);
+        iceSurf.CanWallJump = true;
+        iceSurf.SlideSpeedMultiplier = 2.5f;
+        var iceSprite = getOrAddComponent<SpriteRenderer>(iceWall);
+        iceSprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
+        iceSprite.color = new Color(0.2f, 0.85f, 1.0f, 0.9f); // 하늘색: 빠른 슬라이딩
+
+        // Step Platforms
+        createPlatform(parent, "Platform_Low", new Vector3(-3f, 2.5f, 0f), new Vector2(4f, 0.4f));
+        createPlatform(parent, "Platform_Mid", new Vector3(0f, 5.0f, 0f), new Vector2(4f, 0.4f));
+        createPlatform(parent, "Platform_High", new Vector3(3f, 7.5f, 0f), new Vector2(4f, 0.4f));
 
         // Hazard Spikes
-        GameObject hazardObj = this.createPoolableObject("Hazard_Spikes", parent, new Vector3(10f, 0.2f, 0f));
-        var hazardCol = this.getOrAddComponent<BoxCollider2D>(hazardObj);
-        hazardCol.size = new Vector2(5f, 0.4f);
+        GameObject hazardObj = createPoolableObject("Hazard_Spikes", parent, new Vector3(11f, 0.2f, 0f));
+        var hazardCol = getOrAddComponent<BoxCollider2D>(hazardObj);
+        hazardCol.size = new Vector2(4f, 0.4f);
         hazardCol.isTrigger = true;
-        var hazardSprite = this.getOrAddComponent<SpriteRenderer>(hazardObj);
+        var hazardSprite = getOrAddComponent<SpriteRenderer>(hazardObj);
         hazardSprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
         hazardSprite.color = new Color(0.9f, 0.2f, 0.2f, 0.8f);
     }
@@ -146,19 +163,19 @@ public class DummyStageBuilder : MonoBehaviour
                 string objName = rend.gameObject.name;
                 if (objName.Contains("Ground"))
                 {
-                    this.bindSprite(rend, "Assets/Textures/Environment/Tile_Terrain_Ground.png", new Color(0.25f, 0.28f, 0.32f, 1.0f));
+                    bindSprite(rend, "Assets/Textures/Environment/Tile_Terrain_Ground.png", new Color(0.25f, 0.28f, 0.32f, 1.0f));
                 }
                 else if (objName.Contains("Platform"))
                 {
-                    this.bindSprite(rend, "Assets/Textures/Environment/Tile_Platform_OneWay.png", new Color(0.1f, 0.7f, 0.85f, 1.0f));
+                    bindSprite(rend, "Assets/Textures/Environment/Tile_Platform_OneWay.png", new Color(0.1f, 0.7f, 0.85f, 1.0f));
                 }
                 else if (objName.Contains("Hazard"))
                 {
-                    this.bindSprite(rend, "Assets/Textures/Environment/Tile_Hazard_SpikesLava.png", new Color(0.9f, 0.2f, 0.2f, 0.8f));
+                    bindSprite(rend, "Assets/Textures/Environment/Tile_Hazard_SpikesLava.png", new Color(0.9f, 0.2f, 0.2f, 0.8f));
                 }
                 else if (objName.Contains("Door") || objName.Contains("Chest"))
                 {
-                    this.bindSprite(rend, "Assets/Textures/Environment/Sprite_Structures_Interactive.png", new Color(0.6f, 0.3f, 0.8f, 1.0f));
+                    bindSprite(rend, "Assets/Textures/Environment/Sprite_Structures_Interactive.png", new Color(0.6f, 0.3f, 0.8f, 1.0f));
                 }
             }
         }
@@ -219,33 +236,41 @@ public class DummyStageBuilder : MonoBehaviour
 
     private void createPlatform(Transform parent, string name, Vector3 pos, Vector2 size)
     {
-        GameObject platObj = this.createPoolableObject(name, parent, pos);
-        
-        var col = this.getOrAddComponent<BoxCollider2D>(platObj);
+        GameObject platObj = createPoolableObject(name, parent, pos);
+
+        int oneWayLayer = LayerMask.NameToLayer("OneWayPlatform");
+        if (oneWayLayer >= 0)
+        {
+            platObj.layer = oneWayLayer;
+        }
+
+        var col = getOrAddComponent<BoxCollider2D>(platObj);
         col.size = size;
-        
-        var effector = this.getOrAddComponent<PlatformEffector2D>(platObj);
+
+        var effector = getOrAddComponent<PlatformEffector2D>(platObj);
         col.usedByEffector = true;
 
-        this.getOrAddComponent<OneWayPlatformPassThrough>(platObj);
+        getOrAddComponent<OneWayPlatformPassThrough>(platObj);
 
-        var sprite = this.getOrAddComponent<SpriteRenderer>(platObj);
+        // 발판 옆면 벽점프 방지 세이프티
+        var surf = getOrAddComponent<WallJumpSurface>(platObj);
+        surf.CanWallJump = false;
+
+        var sprite = getOrAddComponent<SpriteRenderer>(platObj);
         sprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
         sprite.color = new Color(0.1f, 0.7f, 0.85f, 0.9f);
     }
 
-
-
     private void setupFadeOverlay()
     {
-        if (this.fadeOverlayCanvasGroup != null) return;
+        if (fadeOverlayCanvasGroup != null) return;
 
         GameObject canvasObj = new GameObject("StageFadeCanvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 9999;
 
-        this.fadeOverlayCanvasGroup = canvasObj.AddComponent<CanvasGroup>();
+        fadeOverlayCanvasGroup = canvasObj.AddComponent<CanvasGroup>();
 
         GameObject panel = new GameObject("BlackOverlay");
         panel.transform.SetParent(canvasObj.transform, false);
@@ -259,26 +284,27 @@ public class DummyStageBuilder : MonoBehaviour
 
     private async UniTask fadeInScreenAsync(CancellationToken cancellationToken)
     {
-        if (this.fadeOverlayCanvasGroup == null) return;
+        if (fadeOverlayCanvasGroup == null) return;
 
         float elapsed = 0f;
-        float duration = Mathf.Max(0.1f, this.FadeDurationSec);
+        float duration = Mathf.Max(0.1f, FadeDurationSec);
 
         while (elapsed < duration && !cancellationToken.IsCancellationRequested)
         {
-            if (this.fadeOverlayCanvasGroup == null) break;
+            if (fadeOverlayCanvasGroup == null) break;
 
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            this.fadeOverlayCanvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+            fadeOverlayCanvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
 
-        if (this.fadeOverlayCanvasGroup != null)
+        if (fadeOverlayCanvasGroup != null)
         {
-            this.fadeOverlayCanvasGroup.alpha = 0f;
-            Destroy(this.fadeOverlayCanvasGroup.gameObject);
-            this.fadeOverlayCanvasGroup = null;
+            fadeOverlayCanvasGroup.alpha = 0f;
+            Destroy(fadeOverlayCanvasGroup.gameObject);
+            fadeOverlayCanvasGroup = null;
         }
     }
 }
+

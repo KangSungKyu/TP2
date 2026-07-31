@@ -66,9 +66,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -109,184 +109,128 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-  m_Sprites:
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_0
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_1
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_2
-    rect:
-      serializedVersion: 2
-      x: 128
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_3
-    rect:
-      serializedVersion: 2
-      x: 192
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_4
-    rect:
-      serializedVersion: 2
-      x: 256
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300008
-  outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_1
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_2
-    rect:
-      serializedVersion: 2
-      x: 128
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_3
-    rect:
-      serializedVersion: 2
-      x: 192
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  - serializedVersion: 2
-    name: Sprite_Structures_Interactive_4
-    rect:
-      serializedVersion: 2
-      x: 256
-      y: 0
-      width: 64
-      height: 64
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300008
-  outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Sprite_Structures_Interactive_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9955dd2730818ac00800000000000000
-      internalID: 912005327633601945
+      spriteID: 032c4d4cef6d4f746b8588732c7c84df
+      internalID: 1376381762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite_Structures_Interactive_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e50041adb7597b46891f69981b53f86
+      internalID: 247801582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite_Structures_Interactive_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4404140ac75c37c47829bcaac5b557e9
+      internalID: -1470128129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite_Structures_Interactive_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69f6414451ead3e409549a307dbfff6b
+      internalID: -590974268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite_Structures_Interactive_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a85f9b91706b7f74f8637e8557edfdbc
+      internalID: 210541699
       vertices: []
       indices: 
       edges: []
@@ -295,7 +239,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 161f765dcca3c8d42a3dd7f651363b70
     internalID: 0
     vertices: []
     indices: 
@@ -303,9 +247,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Sprite_Structures_Interactive_0: 912005327633601945
+      Sprite_Structures_Interactive_0: 1376381762
+      Sprite_Structures_Interactive_1: 247801582
+      Sprite_Structures_Interactive_2: -1470128129
+      Sprite_Structures_Interactive_3: -590974268
+      Sprite_Structures_Interactive_4: 210541699
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

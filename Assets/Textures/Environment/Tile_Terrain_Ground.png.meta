@@ -66,9 +66,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -109,436 +109,282 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-  m_Sprites:
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_0
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_3
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_4
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300008
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_5
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300010
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_6
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300012
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_7
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300014
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_8
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300016
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_9
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300018
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_10
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300020
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_11
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300022
-  outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300000
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_1
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300002
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_2
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300004
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_3
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 64
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300006
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_4
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300008
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_5
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300010
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_6
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300012
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_7
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 32
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300014
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_8
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300016
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_9
-    rect:
-      serializedVersion: 2
-      x: 32
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300018
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_10
-    rect:
-      serializedVersion: 2
-      x: 64
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300020
-  - serializedVersion: 2
-    name: Tile_Terrain_Ground_11
-    rect:
-      serializedVersion: 2
-      x: 96
-      y: 0
-      width: 32
-      height: 32
-    alignment: 0
-    pivot: {x: 0.5, y: 0.5}
-    border: {x: 0, y: 0, z: 0, w: 0}
-    outline: []
-    physicsShape: []
-    tessellationDetail: 0
-    glyph: 0
-    isModifiable: 1
-    nameFileIdTable: {}
-    internalID: 21300022
-  outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f8bba8d82338da680800000000000000
-      internalID: -8742187048509981809
+      spriteID: d99a568233e9358468a5aeced50c27b3
+      internalID: 255847209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bce0609c46bd32479d1b21c97be825d
+      internalID: -2067003478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b807c68e48f0e2049a4af381f732b44a
+      internalID: -541255407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8033cb67053a81442820953dab1af43a
+      internalID: -10293720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 765dc224fd35f49409fc82d3646837c4
+      internalID: -760441870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_5
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2fae3da8f702b4418afa8d7746180ea
+      internalID: -140510032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_6
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57fd4293fbbcbee41a9568ef84461173
+      internalID: 1817388067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_7
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1da3e2bd7f7f94a42811b50f604cd61f
+      internalID: 301516518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75fd8040ee28089448562962904d56dc
+      internalID: 2055472648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_9
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 631813fb136ee4c45abe36e48877fdb0
+      internalID: 28354982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_10
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5ab605abd03bb949a75e1ced2ca1f4b
+      internalID: -2085016515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_Terrain_Ground_11
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 274a4871d8f27ec448589d0d940229a0
+      internalID: 438341338
       vertices: []
       indices: 
       edges: []
@@ -547,7 +393,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3da67f0a084c82c498d1460de8768afa
     internalID: 0
     vertices: []
     indices: 
@@ -555,9 +401,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":3.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Tile_Terrain_Ground_0: -8742187048509981809
+      Tile_Terrain_Ground_0: 255847209
+      Tile_Terrain_Ground_1: -2067003478
+      Tile_Terrain_Ground_10: -2085016515
+      Tile_Terrain_Ground_11: 438341338
+      Tile_Terrain_Ground_2: -541255407
+      Tile_Terrain_Ground_3: -10293720
+      Tile_Terrain_Ground_4: -760441870
+      Tile_Terrain_Ground_5: -140510032
+      Tile_Terrain_Ground_6: 1817388067
+      Tile_Terrain_Ground_7: 301516518
+      Tile_Terrain_Ground_8: 2055472648
+      Tile_Terrain_Ground_9: 28354982
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

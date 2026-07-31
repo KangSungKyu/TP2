@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 3076040719381428793}
   - component: {fileID: 7564202145136594324}
   - component: {fileID: 454871542156405120}
+  - component: {fileID: 5837903626141983593}
+  - component: {fileID: 8390051112812904954}
+  - component: {fileID: 3877398339113559974}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -50,6 +53,8 @@ MonoBehaviour:
   MaxHp: 100
   MaxMp: 50
   MaxPosture: 100
+  Atk: 10
+  IsSuperArmorActive: 0
   OnHpChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -63,6 +68,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnGroggyState:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGroggyEnded:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &7564202145136594324
@@ -89,8 +97,97 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 582cf07a51498ad4d89d96aafa5a6e8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  Speed: 5
+  Speed: 10
   DodgeDashSpeed: 12
+  jumpForce: 15
+  gravity: 28
+--- !u!50 &5837903626141983593
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!70 &8390051112812904954
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.5, y: 1}
+  m_Direction: 0
+--- !u!114 &3877398339113559974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7d6361d6476c8d4c82f648f465e70d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KinematicMotor2D
+  Gravity: 30
+  MaxFallSpeed: 25
+  FallGravityMultiplier: 1.7
+  ApexGravityMultiplier: 0.5
+  SkinWidth: 0.01
+  SolidGroundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  OneWayPlatformLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &5561306966581775118
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,7 +278,7 @@ SpriteRenderer:
   m_Size: {x: 10.24, y: 10.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2330727772339066561
 Animator:
