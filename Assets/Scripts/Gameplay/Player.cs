@@ -135,11 +135,12 @@ public class Player : UnitBase
 
         // 1. 하향 점프 (S/Down + C/Space)
         bool isDownPressed = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
-        if (isDownPressed && keyboard.cKey.wasPressedThisFrame && isGroundedNow)
+        bool isJumpPressedThisFrame = keyboard.cKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame;
+        if (isDownPressed && isJumpPressedThisFrame && isGroundedNow)
         {
             if (motor != null)
             {
-                motor.PassThroughOneWayPlatformAsync(0.25f, this.GetCancellationTokenOnDestroy()).Forget();
+                motor.PassThroughOneWayPlatformAsync(0.35f, this.GetCancellationTokenOnDestroy()).Forget();
             }
             return;
         }

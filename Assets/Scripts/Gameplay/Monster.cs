@@ -220,6 +220,11 @@ public class Monster : UnitBase
 
                 if (motor != null)
                 {
+                    // 메트로배니아 몬스터 AI: 장애물/지형 조우 시 자동 도약(Auto-Hop) 처리
+                    if (motor.IsGrounded && ((moveDir.x > 0 && motor.IsWalledRight) || (moveDir.x < 0 && motor.IsWalledLeft)))
+                    {
+                        motor.SetVelocityY(7.5f);
+                    }
                     motor.SetTargetVelocityX(moveDir.x * moveSpeed);
                 }
                 else

@@ -111,11 +111,11 @@ public class KinematicMotor2D : MonoBehaviour
         isJumpHeld = held;
     }
 
-    public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.25f, CancellationToken cancellationToken = default)
+    public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.35f, CancellationToken cancellationToken = default)
     {
         isPassThroughActive = true;
         IsGrounded = false;
-        Velocity = new Vector2(Velocity.x, -2f);
+        Velocity = new Vector2(Velocity.x, -6.5f);
 
         try
         {
@@ -221,7 +221,7 @@ public class KinematicMotor2D : MonoBehaviour
                 }
             }
 
-            if (currentNormal.y > MinGroundNormalY)
+            if (currentNormal.y > MinGroundNormalY && !isPassThroughActive)
             {
                 IsGrounded = true;
                 if (yMovement)

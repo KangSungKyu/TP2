@@ -79,9 +79,7 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject existingStage = GameObject.Find("TilemapStage_Root");
         if (existingStage != null)
         {
-            if (Application.isPlaying) Destroy(existingStage);
-            else DestroyImmediate(existingStage);
-            if (Application.isPlaying) await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            DestroyImmediate(existingStage);
         }
 
         GameObject rootObj = new GameObject("TilemapStage_Root");
