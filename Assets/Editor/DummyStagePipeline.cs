@@ -15,7 +15,8 @@ public static class DummyStagePipeline
         var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 
         GameObject builderObj = new GameObject("TilemapStageBuilder");
-        builderObj.AddComponent<TilemapStageBuilder>();
+        var builder = builderObj.AddComponent<TilemapStageBuilder>();
+        builder.BuildStageEditorSync();
 
         string scenePath = "Assets/Scenes/TestDummyStageScene.unity";
         bool saved = EditorSceneManager.SaveScene(scene, scenePath);

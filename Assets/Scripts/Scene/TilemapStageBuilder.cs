@@ -21,7 +21,51 @@ public class TilemapStageBuilder : MonoBehaviour
 
     private void Start()
     {
-        BuildTilemapStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        if (Application.isPlaying)
+        {
+            BuildTilemapStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+    }
+
+    [ContextMenu("Build Stage In Editor")]
+    public void BuildStageEditorSync()
+    {
+        GameObject existingStage = GameObject.Find("TilemapStage_Root");
+        if (existingStage != null)
+        {
+            if (Application.isPlaying) Destroy(existingStage);
+            else DestroyImmediate(existingStage);
+        }
+
+        GameObject rootObj = new GameObject("TilemapStage_Root");
+        GameObject chunkPrefab = null;
+
+#if UNITY_EDITOR
+        chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Tilemap_Room_TestDummy.prefab");
+#endif
+
+        if (chunkPrefab != null)
+        {
+            GameObject spawnedChunk = Instantiate(chunkPrefab, rootObj.transform);
+            spawnedChunk.name = "Tilemap_Room_Chunk_Instance";
+
+            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            if (spawner != null)
+            {
+                spawner.SpawnUnitsFromMarkers(spawnedChunk);
+            }
+            Debug.Log($"<color=green>[TilemapStageBuilder] 에디터 동기 로드 완료: '{TilemapAddressableKey}'</color>");
+        }
+        else
+        {
+            buildExpandedDummyStage(rootObj.transform);
+            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            if (spawner != null)
+            {
+                spawner.SpawnUnitsFromMarkers(rootObj);
+            }
+            Debug.Log("<color=green>[TilemapStageBuilder] 에디터 동기 60x30 대형 더미 스테이지 생성 완료!</color>");
+        }
     }
 
     public async UniTask BuildTilemapStageAsync(CancellationToken cancellationToken = default)
@@ -35,8 +79,9 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject existingStage = GameObject.Find("TilemapStage_Root");
         if (existingStage != null)
         {
-            Destroy(existingStage);
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            if (Application.isPlaying) Destroy(existingStage);
+            else DestroyImmediate(existingStage);
+            if (Application.isPlaying) await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
 
         GameObject rootObj = new GameObject("TilemapStage_Root");
