@@ -18,7 +18,7 @@ public class UnitBase : MonoBehaviour
 
 
     // =========================================================================
-    // 2. PROTECTED & PRIVATE FIELDS (camelCase, No '_' prefix)
+    // 2. PROTECTED & PRIVATE FIELDS (camelCase)
     // =========================================================================
 
     protected CombatStats stats;
@@ -28,6 +28,9 @@ public class UnitBase : MonoBehaviour
     protected Transform visualTransform;
     protected CapsuleCollider2D hitCollider;
     protected Rigidbody2D rb2d;
+    protected KinematicMotor2D motor;
+
+    protected bool isGrounded => motor != null ? motor.IsGrounded : false;
 
 
     // =========================================================================
@@ -48,11 +51,11 @@ public class UnitBase : MonoBehaviour
         var unitDB = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<UnitBaseDataTable>(DataTableType.UnitBase) : null;
         if (unitDB != null && unitDB.TryGetUnitData(unitIdx, out var data))
         {
-            this.UnitData = data;
-            this.applyBaseStats(data);
-            this.setupHitbox(data);
-            this.loadResourceAndAnimator(data);
-            Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' Idx {unitIdx} 데이터 바인딩 완료! (HP: {data.MaxHp}, ATK: {data.Atk})</color>");
+            UnitData = data;
+            ApplyBaseStats(data);
+            SetupHitbox(data);
+            LoadResourceAndAnimator(data);
+            Debug.Log($"<color=green>[UnitBase] '{gameObject.name}' Idx {unitIdx} 데이터 바인딩 완료! (HP: {data.MaxHp}, ATK: {data.Atk})</color>");
         }
         else
         {
@@ -62,107 +65,105 @@ public class UnitBase : MonoBehaviour
 
     public virtual void SetFacingRight(bool isRight)
     {
-        // 정책: 원본 스프라이트(Texture)는 왼쪽을 바라보는 형태가 기본값.
-        // 따라서 유닛이 오른쪽(isRight = true)을 바라보게 하려면 flipX를 true로 반전시켜야 함.
-        if (this.spriteRenderer != null)
+        if (spriteRenderer != null)
         {
-            this.spriteRenderer.flipX = isRight;
+            spriteRenderer.flipX = isRight;
         }
         
-        // flipX로 방향을 처리하므로, visualTransform의 Scale은 1f로 유지 (이중 반전 방지)
-        if (this.visualTransform != null)
+        if (visualTransform != null)
         {
-            float scaleY = this.visualTransform.localScale.y;
-            float scaleZ = this.visualTransform.localScale.z;
-            this.visualTransform.localScale = new Vector3(1f, scaleY, scaleZ);
+            float scaleY = visualTransform.localScale.y;
+            float scaleZ = visualTransform.localScale.z;
+            visualTransform.localScale = new Vector3(1f, scaleY, scaleZ);
         }
     }
 
     /// <summary>
     /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
-    /// 플레이어뿐만 아니라 몬스터/보스 AI도 호출 가능한 공용 기능입니다.
     /// </summary>
     public virtual bool TryExecuteTarget(UnitBase target, float executionMultiplier = 5.0f)
     {
-        if (target == null || target.stats == null || this.stats == null) return false;
+        if (target == null || target.stats == null || stats == null) return false;
 
-        // 1. 대상이 Groggy 상태인지 검사
         if (!target.stats.IsGroggy)
         {
             Debug.Log($"[TryExecuteTarget] 대상 '{target.gameObject.name}' 은 Groggy 상태가 아닙니다.");
             return false;
         }
 
-        // 2. 처형 데미지 계산 (시전자의 Atk * 배율)
-        float executionDamage = this.stats.Atk * executionMultiplier;
-
-        // 3. 대상 유닛에게 처형 데미지 적용
-        target.stats.TakeExecutionDamage(executionDamage, attacker: this.stats);
+        float executionDamage = stats.Atk * executionMultiplier;
+        target.stats.TakeExecutionDamage(executionDamage, attacker: stats);
 
         Debug.Log($"<color=yellow>[Execution Success] '{gameObject.name}' 이(가) '{target.gameObject.name}' 에 처형 공격 성공! (Damage: {executionDamage})</color>");
         return true;
     }
 
 
-
     // =========================================================================
-    // 4. PROTECTED & PRIVATE METHODS (camelCase)
+    // 4. PROTECTED & PRIVATE METHODS
     // =========================================================================
 
     protected virtual void Awake()
     {
-        this.stats = GetComponent<CombatStats>();
-        this.skillExecutor = GetComponent<SkillExecutor>();
+        stats = GetComponent<CombatStats>();
+        skillExecutor = GetComponent<SkillExecutor>();
+        motor = GetComponent<KinematicMotor2D>();
+        if (motor == null)
+        {
+            motor = gameObject.AddComponent<KinematicMotor2D>();
+        }
 
-        // [Root & Visual 계층 아키텍처 세팅]
-        this.visualTransform = transform.Find("Visual");
-        if (this.visualTransform == null)
+        visualTransform = transform.Find("Visual");
+        if (visualTransform == null)
         {
             GameObject visualObj = new GameObject("Visual");
-            this.visualTransform = visualObj.transform;
-            this.visualTransform.SetParent(transform, false);
-            this.visualTransform.localPosition = Vector3.zero;
+            visualTransform = visualObj.transform;
+            visualTransform.SetParent(transform, false);
+            visualTransform.localPosition = Vector3.zero;
         }
 
-        this.spriteRenderer = this.visualTransform.GetComponent<SpriteRenderer>();
-        if (this.spriteRenderer == null)
+        spriteRenderer = visualTransform.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
         {
-            this.spriteRenderer = this.visualTransform.gameObject.AddComponent<SpriteRenderer>();
-            this.spriteRenderer.sortingOrder = 10;
+            spriteRenderer = visualTransform.gameObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sortingOrder = 10;
         }
 
-        this.animator = this.visualTransform.GetComponent<Animator>();
-        if (this.animator == null)
+        animator = visualTransform.GetComponent<Animator>();
+        if (animator == null)
         {
-            this.animator = this.visualTransform.gameObject.AddComponent<Animator>();
+            animator = visualTransform.gameObject.AddComponent<Animator>();
         }
     }
 
-    private void applyBaseStats(UnitBaseData data)
+    protected virtual void updateGroundCheck()
     {
-        if (this.stats != null)
+        // KinematicMotor2D가 FixedUpdate에서 자체 구동하므로 외부 호출 불필요
+    }
+
+    private void ApplyBaseStats(UnitBaseData data)
+    {
+        if (stats != null)
         {
-            this.stats.MaxHp = data.MaxHp;
-            this.stats.MaxMp = data.MaxMp;
-            this.stats.MaxPosture = data.MaxPosture;
-            this.stats.InitStats();
+            stats.MaxHp = data.MaxHp;
+            stats.MaxMp = data.MaxMp;
+            stats.MaxPosture = data.MaxPosture;
+            stats.InitStats();
         }
 
-        // 지면 피벗 오프셋: Sprite Sheet 피벗이 (0.5, 0.0)으로 가공되었으므로 항상 (0,0,0) 고정
-        if (this.visualTransform != null)
+        if (visualTransform != null)
         {
-            this.visualTransform.localPosition = Vector3.zero;
+            visualTransform.localPosition = Vector3.zero;
         }
 
-        // TextData 조회
         var textDB = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<TextDataTable>(DataTableType.Text) : null;
         if (textDB != null)
         {
-            this.UnitName = textDB.GetText(data.NameTextIdx);
+            UnitName = textDB.GetText(data.NameTextIdx);
         }
     }
 
-    private void loadResourceAndAnimator(UnitBaseData data)
+    private void LoadResourceAndAnimator(UnitBaseData data)
     {
         var resourceDB = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource) : null;
         if (resourceDB == null) return;
@@ -172,60 +173,56 @@ public class UnitBase : MonoBehaviour
         {
             ResourceManager.Instance.LoadAssetAsync<RuntimeAnimatorController>(animatorKey, controller =>
             {
-                if (controller != null && this.animator != null)
+                if (controller != null && animator != null)
                 {
-                    this.animator.runtimeAnimatorController = controller;
-                    // Controller 연결 직후 기본 Idle 애니메이션 재생을 안전하게 시도하여 스프라이트 미출력 방지
-                    if (this.animator.HasState(0, Animator.StringToHash("Player_Idle")))
+                    animator.runtimeAnimatorController = controller;
+                    if (animator.HasState(0, Animator.StringToHash("Player_Idle")))
                     {
-                        this.animator.Play("Player_Idle", 0, 0f);
+                        animator.Play("Player_Idle", 0, 0f);
                     }
                     else
                     {
-                        this.animator.Play(0, 0, 0f); // Default State 0번 레이어 재생
+                        animator.Play(0, 0, 0f);
                     }
-                    Debug.Log($"<color=green>[UnitBase] '{this.gameObject.name}' 하위 Visual 객체에 '{animatorKey}' 바인딩 및 애니메이션 재생 개시 완료!</color>");
+                    Debug.Log($"<color=green>[UnitBase] '{gameObject.name}' 하위 Visual 객체에 '{animatorKey}' 바인딩 및 애니메이션 재생 개시 완료!</color>");
                 }
             });
         }
     }
 
-    private void setupHitbox(UnitBaseData data)
+    private void SetupHitbox(UnitBaseData data)
     {
-        // 1. Trigger 이벤트를 안정적으로 감지하기 위한 Kinematic Rigidbody2D 부착
-        this.rb2d = GetComponent<Rigidbody2D>();
-        if (this.rb2d == null)
+        rb2d = GetComponent<Rigidbody2D>();
+        if (rb2d == null)
         {
-            this.rb2d = this.gameObject.AddComponent<Rigidbody2D>();
+            rb2d = gameObject.AddComponent<Rigidbody2D>();
         }
-        this.rb2d.bodyType = RigidbodyType2D.Kinematic;
-        this.rb2d.simulated = true;
+        rb2d.bodyType = RigidbodyType2D.Kinematic;
+        rb2d.simulated = true;
 
-        // 2. 피격(Hitbox) 전용 CapsuleCollider2D 설정 (isTrigger = true 로 설정하여 물리 겹침 허용)
-        this.hitCollider = GetComponent<CapsuleCollider2D>();
-        if (this.hitCollider == null)
+        hitCollider = GetComponent<CapsuleCollider2D>();
+        if (hitCollider == null)
         {
-            this.hitCollider = this.gameObject.AddComponent<CapsuleCollider2D>();
+            hitCollider = gameObject.AddComponent<CapsuleCollider2D>();
         }
 
         float radius = data.HitboxRadius > 0f ? data.HitboxRadius : 0.5f;
         float height = radius * 4f;
 
-        this.hitCollider.isTrigger = true;
-        this.hitCollider.size = new Vector2(radius * 2f, height);
-        this.hitCollider.offset = new Vector2(0f, height * 0.5f); // 발바닥 피벗 기준 위쪽 오프셋
-        this.hitCollider.direction = CapsuleDirection2D.Vertical;
+        hitCollider.isTrigger = true;
+        hitCollider.size = new Vector2(radius * 2f, height);
+        hitCollider.offset = new Vector2(0f, height * 0.5f);
+        hitCollider.direction = CapsuleDirection2D.Vertical;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        // 3. Game View에서도 항시 뚜렷하게 보이도록 LineRenderer 기반 Hitbox Visualizer 생성
-        this.setupGameViewHitboxLine(data, radius * 2f, height, new Vector2(0f, height * 0.5f));
+        SetupGameViewHitboxLine(data, radius * 2f, height, new Vector2(0f, height * 0.5f));
 #endif
 
-        Debug.Log($"<color=cyan>[Hitbox] '{this.gameObject.name}' Trigger Hitbox 생성 완료 (Radius: {radius}, Size: {this.hitCollider.size})</color>");
+        Debug.Log($"<color=cyan>[Hitbox] '{gameObject.name}' Trigger Hitbox 생성 완료 (Radius: {radius}, Size: {hitCollider.size})</color>");
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    private void setupGameViewHitboxLine(UnitBaseData data, float width, float height, Vector2 offset)
+    private void SetupGameViewHitboxLine(UnitBaseData data, float width, float height, Vector2 offset)
     {
         Transform debugObj = transform.Find("DebugHitboxLine");
         LineRenderer line;
@@ -267,22 +264,17 @@ public class UnitBase : MonoBehaviour
 #endif
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    /// <summary>
-    /// 테스트 및 디버그 환경에서 피격 Hitbox(CapsuleCollider2D)의 영역을 시각화합니다.
-    /// </summary>
     protected virtual void OnDrawGizmos()
     {
-        var col = this.hitCollider != null ? this.hitCollider : GetComponent<CapsuleCollider2D>();
+        var col = hitCollider != null ? hitCollider : GetComponent<CapsuleCollider2D>();
         if (col == null) return;
 
-        // 진영(Faction) 및 유닛 타입에 따른 기즈모 색상 구분
-        // Player (1): 초록색, Enemy/Boss (2,3): 빨간색, 기타: 하늘색
         Color fillColor = new Color(0f, 1f, 1f, 0.25f);
         Color wireColor = new Color(0f, 1f, 1f, 0.9f);
 
-        if (this.UnitData != null)
+        if (UnitData != null)
         {
-            if (this.UnitData.Faction == 1) // Player
+            if (UnitData.Faction == 1)
             {
                 fillColor = new Color(0f, 1f, 0f, 0.25f);
                 wireColor = new Color(0f, 1f, 0f, 0.9f);

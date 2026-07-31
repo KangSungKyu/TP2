@@ -14,6 +14,7 @@ public static class BatchFullProcessor
         EffectPrefabBuilder.BuildAllEffectPrefabs();
         StageResourcePipeline.BuildStageEnvironmentResources();
         RoomPrefabBuilder.BuildRoomTestDummyPrefab();
+        TilemapRoomPrefabBuilder.BuildTilemapRoomPrefab();
         AddressablePipeline.BuildAndDeploy();
         Debug.Log("<color=green><b>[BatchFullProcessor] Full Unity Pipeline Complete!</b></color>");
     }

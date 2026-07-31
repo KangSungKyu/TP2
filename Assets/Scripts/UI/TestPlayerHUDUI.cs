@@ -5,13 +5,22 @@ using UnityEngine.UI;
 /// 테스트 및 디버그 환경에서 플레이어의 상태 정보(이름, HP, MP, Posture, PlayerState)를
 /// 화면 좌상단에 실시간으로 선명하게 표출해주는 테스트 HUD UI 컴포넌트.
 /// </summary>
-public class TestPlayerHUDUI : MonoBehaviour
+public class TestPlayerHUDUI : Singleton<TestPlayerHUDUI>
 {
-    private static TestPlayerHUDUI instance;
-    public static TestPlayerHUDUI Instance => instance;
+
 
     private Player targetPlayer;
     private CombatStats playerStats;
+
+    private UnitBase targetBoss;
+    private CombatStats bossStats;
+
+    public void BindBossTarget(UnitBase bossUnit)
+    {
+        if (bossUnit == null) return;
+        this.targetBoss = bossUnit;
+        this.bossStats = bossUnit.GetComponent<CombatStats>();
+    }
 
     // GUI 스타일 정의
     private GUIStyle headerStyle;
@@ -19,19 +28,7 @@ public class TestPlayerHUDUI : MonoBehaviour
     private GUIStyle stateStyle;
     private bool stylesInitialized = false;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
+
 
     private void Update()
     {
@@ -89,9 +86,28 @@ public class TestPlayerHUDUI : MonoBehaviour
 
         // 5. 현재 PlayerState 상태 표출
         string stateText = $"STATE: <color=yellow>{this.targetPlayer.CurrentState}</color>";
-        GUILayout.Label(stateText, this.stateStyle);
-
         GUILayout.EndArea();
+
+        // 화면 중앙 상단 보스 HP 대형 게이지 바 렌더링 (SpawnType.Boss 마커 바인딩 유닛)
+        if (this.targetBoss != null)
+        {
+            float bossWidth = 420f;
+            float bossHeight = 65f;
+            float bossX = (Screen.width - bossWidth) * 0.5f;
+            float bossY = 15f;
+
+            Rect bossBoxRect = new Rect(bossX, bossY, bossWidth, bossHeight);
+            GUI.Box(bossBoxRect, GUIContent.none);
+
+            GUILayout.BeginArea(new Rect(bossX + 10f, bossY + 5f, bossWidth - 20f, bossHeight - 10f));
+            string bossName = string.IsNullOrEmpty(this.targetBoss.UnitName) ? "BOSS (Iron Guard Garon)" : this.targetBoss.UnitName;
+            GUILayout.Label($"<color=red><b>[ ☠️ BOSS: {bossName} ]</b></color>", this.headerStyle);
+
+            float bHp = this.bossStats != null ? this.bossStats.CurrentHp : 100f;
+            float bMaxHp = this.bossStats != null ? this.bossStats.MaxHp : 100f;
+            this.drawStatBar("BOSS HP", bHp, bMaxHp, new Color(0.9f, 0.15f, 0.15f));
+            GUILayout.EndArea();
+        }
 #endif
     }
 

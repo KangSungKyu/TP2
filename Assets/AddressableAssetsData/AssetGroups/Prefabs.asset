@@ -105,8 +105,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f000000000000000985100b692da1d2e
-    m_Address: Room_TestDummy
+  - m_GUID: dc6b49e5da713d6408839e04380fbc86
+    m_Address: Tilemap_Room_TestDummy
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
