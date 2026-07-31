@@ -136,7 +136,8 @@ public class TilemapStageBuilder : MonoBehaviour
             }
         }
 
-        Debug.Log("<color=cyan>[TilemapStageBuilder] 대형 테스트 스테이지 전개 완료! 0.5s 버퍼 대기 개시...</color>");
+        SetupMetroidvaniaCamera();
+        Debug.Log("<color=cyan>[TilemapStageBuilder] 메트로배니아 2D 카메라 바인딩 & 대형 테스트 스테이지 전개 완료! 0.5s 버퍼 대기 개시...</color>");
 
         if (BufferTimeSec > 0f)
         {
@@ -145,6 +146,30 @@ public class TilemapStageBuilder : MonoBehaviour
 
         await fadeInScreenAsync(cancellationToken);
         Debug.Log("<color=green>[TilemapStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
+    }
+
+    private void SetupMetroidvaniaCamera()
+    {
+        Camera mainCam = Camera.main;
+        if (mainCam == null)
+        {
+            var camObj = new GameObject("Main Camera");
+            mainCam = camObj.AddComponent<Camera>();
+            camObj.tag = "MainCamera";
+        }
+
+        var metroCam = mainCam.GetComponent<MetroidvaniaCamera2D>();
+        if (metroCam == null)
+        {
+            metroCam = mainCam.gameObject.AddComponent<MetroidvaniaCamera2D>();
+        }
+
+        metroCam.SetBounds(new Vector2(-29f, -1f), new Vector2(29f, 17f));
+        var player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            metroCam.Target = player.transform;
+        }
     }
 
     private void buildExpandedDummyStage(Transform parent)

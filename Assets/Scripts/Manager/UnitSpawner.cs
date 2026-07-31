@@ -18,9 +18,33 @@ public class UnitSpawner : Singleton<UnitSpawner>
             return;
         }
 
+        // 유닛 중복 생성 완전 방지: 기존 몬스터 제거 및 플레이어 유일성 보장
+        CleanupExistingUnits();
+
         foreach (var marker in markers)
         {
             ProcessSpawnMarker(marker);
+        }
+    }
+
+    private void CleanupExistingUnits()
+    {
+        var existingUnits = Object.FindObjectsOfType<UnitBase>();
+        foreach (var unit in existingUnits)
+        {
+            if (unit is Player) continue;
+            if (Application.isPlaying) Object.Destroy(unit.gameObject);
+            else Object.DestroyImmediate(unit.gameObject);
+        }
+
+        var players = Object.FindObjectsOfType<Player>();
+        if (players.Length > 1)
+        {
+            for (int i = 1; i < players.Length; i++)
+            {
+                if (Application.isPlaying) Object.Destroy(players[i].gameObject);
+                else Object.DestroyImmediate(players[i].gameObject);
+            }
         }
     }
 
