@@ -353,9 +353,11 @@ public class Player : UnitBase
         // 공격 상태로 돌입 (지상/공중 공용 모션 재생)
         this.SetState(attackState, true);
 
-        if (this.motor != null)
+        // 지상 공격 시 이동 정지 (공중에서는 관성 유지)
+        if (!this.IsJumping && this.motor != null)
         {
-            this.motor.SetTargetVelocityX(0);
+            this.currentMoveDir = Vector2.zero;
+            this.motor.SetTargetVelocityX(0f);
         }
 
         uint currentSkillId = Util.CreateDataIdx(DataTableType.Skill, (uint)this.comboStep); // Util 유틸 함수로 DataTableType.Skill Idx 생성
