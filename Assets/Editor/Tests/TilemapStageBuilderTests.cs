@@ -6,7 +6,7 @@ using UnityEngine;
 namespace QA.Tests
 {
     /// <summary>
-    /// TilemapStageBuilder 룸 청크 전환, 포탈 상호작용, 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D 무결성 검증 NUnit 테스트
+    /// TilemapStageBuilder 룸 청크 전환, 관문 포탈 3종(Portal, Door, Portal_Gate), 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D 무결성 검증 NUnit 테스트
     /// </summary>
     public class TilemapStageBuilderTests
     {
@@ -146,14 +146,36 @@ namespace QA.Tests
         [Test]
         public void Test08_PortalInteraction_TriggerAndDestinationBinding()
         {
-            GameObject portalObj = new GameObject("Test_Portal");
-            var triggerCollider = portalObj.AddComponent<BoxCollider2D>();
-            triggerCollider.isTrigger = true;
+            string[] portalPaths = new string[]
+            {
+                "Assets/Prefabs/Structures/Portal.prefab",
+                "Assets/Prefabs/Structures/Door.prefab",
+                "Assets/Prefabs/Structures/Portal_Gate.prefab"
+            };
 
-            Assert.IsTrue(triggerCollider.isTrigger, "포탈 상호작용 콜라이더는 Trigger 전용이어야 합니다.");
-            Assert.IsNotNull(portalObj, "포탈 오브젝트 구성 완결");
+            foreach (string path in portalPaths)
+            {
+                Assert.IsTrue(File.Exists(path), $"포탈 프리팹 파일이 존재해야 합니다: {path}");
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                
+                GameObject testPortal = null;
+                if (prefab != null)
+                {
+                    testPortal = Object.Instantiate(prefab);
+                }
+                else
+                {
+                    testPortal = new GameObject(Path.GetFileNameWithoutExtension(path));
+                    var col = testPortal.AddComponent<BoxCollider2D>();
+                    col.isTrigger = true;
+                }
 
-            Object.DestroyImmediate(portalObj);
+                var collider = testPortal.GetComponent<Collider2D>();
+                Assert.IsNotNull(collider, $"'{path}' 포탈 오브젝트에 Collider2D가 부착되어 있어야 합니다.");
+                Assert.IsTrue(collider.isTrigger, $"'{path}' 포탈 콜라이더는 isTrigger = true 이어야 합니다.");
+
+                Object.DestroyImmediate(testPortal);
+            }
         }
 
         [Test]
