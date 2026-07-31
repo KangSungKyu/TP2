@@ -6,7 +6,7 @@ using UnityEngine;
 namespace QA.Tests
 {
     /// <summary>
-    /// TilemapStageBuilder 룸 청크 전환, 관문 포탈 3종(Portal, Door, Portal_Gate), 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D 무결성 검증 NUnit 테스트
+    /// TilemapStageBuilder 룸 청크 전환, 관문 포탈 3종(Portal, Door, Portal_Gate), 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D, StageManager 1스테이지 초심자 룸 시퀀스 무결성 검증 NUnit 테스트
     /// </summary>
     public class TilemapStageBuilderTests
     {
@@ -189,6 +189,37 @@ namespace QA.Tests
             Assert.AreEqual(60f, metroCam.MaxBounds.x, 0.01f, "룸 청크 전환 시 60x30 카메라 바운더리가 정상 갱신되어야 합니다.");
 
             Object.DestroyImmediate(camObj);
+        }
+
+        [Test]
+        public void Test10_Stage1_RoomSequence_3Rooms_Validity()
+        {
+            GameObject stageManagerObj = new GameObject("Test_StageManager");
+            var stageMgr = stageManagerObj.AddComponent<StageManager>();
+
+            Assert.IsNotNull(stageMgr, "StageManager 컴포넌트 생성 실패");
+            Assert.AreEqual(3, stageMgr.Stage1RoomSequence.Count, "1스테이지 초심자 룸 시퀀스는 3개(Entry, Battle, Boss)이어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.Stage1RoomSequence[0], "0번 룸은 Entry 청크이어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Battle", stageMgr.Stage1RoomSequence[1], "1번 룸은 Battle 청크이어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Boss", stageMgr.Stage1RoomSequence[2], "2번 룸은 Boss 청크이어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.CurrentRoomKey, "초기 CurrentRoomKey는 Entry 청크이어야 합니다.");
+
+            Object.DestroyImmediate(stageManagerObj);
+        }
+
+        [Test]
+        public void Test11_RoomDoorPortal_AutoTrigger_AndTargetRoomKey()
+        {
+            GameObject portalObj = new GameObject("Test_RoomDoorPortal");
+            var portal = portalObj.AddComponent<RoomDoorPortal>();
+            portal.TargetRoomKey = "Tilemap_Room_Stage1_Battle";
+            portal.AutoTriggerOnTouch = true;
+
+            Assert.IsNotNull(portal, "RoomDoorPortal 생성 실패");
+            Assert.AreEqual("Tilemap_Room_Stage1_Battle", portal.TargetRoomKey, "목표 룸 타겟 키 바인딩 검증");
+            Assert.IsTrue(portal.AutoTriggerOnTouch, "AutoTriggerOnTouch 활성화 상태 확인");
+
+            Object.DestroyImmediate(portalObj);
         }
     }
 }

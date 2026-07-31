@@ -34,12 +34,14 @@ public class RoomDoorPortal : MonoBehaviour
         {
             await StageManager.Instance.LoadNextRoomAsync(TargetRoomKey);
         }
-        else if (TilemapStageBuilder.Instance != null)
+        else
         {
-            TilemapStageBuilder.Instance.TilemapAddressableKey = TargetRoomKey;
-            await TilemapStageBuilder.Instance.BuildTilemapStageAsync();
+            var builder = Object.FindObjectOfType<TilemapStageBuilder>();
+            if (builder != null)
+            {
+                builder.TilemapAddressableKey = TargetRoomKey;
+                await builder.BuildTilemapStageAsync();
+            }
         }
-
-        isTransitioning = false;
     }
 }

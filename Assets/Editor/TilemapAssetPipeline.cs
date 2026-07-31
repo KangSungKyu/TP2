@@ -20,6 +20,8 @@ public static class TilemapAssetPipeline
         FixTextureImporterPPU("Assets/Textures/Environment/Tile_Background_Deco.png", 32);
         FixTextureImporterPPU("Assets/Textures/Environment/Tile_Terrain_SpecialWalls.png", 32);
         FixTextureImporterPPU("Assets/Textures/Environment/Tile_Stage_Large60x30.png", 32);
+        FixTextureImporterPPU("Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png", 32);
+        FixTextureImporterPPU("Assets/Textures/Environment/Tile_Chapter2_CyberRuins.png", 32);
 
         AssetDatabase.Refresh();
 
@@ -31,10 +33,16 @@ public static class TilemapAssetPipeline
         Sprite platSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Platform_OneWay.png");
         Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Background_Deco.png");
         Sprite specSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Terrain_SpecialWalls.png");
+        Sprite taoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png");
+        Sprite cyberSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Chapter2_CyberRuins.png");
 
         Tile groundTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Ground.asset", groundSprite, Color.white);
         Tile platTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Platform.asset", platSprite, Color.white);
         Tile bgTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Background.asset", bgSprite, new Color(1f, 1f, 1f, 0.5f));
+
+        // 챕터별 타일셋 에셋 생성
+        Tile taoGroundTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_TaoShrine_Ground.asset", taoSprite != null ? taoSprite : groundSprite, Color.white);
+        Tile cyberGroundTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_CyberRuins_Ground.asset", cyberSprite != null ? cyberSprite : groundSprite, Color.white);
 
         // 특수 지형 타일 (빨간색 벽점프 금지, 하늘색 얼음 슬라이딩)
         Tile redWallTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Wall_RedNoJump.asset", specSprite != null ? specSprite : groundSprite, new Color(0.9f, 0.2f, 0.2f, 1f));
@@ -60,6 +68,8 @@ public static class TilemapAssetPipeline
         tilemapComp.SetTile(new Vector3Int(2, 0, 0), bgTile);
         tilemapComp.SetTile(new Vector3Int(3, 0, 0), redWallTile);
         tilemapComp.SetTile(new Vector3Int(4, 0, 0), iceWallTile);
+        tilemapComp.SetTile(new Vector3Int(5, 0, 0), taoGroundTile);
+        tilemapComp.SetTile(new Vector3Int(6, 0, 0), cyberGroundTile);
 
         PrefabUtility.SaveAsPrefabAsset(paletteObj, palettePath);
         Object.DestroyImmediate(paletteObj);

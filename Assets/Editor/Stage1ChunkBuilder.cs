@@ -21,7 +21,8 @@ public static class Stage1ChunkBuilder
         string tilesDir = "Assets/Textures/Environment/Tiles";
         if (!Directory.Exists(tilesDir)) Directory.CreateDirectory(tilesDir);
 
-        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset");
+        Tile taoGroundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_TaoShrine_Ground.asset");
+        Tile groundTile = taoGroundTile != null ? taoGroundTile : AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset");
         Tile platTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset");
         Tile bgTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Background.asset");
 
@@ -181,20 +182,25 @@ public static class Stage1ChunkBuilder
 
     private static void CreatePortalGate(GameObject parent, Vector3 pos, string targetRoomKey)
     {
-        GameObject portalObj = new GameObject("Portal_Gate");
-        portalObj.transform.SetParent(parent.transform);
+        GameObject portalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Structures/Portal_Gate.prefab");
+        GameObject portalObj = null;
+        if (portalPrefab != null)
+        {
+            portalObj = Object.Instantiate(portalPrefab, parent.transform);
+            portalObj.name = "Portal_Gate";
+        }
+        else
+        {
+            portalObj = new GameObject("Portal_Gate");
+            portalObj.transform.SetParent(parent.transform);
+            var boxCol = portalObj.AddComponent<BoxCollider2D>();
+            boxCol.size = new Vector2(2f, 3f);
+            boxCol.isTrigger = true;
+        }
+
         portalObj.transform.localPosition = pos;
-
-        var boxCol = portalObj.AddComponent<BoxCollider2D>();
-        boxCol.size = new Vector2(2f, 3f);
-        boxCol.isTrigger = true;
-
-        var rend = portalObj.AddComponent<SpriteRenderer>();
-        Sprite portalSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_Structures_Interactive.png");
-        if (portalSprite != null) rend.sprite = portalSprite;
-        rend.color = new Color(0.3f, 0.9f, 1.0f, 1f);
-
-        var portalComp = portalObj.AddComponent<RoomDoorPortal>();
+        var portalComp = portalObj.GetComponent<RoomDoorPortal>();
+        if (portalComp == null) portalComp = portalObj.AddComponent<RoomDoorPortal>();
         portalComp.TargetRoomKey = targetRoomKey;
         portalComp.AutoTriggerOnTouch = true;
     }
