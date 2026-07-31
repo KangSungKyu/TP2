@@ -66,7 +66,7 @@ public static class TilemapRoomPrefabBuilder
             AssetDatabase.CreateAsset(iceWallTile, $"{tilesDir}/Tile_Wall_IceSlide.asset");
         }
 
-        Material defaultSpriteMat = new Material(Shader.Find("Sprites/Default"));
+        Material defaultSpriteMat = GetOrCreateTilemapMaterial();
 
         // 2. Root Grid GameObject
         GameObject gridRoot = new GameObject("Tilemap_Room_TestDummy");
@@ -79,7 +79,7 @@ public static class TilemapRoomPrefabBuilder
         var bgTilemap = bgObj.AddComponent<Tilemap>();
         var bgRenderer = bgObj.AddComponent<TilemapRenderer>();
         bgRenderer.sortingOrder = -10;
-        bgRenderer.material = defaultSpriteMat;
+        bgRenderer.sharedMaterial = defaultSpriteMat;
 
         // 4. Tilemap_Ground (CompositeCollider2D + Rigidbody2D Static)
         GameObject groundObj = new GameObject("Tilemap_Ground");
@@ -87,7 +87,7 @@ public static class TilemapRoomPrefabBuilder
         var groundTilemap = groundObj.AddComponent<Tilemap>();
         var groundRenderer = groundObj.AddComponent<TilemapRenderer>();
         groundRenderer.sortingOrder = 0;
-        groundRenderer.material = defaultSpriteMat;
+        groundRenderer.sharedMaterial = defaultSpriteMat;
 
         var groundCol = groundObj.AddComponent<TilemapCollider2D>();
         groundCol.usedByComposite = true;
@@ -104,7 +104,7 @@ public static class TilemapRoomPrefabBuilder
         var platTilemap = platObj.AddComponent<Tilemap>();
         var platRenderer = platObj.AddComponent<TilemapRenderer>();
         platRenderer.sortingOrder = 5;
-        platRenderer.material = defaultSpriteMat;
+        platRenderer.sharedMaterial = defaultSpriteMat;
 
         var platCol = platObj.AddComponent<TilemapCollider2D>();
         platCol.usedByEffector = true;
@@ -187,6 +187,28 @@ public static class TilemapRoomPrefabBuilder
         Debug.Log($"<color=green><b>[TilemapRoomPrefabBuilder] 60x30 타일 배치 완료! Prefab: {prefabPath}</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
+    }
+    private static Material GetOrCreateTilemapMaterial()
+    {
+        string matDir = "Assets/Materials";
+        if (!Directory.Exists(matDir)) Directory.CreateDirectory(matDir);
+
+        string matPath = $"{matDir}/TilemapDefaultMaterial.mat";
+        Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (mat == null)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+            if (shader == null)
+            {
+                shader = Shader.Find("Sprites/Default");
+            }
+            mat = new Material(shader);
+            AssetDatabase.CreateAsset(mat, matPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        }
+        return mat;
     }
 }
 #endif

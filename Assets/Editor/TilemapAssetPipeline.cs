@@ -53,7 +53,7 @@ public static class TilemapAssetPipeline
         layerObj.transform.SetParent(paletteObj.transform);
         var tilemapComp = layerObj.AddComponent<Tilemap>();
         var rend = layerObj.AddComponent<TilemapRenderer>();
-        rend.material = new Material(Shader.Find("Sprites/Default"));
+        rend.sharedMaterial = GetOrCreateTilemapMaterial();
 
         tilemapComp.SetTile(new Vector3Int(0, 0, 0), groundTile);
         tilemapComp.SetTile(new Vector3Int(1, 0, 0), platTile);
@@ -101,6 +101,24 @@ public static class TilemapAssetPipeline
                 Debug.Log($"[TilemapAssetPipeline] PPU {ppu} & Point Filter 설정 완결: {path}");
             }
         }
+    }
+
+    private static Material GetOrCreateTilemapMaterial()
+    {
+        string matPath = "Assets/Materials/TilemapDefaultMaterial.mat";
+        Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (mat == null)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+            if (shader == null)
+            {
+                shader = Shader.Find("Sprites/Default");
+            }
+            mat = new Material(shader);
+            AssetDatabase.CreateAsset(mat, matPath);
+            AssetDatabase.SaveAssets();
+        }
+        return mat;
     }
 
     private static Tile CreateOrUpdateTileAsset(string path, Sprite sprite, Color color)
