@@ -6,6 +6,7 @@
 
 ## 🗓️ 주간 보고서 (Weekly Reports)
 
+- 📄 [2026년 7월 5주차 (2026-W31) 주간 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/weekly/2026-W31_주간보고서.md)
 - 📄 [2026년 7월 4주차 (2026-W30) 주간 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/weekly/2026-W30_주간보고서.md)
 
 ---
@@ -13,6 +14,7 @@
 ## 📅 일일 보고서 (Daily Reports)
 
 ### 2026년 07월
+- 📄 [2026-07-31 (금) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-31_일일보고서.md)
 - 📄 [2026-07-28 (화) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-28_일일보고서.md)
 - 📄 [2026-07-27 (월) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-27_일일보고서.md)
 - 📄 [2026-07-24 (금) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-24_일일보고서.md)
