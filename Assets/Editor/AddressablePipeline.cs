@@ -93,21 +93,47 @@ public static class AddressablePipeline
         RegisterAllAddressables();
 
         var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-        if (settings != null && string.IsNullOrEmpty(settings.activeProfileId))
+        if (settings != null)
         {
-            string defaultProfileId = settings.profileSettings.GetProfileId("Default");
-            if (string.IsNullOrEmpty(defaultProfileId))
+            string activeProfileId = settings.activeProfileId;
+            if (string.IsNullOrEmpty(activeProfileId))
             {
-                var profileNames = settings.profileSettings.GetAllProfileNames();
-                if (profileNames != null && profileNames.Count > 0)
+                activeProfileId = settings.profileSettings.GetProfileId("Default");
+                if (string.IsNullOrEmpty(activeProfileId))
                 {
-                    defaultProfileId = settings.profileSettings.GetProfileId(profileNames[0]);
+                    var profileNames = settings.profileSettings.GetAllProfileNames();
+                    if (profileNames != null && profileNames.Count > 0)
+                    {
+                        activeProfileId = settings.profileSettings.GetProfileId(profileNames[0]);
+                    }
+                }
+                if (!string.IsNullOrEmpty(activeProfileId))
+                {
+                    settings.activeProfileId = activeProfileId;
                 }
             }
-            if (!string.IsNullOrEmpty(defaultProfileId))
+
+            foreach (var group in settings.groups)
             {
-                settings.activeProfileId = defaultProfileId;
+                if (group == null) continue;
+                foreach (var schema in group.Schemas)
+                {
+                    if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema bundledSchema)
+                    {
+                        if (bundledSchema.BuildPath != null && string.IsNullOrEmpty(bundledSchema.BuildPath.Id))
+                        {
+                            bundledSchema.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
+                        }
+                        if (bundledSchema.LoadPath != null && string.IsNullOrEmpty(bundledSchema.LoadPath.Id))
+                        {
+                            bundledSchema.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
+                        }
+                    }
+                }
             }
+
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.GroupSchemaModified, null, true);
+            AssetDatabase.SaveAssets();
         }
 
         AddressableAssetSettings.BuildPlayerContent();
