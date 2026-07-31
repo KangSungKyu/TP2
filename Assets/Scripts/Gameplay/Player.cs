@@ -37,13 +37,20 @@ public class Player : UnitBase
     private bool hasQueuedAttack = false;
     private float comboWindow = 0.5f;
 
-    // 점프 관련 변수
+    // 점프 및 벽점프 관련 변수
     [SerializeField]
     private float jumpForce = 11.5f;
     private float coyoteTime = 0.12f;
     private float coyoteTimeCounter = 0f;
     private float jumpBufferTime = 0.12f;
     private float jumpBufferCounter = 0f;
+
+    [Header("Wall Jump Settings")]
+    public Vector2 WallJumpForce = new Vector2(9.5f, 12.5f);
+    public float WallJumpLockoutDuration = 0.18f;
+
+    private float wallJumpLockoutTimer = 0f;
+    private int lastWallDir = 0;
 
 
     // =========================================================================
@@ -98,6 +105,11 @@ public class Player : UnitBase
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
+        if (wallJumpLockoutTimer > 0f)
+        {
+            wallJumpLockoutTimer -= Time.deltaTime;
+        }
+
         bool isJumpingInput = keyboard.cKey.isPressed;
         HandleMovement(keyboard);
         HandleJump(keyboard);
@@ -146,19 +158,31 @@ public class Player : UnitBase
         {
             coyoteTimeCounter = coyoteTime;
             IsJumping = false;
+            lastWallDir = 0; // 지상 착지 시 벽점프 기록 초기화
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
 
-        // 3. 가변 점프 (버튼 감쇄)
+        // 3. 공중 벽점프 시도
+        if (!isGroundedNow && motor != null && motor.WallDir != 0 && jumpBufferCounter > 0f)
+        {
+            if (TryPerformWallJump())
+            {
+                jumpBufferCounter = 0f;
+                coyoteTimeCounter = 0f;
+                return;
+            }
+        }
+
+        // 4. 가변 점프 (버튼 감쇄)
         if (keyboard.cKey.wasReleasedThisFrame && motor != null && motor.Velocity.y > 0f)
         {
             motor.SetVelocityY(motor.Velocity.y * 0.4f);
         }
 
-        // 4. 점프 실행
+        // 5. 일반 지상 점프 실행
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             if (motor != null)
@@ -175,6 +199,34 @@ public class Player : UnitBase
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
         }
+    }
+
+    private bool TryPerformWallJump()
+    {
+        if (motor == null || motor.IsGrounded || motor.WallDir == 0) return false;
+
+        var surface = motor.WallSurface;
+        if (surface != null && !surface.CanWallJump) return false;
+        if (surface != null && !surface.AllowSameWall && lastWallDir == motor.WallDir) return false;
+
+        int wallDir = motor.WallDir;
+        motor.SetTargetVelocityX(-wallDir * WallJumpForce.x);
+        motor.SetVelocityY(WallJumpForce.y);
+
+        wallJumpLockoutTimer = WallJumpLockoutDuration;
+        lastWallDir = wallDir;
+        IsJumping = true;
+
+        if (stats != null)
+        {
+            stats.SetJumped(true);
+        }
+
+        SetFacingRight(-wallDir > 0);
+        SetState(PlayerState.Jump, forceUpdate: true);
+
+        Debug.Log($"<color=cyan>[WallJump] 벽점프 성공! Dir: {-wallDir}, Force: {WallJumpForce}</color>");
+        return true;
     }
 
     private void HandleExecutionAction(Keyboard keyboard)
@@ -221,6 +273,10 @@ public class Player : UnitBase
             return;
 
         if (isAttacking && !IsJumping)
+            return;
+
+        // 벽점프 반동 사각 이동 동안 수평 입력 잠금
+        if (wallJumpLockoutTimer > 0f)
             return;
 
         float moveX = 0f;
@@ -270,9 +326,9 @@ public class Player : UnitBase
 
     private void HandleDefensiveActions(Keyboard keyboard)
     {
-        if (isAttacking || IsJumping) return;
+        if (isAttacking) return;
 
-        if (keyboard.spaceKey.wasPressedThisFrame)
+        if (keyboard.spaceKey.wasPressedThisFrame && !IsJumping)
         {
             GuardParrySequenceAsync(keyboard, this.GetCancellationTokenOnDestroy()).Forget();
         }
@@ -425,6 +481,16 @@ public class Player : UnitBase
             if (motor != null)
             {
                 motor.SetTargetVelocityX(dodgeDir.x * DodgeDashSpeed);
+
+                // 공중 회피 중 벽에 접촉하거나 점프 입력 시 회피 캔슬 & 벽점프 연계
+                if (!motor.IsGrounded && motor.WallDir != 0)
+                {
+                    stats.SetDodging(false);
+                    if (TryPerformWallJump())
+                    {
+                        return;
+                    }
+                }
             }
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);

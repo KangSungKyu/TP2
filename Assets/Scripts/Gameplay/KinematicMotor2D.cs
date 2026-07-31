@@ -27,11 +27,17 @@ public class KinematicMotor2D : MonoBehaviour
     public LayerMask SolidGroundLayer;
     public LayerMask OneWayPlatformLayer;
 
+    [Header("Wall Settings")]
+    public float MaxWallSlideSpeed = 3.5f;
+
     // 모터 상태 (외부 읽기 전용)
     public Vector2 Velocity { get; private set; }
     public bool IsGrounded { get; private set; }
     public bool IsWalledLeft { get; private set; }
     public bool IsWalledRight { get; private set; }
+    public int WallDir => IsWalledLeft ? -1 : (IsWalledRight ? 1 : 0);
+    public Collider2D WallCollider { get; private set; }
+    public WallJumpSurface WallSurface { get; private set; }
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
@@ -144,6 +150,8 @@ public class KinematicMotor2D : MonoBehaviour
         IsGrounded = false;
         IsWalledLeft = false;
         IsWalledRight = false;
+        WallCollider = null;
+        WallSurface = null;
 
         var deltaPosition = Velocity * dt;
 
@@ -174,6 +182,15 @@ public class KinematicMotor2D : MonoBehaviour
         }
 
         float vy = Velocity.y - (Gravity * gravityScale * dt);
+
+        // 벽 슬라이딩 낙하 속도 완화
+        if (!IsGrounded && WallDir != 0 && vy < 0f)
+        {
+            float slideMult = WallSurface != null ? WallSurface.SlideSpeedMultiplier : 1.0f;
+            float maxSlide = MaxWallSlideSpeed * slideMult;
+            vy = Mathf.Max(vy, -maxSlide);
+        }
+
         vy = Mathf.Max(vy, -MaxFallSpeed);
         Velocity = new Vector2(Velocity.x, vy);
     }
@@ -218,6 +235,13 @@ public class KinematicMotor2D : MonoBehaviour
             {
                 if (currentNormal.x > 0) IsWalledLeft = true;
                 else IsWalledRight = true;
+
+                WallCollider = hit.collider;
+                WallSurface = hit.collider.GetComponent<WallJumpSurface>();
+                if (WallSurface == null)
+                {
+                    WallSurface = hit.collider.GetComponentInParent<WallJumpSurface>();
+                }
             }
 
             if (IsGrounded)
