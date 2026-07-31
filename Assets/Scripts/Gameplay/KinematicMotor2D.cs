@@ -233,14 +233,19 @@ public class KinematicMotor2D : MonoBehaviour
 
             if (!yMovement && Mathf.Abs(currentNormal.x) > 0.5f)
             {
-                if (currentNormal.x > 0) IsWalledLeft = true;
-                else IsWalledRight = true;
-
-                WallCollider = hit.collider;
-                WallSurface = hit.collider.GetComponent<WallJumpSurface>();
-                if (WallSurface == null)
+                // 1-Way 발판(OneWayPlatformLayer) 옆면은 벽점프 대상에서 완벽 제외
+                bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0;
+                if (!isOneWayPlatform)
                 {
-                    WallSurface = hit.collider.GetComponentInParent<WallJumpSurface>();
+                    if (currentNormal.x > 0) IsWalledLeft = true;
+                    else IsWalledRight = true;
+
+                    WallCollider = hit.collider;
+                    WallSurface = hit.collider.GetComponent<WallJumpSurface>();
+                    if (WallSurface == null)
+                    {
+                        WallSurface = hit.collider.GetComponentInParent<WallJumpSurface>();
+                    }
                 }
             }
 

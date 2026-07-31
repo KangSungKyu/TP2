@@ -237,14 +237,24 @@ public class DummyStageBuilder : MonoBehaviour
     private void createPlatform(Transform parent, string name, Vector3 pos, Vector2 size)
     {
         GameObject platObj = createPoolableObject(name, parent, pos);
-        
+
+        int oneWayLayer = LayerMask.NameToLayer("OneWayPlatform");
+        if (oneWayLayer >= 0)
+        {
+            platObj.layer = oneWayLayer;
+        }
+
         var col = getOrAddComponent<BoxCollider2D>(platObj);
         col.size = size;
-        
+
         var effector = getOrAddComponent<PlatformEffector2D>(platObj);
         col.usedByEffector = true;
 
         getOrAddComponent<OneWayPlatformPassThrough>(platObj);
+
+        // 발판 옆면 벽점프 방지 세이프티
+        var surf = getOrAddComponent<WallJumpSurface>(platObj);
+        surf.CanWallJump = false;
 
         var sprite = getOrAddComponent<SpriteRenderer>(platObj);
         sprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
