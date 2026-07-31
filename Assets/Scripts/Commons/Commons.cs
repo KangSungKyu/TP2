@@ -358,6 +358,15 @@ public class SkillData
 
     [Name("hittimings"), TypeConverter(typeof(FloatArrayConverter))]
     public float[] HitTimings { get; set; } // _ 구분자 float 배열
+
+    [Name("activeduration")]
+    public float ActiveDuration { get; set; }
+
+    [Name("effectidx")]
+    public uint EffectIdx { get; set; } // EffectData.csv Idx 참조 (Type 8: 8001~)
+
+    [Name("animstate")]
+    public int AnimState { get; set; } // Animator 'State' (int) 파라미터 제어 값
 }
 
 /// <summary>
@@ -387,14 +396,6 @@ public class StageBaseData
     [Name("roomsequence")]
     public string RoomSequence { get; set; }
 }
-    [Name("activeduration")]
-    public float ActiveDuration { get; set; }
 
-    [Name("effectidx")]
-    public uint EffectIdx { get; set; } // EffectData.csv Idx 참조 (Type 8: 8001~)
-
-    [Name("animstate")]
-    public int AnimState { get; set; } // Animator 'State' (int) 파라미터 제어 값
-}
 
 

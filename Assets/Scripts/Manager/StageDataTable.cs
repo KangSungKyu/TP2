@@ -28,6 +28,11 @@ public class StageDataTable : IDataLoad
         Debug.Log($"[StageDataTable] 총 {this.stageDict.Count}개의 스테이지 마스터 데이터가 로드되었습니다.");
     }
 
+    public void Release()
+    {
+        this.stageDict.Clear();
+    }
+
     public bool TryGetStageData(uint idx, out StageBaseData data)
     {
         return this.stageDict.TryGetValue(idx, out data);

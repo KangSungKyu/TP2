@@ -1,0 +1,936 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.4/staging' branch; Version is '6000.4.8f1 (f8b72d3d7343) revision 16299821'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08" at "2026-07-31T04:57:08.2224799Z"
+OS: 'Windows 11  (10.0.26200) Professional' Language: 'ko' Physical Memory: 32471 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-07-31T04:57:08Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Unity.exe
+-batchmode
+-nographics
+-projectPath
+C:\Users\PC\Projects\TP2
+-executeMethod
+QA.Tests.QATestRunner.RunBatchTests
+-logFile
+test_out33.log
+Successfully changed project path to: C:\Users\PC\Projects\TP2
+C:/Users/PC/Projects/TP2
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Player connection [21708]  Target information:
+
+Player connection [21708]  * "[IP] 192.168.0.33 [Port] 55504 [Flags] 2 [Guid] 3304979987 [EditorId] 3304979987 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-3J0UFVG) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [21708] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [21708] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-22344" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Error: HandshakeResponse reported an error:
+	ResponseCode: 505
+	ResponseStatus: Unsupported protocol version '1.18.1'.
+[Licensing::Module] Error: Failed to handshake to channel: "LicenseClient-403-08"
+[Licensing::IpcConnector] LicenseClient-403-08 channel disconnected successfully.
+[Licensing::IpcConnector] Channel LicenseClient-403-08-6000.4.8 doesn't exist
+[Licensing::Module] Successfully launched the LicensingClient (PId: 26020)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8" at "2026-07-31T04:57:09.4060296Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 26020, path: "C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              56f532b4170847e28d33850213ddfba9
+  Correlation Id:          86d36d1ea8d08d6b9423efc183562c42
+  External correlation Id: 5597140799905379231
+  Machine Id:              Cmy02f24/rcD46FhG7FY6Icn93g=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-403-08-6000.4.8" (connect: 0.37s, validation: 0.22s, handshake: 0.01s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8-notifications" at "2026-07-31T04:57:09.6333018Z"
+[Licensing::Module] Connected to LicensingClient (PId: 26020, launch time: 0.00, total connection time: 0.60s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14568547130648-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 1.44s
+[Licensing::Module] Licensing is initialized (took 1.00s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Active build profile path: `Assets/Settings/Build Profiles/Windows.asset`
+Artifact Garbage Collection - Removed 3 unused hashed content files
+Got setting from build profile YAML, name `m_BuildTarget`, value `19`
+Got setting from build profile YAML, name `m_Subtarget`, value `2`
+Initialize engine version: 6000.4.8f1 (f8b72d3d7343)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/PC/Projects/TP2/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56344
+CodeReloadManager initialized
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001311 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.319 seconds
+Domain Reload Profiling: 731ms
+	BeginReloadAssembly (133ms)
+		CreateAndSetChildDomain (20ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (49ms)
+	LoadAllAssembliesAndSetupDomain (186ms)
+		LoadAssemblies (111ms)
+		AnalyzeDomain (179ms)
+			TypeCache.Refresh (178ms)
+				TypeCache.ScanAssembly (168ms)
+	FinalizeReload (320ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (39ms)
+			BeforeProcessingInitializeOnLoad (66ms)
+			ProcessInitializeOnLoadAttributes (89ms)
+			ProcessInitializeOnLoadMethodAttributes (76ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 72 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.2d.animation@14.0.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.animation@011d329ac58b)
+    com.unity.2d.aseprite@4.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.aseprite@ccedfadacc51)
+    com.unity.2d.psdimporter@13.0.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.psdimporter@e58d0a2c1d48)
+    com.unity.2d.spriteshape@14.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.spriteshape@da3647ffbbd7)
+    com.unity.2d.tilemap.extras@7.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tilemap.extras@66df903b3633)
+    com.unity.2d.tooling@2.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tooling@9d6aff712598)
+    com.unity.addressables@2.9.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.addressables@8460f1c9c927)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.collab-proxy@2.12.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.ide.rider@3.0.40 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.rider@e4950c6d131b)
+    com.unity.ide.visualstudio@2.0.27 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.visualstudio@dc1ddd4f09b6)
+    com.unity.inputsystem@1.19.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.pipeline@0.3.1-exp.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.pipeline@58c16695e488)
+    com.unity.timeline@1.8.12 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.burst@1.8.29 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.6.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.scriptablebuildpipeline@36e3b5898ee2)
+    com.unity.2d.common@13.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.common@edfe77495b67)
+    com.unity.mathematics@1.3.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.searcher@4.9.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.test-framework.performance@3.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.test-framework.performance@aa81a99c4a75)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.sprite@b95cc7beb645)
+    com.unity.2d.tilemap@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tilemap@191c90975efd)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.universal@13e5115b98bf)
+    com.unity.test-framework@1.6.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.test-framework@76560ee600cb)
+    com.unity.ugui@2.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ugui@a9ea81766fbd)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.core@6f62546dd936)
+    com.unity.shadergraph@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.shadergraph@33f3b0a71b9a)
+    com.unity.render-pipelines.universal-config@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.universal-config@0db4263b9e6b)
+    com.unity.collections@6.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collections@5b6ebd78ccc0)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+[ScriptCompilation] Requested script compilation because: AssetDatabase observed changes in script compilation related files
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/PC/Projects/TP2
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.DisplayProgressbar: Compiling Scripts
+Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/PC/Projects/TP2
+ExitCode: 4 Duration: 3s877ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+[1139/1496  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1140/1496  3s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll (+2 others)
+Assets\Scripts\Scene\InitScene.cs(44,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\UI\CoreTestHUD.cs(13,24): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\MainScene.cs(41,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\MainScene.cs(48,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Gameplay\Player.cs(236,28): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\Scripts\Scene\TilemapStageBuilder.cs(52,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Scene\TilemapStageBuilder.cs(62,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\UI\TestPlayerHUDUI.cs(38,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Manager\UnitSpawner.cs(52,25): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Manager\UnitSpawner.cs(122,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Scripts\Gameplay\Player.cs(519,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+*** Tundra requires additional run (3.84 seconds), 2 items updated, 1138 evaluated
+ExitCode: 0 Duration: 1s323ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/PC/Projects/TP2
+ExitCode: 0 Duration: 1s969ms
+Finished compiling graph: 1500 nodes, 31307 flattened edges (25201 ToBuild, 250 ToUse), maximum node priority 1667
+[1140/1496  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1489/1496  0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\Editor\TilemapRoomPrefabBuilder.cs(48,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
+
+Assets\Editor\UnityPipelineAnimatorBinder.cs(272,21): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+[1490/1496  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll, with 141 defines and 373 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1491/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[1492/1496  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 139 defines and 397 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1493/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[1494/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1495/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (1.94 seconds), 8 items updated, 1496 evaluated
+Assets\Editor\TilemapRoomPrefabBuilder.cs(48,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
+Assets\Editor\UnityPipelineAnimatorBinder.cs(272,21): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+AssetDatabase: script compilation time: 7.551772s
+Begin MonoManager ReloadAssembly
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Assembly Assembly-CSharp-Editor-firstpass.dll at Library/ScriptAssemblies/Assembly-CSharp-Editor-firstpass.dll not valid. Loading of assembly skipped.
+Assembly DocCodeExamples.dll at Library/ScriptAssemblies/DocCodeExamples.dll not valid. Loading of assembly skipped.
+Assembly TestNewCustomAssembly.dll at Library/ScriptAssemblies/TestNewCustomAssembly.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Animation.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Animation.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Aseprite.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Aseprite.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Common.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Common.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Psdimporter.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Psdimporter.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Sprite.Package.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Sprite.Package.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.SpriteShape.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.SpriteShape.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.2D.Tilemap.Package.EditorTests.dll at Library/ScriptAssemblies/Unity.2D.Tilemap.Package.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Addressables.Editor.Tests.dll at Library/ScriptAssemblies/Unity.Addressables.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Addressables.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.Addressables.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.AppUI.Editor.Tests.dll at Library/ScriptAssemblies/Unity.AppUI.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.AppUI.Tests.dll at Library/ScriptAssemblies/Unity.AppUI.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.BurstCompatibilityGen.dll at Library/ScriptAssemblies/Unity.Collections.BurstCompatibilityGen.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.DocCodeSamples.dll at Library/ScriptAssemblies/Unity.Collections.DocCodeSamples.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.PerformanceTests.dll at Library/ScriptAssemblies/Unity.Collections.PerformanceTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.Tests.dll at Library/ScriptAssemblies/Unity.Collections.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Collections.Tests.Playmode.dll at Library/ScriptAssemblies/Unity.Collections.Tests.Playmode.dll not valid. Loading of assembly skipped.
+Assembly Unity.InputSystem.IntegrationTests.dll at Library/ScriptAssemblies/Unity.InputSystem.IntegrationTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Mathematics.Tests.dll at Library/ScriptAssemblies/Unity.Mathematics.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Multiplayer.Center.Editor.Tests.dll at Library/ScriptAssemblies/Unity.Multiplayer.Center.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Multiplayer.Center.Tests.dll at Library/ScriptAssemblies/Unity.Multiplayer.Center.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Nuget.Mono-Cecil.dll at Library/ScriptAssemblies/Unity.Nuget.Mono-Cecil.dll not valid. Loading of assembly skipped.
+Assembly Unity.PathTracing.Editor.Tests.dll at Library/ScriptAssemblies/Unity.PathTracing.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.PathTracing.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.PathTracing.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Pipeline.Tests.Editor.dll at Library/ScriptAssemblies/Unity.Pipeline.Tests.Editor.dll not valid. Loading of assembly skipped.
+Assembly Unity.Pipeline.Tests.Runtime.dll at Library/ScriptAssemblies/Unity.Pipeline.Tests.Runtime.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Core.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Core.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Config.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Config.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Editor.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.RenderPipelines.Universal.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ResourceManager.Tests.dll at Library/ScriptAssemblies/Unity.ResourceManager.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipeline.Editor.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipeline.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Searcher.EditorTests.dll at Library/ScriptAssemblies/Unity.Searcher.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.ShaderGraph.Editor.Tests.dll at Library/ScriptAssemblies/Unity.ShaderGraph.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.TextMeshPro.Editor.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.TextMeshPro.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Tests.dll not valid. Loading of assembly skipped.
+Assembly Unity.UnifiedRayTracing.Editor.Tests.dll at Library/ScriptAssemblies/Unity.UnifiedRayTracing.Editor.Tests.dll not valid. Loading of assembly skipped.
+Assembly UnityEditor.UI.Common.Tests.dll at Library/ScriptAssemblies/UnityEditor.UI.Common.Tests.dll not valid. Loading of assembly skipped.
+Assembly UnityEditor.UI.EditorTests.dll at Library/ScriptAssemblies/UnityEditor.UI.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly UnityEngine.UI.Tests.dll at Library/ScriptAssemblies/UnityEngine.UI.Tests.dll not valid. Loading of assembly skipped.
+Refreshing native plugins compatible for Editor in 2.76 ms, found 6 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 2.30 ms, found 6 plugins.
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Start HTTP server: port:7800
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.604 seconds
+Domain Reload Profiling: 3373ms
+	BeginReloadAssembly (291ms)
+		DisableScriptedObjects (19ms)
+		CreateAndSetChildDomain (145ms)
+	RebuildCommonClasses (33ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (609ms)
+	LoadAllAssembliesAndSetupDomain (826ms)
+		LoadAssemblies (502ms)
+		AnalyzeDomain (409ms)
+			TypeCache.Refresh (316ms)
+				TypeCache.ScanAssembly (300ms)
+			BuildScriptInfoCaches (80ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (1604ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (22ms)
+			BeforeProcessingInitializeOnLoad (171ms)
+			ProcessInitializeOnLoadAttributes (1070ms)
+			ProcessInitializeOnLoadMethodAttributes (164ms)
+			AfterProcessingInitializeOnLoad (4ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceRays.urtshader using Guid(1142bbad8b9e8c44c83a9775ff120d37) (ScriptedImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+
+Compiling Ray Tracing Shader "TraceRays.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'b61a11853fc2b01c85b821ba8aaf5c7e') in 0.0571935 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=46687cccdc33168fce57c46918914a0e DependenciesID=ba78a0469f42bfec0b01e12118e1a492 StaticDependenciesID=b7859538b7c8061be2c1df0681a26cec 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/Lighting/SurfaceCache/RisEstimation.urtshader using Guid(713f6141bd66a134383b787f2eaa7c11) (ScriptedImporter)
+Compiling Ray Tracing Shader "RisEstimation.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'd7ac51d7078c9d0f4518515a4bd89058') in 0.0109748 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=e10568ab6bce9a97b28d8c885dc887c9 DependenciesID=7bda994a1075ee45a05df5fd39078a40 StaticDependenciesID=1251c416255850dca778d66927462604 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapShadowMaskIntegration.urtshader using Guid(d19f4f8a13b6edb48b986a47ec96402e) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapShadowMaskIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '6206f4b63d9d1dd6323401f03425e922') in 0.0166354 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=2b95ef19d50b21f939236f8de4f3b7c4 DependenciesID=3a4c5a758997883cb2c7a4dad415ebe1 StaticDependenciesID=dddefbaa39ba5d51a386df5433e82fa1 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapGBufferDebug.urtshader using Guid(737a1597422c12547a8714d76a9406ec) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapGBufferDebug.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'babf3e30592708beedda850f6a16aa60') in 0.0100841 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=091ab5fc811d0bb32fd83d24c76e3ade DependenciesID=a74f3d1e9dc51cb077ba856b7eab9889 StaticDependenciesID=62194a0448f2b8616e1214fb593272db 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapNormalIntegration.urtshader using Guid(1451d029813b192429211be28181beab) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapNormalIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '791a469038e49731e268afc65adafb0e') in 0.010365 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=ceb98ab71ac413b56190ee84e02cff03 DependenciesID=c40fff4210f4795126824cb6cbd960bd StaticDependenciesID=cbe3820d9825e61936c3967ec27e4e90 
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/RenderingLayerMask/TraceRenderingLayerMask.urtshader using Guid(94a070d33e408384bafc1dea4a565df9) (ScriptedImporter)
+Compiling Ray Tracing Shader "TraceRenderingLayerMask.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '86f5f30a5cada56579762dd325614ad9') in 0.0084468 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=1a05fb70609584037b92ffb7bbfa4513 DependenciesID=e4c04546dd7334f19deb336f5df7647d StaticDependenciesID=83d03f1fcc976b11b697d3bab0b97d8c 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/Lighting/SurfaceCache/UniformEstimation.urtshader using Guid(94a39d12848d8d64ca962a72b74e7c50) (ScriptedImporter)
+Compiling Ray Tracing Shader "UniformEstimation.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '294fe8c4e2b40974f52434bf1a3e50d3') in 0.0082304 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=63829e09c8421943158a5c8e22d7fb1c DependenciesID=a3615acec63a8869e35ea1a076121cb4 StaticDependenciesID=f100dc97879ef35876f7ad5427566dd9 
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceTransparentRays.urtshader using Guid(6513c3b892e933c4f8d00c19d5c47532) (ScriptedImporter)
+Compiling Ray Tracing Shader "TraceTransparentRays.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'ce98530d50922e273fe691dd13c2666f') in 0.004984 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=9a4f92c4b834443772f57e904b7b5318 DependenciesID=e2b5d4de0ad804a3b9ecae2a1ed8ba57 StaticDependenciesID=5e41b194f27d8b70c797e75555e2b1f0 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapIndirectIntegration.urtshader using Guid(7624adbeb148b5c48ab5ab660cc2602a) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapIndirectIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '7636fca688e599403be3d3b12c440c22') in 0.0104727 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=331a21b109ee676710cbf634c8ef4c64 DependenciesID=a013b62f44319fe9498c0e871d3829fb StaticDependenciesID=6d19372de11b03798f093933090e79bb 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapGBufferIntegration.urtshader using Guid(e9f4de6d1e07fb94f9a60d35b618f724) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapGBufferIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '6b095755af600b25dba257b1420adcfa') in 0.0074764 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=88abca16d66a7184f4c4b47027b43f11 DependenciesID=7e07fd4aeea28b90cf80df010e477915 StaticDependenciesID=66dc06979910318021783fcb4ccd3ecc 
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/DynamicGI/DynamicGISkyOcclusion.urtshader using Guid(5a2a534753fbdb44e96c3c78b5a6999d) (ScriptedImporter)
+Compiling Ray Tracing Shader "DynamicGISkyOcclusion.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '6f054e61c1371e27dad04f659288b92e') in 0.0074512 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=d00095a4a55ff2ec22e939f29df9180b DependenciesID=ff1535c0e2997a6039c548982004dd93 StaticDependenciesID=18974378deb0e4fc540e6b2321b0ff13 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapDirectIntegration.urtshader using Guid(5bbebdef5916845478fcef13fa10d89f) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapDirectIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '16a5e83c3e0e5009ab394ab2b951fdd6') in 0.0113686 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=a922f61de12ed04fdf9509350b340e48 DependenciesID=57ccbabcf65c829f2817a591a3ce9914 StaticDependenciesID=63188f79534be5f4b9e074ad4af5bfb7 
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceRaysAndFetchAttributes.urtshader using Guid(fbc59f55df2416344b008dc23753cae2) (ScriptedImporter)
+Compiling Ray Tracing Shader "TraceRaysAndFetchAttributes.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'b176c8e4b623a9b1bca035cc8a457f3e') in 0.0059407 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=3b313a6c864bac4a92bdbdf353437986 DependenciesID=d21a282b89a2e496dfcce7cde4fed2ac StaticDependenciesID=aa8291e86ea82085a643681c1c779d39 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapAOIntegration.urtshader using Guid(1c410815c01ce1d4d82c645c0cd45747) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapAOIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '9df1e187d4190f9957b2b561b03a969c') in 0.0103898 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=5103f96431e842f7259bb0177de5374a DependenciesID=149050e4eae14bbf0824943226fef567 StaticDependenciesID=bcaf3aac9727a2ca27155e619d011e5f 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/ProbeIntegrationValidity.urtshader using Guid(2c32233d92a2d0745930664c087c5c9a) (ScriptedImporter)
+Compiling Ray Tracing Shader "ProbeIntegrationValidity.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'bcf9a3db43d96e62931481948649ec6d') in 0.0087296 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=7382f6ebace9db409d45bbf3f67db551 DependenciesID=c362f229ed9d3f4e8329bf893a13639b StaticDependenciesID=4aea10376946a8225ccdfdec15a70dac 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LightmapValidityIntegration.urtshader using Guid(ace95ac84e213794891b4bd7c9b3c158) (ScriptedImporter)
+Compiling Ray Tracing Shader "LightmapValidityIntegration.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '9cfefd2467c2f392ccaf70284f81d86a') in 0.0104707 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=1e4e1f52bf9adcad13f0bcdba75cec3b DependenciesID=57d9d38cd2a047f8b92a9651c6724631 StaticDependenciesID=46d905dacc01197a8e043a8ad4f9d21d 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/Lighting/SurfaceCache/RestirCandidateTemporal.urtshader using Guid(ad3a9f9982f8c4f4a839a78955e78458) (ScriptedImporter)
+Compiling Ray Tracing Shader "RestirCandidateTemporal.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'ee1f626977a9995fa6dc3fe2cae85133') in 0.0071907 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=0ee7e16793f63ad4fa9bacccbdab596d DependenciesID=a54e69929afed86f408abe0f3a11f5a4 StaticDependenciesID=2beaac54fac463ee5ee15c00b0990d01 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/ProbeIntegrationIndirect.urtshader using Guid(5ecdabd800f05984696f22ba95284516) (ScriptedImporter)
+Compiling Ray Tracing Shader "ProbeIntegrationIndirect.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '889fc6615150a45fc63538a9546c0e35') in 0.010187 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=7b342ad6fce78607d4cb85fc02d9d19a DependenciesID=e68919762ba0a9e0f238cb17c5dcbebb StaticDependenciesID=83ecbbd61911181b4944eb7ac9eabee5 
+Start importing Packages/com.unity.render-pipelines.core/Tests/Runtime/PathTracing/PathIteratorTest.urtshader using Guid(6e0b547bab30a804c8123974120d583f) (ScriptedImporter)
+Compiling Ray Tracing Shader "PathIteratorTest.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '57d947cae0e8003fbc981ad74169efaa') in 0.0110932 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=07420bf6446c0c205e272929d6eb81ee DependenciesID=594f11d35b7aba65962c7886d27a4981 StaticDependenciesID=cf2a33ce9b71ea08a4459556694e1323 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/LiveGI.urtshader using Guid(ceb7a31b84722d144bbeff1c8cd88769) (ScriptedImporter)
+Compiling Ray Tracing Shader "LiveGI.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '12f1f33770683c6d22725c2f237e83ab') in 0.0107926 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=c58ef83ec50830e9bfe040e930b3537e DependenciesID=efbcc06b527755efc51f17180af96016 StaticDependenciesID=628001b751fe9fddf64a203b1446575e 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/ProbeIntegrationOcclusion.urtshader using Guid(de3013e16d99f2746ab1735ec06a660b) (ScriptedImporter)
+Compiling Ray Tracing Shader "ProbeIntegrationOcclusion.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'b8fb97ca364825a954794a7a33584bbe') in 0.010224 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=34ea5cef2db8063219dc8fd537498cc0 DependenciesID=b4bdf7721efc399300aba8c6c0cc6ced StaticDependenciesID=183f3d853e4af89ec08f4e79696e167d 
+Start importing Packages/com.unity.render-pipelines.core/Runtime/PathTracing/Shaders/ProbeIntegrationDirect.urtshader using Guid(1f9bfe60b4ad75943a5281839c1a4e5c) (ScriptedImporter)
+Compiling Ray Tracing Shader "ProbeIntegrationDirect.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: 'f9e05b28fe00eb70f1cbd312b7b9c80e') in 0.0104368 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=4cedefe6725f61ebfce8197635258855 DependenciesID=e4ee24474e83bb9a6d47c033a5149289 StaticDependenciesID=d3f99f9cc1ae2c0c0147c2fa8da668fc 
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/VirtualOffset/TraceVirtualOffset.urtshader using Guid(ff2cbab5da58bf04d82c5f34037ed123) (ScriptedImporter)
+Compiling Ray Tracing Shader "TraceVirtualOffset.urtshader", keywords = <no keywords>
+    finished in 0.00 seconds. Local cache hits 1, remote cache hits 0, compiled 0 platform variants
+ -> (Import Result ID: '6f29081014305158ffc1f553fe9ac97c') in 0.008634 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=7915af89c97778059399f61159182492 DependenciesID=4529efd1d999f927776004ba32005281 StaticDependenciesID=f51ff46b48d84884c883ac486ebfd7f9 
+Refreshing native plugins compatible for Editor in 3.56 ms, found 6 plugins.
+(Values over 0.050ms)
+Asset Pipeline Refresh (id=a6ddbf4a7b7027c4698ec9412cb0ea50): Total: 12.174 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=23 (actual=23, local cache=0, cache server=0)
+		Asset DB Process Time: managed=5 ms, native=2432 ms
+		Asset DB Callback time: managed=187 ms, native=164 ms
+		Scripting: domain reloads=1, domain reload time=1773 ms, compile time=7553 ms, other=57 ms
+		Project Asset Count: scripts=2048, non-scripts=5681
+		Asset File Changes: new=0, changed=3, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 17.408ms
+	ApplyChangesToAssetFolders: 0.698ms
+	Scan: 168.191ms
+	OnSourceAssetsModified: 0.737ms
+	CategorizeScriptCompilationAssets: 60.627ms
+	ProcessAssetsWithTransientArtifactChanges: 84.929ms
+	CategorizeAssets: 74.227ms
+	CompileScripts: 7552.997ms
+	ImportOutOfDateAssets: 1897.205ms (1615.838ms without children)
+		ImportManagerImport: 277.948ms (1.638ms without children)
+			UpdateCategorizedAssets: 1.268ms
+		UnloadImportedAssets: 1.692ms
+		ReloadImportedAssets: 0.776ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.849ms
+		OnDemandSchedulerStart: 0.825ms
+	PostProcessAllAssets: 329.616ms
+		ComputeShaderImportPostprocess 71.393ms
+		RaytracingShaderImportPostprocess 68.786ms
+		VCAutoAddAssetPostprocess 0.900ms
+		XRBuildSystem.XRAssetImported 0.619ms
+		SpriteAtlasDatabase.OnAssetPostprocessCallback 0.069ms
+		PostProcessCallbackCreateDeferredMaterials 0.060ms
+		MonoPostProcessAllAssets: 186.704ms
+			AssetPostprocessor.OnPostprocessAllAssets 118.227ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 17.775ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 9.810ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 7.215ms
+			SyncVS.PostprocessSyncProject 2.650ms
+			AddressablesAssetPostProcessor.OnPostprocessAllAssets 2.520ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 2.169ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 1.573ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.542ms
+			AssetChangedListener.OnPostprocessAllAssets 1.168ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 0.978ms
+			MaterialPostprocessor.OnPostprocessAllAssets 0.799ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.736ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.632ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.610ms
+			SpriteShapeAssetPostProcessor.OnPostprocessAllAssets 0.594ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.509ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 0.458ms
+			UtilityWindowPostProcessor.OnPostprocessAllAssets 0.449ms
+			AssetPathToTypes.OnPostprocessAllAssets 0.409ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 0.370ms
+			AssetProcessor.OnPostprocessAllAssets 0.360ms
+			PostProcessor.OnPostprocessAllAssets 0.350ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 0.338ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.294ms
+			ModelAssetProcessor.OnPostprocessAllAssets 0.262ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.249ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.228ms
+			AssetEvents.OnPostprocessAllAssets 0.187ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.181ms
+			SpriteLibraryAssetPostprocessor.OnPostprocessAllAssets 0.163ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.130ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.127ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.124ms
+			PSDImportPostProcessor.OnPostprocessAllAssets 0.123ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.119ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.113ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.092ms
+			PSDImporterAssetPostProcessor.OnPostprocessAllAssets 0.067ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.055ms
+	PostAssetChangesProfiler: 5.197ms
+	UnloadStreamsBegin: 3.380ms
+	PersistCurrentRevisions: 0.390ms
+	GenerateScriptTypeHashes: 3.128ms
+	GenerateScriptTypeSerializationHashes: 5.606ms
+	Untracked: 1972.761ms
+
+Application.AssetDatabase Initial Refresh End
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Scanning for USB devices : 3.436ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-TP2
+Unloading 89 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10227 unused Assets / (4.4 MB). Loaded Objects now: 11102.
+Memory consumption went from 262.6 MB to 258.2 MB.
+Total: 9.832100 ms (FindLiveObjects: 0.712100 ms CreateObjectMapping: 0.722100 ms MarkObjects: 6.341100 ms  DeleteObjects: 2.051700 ms)
+
+<color=green>[PASS] CSVDataPipelineTests.Test01_ResourceDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] CSVDataPipelineTests.Test02_TextDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] CSVDataPipelineTests.Test03_UnitBaseDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] CSVDataPipelineTests.Test04_MonsterBaseDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] CSVDataPipelineTests.Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] CSVDataPipelineTests.Test06_SkillDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] GameplayArchitectureTests.Test01_UnitBaseHierarchyAndPivot_PlayerAndBoss</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[TestUnit] 가드(Guard) 성공!
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CombatStats:TakeDamage (single,bool,bool,CombatStats) (at Assets/Scripts/Gameplay/CombatStats.cs:102)
+QA.Tests.GameplayArchitectureTests:Test02_CombatStats_TakeDamageAndGuard_ReducesDamage () (at Assets/Editor/Tests/GameplayArchitectureTests.cs:21)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Gameplay/CombatStats.cs Line: 102)
+
+<color=green>[PASS] GameplayArchitectureTests.Test02_CombatStats_TakeDamageAndGuard_ReducesDamage</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[PlayerTest] 패링(Parry) 성공!
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CombatStats:TakeDamage (single,bool,bool,CombatStats) (at Assets/Scripts/Gameplay/CombatStats.cs:78)
+QA.Tests.GameplayArchitectureTests:Test03_CombatStats_ParrySuccess_InflictsPostureOnAttacker () (at Assets/Editor/Tests/GameplayArchitectureTests.cs:39)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Gameplay/CombatStats.cs Line: 78)
+
+<color=green>[PASS] GameplayArchitectureTests.Test03_CombatStats_ParrySuccess_InflictsPostureOnAttacker</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[TestDodge] 공격 회피(Dodge) 성공!
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CombatStats:TakeDamage (single,bool,bool,CombatStats) (at Assets/Scripts/Gameplay/CombatStats.cs:64)
+QA.Tests.GameplayArchitectureTests:Test04_CombatStats_Dodge_EvadesDamage100Percent () (at Assets/Editor/Tests/GameplayArchitectureTests.cs:53)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Gameplay/CombatStats.cs Line: 64)
+
+<color=green>[PASS] GameplayArchitectureTests.Test04_CombatStats_Dodge_EvadesDamage100Percent</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[TestPosture] 자세 게이지 임계치 달성! 무방비 그로기(Groggy) 진입 (3초)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CombatStats:TriggerGroggy (single) (at Assets/Scripts/Gameplay/CombatStats.cs:151)
+CombatStats:AddPosture (single) (at Assets/Scripts/Gameplay/CombatStats.cs:143)
+QA.Tests.GameplayArchitectureTests:Test05_PostureGauge_100PercentAccumulation_TriggersGroggyState () (at Assets/Editor/Tests/GameplayArchitectureTests.cs:64)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Gameplay/CombatStats.cs Line: 151)
+
+<color=green>[PASS] GameplayArchitectureTests.Test05_PostureGauge_100PercentAccumulation_TriggersGroggyState</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:30)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] AnimatorControllerTests.Test01_PlayerAnimatorController_ClipAndStateTransitions</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:33)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] AnimatorControllerTests.Test02_GaronAnimatorController_ClipAndStateTransitions</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:33)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] AnimatorControllerTests.Test03_NormalMonstersAnimatorControllers_StatesAndTransitions</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:33)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] TilemapStageBuilderTests.Test01_TilemapRoomTestDummyPrefab_ExistenceAndMarkers</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] TilemapStageBuilderTests.Test02_OneWayPlatform_PassThroughDurationLogic</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[PASS] TilemapStageBuilderTests.Test03_WallJumpSurface_PropertiesAndRules</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green>[TilemapStageBuilder] 에디터 동기 로드 완료: 'Tilemap_Room_TestDummy'</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+TilemapStageBuilder:BuildStageEditorSync () (at Assets/Scripts/Scene/TilemapStageBuilder.cs:57)
+QA.Tests.TilemapStageBuilderTests:Test04_BuildStageEditorSync_ExecutionAndRootValidation () (at Assets/Editor/Tests/TilemapStageBuilderTests.cs:74)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Scene/TilemapStageBuilder.cs Line: 57)
+
+<color=green>[PASS] TilemapStageBuilderTests.Test04_BuildStageEditorSync_ExecutionAndRootValidation</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green><b>[QATestRunner] 🎉 모든 QA 검증 성공! (총 18/18 패스)</b></color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:43)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 43)
+
+[QATestRunner] 테스트 결과가 'Logs/qa_test_results.txt' 파일로 저장되었습니다.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:54)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 54)
+
+Request timed out while processing request "https://public-cdn.cloud.unity3d.com/config/production", HTTP error code 0
+.[UnityConnect] Request timed out.
+Pipeline Server stopped
+Curl error 42: Callback aborted
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (Import Result ID: '24bec6481420421bf60c7c11d38a02c5') in 0.0028146 seconds [static dependencies only]. Details - ImportResultOutputID=d777934f36c664454d62eda103573334 DependenciesID=e046d43a93c0a907fcdddd9a1a7d4337 StaticDependenciesID=823d6c9442bc600624d428cc5ce54657 
+Refreshing native plugins compatible for Editor in 2.20 ms, found 6 plugins.
+Asset Pipeline Refresh (id=a13e5ce64428fa94a99c912581ce2c4f): Total: 0.082 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-403-08-6000.4.8-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-403-08-6000.4.8 channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1785473844450,"processId":22344,"allocatedMemory":20225656,"memoryLabels":[{"Default":216824},{"Permanent":15276},{"NewDelete":65185},{"Thread":4230384},{"Manager":37485},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":853792},{"Material":24},{"GfxDevice":55320},{"Animation":392},{"Audio":3008},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":888},{"Input":9880},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155052},{"BaseObject":1620432},{"Resource":1184},{"Renderer":3008},{"Transform":4685},{"File":1088},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":17004},{"StaticString":6718},{"Utility":2673318},{"Curl":1712},{"PoolAlloc":2792},{"AI":80},{"TypeTree":13741},{"ScriptManager":448},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":120},{"GI":7792},{"Director":8320},{"CloudService":10736},{"WebRequest":845},{"VR":48050},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":472},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":128},{"EditorUtility":123520},{"VersionControl":4},{"Undo":931},{"AssetDatabase":9553546},{"EditorGi":328},{"UnityConnect":37716},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2888},{"Windowing":456},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}
+~StackAllocator(ALLOC_TEMP_MAIN) m_LastAlloc not NULL. Did you forget to call FreeAllStackAllocations()? To get more information, run app with -diag-temp-memory-leak-validation cmd line argument
