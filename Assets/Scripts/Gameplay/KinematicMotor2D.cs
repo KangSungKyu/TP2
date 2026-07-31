@@ -17,6 +17,7 @@ public class KinematicMotor2D : MonoBehaviour
     public float FallGravityMultiplier = 1.7f;
     public float ApexGravityMultiplier = 0.5f;
     public float SkinWidth = 0.01f;
+
     /// <summary>
     /// 착지 가능한 최소 지면 법선 Y값 (0.65 ≈ 약 50° 이하 경사만 착지)
     /// </summary>
@@ -45,83 +46,70 @@ public class KinematicMotor2D : MonoBehaviour
 
     private void Awake()
     {
-        this.body = GetComponent<Rigidbody2D>();
+        body = GetComponent<Rigidbody2D>();
 
-        // 물리 충돌용 non-trigger Collider2D 탐색 (trigger Hitbox 제외)
-        this.physicsCollider = null;
+        physicsCollider = null;
         foreach (var col in GetComponents<Collider2D>())
         {
             if (!col.isTrigger)
             {
-                this.physicsCollider = col;
+                physicsCollider = col;
                 break;
             }
         }
-        if (this.physicsCollider == null)
+        if (physicsCollider == null)
         {
-            this.physicsCollider = GetComponent<Collider2D>();
+            physicsCollider = GetComponent<Collider2D>();
         }
 
-        this.body.bodyType = RigidbodyType2D.Kinematic;
-        this.body.useFullKinematicContacts = true;
-        this.body.simulated = true;
+        body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
+        body.simulated = true;
 
-        if (this.SolidGroundLayer == 0)
+        if (SolidGroundLayer == 0)
         {
-            this.SolidGroundLayer = LayerMask.GetMask("Default", "Ground");
+            SolidGroundLayer = LayerMask.GetMask("Default", "Ground");
         }
-        if (this.OneWayPlatformLayer == 0)
+        if (OneWayPlatformLayer == 0)
         {
-            this.OneWayPlatformLayer = LayerMask.GetMask("OneWayPlatform");
+            OneWayPlatformLayer = LayerMask.GetMask("OneWayPlatform");
         }
 
-        this.solidFilter = new ContactFilter2D();
-        this.solidFilter.useTriggers = false;
-        this.solidFilter.useLayerMask = true;
-        this.solidFilter.SetLayerMask(this.SolidGroundLayer);
+        solidFilter = new ContactFilter2D();
+        solidFilter.useTriggers = false;
+        solidFilter.useLayerMask = true;
+        solidFilter.SetLayerMask(SolidGroundLayer);
 
-        this.groundWithPlatformFilter = new ContactFilter2D();
-        this.groundWithPlatformFilter.useTriggers = false;
-        this.groundWithPlatformFilter.useLayerMask = true;
-        this.groundWithPlatformFilter.SetLayerMask(this.SolidGroundLayer | this.OneWayPlatformLayer);
+        groundWithPlatformFilter = new ContactFilter2D();
+        groundWithPlatformFilter.useTriggers = false;
+        groundWithPlatformFilter.useLayerMask = true;
+        groundWithPlatformFilter.SetLayerMask(SolidGroundLayer | OneWayPlatformLayer);
     }
 
     // =========================================================================
-    // 외부 API (Update에서 호출)
+    // 외부 API
     // =========================================================================
 
-    /// <summary>
-    /// 수평 입력 속도 설정 (Update에서 매 프레임 호출, FixedUpdate에서 velocity.x에 적용)
-    /// </summary>
     public void SetTargetVelocityX(float vx)
     {
-        this.targetVelocityX = vx;
+        targetVelocityX = vx;
     }
 
-    /// <summary>
-    /// 수직 속도 즉시 설정 (점프 임펄스 등)
-    /// </summary>
     public void SetVelocityY(float vy)
     {
-        this.Velocity = new Vector2(this.Velocity.x, vy);
+        Velocity = new Vector2(Velocity.x, vy);
     }
 
-    /// <summary>
-    /// 점프 키 홀드 상태 전달 (가변 중력 - 점프 정점 부유감 용)
-    /// </summary>
     public void SetJumpHeld(bool held)
     {
-        this.isJumpHeld = held;
+        isJumpHeld = held;
     }
 
-    /// <summary>
-    /// 1-Way 발판 하향 점프(Drop Through) 비동기 트리거
-    /// </summary>
     public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.25f, CancellationToken cancellationToken = default)
     {
-        this.isPassThroughActive = true;
-        this.IsGrounded = false;
-        this.Velocity = new Vector2(this.Velocity.x, -2f);
+        isPassThroughActive = true;
+        IsGrounded = false;
+        Velocity = new Vector2(Velocity.x, -2f);
 
         try
         {
@@ -130,155 +118,133 @@ public class KinematicMotor2D : MonoBehaviour
         catch (OperationCanceledException) { }
         finally
         {
-            this.isPassThroughActive = false;
+            isPassThroughActive = false;
         }
     }
 
-    /// <summary>
-    /// 텔레포트 (body.position + velocity 동시 초기화)
-    /// </summary>
     public void Teleport(Vector3 position)
     {
-        this.body.position = position;
-        this.Velocity = Vector2.zero;
-        this.targetVelocityX = 0f;
+        body.position = position;
+        Velocity = Vector2.zero;
+        targetVelocityX = 0f;
     }
 
     // =========================================================================
-    // FixedUpdate 물리 루프 (tp_2dpm KinematicObject 패턴)
+    // FixedUpdate 물리 루프
     // =========================================================================
 
     private void FixedUpdate()
     {
-        float dt = Time.deltaTime; // FixedUpdate 내에서 Time.deltaTime == Time.fixedDeltaTime
+        float dt = Time.deltaTime;
 
-        // 1. 가변 중력
-        this.applyGravity(dt);
+        ApplyGravity(dt);
 
-        // 2. 수평 속도 = Update에서 설정된 입력 기반 targetVelocityX
-        this.Velocity = new Vector2(this.targetVelocityX, this.Velocity.y);
+        Velocity = new Vector2(targetVelocityX, Velocity.y);
 
-        // 3. 상태 초기화
-        this.IsGrounded = false;
-        this.IsWalledLeft = false;
-        this.IsWalledRight = false;
+        IsGrounded = false;
+        IsWalledLeft = false;
+        IsWalledRight = false;
 
-        var deltaPosition = this.Velocity * dt;
+        var deltaPosition = Velocity * dt;
 
-        // 4. 수평 이동 (groundNormal 접선 벡터 기반 경사면 이동) → body.position 즉시 반영
-        var moveAlongGround = new Vector2(this.groundNormal.y, -this.groundNormal.x);
+        var moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
         var horizontalMove = moveAlongGround * deltaPosition.x;
-        this.performMovement(horizontalMove, false);
+        PerformMovement(horizontalMove, false);
 
-        // 5. 수직 이동 → 갱신된 body.position에서 탐지 → body.position 즉시 반영
         var verticalMove = Vector2.up * deltaPosition.y;
-        this.performMovement(verticalMove, true);
+        PerformMovement(verticalMove, true);
     }
 
-    private void applyGravity(float dt)
+    private void ApplyGravity(float dt)
     {
-        // 지면 밀착 상태에서는 미세 하향 속도만 유지 (경사면 밀착 보장)
-        if (this.IsGrounded && this.Velocity.y <= 0f)
+        if (IsGrounded && Velocity.y <= 0f)
         {
-            this.Velocity = new Vector2(this.Velocity.x, -0.1f);
+            Velocity = new Vector2(Velocity.x, -0.1f);
             return;
         }
 
         float gravityScale = 1f;
-        if (this.Velocity.y < 0f)
+        if (Velocity.y < 0f)
         {
-            gravityScale = this.FallGravityMultiplier; // 빠른 낙하
+            gravityScale = FallGravityMultiplier;
         }
-        else if (Mathf.Abs(this.Velocity.y) < 1.5f && this.isJumpHeld)
+        else if (Mathf.Abs(Velocity.y) < 1.5f && isJumpHeld)
         {
-            gravityScale = this.ApexGravityMultiplier; // 점프 정점 부유감
+            gravityScale = ApexGravityMultiplier;
         }
 
-        float vy = this.Velocity.y - (this.Gravity * gravityScale * dt);
-        vy = Mathf.Max(vy, -this.MaxFallSpeed);
-        this.Velocity = new Vector2(this.Velocity.x, vy);
+        float vy = Velocity.y - (Gravity * gravityScale * dt);
+        vy = Mathf.Max(vy, -MaxFallSpeed);
+        Velocity = new Vector2(Velocity.x, vy);
     }
 
-    // =========================================================================
-    // 2-pass 이동 실행 (tp_2dpm PerformMovement 참고)
-    // =========================================================================
-
-    private void performMovement(Vector2 move, bool yMovement)
+    private void PerformMovement(Vector2 move, bool yMovement)
     {
         float distance = move.magnitude;
         if (distance < 0.001f) return;
 
-        // 하강 수직 이동 + PassThrough 비활성 → 1-Way 발판 레이어 포함
-        var filter = (yMovement && move.y <= 0f && !this.isPassThroughActive)
-            ? this.groundWithPlatformFilter
-            : this.solidFilter;
+        var filter = (yMovement && move.y <= 0f && !isPassThroughActive)
+            ? groundWithPlatformFilter
+            : solidFilter;
 
-        // Collider2D.Cast: 자기 자신 자동 제외, 콜라이더 형상 자동 사용
-        int count = this.physicsCollider.Cast(move.normalized, filter, this.hitBuffer, distance + this.SkinWidth);
+        int count = physicsCollider.Cast(move.normalized, filter, hitBuffer, distance + SkinWidth);
 
         for (int i = 0; i < count; i++)
         {
-            var hit = this.hitBuffer[i];
+            var hit = hitBuffer[i];
             var currentNormal = hit.normal;
 
-            // 1-Way 발판 높이 비교 (발바닥이 발판 상단보다 아래면 통과 허용)
-            if (((1 << hit.collider.gameObject.layer) & this.OneWayPlatformLayer) != 0)
+            if (((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0)
             {
-                float feetY = this.physicsCollider.bounds.min.y;
+                float feetY = physicsCollider.bounds.min.y;
                 float platformTopY = hit.collider.bounds.max.y;
-                if (feetY < platformTopY - 0.15f || this.isPassThroughActive)
+                if (feetY < platformTopY - 0.15f || isPassThroughActive)
                 {
                     continue;
                 }
             }
 
-            // 착지 판정: normal.y > MinGroundNormalY인 표면만 착지 가능
-            if (currentNormal.y > this.MinGroundNormalY)
+            if (currentNormal.y > MinGroundNormalY)
             {
-                this.IsGrounded = true;
+                IsGrounded = true;
                 if (yMovement)
                 {
-                    this.groundNormal = currentNormal;
-                    currentNormal.x = 0; // 수직 이동 시 법선 X 성분 제거 (수직 밀착)
+                    groundNormal = currentNormal;
+                    currentNormal.x = 0;
                 }
             }
 
-            // 벽 감지 (수평 이동 pass에서만)
             if (!yMovement && Mathf.Abs(currentNormal.x) > 0.5f)
             {
-                if (currentNormal.x > 0) this.IsWalledLeft = true;
-                else this.IsWalledRight = true;
+                if (currentNormal.x > 0) IsWalledLeft = true;
+                else IsWalledRight = true;
             }
 
-            // 속도 투영 (경사면에서 자연스러운 속도 조정)
-            if (this.IsGrounded)
+            if (IsGrounded)
             {
-                float projection = Vector2.Dot(this.Velocity, currentNormal);
+                float projection = Vector2.Dot(Velocity, currentNormal);
                 if (projection < 0)
                 {
-                    // 경사면 법선에 대한 속도 투영 → 경사면을 따라 감속
-                    this.Velocity -= projection * currentNormal;
+                    Velocity -= projection * currentNormal;
                 }
             }
             else
             {
-                // 공중에서 충돌: 해당 축 속도 제거
                 if (!yMovement)
                 {
-                    this.Velocity = new Vector2(0f, this.Velocity.y);
+                    Velocity = new Vector2(0f, Velocity.y);
                 }
                 else
                 {
-                    this.Velocity = new Vector2(this.Velocity.x, Mathf.Min(this.Velocity.y, 0f));
+                    Velocity = new Vector2(Velocity.x, Mathf.Min(Velocity.y, 0f));
                 }
             }
 
-            // SkinWidth 차감하여 표면에 밀착 (뚫림 방지)
-            float modifiedDistance = hit.distance - this.SkinWidth;
+            float modifiedDistance = hit.distance - SkinWidth;
             distance = modifiedDistance < distance ? modifiedDistance : distance;
         }
 
         distance = Mathf.Max(0f, distance);
-        this.body.position += move.normalized * distance;
+        body.position += move.normalized * distance;
     }
 }
