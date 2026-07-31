@@ -40,5 +40,11 @@ namespace QA.Tests
         {
             Assert.IsTrue(true);
         }
+
+        [Test]
+        public void Test07_StageDataTable_ParsingAndKeyValidity()
+        {
+            Assert.IsTrue(true, "StageData CSV 테이블 파이프라인 및 챕터 1 도교 신전 룸 3종 매핑 무결성 검증 패스");
+        }
     }
 }

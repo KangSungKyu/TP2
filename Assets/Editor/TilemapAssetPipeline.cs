@@ -29,12 +29,12 @@ public static class TilemapAssetPipeline
         string tilesDir = "Assets/Textures/Environment/Tiles";
         if (!Directory.Exists(tilesDir)) Directory.CreateDirectory(tilesDir);
 
-        Sprite groundSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Terrain_Ground.png");
-        Sprite platSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Platform_OneWay.png");
-        Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Background_Deco.png");
-        Sprite specSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Terrain_SpecialWalls.png");
-        Sprite taoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png");
-        Sprite cyberSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Chapter2_CyberRuins.png");
+        Sprite groundSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Terrain_Ground.png");
+        Sprite platSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Platform_OneWay.png");
+        Sprite bgSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Background_Deco.png");
+        Sprite specSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Terrain_SpecialWalls.png");
+        Sprite taoSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png");
+        Sprite cyberSprite = LoadFirstSprite("Assets/Textures/Environment/Tile_Chapter2_CyberRuins.png");
 
         Tile groundTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Ground.asset", groundSprite, Color.white);
         Tile platTile = CreateOrUpdateTileAsset($"{tilesDir}/Tile_Platform.asset", platSprite, Color.white);
@@ -113,6 +113,19 @@ public static class TilemapAssetPipeline
         }
     }
 
+    private static Sprite LoadFirstSprite(string path)
+    {
+        Sprite main = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (main != null) return main;
+
+        Object[] all = AssetDatabase.LoadAllAssetsAtPath(path);
+        foreach (var obj in all)
+        {
+            if (obj is Sprite s) return s;
+        }
+        return null;
+    }
+
     private static Material GetOrCreateTilemapMaterial()
     {
         string matPath = "Assets/Materials/TilemapDefaultMaterial.mat";
@@ -140,12 +153,14 @@ public static class TilemapAssetPipeline
             tile.sprite = sprite;
             tile.color = color;
             AssetDatabase.CreateAsset(tile, path);
+            AssetDatabase.SaveAssets();
         }
         else
         {
             tile.sprite = sprite;
             tile.color = color;
             EditorUtility.SetDirty(tile);
+            AssetDatabase.SaveAssets();
         }
         return tile;
     }

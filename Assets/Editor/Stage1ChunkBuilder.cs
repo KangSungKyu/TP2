@@ -167,6 +167,9 @@ public static class Stage1ChunkBuilder
         string prefabPath = $"{roomsDir}/{roomName}.prefab";
         PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
         Object.DestroyImmediate(gridRoot);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"<color=green>[Stage1ChunkBuilder] 실물 룸 청크 프리팹 저장 완결: {prefabPath}</color>");
     }
 
     private static void CreateSpawnMarker(GameObject parent, string name, Vector3 pos, SpawnType type, string monsterId = "")

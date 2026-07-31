@@ -6,7 +6,7 @@ using UnityEngine;
 namespace QA.Tests
 {
     /// <summary>
-    /// TilemapStageBuilder 룸 청크 전환, 관문 포탈 3종(Portal, Door, Portal_Gate), 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D, StageManager 1스테이지 초심자 룸 시퀀스 무결성 검증 NUnit 테스트
+    /// TilemapStageBuilder 룸 청크 전환, 관문 포탈 3종(Portal, Door, Portal_Gate), 1-Way 발판, 벽점프, UnitSpawner, MetroidvaniaCamera2D, StageManager 1스테이지 초심자 룸 시퀀스 및 챕터 1 도교 신전 타일셋 무결성 검증 NUnit 테스트
     /// </summary>
     public class TilemapStageBuilderTests
     {
@@ -220,6 +220,16 @@ namespace QA.Tests
             Assert.IsTrue(portal.AutoTriggerOnTouch, "AutoTriggerOnTouch 활성화 상태 확인");
 
             Object.DestroyImmediate(portalObj);
+        }
+
+        [Test]
+        public void Test12_Chapter1_TaoistTemple_TilesetAndPortalGateBinding()
+        {
+            string taoTilesetPath = "Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png";
+            Assert.IsTrue(File.Exists(taoTilesetPath), $"1챕터 도교 신전 타일셋 에셋이 존재해야 합니다: {taoTilesetPath}");
+
+            string portalGatePath = "Assets/Prefabs/Structures/Portal_Gate.prefab";
+            Assert.IsTrue(File.Exists(portalGatePath), $"Portal_Gate.prefab 관문 에셋이 존재해야 합니다: {portalGatePath}");
         }
     }
 }
