@@ -32,40 +32,38 @@ public static class TilemapRoomPrefabBuilder
         Sprite platSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Platform_OneWay.png");
         Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Background_Deco.png");
 
-        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/GroundTile.asset");
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset");
         if (groundTile == null)
         {
             groundTile = ScriptableObject.CreateInstance<Tile>();
             groundTile.sprite = groundSprite;
-            AssetDatabase.CreateAsset(groundTile, $"{tilesDir}/GroundTile.asset");
-        }
-        else
-        {
-            groundTile.sprite = groundSprite;
+            AssetDatabase.CreateAsset(groundTile, $"{tilesDir}/Tile_Ground.asset");
         }
 
-        Tile platTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/PlatTile.asset");
+        Tile platTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset");
         if (platTile == null)
         {
             platTile = ScriptableObject.CreateInstance<Tile>();
             platTile.sprite = platSprite;
-            AssetDatabase.CreateAsset(platTile, $"{tilesDir}/PlatTile.asset");
-        }
-        else
-        {
-            platTile.sprite = platSprite;
+            AssetDatabase.CreateAsset(platTile, $"{tilesDir}/Tile_Platform.asset");
         }
 
-        Tile bgTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/BgTile.asset");
-        if (bgTile == null)
+        Tile redWallTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Wall_RedNoJump.asset");
+        if (redWallTile == null)
         {
-            bgTile = ScriptableObject.CreateInstance<Tile>();
-            bgTile.sprite = bgSprite;
-            AssetDatabase.CreateAsset(bgTile, $"{tilesDir}/BgTile.asset");
+            redWallTile = ScriptableObject.CreateInstance<Tile>();
+            redWallTile.sprite = groundSprite;
+            redWallTile.color = new Color(0.9f, 0.2f, 0.2f, 1f);
+            AssetDatabase.CreateAsset(redWallTile, $"{tilesDir}/Tile_Wall_RedNoJump.asset");
         }
-        else
+
+        Tile iceWallTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Wall_IceSlide.asset");
+        if (iceWallTile == null)
         {
-            bgTile.sprite = bgSprite;
+            iceWallTile = ScriptableObject.CreateInstance<Tile>();
+            iceWallTile.sprite = groundSprite;
+            iceWallTile.color = new Color(0.2f, 0.85f, 1.0f, 1f);
+            AssetDatabase.CreateAsset(iceWallTile, $"{tilesDir}/Tile_Wall_IceSlide.asset");
         }
 
         Material defaultSpriteMat = new Material(Shader.Find("Sprites/Default"));
@@ -135,14 +133,14 @@ public static class TilemapRoomPrefabBuilder
             groundTilemap.SetTile(new Vector3Int(-30, y, 0), groundTile);
             groundTilemap.SetTile(new Vector3Int(30, y, 0), groundTile);
         }
-        // Zone B 벽 타일
+        // Zone B 벽 타일 (Standard, Alternate, Red NoJump, Ice Slide)
         for (int y = 1; y <= 14; y++)
         {
             groundTilemap.SetTile(new Vector3Int(-8, y, 0), groundTile);
             groundTilemap.SetTile(new Vector3Int(-4, y, 0), groundTile);
             groundTilemap.SetTile(new Vector3Int(0, y, 0), groundTile);
-            groundTilemap.SetTile(new Vector3Int(4, y, 0), groundTile);
-            groundTilemap.SetTile(new Vector3Int(8, y, 0), groundTile);
+            groundTilemap.SetTile(new Vector3Int(4, y, 0), redWallTile != null ? redWallTile : groundTile);
+            groundTilemap.SetTile(new Vector3Int(8, y, 0), iceWallTile != null ? iceWallTile : groundTile);
         }
 
         // 6-2. 1-Way 발판 타일 (Zone A & Zone C)
