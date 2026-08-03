@@ -75,8 +75,8 @@ namespace QA.Tests
         public void Test07_StageDataTable_ParsingAndKeyValidity()
         {
             string csvContent = "idx,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n" +
-                               "9001,2001,1,TaoShrine,1040,1042,1040_1041_1042\n" +
-                               "9002,2001,2,CyberRuins,1043,1044,1043_1044";
+                               "9001,2001,1,1,1040,1042,1040_1041_1042\n" +
+                               "9002,2001,2,2,1040,1042,1040_1042";
 
             StageDataTable table = new StageDataTable();
             table.LoadData(csvContent);
@@ -87,6 +87,7 @@ namespace QA.Tests
             Assert.IsTrue(found, "Type 9 규격(9001) 1스테이지 데이터 조회가 가능해야 합니다.");
             Assert.AreEqual(9001u, stage1Data.Idx, "Stage 1 Idx = 9001 규격 검증");
             Assert.AreEqual(1, stage1Data.Chapter, "Stage 1 Chapter = 1 규격 검증");
+            Assert.AreEqual(1, stage1Data.ThemeType, "Stage 1 ThemeType = 1 (정수) 파싱 무결성 검증");
             Assert.AreEqual(1040u, stage1Data.StartRoomIdx, "Stage 1 StartRoomIdx 규격 검증");
             Assert.AreEqual(1042u, stage1Data.BossRoomIdx, "Stage 1 BossRoomIdx 규격 검증");
             Assert.AreEqual(3, stage1Data.RoomSequenceIdxList.Length, "RoomSequenceIdxList 3개 청크 정수 idx 목록 규격 검증");

@@ -243,5 +243,21 @@ namespace QA.Tests
             Assert.IsTrue(text.Contains("1041"), "1스테이지 Battle 룸 청크 ResourceIdx (1041)가 포함되어 있어야 합니다.");
             Assert.IsTrue(text.Contains("1042"), "1스테이지 Boss 룸 청크 ResourceIdx (1042)가 포함되어 있어야 합니다.");
         }
+
+        [Test]
+        public void Test14_Addressable_Label_Datas_And_StageData_ThemeType_Integer_Parsing_Validation()
+        {
+            string stageDataCsvPath = "Assets/Datas/StageData.csv";
+            Assert.IsTrue(File.Exists(stageDataCsvPath), $"StageData.csv 에셋 파일이 존재해야 합니다: {stageDataCsvPath}");
+
+            string text = File.ReadAllText(stageDataCsvPath);
+            Assert.IsTrue(text.Contains("9001,2001,1,1,1040,1042,1040_1041_1042"), "StageData.csv 9001행에서 themetype=1 정수 파싱 항목이 완벽 일치해야 합니다.");
+
+            string metaPath = stageDataCsvPath + ".meta";
+            Assert.IsTrue(File.Exists(metaPath), $"StageData.csv.meta 에셋 메타 파일이 존재해야 합니다: {metaPath}");
+            
+            string metaText = File.ReadAllText(metaPath);
+            Assert.IsNotNull(metaText, "StageData.csv.meta 로딩 확인");
+        }
     }
 }

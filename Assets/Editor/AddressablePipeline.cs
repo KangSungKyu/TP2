@@ -6,7 +6,7 @@ using UnityEngine;
 using System.IO;
 
 /// <summary>
-/// Addressables 자동 등록 & 로컬 배포 파이프라인 (대문자 P 표준 경로 Assets/Prefabs 반영).
+/// Addressables 자동 등록 & 로컬 배포 파이프라인 (Datas "Datas" 라벨 지정 반영).
 /// </summary>
 public static class AddressablePipeline
 {
@@ -24,7 +24,7 @@ public static class AddressablePipeline
         var animsGroup = settings.FindGroup("Anims") ?? settings.CreateGroup("Anims", false, false, true, null);
         var datasGroup = settings.FindGroup("Datas") ?? settings.CreateGroup("Datas", false, false, true, null);
 
-        // 1. Prefabs 하위 전체 (.prefab) 서치 (대문자 P 경로 Assets/Prefabs 및 서브 폴더 Rooms 등 포함)
+        // 1. Prefabs 하위 전체 (.prefab)
         string prefabsDir = "Assets/Prefabs";
         if (Directory.Exists(prefabsDir))
         {
@@ -38,6 +38,7 @@ public static class AddressablePipeline
                     string addressKey = Path.GetFileNameWithoutExtension(assetPath);
                     var entry = settings.CreateOrMoveEntry(guid, prefabsGroup);
                     entry.address = addressKey;
+                    entry.SetLabel("Prefabs", true, true);
                     Debug.Log($"Addressable Registered [Prefabs]: {addressKey} -> {assetPath}");
                 }
             }
@@ -59,16 +60,16 @@ public static class AddressablePipeline
                         string addressKey = Path.GetFileNameWithoutExtension(assetPath);
                         var entry = settings.CreateOrMoveEntry(guid, animsGroup);
                         entry.address = addressKey;
+                        entry.SetLabel("Anims", true, true);
                     }
                 }
             }
         }
 
-        // 3. Datas (.csv)
+        // 3. Datas (.csv) - Datas Label 자동 할당
         string datasDir = "Assets/Datas";
         if (Directory.Exists(datasDir))
         {
-            settings.AddLabel("Datas");
             string[] csvFiles = Directory.GetFiles(datasDir, "*.csv", SearchOption.AllDirectories);
             foreach (string file in csvFiles)
             {
@@ -79,14 +80,15 @@ public static class AddressablePipeline
                     string addressKey = Path.GetFileNameWithoutExtension(assetPath);
                     var entry = settings.CreateOrMoveEntry(guid, datasGroup);
                     entry.address = addressKey;
-                    entry.SetLabel("Datas", true);
+                    entry.SetLabel("Datas", true, true);
+                    Debug.Log($"Addressable Registered [Datas with Label 'Datas']: {addressKey} -> {assetPath}");
                 }
             }
         }
 
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, null, true);
         AssetDatabase.SaveAssets();
-        Debug.Log("<color=green><b>[AddressablePipeline] Addressables 대문자 Prefabs 전수 등록 완결!</b></color>");
+        Debug.Log("<color=green><b>[AddressablePipeline] Addressables Datas Label 지정 전수 등록 완결!</b></color>");
     }
 
     [MenuItem("TP2/Build & Deploy Addressables (Addressables 빌드 및 배포)")]
@@ -95,47 +97,21 @@ public static class AddressablePipeline
         RegisterAllAddressables();
 
         var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-        if (settings != null)
+        if (settings != null && string.IsNullOrEmpty(settings.activeProfileId))
         {
-            string activeProfileId = settings.activeProfileId;
-            if (string.IsNullOrEmpty(activeProfileId))
+            string defaultProfileId = settings.profileSettings.GetProfileId("Default");
+            if (string.IsNullOrEmpty(defaultProfileId))
             {
-                activeProfileId = settings.profileSettings.GetProfileId("Default");
-                if (string.IsNullOrEmpty(activeProfileId))
+                var profileNames = settings.profileSettings.GetAllProfileNames();
+                if (profileNames != null && profileNames.Count > 0)
                 {
-                    var profileNames = settings.profileSettings.GetAllProfileNames();
-                    if (profileNames != null && profileNames.Count > 0)
-                    {
-                        activeProfileId = settings.profileSettings.GetProfileId(profileNames[0]);
-                    }
-                }
-                if (!string.IsNullOrEmpty(activeProfileId))
-                {
-                    settings.activeProfileId = activeProfileId;
+                    defaultProfileId = settings.profileSettings.GetProfileId(profileNames[0]);
                 }
             }
-
-            foreach (var group in settings.groups)
+            if (!string.IsNullOrEmpty(defaultProfileId))
             {
-                if (group == null) continue;
-                foreach (var schema in group.Schemas)
-                {
-                    if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema bundledSchema)
-                    {
-                        if (bundledSchema.BuildPath != null && string.IsNullOrEmpty(bundledSchema.BuildPath.Id))
-                        {
-                            bundledSchema.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
-                        }
-                        if (bundledSchema.LoadPath != null && string.IsNullOrEmpty(bundledSchema.LoadPath.Id))
-                        {
-                            bundledSchema.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
-                        }
-                    }
-                }
+                settings.activeProfileId = defaultProfileId;
             }
-
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.GroupSchemaModified, null, true);
-            AssetDatabase.SaveAssets();
         }
 
         AddressableAssetSettings.BuildPlayerContent();
