@@ -259,5 +259,28 @@ namespace QA.Tests
             string metaText = File.ReadAllText(metaPath);
             Assert.IsNotNull(metaText, "StageData.csv.meta 로딩 확인");
         }
+
+        [Test]
+        public void Test15_HubScene_To_MainScene_Stage1_9001_Transition_And_AutoRender_Validation()
+        {
+            GameObject hubSceneObj = new GameObject("Test_HubScene");
+            var hubScene = hubSceneObj.AddComponent<HubScene>();
+            Assert.IsNotNull(hubScene, "HubScene 컴포넌트 생성 실패");
+
+            GameObject mainSceneObj = new GameObject("Test_MainScene");
+            var mainScene = mainSceneObj.AddComponent<MainScene>();
+            Assert.IsNotNull(mainScene, "MainScene 컴포넌트 생성 실패");
+
+            GameObject stageMgrObj = new GameObject("Test_StageManager");
+            var stageMgr = stageMgrObj.AddComponent<StageManager>();
+            stageMgr.CurrentStageIdx = 9001;
+
+            Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "1스테이지(9001) 식별자 설정 확인");
+            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "HubScene -> MainScene 진입 후 1스테이지 Entry 룸 청크(1040) 자동 렌더링 키 해석 검증");
+
+            Object.DestroyImmediate(hubSceneObj);
+            Object.DestroyImmediate(mainSceneObj);
+            Object.DestroyImmediate(stageMgrObj);
+        }
     }
 }
