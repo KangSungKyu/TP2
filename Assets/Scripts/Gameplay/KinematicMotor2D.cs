@@ -113,6 +113,11 @@ public class KinematicMotor2D : MonoBehaviour
     public void SetVelocityY(float vy)
     {
         Velocity = new Vector2(Velocity.x, vy);
+        if (vy > 0f)
+        {
+            IsGrounded = false;
+            groundNormal = Vector2.up;
+        }
     }
 
     public void SetJumpHeld(bool held)
@@ -159,15 +164,15 @@ public class KinematicMotor2D : MonoBehaviour
             InitMotor();
         }
 
-        ApplyGravity(dt);
-
-        Velocity = new Vector2(targetVelocityX, Velocity.y);
-
         IsGrounded = false;
         IsWalledLeft = false;
         IsWalledRight = false;
         WallCollider = null;
         WallSurface = null;
+
+        ApplyGravity(dt);
+
+        Velocity = new Vector2(targetVelocityX, Velocity.y);
 
         var deltaPosition = Velocity * dt;
 
@@ -178,9 +183,9 @@ public class KinematicMotor2D : MonoBehaviour
         var verticalMove = Vector2.up * deltaPosition.y;
         PerformMovement(verticalMove, true);
 
-        if (groundNormal.y > MinGroundNormalY && !isPassThroughActive)
+        if (!IsGrounded && Velocity.y <= 0f)
         {
-            IsGrounded = true;
+            groundNormal = Vector2.up;
         }
     }
 
@@ -253,14 +258,11 @@ public class KinematicMotor2D : MonoBehaviour
                 }
             }
 
-            if (currentNormal.y > MinGroundNormalY && !isPassThroughActive)
+            if (yMovement && move.y <= 0f && currentNormal.y > MinGroundNormalY && !isPassThroughActive)
             {
                 IsGrounded = true;
-                if (yMovement)
-                {
-                    groundNormal = currentNormal;
-                    currentNormal.x = 0;
-                }
+                groundNormal = currentNormal;
+                currentNormal.x = 0;
             }
 
             if (!yMovement && Mathf.Abs(currentNormal.x) > 0.5f)
