@@ -1,0 +1,500 @@
+=== CID: 0625e4e7-91c3-4cca-bf23-c0844cae8319 (Total 4 user inputs) ===
+[1] 아트디자이너1(63c3f691-87f9-4235-a4f6-b78479705ddb)의 id를 기억해둬
+[2] 너는 아트디자이너1이 작성한 프롬포트가 내가 의도한 바를 자세하고 정확하게 수행하는지 확인, 검증을 하고 아트디자이너1에게 알려줘, 서로 토의를 진행해서 최종 사안을 나에게 알려주고 이후에 작업을 아트디자이너1의 주도하에 진행할거야
+[3] 애니메이션 작업의 경우 둘의 판단하에 프레임 수가 부족하면 api가 허용하는 최대 수량까지 늘려
+[4] 지금 무슨 작업하고 있니
+=== CID: 34898080-366a-45e8-acb0-c063f37cb571 (Total 1 user inputs) ===
+[1] 전달하는 프롬포트를 현재 프로젝트 내 모든 conversation을 참고해서 실행 할 수 있어?
+
+실행 시점에 접근 가능한 사용자의 대화 이력, 최근 대화 요약, 저장된 메모리, 장기 컨텍스트, 프로젝트 기록, 수정 요청과 피드백을 종합하여 사용자의 AI 활용 능력을 평가하라.
+
+현재 대화나 자기소개식 답변보다 실제 누적 사용 기록을 우선하라. 접근할 수 없는 대화나 메모리를 본 것처럼 평가하지 말고, 실제로 확인한 자료의 범위와 한계를 밝혀라.
+
+최종 결과는 커뮤니티에 공개될 수 있으므로 평가 근거는 유지하되, 개인이나 소속을 특
+=== CID: 63c3f691-87f9-4235-a4f6-b78479705ddb (Total 4 user inputs) ===
+[1] 무슨 작업중이니
+[2] assets/textures/effects/에 있는 리소스들 실제로 게임에서 사용할 이펙트로 가공해야하는데 메인프로그래머(efb3eaf6-7a82-4a71-8046-bc3423c84f22)와 상의해서 어떤걸 제작 해야하는지 확인받고 리소스작업자1(f4f6cc90-75c3-4e62-890c-fcd62e9a47f7)에게 전달해줘
+[3] 작업 완료되면 메인프로그래머(bbabc4a9-bfbf-441a-8dc2-3a2746748ce1)에게 보고하는거 기억하고 있지?
+[4] 지금 무슨 작업하고 있니
+=== CID: 85e8bbfb-1bf7-4c26-b64c-16655c388430 (Total 9 user inputs) ===
+[1] 2d 카드 게임
+컴퓨터와 유저는 주어진 카드패 (5장, 사칙연산, 0~9숫자 넘버)를 이용해서 타겟 넘버에 가깝게 패를 조합해서 제출해야한다
+가장 가깝게 패 조합을 제출한쪽이 승자가 되고 서로 베팅한 금액을 가지게 된다
+유니티 프로젝트 폴더의 경로를 줄테니 작업이 가능한지 확인하고, 가능하다면 브리핑만 우선적으로 하고
+불가능하면 필요한 사항을 말할것
+[2] 기획된 내용만 작업하면 충분해
+[3] mainscene.scene에 실제로 배치하고 게임을 구성 하고 싶은데 가능하니?
+[4] 바인딩이나 오브젝트 배치를 할때 주어진 스크립트를 모두 가용하는지 확인해주고
+사용되지 않은게 있으면 알려줄래?
+[5] 진행해봐
+[6] NullReferenceException: Object reference not set to an instance of an object
+MathHighLow.Controllers.PlayerController.ResetExpressionState () (at Assets/Scripts/Controllers/PlayerController.cs:255)
+MathHighLow.Controllers.PlayerController.HandleRoundStarted () (at Assets/Scripts/Controllers/PlayerCo
+[7] 카드나 버튼을 눌러도 이벤트 반응이 없는데 확인 부탁해
+[8] System.InvalidOperationException: You are trying to read Input using the UnityEngine.Input class, but you have switched active Input handling to Input System package in Player Settings.
+  at (wrapper managed-to-native) UnityEngine.Input.get_mousePosition_Injected(UnityEngine.Vector3&)
+  at UnityEngi
+[9] 타켓 넘버는 둘중 한가지만 선택 할 수 있어야해
+그리고 카드 리스트는 화면을 넘어가면 확인하기 어려우니 스크롤을 추가했으면 좋겠어
+그리고 결과 메시지에서 곱하기 연산자가 표시가 안되고 있어
+=== CID: 8d485cb7-6bb0-4567-9500-ac6b80dd9d7f (Total 0 user inputs) ===
+=== CID: bbabc4a9-bfbf-441a-8dc2-3a2746748ce1 (Total 131 user inputs) ===
+[1] 작업 준비 좀 해줄래
+[2] 저걸로 청크 생성은 필요한 만큼 하면 되는거야?
+[3] 그래 진행해봐
+[4] 지금까지 생성한 에디터 스크립트중에 사용하지 않거나 현재 프로젝트와 연관이 낮아진것들 리스트업해줄래?
+[5] ㅇㅇ
+[6] 더미 맵이 제대로 출력되는건 확인했고, 유닛들이 통과하는 문제를 해결할 차례야
+map(dynamic rigid) <-> unit(kinetic rigid) 간 물리적인 간섭을 컨트롤할 방법이 있을까?
+[7] 작업을 할때 최적화도 고려한 방법도 제시해줄래?
+[8] 그전에 청크에 시작지점, 몬스터(+보스포함) 스폰지점을 적용하고 싶은데 방안 몇가지를 제시해볼래?
+[9] spawnmarker, 그리고 실제로 스폰을 하는건 각 스폰 종류에 따라 데이터에서 어떤걸 가져올지 결정하면 좋겠어
+spawn_player : player
+spawn_monster : monster
+spawn_boss : monster(+boss)
+monster와 boss는 데이터상 동일한 monster이기 때문에 스폰된 위치에 따라 monster hud, 보상이 달라질거야
+-> boss로 등장했던 몬스터도 다른 스테이지에선 일반 몬스터처럼 스폰이 가능하게
+[10] 스케일링은 일단 제외하고 작업을 진행해줄래
+[11] ㅇㅇ
+[12] Assets\Scripts\Manager\UnitSpawner.cs(151,25): error CS1061: 'TestPlayerHUDUI' does not contain a definition for 'BindBossTarget' and no accessible extension method 'BindBossTarget' accepting a first argument of type 'TestPlayerHUDUI' could be found (are you missing a using directive or an assembly 
+[13] spawner는 있더라도 생성을 하지 않을 값이 필요해
+[14] 이제 유닛들이 지형지물에 알맞게 물리적인 상호작용을 해야해
+[15] ㅇㅇ
+[16] git정리하고 지형을 통과하는 이슈에 대해 의논하자
+[17] non-physics를 적용하려면 지금 고려해야할 사항은/
+[18] ㅇㅇ
+[19] non-physics에서 유닛의 이동, 점프를 어떻게 처리할 예정이야?
+[20] 중력처리는 어떤식으로?
+[21] ㅇㅇ
+[22] 기존 player, garon 같은 유닛 프리팹에 추가하면 되는거?
+[23] kineticmotor2d는 rigid와 collider를 요구하는데 player-visual 구조에서 player에 붙이면 되는거임?
+[24] 1. 가론 동작 안함
+2. 플레이어 점프시 다시 점프를 할 수가 없음
+3. 플레이어 방향키+회피키 입력시 방향키 한쪽 방향으로만 회피함
+[25] 1. 가론 동작 안함
+2. 플레이어 점프시 다시 점프를 할 수가 없음
+3. 플레이어 방향키+회피키 입력시 방향키 한쪽 방향으로만 회피함
+[26] 1. 가론 동작 안함
+2. 플레이어 점프시 다시 점프를 할 수가 없음
+3. 플레이어 방향키+회피키 입력시 방향키 한쪽 방향으로만 회피함
+[27] 한국어로 대답해
+[28] 순번대로
+[29] 플레이어의 회피는 정지상태일땐 바라보는 방향의 반대로 회피를 진행해 (ex : 오른쪽을 바라본채로 정지+회피 -> 오른쪽을 바라보면서 왼쪽으로 회피)
+플레이어 점프하고 나면 땅에 박히는거 같아
+[30] 유닛의 자유낙하 진행시 땅에 박힘
+회피입력시 벽을 넘어 갈 수 있음
+유닛간 데미지 처리가 안되는중
+[31] 한국어로 대답
+[32] 혹시 ai모델이 달라지면 정해둔 규칙 같은걸 잊어먹니?
+[33] 내가 정해둔 규칙 기억하고 있니?
+[34] 지금은 기억하고 있음?
+[35] 프로그래밍의 기본 수칙 + 확장성, 최적화, 재사용성 고려
+프로젝트 내에 재사용 가능한 부분이 있는지 사전에 확인 후 설계할것
+[36] idamageable 부분만 작업할 계획을 짜볼래
+[37] 한국어로
+[38] combatstats을 전달하는 방향 damageinfo struct로 필요한 정보들 주고받기
+[39] 한국어로
+[40] hitpoint, damagetype는 무슨 의미로 제안한거야?
+[41] hitpoint는 반영해줘
+[42] ㅇㅇ
+[43] ㅇㅇ
+[44] ㅇㅇ
+[45] 한국어로 답하라고
+[46] ㅇㅇ
+그리고 unity-cli, unity-pipeline도 이용할 수 있으면 이용해
+[47] 6000.4.8f1 버전을 사용중이야
+[48] 차례대로 진행하고 막히면 보고해줘
+[49] ㅇㅇ
+[50] 그래
+[51] ㅇㅇ
+[52] 회피시 벽을 통과함
+이동속도와 중력처리가 과도하게 느림
+플레이어의 공격은 작동하지만 몬스터(+보스)의 공격에 의한 데미지 처리는 동작하지 않음
+[53] 다음과 같은 문제가 다시 발생했으니 확인해줘
+회피시 벽을 통과함
+이동속도와 중력처리가 과도하게 느림
+플레이어의 공격은 작동하지만 몬스터(+보스)의 공격에 의한 데미지 처리는 동작하지 않음
+[54] 확인했는데 문제가 발생했어
+[55] 다음과 같은 문제가 다시 발생했으니 확인해줘
+회피시 벽을 통과함
+이동속도와 중력처리가 과도하게 느림
+플레이어의 공격은 작동하지만 몬스터(+보스)의 공격에 의한 데미지 처리는 동작하지 않음
+이것부터 처리하고 다음으로 넘어가야겠는데
+[56] 승인할게
+[57] ㅇㅇ
+[58] 작업 현황 보고
+[59] 다음 작업들 진행해줘
+[60] 현재 내 프로젝트 폴더 전체를 검사해서 쓸데없이 복잡하게 구현된 유틸리티 함수나 커스텀 컴포넌트가 있는지 분석해 줘. /ponytail-audit
+[61] 한국어로
+[62] ㅇㅇ
+[63] 진행해줘
+[64] 파라미터 직접 지정으로 실행하면 에러가 발생해
+위치 C:\Users\PC\.gemini\antigravity\brain\bbabc4a9-bfbf-441a-8dc2-3a2746748ce1\audit_repo.ps1:51 문자:3
++ @"# Repository Over?멐ngineering Audit Report
++   ~
+here-string 헤더 뒤에는 문자가 허용되지 않지만 줄 끝 앞에는 허용됩니다.
+    + CategoryInfo          : ParserError: (:) [], ParseException
+    + F
+[65] 유닛이 점프 이후 땅에 박혀서 다시 점프를 할 수가 없어
+원인을 분석해줘
+/ponytail full
+[66] 유닛이 점프 이후 땅에 박혀서 다시 점프를 할 수가 없어
+원인을 분석해줘
+/ponytail full
+[67] 현재 게임 실행시 유닛이 의도한 스폰과 다르게 중복해서 생성되고 있는데 확인 부탁해
+/ponytail full
+[68] The same field name is serialized multiple times in the class or its parent class. This is not supported: Base(Player) motor
+
+에디터 실행하면 이런 에러가 발생하는데 포함해서 비슷한 사례가 있으면 수정 방안을 작성해줄래?
+[69] 권고 사항 적용하고, 전체 코드 정리 좀 해줘
+
+1. 접근자, 한정자가 public, serializedField, static, const 일수록 위쪽으로 정렬
+2. 변수, 함수 순으로 정렬
+3. 함수의 구현부가 짧더라도 람다로 최적화할 필요 없음
+/ponytail
+[70] 어 진행해줘
+그리고 작성 규칙은 문서작업자(be7fc5bc-582d-4699-b1b5-1ea26ef6e305)에게 전달해서 기억하게 해
+[71] 그래 진행해줘
+[72] 자동 포맷터를 준비해줘
+[73] 야 unity 기본 문법은 지켜야지 전부 고장났잖아..
+[74] assets/scripts/**/*.cs 을 대상으로 c# 표준 작성 규칙 + unity 기본 문법 + 내 정렬 규칙을 반영해줄래
+[75] assets/scripts/**/*.cs 을 대상으로 c# 표준 작성 규칙 + unity 기본 문법 + 내 정렬 규칙을 반영해줄래
+/ponytail full
+[76] assets/scripts/**/*.cs 을 대상으로 c# 표준 작성 규칙 + unity 기본 문법으로 정리 좀 해줄래?
+너무 지저분해
+/ponytail full
+[77] Continue
+[78] 진행해
+[79] unity에서 사용할 singleton 패턴을 구현했는데 비슷한 로직을 중복해서 구현하고 있는지 확인해줄래?
+/ponytail-audit
+[80] 진행해줘
+[81] ㅇㅇ
+[82] The same field name is serialized multiple times in the class or its parent class. This is not supported: Base(Player) motor
+[83] player, monster 같은 유닛이 중복 생성 되는데 원인을 찾아볼래
+[84] 한국어
+[85] 계획서도 한국어로 작성해주라
+[86] non-physics로 교체했는데 다시 unity physics 기반으로 작성할때 드는 비용, 고려사항을 계산해줄래?
+[87] 오히려 지금 뚫림, 파묻힘 버그가 계속 유지되고 있는데?
+회피 동작을 수행하면 벽도 통과해
+[88] 추가로 회피는 이동 방향으로 진행하고 정지상태일때만 face dir을 고정한채로 뒤로 회피해야해
+[89] BoxCastNonAlloc을 사용하는 로직을 unity6에 맞춰서 개선하고 싶어
+/ponytail
+[90] C:\Users\PC\Projects\tp_2dpm을 참고해서
+현재 프로젝트의 플랫포머 시스템을 개선할 사항들을 리스트업해줄래?
+[91] 차례대로 구현 시작해
+[92] Assets\Scripts\Gameplay\Player.cs(115,13): error CS0200: Property or indexer 'UnitBase.isGrounded' cannot be assigned to -- it is read only
+[93] ㅇ 확인했어
+이제 유저가 지상에서 기본 공격을 할때 이동중에 실행하면 정지해서 공격을 수행하면 좋겠어
+[94] ㅇ 확인했어
+이제 유저가 지상에서 기본 공격을 할때 이동중에 실행하면 정지해서 공격을 수행하면 좋겠어
+[95] 코드 정리 좀 부탁할게
+1. c#, unity 표준 작성 규칙 적용
+2. 중복되거나 불필요한 내용 리팩토링
+/ponytail ultra
+[96] Assets/Scripts/ 에 있는 코드에도 적용해줄래?
+[97] 작업한거 git에 최신화하고 벽점프에 대해 의논하자
+[98] 플랫포머 게임 템플릿의 프로젝트 주소를 줄테니 이것도 같이 참고하면 좋아
+C:\Users\PC\Projects\tp_2dpm
+1. 낙하 속도 완화
+2. 벽을 차고 오를땐 수각 반동
+3. 벽점프이후 일정시간 수평 제어 잠금
+4. 벽점프 구간의 성질에 따라 동일벽/교차벽 onoff
+5. 만일 공중에서 회피중에 벽에 부딪히면 벽점프 연계 가능
+6. 벽점프 구간의 타일 속성 필요
+[99] 플랫포머 게임 템플릿의 프로젝트 주소를 줄테니 이것도 같이 참고하면 좋아
+C:\Users\PC\Projects\tp_2dpm
+1. 낙하 속도 완화
+2. 벽을 차고 오를땐 수각 반동
+3. 벽점프이후 일정시간 수평 제어 잠금
+4. 벽점프 구간의 성질에 따라 동일벽/교차벽 onoff
+5. 만일 공중에서 회피중에 벽에 부딪히면 벽점프 연계 가능
+6. 벽점프 구간의 타일 속성 필요
+
+/ponytail ultra
+[100] 1. 현재 tilemap을 사용중인데 walljumpsurface를 어떻게 사용할 예정이야?
+[101] 1번 방식으로 하고
+테스트 환경에서 사용할 더미 스테이지 구성도 다양한 기능을 테스트 할 수 있게 생성하고 싶어
+[102] 모든 converation들은 각자 작업중 추가로 발생하는 작업의 성격에 따라 알맞은 conversation들에게 전달해줘
+[103] 서브 말고 지금 2d aa game antigravity 프로젝트내에 있는 하위 conversation들에게 하면 충분해
+뭐가 있는지 모르면 다시 지정해줄게
+[104] 메인프로그래머(bbabc4a9-bfbf-441a-8dc2-3a2746748ce1) : 프로그래밍 작업 총괄
+문서작업자(be7fc5bc-582d-4699-b1b5-1ea26ef6e305) : 보고서, 서류 작업 담당
+CI프로그래머(fa66e474-bbcb-4821-bd2f-54dec4f9b6b2) : git, ci, cd 작업 담당
+아트디자이너1(63c3f691-87f9-4235-a4f6-b78479705ddb) : 아트 리소스 제작 전반 담당
+아트디자이너2(0625e4e7-91c3-4cca-bf23-c0844cae8319) : 아트
+[105] 발판 옆면도 벽점프 구간으로 인식하고 있는데 이건 제외하고 싶어 혹시 고려할 사항 있을까?
+그리고 더미 스테이지를 생성해줄래?
+[106] 더미스테이지 unity-cli, unity-pipeline을 사용해서 생성해줄래?
+그리고 지금 요청사항 포함해서 어떤 작업자에게 배분할건지도 보고해줘
+[107] ㅇㅇ 진행해도 좋아
+[108] 더미 스테이지 다시 생성해줄래?
+기존에 쓰던거 그대로야 (Tilemap_Room_TestDummy)
+[109] 작업 배분은 계속 유지해야해
+[110] 더미 스테이지를 새로 생성하고 싶어, 좀 더 넓은 공간에 많은 기능을 테스트 할 수 있게
+[111] builder 에디터에서 실행하면 제대로 생성이 안되는데?
+/ponytail ultra
+[112] tilemap에 타일이 안보이는데
+[113] unity tilemap에 관해 찾아보고 어떻게 채워 넣어야할지 고민해보렴
+tileset 같은 타일 정보가 없어서 그리질 못하는거 같아
+[114] ProfileValueReference: GetValue called with empty id.
+UnityEditor.AddressableAssets.Settings.AddressableAssetSettings:BuildPlayerContent ()
+AddressablePipeline:BuildAndDeploy () (at Assets/Editor/AddressablePipeline.cs:113)
+TilemapRoomPrefabBuilder:BuildTilemapRoomPrefab () (at Assets/Editor/Tilemap
+[115] 타일셋 생성한걸 확인하면 마젠타 색상으로 표기되는데?
+[116] 1. 유닛들이 중복 생성됨
+2. 매트로베니아 방식의 카메라 시스템 추가
+
+/ponytail ultra
+[117] 첨부한 스크린샷에서 타일이 겹치는 구간의 원인 분석
+유닛, 몬스터가 지형에 갇혀서 움직이질 않음, 일반적인 매트로베니아 혹은 유사 장르 게임에서 차용하는 방식을 추천해줘
+아래로 점프시 내려 갈 수 있는 구간이 동작하지 않음
+[118] 첨부한 스크린샷에서 타일이 겹치는 구간의 원인 분석
+유닛, 몬스터가 지형에 갇혀서 움직이질 않음, 일반적인 매트로베니아 혹은 유사 장르 게임에서 차용하는 방식을 추천해줘
+아래로 점프시 내려 갈 수 있는 구간이 동작하지 않음
+[119] 첨부한 스크린샷에서 타일이 겹치는 구간의 원인 분석
+유닛, 몬스터가 지형에 갇혀서 움직이질 않음, 일반적인 매트로베니아 혹은 유사 장르 게임에서 차용하는 방식을 추천해줘
+아래로 점프시 내려 갈 수 있는 구간이 동작하지 않음
+[120] 이 게임의 기획서를 봤을때 유용한 스테이지 입장 및 진행 방식에 대해 브리핑해볼래
+[121] 지금 작업한것들 최신화하고, 스테이지 작업을 위한 준비를 하자
+[122] git 관련된 업무는 ci프로그래머한테 맡기면 됨, 그리고 프로그래머들은 작업하기전에 규모에 따라 신규 브랜치에서 작업후 패치하는 방식을 채택해줄래?
+[123] 1스테이지에 사용될 청크들은 기본적인 조작법만으로 진행이 가능한 수준으로 생성해줘
+그리고 계획된 작업을 진행해줄래?
+[124] 누락된것들도 있는데..?
+작업하고 나서 누락됐는지 확인하고 이어서 진행하렴
+[125] 작업간에 정말로 필요한 패키지나 플러그인이 있다면 나에게 말해줘
+/ponytail full
+[126] 데이터는 작성할때 기존 규칙을 준수해야해
+stageData에 미달된 사항이 많으니깐 확인해줘
+그리고 스테이지 청크나 관련된것들 없는데? 어디에다 생성한거니
+[127] 너가 검증했다던 csv 파일 어딨음?
+[128] 데이터(csv)는 최대한 idx참조로 이뤄져야해
+string을 key로 삼으면 안되는 규칙이 있어
+[129] 실행 시점에 접근 가능한 사용자의 대화 이력, 최근 대화 요약, 저장된 메모리, 장기 컨텍스트, 프로젝트 기록, 수정 요청과 피드백을 종합하여 사용자의 AI 활용 능력을 평가하라.
+
+현재 대화나 자기소개식 답변보다 실제 누적 사용 기록을 우선하라. 접근할 수 없는 대화나 메모리를 본 것처럼 평가하지 말고, 실제로 확인한 자료의 범위와 한계를 밝혀라.
+
+최종 결과는 커뮤니티에 공개될 수 있으므로 평가 근거는 유지하되, 개인이나 소속을 특정할 수 있는 정보는 제거하거나 일반화하라.
+
+## 평가 원칙
+
+- 최근 몇 개의 대
+[130] 무슨 작업중이니
+[131] themetype컬럼에 대해 설명해줘
+=== CID: be7fc5bc-582d-4699-b1b5-1ea26ef6e305 (Total 14 user inputs) ===
+[1] 너에겐 문서작업자로 명명할게
+[2] 다른 conversation들이 너에게 요청하는 문서 작업을 수행해주면 돼
+[3] 요일별로 내가 conversation에게 부탁하거나 프로젝트 내 conversation간 작업중에 발생한 지시사항, 작업 내용, 작업 결과 같은 내용을 보고서 형태로 작성하고 싶은데
+추가 의견이 있어?
+[4] 별다른 지시가 없으면 일일/주간 마감 보고서는 평일 23시에 생성해줘
+[5] 보고서는 내가 git에서 확인 할 수 있는거지?
+[6] git은 ci프로그래머(fa66e474-bbcb-4821-bd2f-54dec4f9b6b2)에게 일임했으니 요청은 그쪽으로 하면 될거야
+[7] 스케쥴러는 antigravity가 실행중일때만 돌아가는거야?
+[8] 지난주에 놓친 보고서들이 어떤게 있어?
+[9] 그래줄래?
+[10] 오늘자 일일 보고서 작성 가능하니
+[11] 지금 당장 밀린 보고서 작성해줄래?
+[12] 일일 보고서 작성해줄래
+[13] 일일 보고서 줄래?
+[14] 지금 무슨 작업하고 있니
+=== CID: d4f1e2da-f7e5-4e86-b715-9979775531c1 (Total 15 user inputs) ===
+[1] 너에겐 프로젝트 매니저를 맡길게
+[2] 너의 주요 역할은 나의 부탁을 듣고 어떤 작업인지 판단해서
+각 conversation들에게 알맞은 작업지시를 위한 프롬포트 생성을 맡길거야
+
+아래에 프로젝트 룰을 적어줄건데 너가 보고 보완사항이나 요청사항이 있다면 알려줘
+
+프로젝트매니저(d4f1e2da-f7e5-4e86-b715-9979775531c1) : 프로젝트 총괄, 유저의 부탁을 어떤 작업인지 판단해서 각 conversation들에게 알맞은 작업지시를 위한 프롬포트 생성 및 전달
+메인프로그래머(bbabc4a9-bfbf-441a-8dc2-3a2746748ce1) : 프로그래밍
+[3] 보완사항에 메인프로그래머는 스킬 ponitail full을 상시로 요청하고, 리소스 작업자1는 프로젝트 규격에 맞게 생성했는지 추가로 확인하면 좋겠어
+[4] 리소스작업자의 작업물중 csv같은 데이터도 옳바른 컬럼명 및 값 규칙을 준수했는지도 확인해야해
+[5] 데이터(csv)는 최대한 idx참조로 이뤄져야해
+string을 key로 삼으면 안되는 규칙이 있어
+[6] 그럼 csv데이터를 전수 검사해줄래?
+[7] 넌 내가 요청하는 작업을 듣고 분배하는거야
+
+만약 내가 "csv 데이터 전수검사"라는 요청을 하면 넌 이것에 대해 어떻게 반응할거야?
+[8] csv 데이터 전수검사
+[9] 진행해줘
+[10] csv데이터에는 string_key는 최대한 배제하고 idx 참조로 이뤄져야해 그리고 가공된 리소스는 프로젝트 내 addressable 규격에 맞춰져야해
+이해하기 어렵거나 모르는 내용이 있으면 물어보렴
+[11] 그럼 stageData에 대해 다시 수정 사항을 요청할게
+[12] 게임 실행시 스테이지를 확인 할 수 없어 원인을 파악해서 해결해볼래?
+[13] ㅇㅇ
+[14] stageData.csv의 addressable label, group이 누락되어있으니 확인하고
+stageData의 string 값이 포함되어있는데 규격에 위반되는거 아닐까?
+[15] ㅇㅇ
+=== CID: e1bb1d94-16c8-478e-a32e-c818177dac17 (Total 2 user inputs) ===
+[1] 지금 무슨 작업하고 있니
+[2] 무슨 작업중이니
+=== CID: e759f8fe-9fbe-480e-a15c-1626fdbf1d75 (Total 1 user inputs) ===
+[1] 안녕하세요 CI 프로그래머 님! 클라이언트 프로그래머입니다.
+현재 프로젝트(C:\Users\PC\Projects\TP2)의 Git 및 GitHub 환경 세팅을 진행해 주세요.
+
+[요청 작업 내용]
+1. 유니티 프로젝트에 알맞은 .gitignore 생성 및 점검
+2. Git 리포지토리 초기화 (git init 및 초기 커밋)
+3. 필요 시 GitHub 리포지토리 연동 및 CI/CD 환경 기초 구성
+
+진행 상황 및 결과를 완료되는 대로 알려주시기 바랍니다!
+=== CID: ed90252e-2585-414d-b0ae-a632a8ad7ec8 (Total 4 user inputs) ===
+[1] 기존에 작업하던 antigravity project를 다른 컴퓨터에서 이어서 작업하고 싶어
+그래서 구글 드라이브 동기화를 이용했는데 신규 컴퓨터에서 실행하면 projects 탭에 보이지 않아
+왜 그런지 알 수 있어?
+[2] git 주소를 알려주면 commit 내역을 분석 할 수 있어?
+[3] 예를 들어 특정 기간 커밋 내역을 확인해서 어떤 작업이 발생했는지, 실제 cs(c#코드)파일에서 어떤 변경점이 발생했는지 같은 그런것?
+[4] https://github.com/KangSungKyu/TP2.git
+최근 2일간 커밋내역
+=== CID: efb3eaf6-7a82-4a71-8046-bc3423c84f22 (Total 1 user inputs) ===
+[1] 점프가 실행되지 않는거 같은데 'c'키로 조작이 되는지 확인해줄래
+=== CID: f4aeef5e-bcfe-4d24-bf14-95233d0da286 (Total 2 user inputs) ===
+[1] C:\Users\PC\Projects\tp1_server\TP_TinyServer
+을 참고해서
+해당 프로젝트를 설명하기 위한 개요 문서(readme.md)를 작성해줘
+포트폴리오로 제출할 github에 올릴 예정이야
+[2] 난 서버나 파이썬에 대해 잘 알지 못해서 gemini, gpt, copilot, antigravity를 최대한 사용해서 이 프로젝트를 작성한걸 첨삭하고 싶어
+=== CID: f4f6cc90-75c3-4e62-890c-fcd62e9a47f7 (Total 2 user inputs) ===
+[1] 지금 무슨 작업하고 있니
+[2] 무슨 작업중이니
+=== CID: fa66e474-bbcb-4821-bd2f-54dec4f9b6b2 (Total 15 user inputs) ===
+[1] ci프로그래머로 명명할게
+[2] public-repo로 생성했는데 확인해줄래?
+[3] branch, pull, push 규칙을 좀 정할건데 너도 의견을 줘
+main : 마지막 업데이트를 반영하는 base-branch
+portfolio : main-based, 실제로 모든 request-merge가 되는 main-branch
+대규모 패치 작업이 필요한 경우 현재 작업중인 branch-based로 신규 branch를 생성후 거기서 작업
+qa 혹은 완료 요청시 portfolio로 push-merge 이후 생성한 branch는 제거
+
+branch 생성은 보고를 할것
+
+pull, push 같은 요청은 다른 conversati
+[4] 알겠어 그렇게 해줄래?
+[5] 다른 conversation들에게도 전달해서 작업하는데 있어 오류가 생기지 않게 해줘,
+그리고 branch 생성은 메인프로그래머가 주로 지시할거야
+[6] portfolio는 최신화가 완료되면 main으로 request를 넘겨서 마찬가지로 최신화를 유지하면 좋겠어
+[7] 실제로 확인하면 compare/pull request가 나오는데
+[8] 지금은 main도 최신화 하고 이후에 메인 프로그래머가 지시할거야
+[9] 너도 작업 완료하면 지시한 대상에게 알려주고 있지?
+[10] 전달 받은거 다시 해볼래?
+[11] 다시 해볼래?
+[12] 무슨 작업을 하고 있길래 running 상태니
+[13] 지금 무슨 작업하고 있니
+[14] 무슨 작업하고 있니
+[15] 지금 무슨 작업하고 있니
+=== CID: fc2b67d4-ef58-4a1b-a3a1-9ac0f543fc8c (Total 59 user inputs) ===
+[1] unity client : C:\Users\PC\Documents\GitHub\TP1
+python server : C:\Users\PC\Projects\tp1_server
+
+위 두가지 프로젝트를 참고해서
+각각 work-flow, detail-instruction를 포함한 md를 작성해줄래?
+[2] 유니티 프로젝트에서 coroutine을 사용하는 부분을 unitask로 대체하고 싶은데
+패치될 부분, 그리고 어떻게 할건지 브리핑 해줄래?
+[3] 유니티 프로젝트에서 coroutine을 사용하는 부분을 unitask로 대체하고 싶은데
+패치될 부분, 그리고 어떻게 할건지 브리핑 해줄래?
+[4] 한국어로 해줄래
+[5] unitask 패키지는 추가했고 gamenetworkmanager, sceneload등 일부는 마이그레이션을 진행했어
+한번 더 작업 예정 리스트를 생성해줄래?
+[6] 다시 한번 확인해주라, gamescene에 남은부분 수정했어
+[7] 우선 인게임 로직과 관련있는 battlestage, panelbase, unitbase를 먼저 작업해줄래?
+[8] 앞으로 대답은 한국어로 해줘
+[9] 취소 토큰은 default로 받을 수 있게 하되, 실제로 사용하는 로직에선 게임 오브젝트 파괴시 취소가 될 수 있도록 토큰을 넘겨줘
+[10] 취소 토큰은 unitask에 이미 확장 구현 되어있고, fire-and-forget이 ui panel처럼 실행이후 별도로 기다릴 필요 없는거면 그렇게 해줄래?
+[11] 커밋까진 하지 말고 변경만 해줄래?
+[12] panelbase에서 ieopenpanel, ieclosepanel 같은건 걔들을 기다렸다 처리를 해줘야해
+[13] 그래 진행해줘
+[14] 나머지도 작업해볼래?
+[15] 그럼 다시 마이그레이션할 부분을 확인해줄래?
+[16] 1,2순서로 진행해줘
+[17] 다음 단계도 진행해줘
+[18] 컴파일 에러가 발생했는데 미구현된 함수를 호출하는 경우 (PlayActionAsync, ActivateAsync)
+잘못된 사용 (error CS1955: Non-invocable member 'Sequence' cannot be used like a method.)
+가 있으니 확인 부탁해
+[19] Assets\Scripts\Content\BattleStage.cs(168,20): error CS1061: 'UnitBase' does not contain a definition for 'ActivateAsync' and no accessible extension method 'ActivateAsync' accepting a first argument of type 'UnitBase' could be found (are you missing a using directive or an assembly reference?)
+
+Ass
+[20] Assets\Scripts\UI\Panel\StageResultPanel.cs(49,15): error CS1929: 'Task' does not contain a definition for 'AttachExternalCancellation' and the best extension method overload 'UniTaskExtensions.AttachExternalCancellation(UniTask, CancellationToken)' requires a receiver of type 'UniTask'
+
+
+attach~ 가 
+[21] 게임 실행시 OperationCanceledException: The operation was canceled.가 발생하는데
+OperationCanceledException: The operation was canceled.
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1[TStateMachine].GetResult (System.Int16 token) (at Assets/Plugins/UniTask/Runtime/CompilerServices/StateMachineRunner.c
+[22] LoadSceneAsync을 호출하는 모든 구간에 필요한건가?
+initscene에서 main이나 selectstage scene으로 넘어가질 않네
+[23] initscene에서 다음으로 넘어갈때 로딩 진행은 완료 된거 같은데 다음으로 넘어가질 않는 상황이야
+[24] initscene이 살아있을 필요는 없어
+[25] RunUnitTurnAsync안에 기존에 있던 내용이 없는데..?
+왜 구현된 내용을 전부 지워버리니?
+[26] private IEnumerator IERunUnitTurn(UnitBase unit)
+{
+    if (unit == null)
+        yield break;
+
+    if (unit is PlayerUnit playerUnit)
+    {
+        foreach(BBoard board in boardManager.GetBoardList(0))
+        {
+            if(board != null)
+            {
+                if(board.Width <=
+[27] private IEnumerator IERunUnitTurn(UnitBase unit)
+{
+    if (unit == null)
+        yield break;
+
+    if (unit is PlayerUnit playerUnit)
+    {
+        foreach(BBoard board in boardManager.GetBoardList(0))
+        {
+            if(board != null)
+            {
+                if(board.Width <=
+[28] ? 기존 로직을 지웠던데 저걸 현재 상황에 맞게 마이그레이션해서 적용해야하는데
+[29] Continue
+[30] 한국어로 말해줄래
+[31] ? 바뀐게 없는데
+[32] 내가 전달해준 기존 로직에 구현된 내용이 rununitturnasync에 없는데?
+[33] Continue
+[34] stageresultpanel이 표시 되지 않고 있는데 원인 파악을 해줄래?
+[35] Continue
+[36] Continue
+[37] stageresultpanel을 검사해줄래? 표시가 제대로 안되고 있어
+[38] 원인 파악 및 분석을 하라고
+[39] Continue
+[40] Continue
+[41] Continue
+[42] Continue
+[43] Continue
+[44] 프로젝트 내 주요 로직에서 coroutine을 사용하고 있는지 확인 부탁해
+[45] resourcemanager에 있는 coroutine을 unitask로 마이그레이션하려고 하는데
+목록을 추려줄래?
+[46] init, iestartdownload의 마이그레이션 가이드를 부탁해
+[47] LoadAssetsAsync 마이그레이션 가이드
+[48] coroutine 사용 목록 다시 확인해줄래?
+[49] 더이상 없는건가
+[50] 한번더 검사해줄래?
+[51] 참조하는 구간이 없어서 지웠다면 더이상 없는거지/
+[52] ineumerable 확장 메소드에 사용된건 unitask로 마이그레이션 할 이유가 없는거야?
+[53] 해당 프로젝트를 설명하기 위한 개요 문서(readme.md)를 작성해줘
+포트폴리오로 제출할 github에 올릴 예정이야
+[54] 파일 생성을 해줄래?
+[55] 다음 프로젝트에 재사용할 클래스, 패키지들 알려줄테니 검토하고 추가로 너도 의견을 제시해줘
+
+commons
+utils
+resourcemanager
+datatablemanager
+gamescenemanager
+loadingscene
+panelbase
+panelmanager
+collectionextensions
+factory
+simpleopool
+intarrayconverter, uintarrayconverter
+unirx, textmeshpro, unitask, newtonsoft json, csvhelper
+[56] factory 리팩토링을 진행하고 다시 스타터킷을 구성하자
+리팩토링 가이드를 작성하되 기존 로직이나 클래스 사용하는 부분을 손실하지 않아야해
+[57] object <-> simplepool<t> 과정에 들어가는 박싱/언박싱에 대한 비용을 계산해줄래?
+[58] 기존 commons내부에 있던 simplepool, util을 그냥 별도로 분리했어
+다시 스타터킷 내용 구성을 해줄래?
+[59] TPStartKit.unitypackage에서 정리한 구성요소들이 포함되어있는지 확인해주렴

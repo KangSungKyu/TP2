@@ -1,11 +1,31 @@
 [Licensing::Module] Trying to connect to existing licensing client channel...
 Built from '6000.4/staging' branch; Version is '6000.4.8f1 (f8b72d3d7343) revision 16299821'; Using compiler version '194234433'; Build Type 'Release'
 OS: 'Windows 11  (10.0.26200) Professional' Language: 'ko' Physical Memory: 32471 MB
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08" at "2026-07-31T07:09:10.6181486Z"
 BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08" at "2026-08-03T00:54:44.9304122Z"
 System  architecture: x64
 Process architecture: x64
-Date: 2026-07-31T07:09:10Z
+Date: 2026-08-03T00:54:44Z
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 1848, path: "C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              de3b04b46967496c8d2583054a6996a4
+  Correlation Id:          1dcbf54de6db0a0e14a1f7d7ba2e6c9b
+  External correlation Id: 6399646146231725481
+  Machine Id:              Cmy02f24/rcD46FhG7FY6Icn93g=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-403-08" (connect: 0.00s, validation: 0.00s, handshake: 0.02s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-notifications" at "2026-08-03T00:54:44.9579892Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14568547130648-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 0.05s
 
 COMMAND LINE ARGUMENTS:
 C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Unity.exe
@@ -16,7 +36,7 @@ C:\Users\PC\Projects\TP2
 -executeMethod
 QA.Tests.QATestRunner.RunBatchTests
 -logFile
-test_out46.log
+test_out55.log
 Successfully changed project path to: C:\Users\PC\Projects\TP2
 C:/Users/PC/Projects/TP2
 [UnityMemory] Configuration Parameters - Can be set up in boot.config
@@ -54,47 +74,16 @@ C:/Users/PC/Projects/TP2
     "memorysetup-job-temp-allocator-block-size=2097152"
     "memorysetup-job-temp-allocator-block-size-background=1048576"
     "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
-Player connection [18576]  Target information:
+Player connection [24044]  Target information:
 
-Player connection [18576]  * "[IP] 192.168.0.33 [Port] 55504 [Flags] 2 [Guid] 1663135604 [EditorId] 1663135604 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-3J0UFVG) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+Player connection [24044]  * "[IP] 192.168.0.33 [Port] 55504 [Flags] 2 [Guid] 1688567679 [EditorId] 1688567679 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-3J0UFVG) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
 
-Player connection [18576] Host joined multi-casting on [225.0.0.222:54997]...
-Player connection [18576] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [24044] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [24044] Host joined alternative multi-casting on [225.0.0.222:34997]...
 Input System module state changed to: Initialized.
 [Physics::Module] Initialized fallback backend.
 [Physics::Module] Id: 0xdecafbad
-[Package Manager] Connected to IPC stream "Upm-11984" after 0.2 seconds.
-[Licensing::Module] Licensing is not yet initialized.
-[Licensing::Client] Error: HandshakeResponse reported an error:
-	ResponseCode: 505
-	ResponseStatus: Unsupported protocol version '1.18.1'.
-[Licensing::Module] Error: Failed to handshake to channel: "LicenseClient-403-08"
-[Licensing::IpcConnector] LicenseClient-403-08 channel disconnected successfully.
-[Licensing::IpcConnector] Channel LicenseClient-403-08-6000.4.8 doesn't exist
-[Licensing::Module] Successfully launched the LicensingClient (PId: 17112)
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8" at "2026-07-31T07:09:11.7747614Z"
-[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 17112, path: "C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
-[Licensing::Module] LicensingClient has failed validation; ignoring
-[Licensing::Client] Handshaking with LicensingClient:
-  Version:                 1.18.1+9fbee8e
-  Session Id:              51d0c47da8df4e20a563fbbe1a3b4811
-  Correlation Id:          ac40cce7141944005028c7fedf0eeae6
-  External correlation Id: 5355120032692220989
-  Machine Id:              Cmy02f24/rcD46FhG7FY6Icn93g=
-[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-403-08-6000.4.8" (connect: 0.37s, validation: 0.07s, handshake: 0.01s)
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-403-08-6000.4.8-notifications" at "2026-07-31T07:09:11.8539635Z"
-[Licensing::Module] Connected to LicensingClient (PId: 17112, launch time: 0.00, total connection time: 0.45s)
-[Licensing::Module] Error: Access token is unavailable; failed to update
-[Licensing::Client] Successfully resolved entitlement details
-[Licensing::Module] License group:
-  Id: 14568547130648-UnityPersXXXX
-  Product: Unity Personal
-  Type: Assigned
-  Expiration: Unlimited
-[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
-[Licensing::Client] Successfully resolved entitlement details
-[Licensing::Module] Licensing Background thread has ended after 1.27s
-[Licensing::Module] Licensing is initialized (took 0.82s).
+[Package Manager] Connected to IPC stream "Upm-20396" after 0.2 seconds.
 [Licensing::Client] Successfully resolved entitlement details
 Library Redirect Path: Library/
 [Physics::Module] Selected backend.
@@ -104,6 +93,7 @@ Library Redirect Path: Library/
 [Physics::Module] Integration Version: 1.0.0
 [Physics::Module] Threading Mode: Multi-Threaded
 Active build profile path: `Assets/Settings/Build Profiles/Windows.asset`
+Artifact Garbage Collection - Removed 16 unused hashed content files
 Got setting from build profile YAML, name `m_BuildTarget`, value `19`
 Got setting from build profile YAML, name `m_Subtarget`, value `2`
 Initialize engine version: 6000.4.8f1 (f8b72d3d7343)
@@ -120,7 +110,7 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56984
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56396
 CodeReloadManager initialized
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
@@ -130,35 +120,35 @@ Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
 Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.4.8f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001387 seconds.
+Registered in 0.001648 seconds.
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
 Package Manager log level set to [2]
 ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.341 seconds
-Domain Reload Profiling: 701ms
-	BeginReloadAssembly (109ms)
+- Finished resetting the current domain, in  0.329 seconds
+Domain Reload Profiling: 691ms
+	BeginReloadAssembly (110ms)
 		CreateAndSetChildDomain (8ms)
-	RebuildCommonClasses (30ms)
+	RebuildCommonClasses (31ms)
 	RebuildNativeTypeToScriptingClass (10ms)
 	initialDomainReloadingComplete (47ms)
 	LoadAllAssembliesAndSetupDomain (163ms)
-		LoadAssemblies (100ms)
-		AnalyzeDomain (155ms)
-			TypeCache.Refresh (154ms)
+		LoadAssemblies (101ms)
+		AnalyzeDomain (156ms)
+			TypeCache.Refresh (155ms)
 				TypeCache.ScanAssembly (143ms)
-	FinalizeReload (342ms)
+	FinalizeReload (330ms)
 		SetupLoadedEditorAssemblies (0ms)
-			InitializePlatformSupportModulesInManaged (45ms)
-			BeforeProcessingInitializeOnLoad (65ms)
-			ProcessInitializeOnLoadAttributes (91ms)
-			ProcessInitializeOnLoadMethodAttributes (72ms)
+			InitializePlatformSupportModulesInManaged (42ms)
+			BeforeProcessingInitializeOnLoad (67ms)
+			ProcessInitializeOnLoadAttributes (96ms)
+			ProcessInitializeOnLoadMethodAttributes (73ms)
 [Licensing::Client] Successfully resolved entitlement details
 Application.AssetDatabase Initial Refresh Start
 [Package Manager] Restoring resolved packages state from cache
 [Licensing::Client] Successfully resolved entitlement details
-[Package Manager] Registered 72 packages:
+[Package Manager] Registered 76 packages:
   Packages from [https://packages.unity.com]:
     com.unity.2d.animation@14.0.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.animation@011d329ac58b)
     com.unity.2d.aseprite@4.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.aseprite@ccedfadacc51)
@@ -168,6 +158,7 @@ Application.AssetDatabase Initial Refresh Start
     com.unity.2d.tooling@2.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.tooling@9d6aff712598)
     com.unity.addressables@2.9.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.addressables@8460f1c9c927)
     com.unity.ai.inference@2.6.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.cinemachine@3.1.7 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.cinemachine@f3f96bcb59af)
     com.unity.collab-proxy@2.12.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
     com.unity.ide.rider@3.0.40 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.rider@e4950c6d131b)
     com.unity.ide.visualstudio@2.0.27 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.ide.visualstudio@dc1ddd4f09b6)
@@ -177,6 +168,7 @@ Application.AssetDatabase Initial Refresh Start
     com.unity.timeline@1.8.12 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.timeline@8cd8509afae5)
     com.unity.visualscripting@1.9.11 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
     com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.splines@2.8.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.splines@9b00833aca09)
     com.unity.burst@1.8.29 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
     com.unity.dt.app-ui@2.1.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
     com.unity.profiling.core@1.0.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
@@ -184,6 +176,7 @@ Application.AssetDatabase Initial Refresh Start
     com.unity.2d.common@13.0.2 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.common@edfe77495b67)
     com.unity.mathematics@1.3.3 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
     com.unity.searcher@4.9.4 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.settings-manager@2.1.1 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.settings-manager@0b8638c5ce86)
     com.unity.test-framework.performance@3.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.test-framework.performance@aa81a99c4a75)
   Built-in packages:
     com.unity.2d.sprite@1.0.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.2d.sprite@b95cc7beb645)
@@ -233,64 +226,34 @@ Application.AssetDatabase Initial Refresh Start
     com.unity.shadergraph@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.shadergraph@33f3b0a71b9a)
     com.unity.render-pipelines.universal-config@17.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.render-pipelines.universal-config@0db4263b9e6b)
     com.unity.collections@6.4.0 (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.unity.collections@5b6ebd78ccc0)
+  Git packages:
+    com.coplaydev.unity-mcp@https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity (location: C:\Users\PC\Projects\TP2\Library\PackageCache\com.coplaydev.unity-mcp@a2d7be6d16ec)
 [Subsystems] No new subsystems found in resolved package list.
-[Package Manager] Done registering packages in 0.02 seconds
-The GUID inside 'Assets/Prefabs/Structures/Door.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+[Package Manager] Done registering packages in 0.04 seconds
 The GUID inside 'Assets/Prefabs/Structures/Portal_Gate.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/Prefabs/Structures/Door.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
 The GUID inside 'Assets/Prefabs/Structures/Portal.prefab.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
 The .meta file Assets/Prefabs/Structures/Door.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
 The .meta file Assets/Prefabs/Structures/Portal.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
 The .meta file Assets/Prefabs/Structures/Portal_Gate.prefab.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
 [ScriptCompilation] Requested script compilation because: AssetDatabase observed changes in script compilation related files
 Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Starting: C:\Program Files\Unity\Hub\Editor\6000.4.8f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
 WorkingDir: C:/Users/PC/Projects/TP2
 Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.DisplayProgressbar: Compiling Scripts
-ExitCode: 0 Duration: 6s800ms
-[1139/1496  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
-[1488/1496  4s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll (+2 others)
-Assets\Scripts\Gameplay\MetroidvaniaCamera2D.cs(33,26): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Manager\StageManager.cs(35,23): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Gameplay\RoomDoorPortal.cs(39,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\InitScene.cs(44,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Manager\UnitSpawner.cs(32,29): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-
-Assets\Scripts\Manager\UnitSpawner.cs(40,23): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-
-Assets\Scripts\Gameplay\Player.cs(237,28): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-
-Assets\Scripts\UI\CoreTestHUD.cs(13,24): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\UI\TestPlayerHUDUI.cs(38,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\TilemapStageBuilder.cs(52,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\TilemapStageBuilder.cs(62,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Manager\UnitSpawner.cs(76,25): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\TilemapStageBuilder.cs(166,22): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Manager\UnitSpawner.cs(146,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Gameplay\Player.cs(520,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\MainScene.cs(36,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-
-Assets\Scripts\Scene\MainScene.cs(43,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-[1489/1496  0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
-Assets\Editor\Tests\TilemapStageBuilderTests.cs(103,33): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-
-Assets\Editor\Stage1ChunkBuilder.cs(139,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
-
+ExitCode: 0 Duration: 4s803ms
+[1194/1571  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1567/1571  3s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
 Assets\Editor\TilemapRoomPrefabBuilder.cs(93,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
 
+Assets\Editor\Tests\TilemapStageBuilderTests.cs(103,33): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\Editor\Stage1ChunkBuilder.cs(140,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
+
 Assets\Editor\UnityPipelineAnimatorBinder.cs(272,21): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
-[1490/1496  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp.dll (+pdb)
-Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll, with 141 defines and 373 references
+[1568/1571  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 139 defines and 404 references
 
 processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
 
@@ -299,43 +262,14 @@ running Unity.Jobs.CodeGen.JobsILPostProcessor
 running Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor
 
 running zzzUnity.Burst.CodeGen.BurstILPostProcessor
-[1491/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
-[1492/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
-[1493/1496  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
-Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 139 defines and 397 references
-
-processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
-
-running Unity.Jobs.CodeGen.JobsILPostProcessor
-
-running Unity.Pipeline.CodeGen.HotReloadInPlaceILPostProcessor
-
-running zzzUnity.Burst.CodeGen.BurstILPostProcessor
-[1494/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
-[1495/1496  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
-*** Tundra build success (6.77 seconds), 9 items updated, 1496 evaluated
-Assets\Scripts\Gameplay\MetroidvaniaCamera2D.cs(33,26): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Manager\StageManager.cs(35,23): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Gameplay\RoomDoorPortal.cs(39,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\InitScene.cs(44,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Manager\UnitSpawner.cs(32,29): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-Assets\Scripts\Manager\UnitSpawner.cs(40,23): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-Assets\Scripts\Gameplay\Player.cs(237,28): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-Assets\Scripts\UI\CoreTestHUD.cs(13,24): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\UI\TestPlayerHUDUI.cs(38,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\TilemapStageBuilder.cs(52,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\TilemapStageBuilder.cs(62,81): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Manager\UnitSpawner.cs(76,25): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\TilemapStageBuilder.cs(166,22): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Manager\UnitSpawner.cs(146,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Gameplay\Player.cs(520,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\MainScene.cs(36,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Scripts\Scene\MainScene.cs(43,13): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
-Assets\Editor\Tests\TilemapStageBuilderTests.cs(103,33): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
-Assets\Editor\Stage1ChunkBuilder.cs(139,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
+[1569/1571  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1570/1571  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (4.78 seconds), 5 items updated, 1571 evaluated
 Assets\Editor\TilemapRoomPrefabBuilder.cs(93,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
+Assets\Editor\Tests\TilemapStageBuilderTests.cs(103,33): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\Editor\Stage1ChunkBuilder.cs(140,9): warning CS0618: 'Collider2D.usedByComposite' is obsolete: 'usedByComposite has been deprecated. Please use compositeOperation.'
 Assets\Editor\UnityPipelineAnimatorBinder.cs(272,21): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
-AssetDatabase: script compilation time: 7.176364s
+AssetDatabase: script compilation time: 5.212254s
 Begin MonoManager ReloadAssembly
 Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Assembly Assembly-CSharp-Editor-firstpass.dll at Library/ScriptAssemblies/Assembly-CSharp-Editor-firstpass.dll not valid. Loading of assembly skipped.
 Assembly DocCodeExamples.dll at Library/ScriptAssemblies/DocCodeExamples.dll not valid. Loading of assembly skipped.
@@ -375,6 +309,7 @@ Assembly Unity.ScriptableBuildPipeline.Editor.Tests.dll at Library/ScriptAssembl
 Assembly Unity.ScriptableBuildPipeline.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Tests.dll not valid. Loading of assembly skipped.
 Assembly Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll at Library/ScriptAssemblies/Unity.ScriptableBuildPipelineTests.Runtime.Tests.dll not valid. Loading of assembly skipped.
 Assembly Unity.Searcher.EditorTests.dll at Library/ScriptAssemblies/Unity.Searcher.EditorTests.dll not valid. Loading of assembly skipped.
+Assembly Unity.Settings.Tests.dll at Library/ScriptAssemblies/Unity.Settings.Tests.dll not valid. Loading of assembly skipped.
 Assembly Unity.ShaderGraph.Editor.Tests.dll at Library/ScriptAssemblies/Unity.ShaderGraph.Editor.Tests.dll not valid. Loading of assembly skipped.
 Assembly Unity.TextMeshPro.Editor.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Editor.Tests.dll not valid. Loading of assembly skipped.
 Assembly Unity.TextMeshPro.Tests.dll at Library/ScriptAssemblies/Unity.TextMeshPro.Tests.dll not valid. Loading of assembly skipped.
@@ -382,125 +317,144 @@ Assembly Unity.UnifiedRayTracing.Editor.Tests.dll at Library/ScriptAssemblies/Un
 Assembly UnityEditor.UI.Common.Tests.dll at Library/ScriptAssemblies/UnityEditor.UI.Common.Tests.dll not valid. Loading of assembly skipped.
 Assembly UnityEditor.UI.EditorTests.dll at Library/ScriptAssemblies/UnityEditor.UI.EditorTests.dll not valid. Loading of assembly skipped.
 Assembly UnityEngine.UI.Tests.dll at Library/ScriptAssemblies/UnityEngine.UI.Tests.dll not valid. Loading of assembly skipped.
-Refreshing native plugins compatible for Editor in 2.79 ms, found 6 plugins.
+'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+Refreshing native plugins compatible for Editor in 3.65 ms, found 6 plugins.
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
-Refreshing native plugins compatible for Editor in 2.28 ms, found 6 plugins.
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
+Refreshing native plugins compatible for Editor in 2.74 ms, found 6 plugins.
 Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.pipeline/Runtime/Plugins/CodeAnalysis/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Start HTTP server: port:7800
 ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.656 seconds
-Domain Reload Profiling: 3929ms
-	BeginReloadAssembly (327ms)
-		DisableScriptedObjects (49ms)
-		CreateAndSetChildDomain (160ms)
-	RebuildCommonClasses (31ms)
+- Finished resetting the current domain, in  2.576 seconds
+Domain Reload Profiling: 4327ms
+	BeginReloadAssembly (311ms)
+		DisableScriptedObjects (41ms)
+		CreateAndSetChildDomain (146ms)
+	RebuildCommonClasses (32ms)
 	RebuildNativeTypeToScriptingClass (10ms)
-	initialDomainReloadingComplete (1076ms)
-	LoadAllAssembliesAndSetupDomain (830ms)
-		LoadAssemblies (504ms)
-		AnalyzeDomain (401ms)
-			TypeCache.Refresh (311ms)
-				TypeCache.ScanAssembly (295ms)
-			BuildScriptInfoCaches (78ms)
-			ResolveRequiredComponents (10ms)
-	FinalizeReload (1657ms)
+	initialDomainReloadingComplete (618ms)
+	LoadAllAssembliesAndSetupDomain (779ms)
+		LoadAssemblies (429ms)
+		AnalyzeDomain (429ms)
+			TypeCache.Refresh (330ms)
+				TypeCache.ScanAssembly (313ms)
+			BuildScriptInfoCaches (86ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (2576ms)
 		SetupLoadedEditorAssemblies (0ms)
 			InitializePlatformSupportModulesInManaged (24ms)
-			BeforeProcessingInitializeOnLoad (191ms)
-			ProcessInitializeOnLoadAttributes (1062ms)
-			ProcessInitializeOnLoadMethodAttributes (169ms)
+			BeforeProcessingInitializeOnLoad (214ms)
+			ProcessInitializeOnLoadAttributes (1987ms)
+			ProcessInitializeOnLoadMethodAttributes (161ms)
 			AfterProcessingInitializeOnLoad (4ms)
 		AwakeInstancesAfterBackupRestoration (13ms)
-Start importing Assets/Textures/Environment/Tile_Chapter2_CyberRuins.png using Guid(e036ef1a873ee944b8e71c7f5b7017b2) (TextureImporter) -> (Import Result ID: '27dcd65ef3b85c63ccd575c2d76be792') in 0.0260526 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=2cbee299a5749f166cfd1af6c03a147f DependenciesID=de9dac069bdad88cc8416a11c5b4274d StaticDependenciesID=e28c4763cc5e63ef1a928096f299f63f 
-Start importing Assets/Textures/Environment/Tile_Chapter1_TaoShrine.png using Guid(4245880915e1ac8499f4bb42fac66ecc) (TextureImporter) -> (Import Result ID: '2e71aba54ace61f929f91cf52d319fd0') in 0.0025837 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=9d35e7068068cffcc6bfb39575f5b110 DependenciesID=0cea9dc2a87d8a9fc66d63f0a2338220 StaticDependenciesID=701e5a86ccc9c659fa753fb6d2a9c26e 
-Start importing Assets/Textures/Environment/Sprite_Portal_Gate.png using Guid(de097e56fcf777148871df15e34bb802) (TextureImporter) -> (Import Result ID: '8320b32ea83ee93a8bf5c9f821cf23f3') in 0.0048859 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=23c8b08c3e0476cccfa43d90e9485f72 DependenciesID=fd1dc2ace454a6043d0d687b40a1f610 StaticDependenciesID=8d8040e7029a2efa01299faad7554fa1 
-Refreshing native plugins compatible for Editor in 2.20 ms, found 6 plugins.
+Refreshing native plugins compatible for Editor in 2.42 ms, found 6 plugins.
 (Values over 0.050ms)
-Asset Pipeline Refresh (id=9b406236c9cb58b47927c6223f1a48bb): Total: 11.962 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+Asset Pipeline Refresh (id=d2700c32d35811543a9de39aae3808ce): Total: 10.413 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
 	Summary:
-		Imports: total=3 (actual=3, local cache=0, cache server=0)
-		Asset DB Process Time: managed=20 ms, native=2219 ms
-		Asset DB Callback time: managed=185 ms, native=23 ms
-		Scripting: domain reloads=1, domain reload time=2277 ms, compile time=7178 ms, other=56 ms
-		Project Asset Count: scripts=2052, non-scripts=5691
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=3134 ms
+		Asset DB Callback time: managed=192 ms, native=50 ms
+		Scripting: domain reloads=1, domain reload time=1755 ms, compile time=5214 ms, other=66 ms
+		Project Asset Count: scripts=2176, non-scripts=5819
 		Asset File Changes: new=0, changed=1, moved=0, deleted=0
 		Scan Filter Count: 0
-	InvokePackagesCallback: 19.121ms
-	ApplyChangesToAssetFolders: 0.987ms
-	Scan: 147.653ms
-	OnSourceAssetsModified: 0.727ms
-	CategorizeScriptCompilationAssets: 62.831ms
-	ProcessAssetsWithTransientArtifactChanges: 92.835ms
-	CategorizeAssets: 78.464ms
-	CompileScripts: 7177.589ms
-	ImportOutOfDateAssets: 1706.604ms (1668.036ms without children)
-		ImportManagerImport: 35.361ms (1.121ms without children)
-		UnloadImportedAssets: 1.567ms
-		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.838ms
-		OnDemandSchedulerStart: 0.748ms
-	PostProcessAllAssets: 187.146ms
-		VCAutoAddAssetPostprocess 0.910ms
-		XRBuildSystem.XRAssetImported 0.629ms
-		MonoPostProcessAllAssets: 185.092ms
-			AssetPostprocessor.OnPostprocessAllAssets 116.390ms
-			StyleCatalogPostProcessor.OnPostprocessAllAssets 19.391ms
-			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 8.579ms
-			BuilderAssetPostprocessor.OnPostprocessAllAssets 4.315ms
-			SyncVS.PostprocessSyncProject 3.099ms
-			AddressablesAssetPostProcessor.OnPostprocessAllAssets 2.537ms
-			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 2.143ms
-			TextAssetPostProcessor.OnPostprocessAllAssets 1.976ms
-			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.808ms
-			SpeedTree9Postprocessor.OnPostprocessAllAssets 1.706ms
-			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 1.411ms
-			AssetChangedListener.OnPostprocessAllAssets 1.308ms
-			MaterialPostprocessor.OnPostprocessAllAssets 0.690ms
-			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.631ms
-			AssetProcessor.OnPostprocessAllAssets 0.491ms
-			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 0.439ms
-			UtilityWindowPostProcessor.OnPostprocessAllAssets 0.413ms
-			PostProcessor.OnPostprocessAllAssets 0.364ms
-			UVCSAssetPostprocessor.OnPostprocessAllAssets 0.342ms
-			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.328ms
-			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.321ms
-			AssetPathToTypes.OnPostprocessAllAssets 0.318ms
-			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.305ms
-			ModelAssetProcessor.OnPostprocessAllAssets 0.267ms
-			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.254ms
-			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.243ms
-			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.228ms
-			AudioMixerPostprocessor.OnPostprocessAllAssets 0.210ms
-			AssetEvents.OnPostprocessAllAssets 0.194ms
-			SpriteShapeAssetPostProcessor.OnPostprocessAllAssets 0.190ms
-			SpriteLibraryAssetPostprocessor.OnPostprocessAllAssets 0.171ms
-			SamplePostprocessor.OnPostprocessAllAssets 0.142ms
-			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.138ms
-			SpeedTreePostProcessor.OnPostprocessAllAssets 0.131ms
-			ConfigAssetsTracker.OnPostprocessAllAssets 0.124ms
-			PSDImportPostProcessor.OnPostprocessAllAssets 0.117ms
-			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.113ms
-			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.095ms
-			PSDImporterAssetPostProcessor.OnPostprocessAllAssets 0.074ms
-			AudioContainerPostProcessor.OnPostprocessAllAssets 0.057ms
-	PostAssetChangesProfiler: 3.863ms
-	UnloadStreamsBegin: 3.138ms
-	PersistCurrentRevisions: 0.375ms
-	GenerateScriptTypeHashes: 3.341ms
-	GenerateScriptTypeSerializationHashes: 5.920ms
-	Untracked: 2475.371ms
+	InvokePackagesCallback: 45.489ms
+	ApplyChangesToAssetFolders: 0.657ms
+	Scan: 139.942ms
+	OnSourceAssetsModified: 0.757ms
+	CategorizeScriptCompilationAssets: 62.966ms
+	ProcessAssetsWithTransientArtifactChanges: 97.266ms
+	CategorizeAssets: 77.205ms
+	CompileScripts: 5213.719ms
+	ImportOutOfDateAssets: 2592.991ms (2589.243ms without children)
+		ReloadNativeAssets: 0.058ms
+		UnloadImportedAssets: 1.769ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.145ms
+		OnDemandSchedulerStart: 0.773ms
+	PostProcessAllAssets: 193.393ms
+		VCAutoAddAssetPostprocess 0.901ms
+		XRBuildSystem.XRAssetImported 0.586ms
+		MonoPostProcessAllAssets: 191.496ms
+			AssetPostprocessor.OnPostprocessAllAssets 124.630ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 21.216ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 8.904ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 4.995ms
+			SyncVS.PostprocessSyncProject 2.951ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 2.165ms
+			AddressablesAssetPostProcessor.OnPostprocessAllAssets 2.077ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.390ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 1.046ms
+			AssetChangedListener.OnPostprocessAllAssets 1.037ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 1.003ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.793ms
+			MaterialPostprocessor.OnPostprocessAllAssets 0.706ms
+			UtilityWindowPostProcessor.OnPostprocessAllAssets 0.606ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 0.462ms
+			AssetProcessor.OnPostprocessAllAssets 0.391ms
+			CinemachineSettings.OnPostprocessAllAssets 0.389ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.366ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.344ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 0.295ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 0.289ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.282ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.261ms
+			PostProcessor.OnPostprocessAllAssets 0.251ms
+			ModelAssetProcessor.OnPostprocessAllAssets 0.248ms
+			AssetPathToTypes.OnPostprocessAllAssets 0.231ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.212ms
+			SpriteShapeAssetPostProcessor.OnPostprocessAllAssets 0.208ms
+			DomainReloadProcessor.OnPostprocessAllAssets 0.195ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.195ms
+			AssetEvents.OnPostprocessAllAssets 0.180ms
+			SpriteLibraryAssetPostprocessor.OnPostprocessAllAssets 0.174ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.153ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.129ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.127ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.124ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.121ms
+			PSDImportPostProcessor.OnPostprocessAllAssets 0.111ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.104ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.093ms
+			PSDImporterAssetPostProcessor.OnPostprocessAllAssets 0.064ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.053ms
+	PostAssetChangesProfiler: 4.830ms
+	UnloadStreamsBegin: 3.087ms
+	PersistCurrentRevisions: 0.232ms
+	GenerateScriptTypeHashes: 2.801ms
+	GenerateScriptTypeSerializationHashes: 4.905ms
+	Untracked: 1975.178ms
 
 Application.AssetDatabase Initial Refresh End
 Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
-Scanning for USB devices : 3.385ms
+Scanning for USB devices : 3.312ms
 Initializing Unity extensions:
 [MODES] ModeService[none].Initialize
 [MODES] ModeService[none].LoadModes
 [MODES] Loading mode Default (0) for mode-current-id-TP2
-Unloading 69 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 10193 unused Assets / (3.7 MB). Loaded Objects now: 11108.
-Memory consumption went from 258.3 MB to 254.7 MB.
-Total: 10.228900 ms (FindLiveObjects: 0.530200 ms CreateObjectMapping: 0.568700 ms MarkObjects: 6.301100 ms  DeleteObjects: 2.825900 ms)
+Unloading 70 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10896 unused Assets / (4.5 MB). Loaded Objects now: 11810.
+Memory consumption went from 277.0 MB to 272.5 MB.
+Total: 11.285400 ms (FindLiveObjects: 0.656100 ms CreateObjectMapping: 0.566000 ms MarkObjects: 7.539300 ms  DeleteObjects: 2.519300 ms)
+
+[ResourceDataTable] 총 1개의 리소스 경로 데이터 로드 완료.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+ResourceDataTable:LoadData (string) (at Assets/Scripts/Manager/ResourceDataTable.cs:28)
+QA.Tests.CSVDataPipelineTests:Test01_ResourceDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:13)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/ResourceDataTable.cs Line: 28)
 
 <color=green>[PASS] CSVDataPipelineTests.Test01_ResourceDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
@@ -515,6 +469,23 @@ QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:5
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
 
+[TextDataTable] 총 1개의 텍스트 데이터 로드 완료.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+TextDataTable:LoadData (string) (at Assets/Scripts/Manager/TextDataTable.cs:28)
+QA.Tests.CSVDataPipelineTests:Test02_TextDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:22)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/TextDataTable.cs Line: 28)
+
 <color=green>[PASS] CSVDataPipelineTests.Test02_TextDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
 UnityEngine.StackTraceUtility:ExtractStackTrace ()
@@ -527,6 +498,23 @@ QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
 QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[UnitBaseDataTable] 총 1개의 유닛 공용 데이터 로드 완료.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnitBaseDataTable:LoadData (string) (at Assets/Scripts/Manager/UnitBaseDataTable.cs:27)
+QA.Tests.CSVDataPipelineTests:Test03_UnitBaseDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:32)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/UnitBaseDataTable.cs Line: 27)
 
 <color=green>[PASS] CSVDataPipelineTests.Test03_UnitBaseDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
@@ -541,6 +529,23 @@ QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:5
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
 
+[MonsterDataTable] 총 1개의 몬스터 파생 데이터 로드 완료.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+MonsterDataTable:LoadData (string) (at Assets/Scripts/Manager/MonsterDataTable.cs:24)
+QA.Tests.CSVDataPipelineTests:Test04_MonsterBaseDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:42)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/MonsterDataTable.cs Line: 24)
+
 <color=green>[PASS] CSVDataPipelineTests.Test04_MonsterBaseDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
 UnityEngine.StackTraceUtility:ExtractStackTrace ()
@@ -553,6 +558,23 @@ QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
 QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[MonsterPatternDataTable] 총 1개의 패턴 데이터 로드 완료.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+MonsterPatternDataTable:LoadData (string) (at Assets/Scripts/Manager/MonsterPatternDataTable.cs:26)
+QA.Tests.CSVDataPipelineTests:Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:52)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/MonsterPatternDataTable.cs Line: 26)
 
 <color=green>[PASS] CSVDataPipelineTests.Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
@@ -567,7 +589,54 @@ QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:5
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
 
+[SkillDataTable] 총 2개의 스킬 데이터가 로드되었습니다.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SkillDataTable:LoadData (string) (at Assets/Scripts/Manager/SkillDataTable.cs:28)
+QA.Tests.CSVDataPipelineTests:Test06_SkillDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:64)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/SkillDataTable.cs Line: 28)
+
 <color=green>[PASS] CSVDataPipelineTests.Test06_SkillDataTable_ParsingAndKeyValidity</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+[StageDataTable] 총 2개의 스테이지 마스터 데이터가 로드되었습니다.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+StageDataTable:LoadData (string) (at Assets/Scripts/Manager/StageDataTable.cs:28)
+QA.Tests.CSVDataPipelineTests:Test07_StageDataTable_ParsingAndKeyValidity () (at Assets/Editor/Tests/CSVDataPipelineTests.cs:82)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:77)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:27)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Scripts/Manager/StageDataTable.cs Line: 28)
+
+<color=green>[PASS] CSVDataPipelineTests.Test07_StageDataTable_ParsingAndKeyValidity</color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
 UnityEngine.StackTraceUtility:ExtractStackTrace ()
 UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
@@ -932,7 +1001,20 @@ QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:5
 
 (Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
 
-<color=green><b>[QATestRunner] 🎉 모든 QA 검증 성공! (총 25/25 패스)</b></color>
+<color=green>[PASS] TilemapStageBuilderTests.Test12_Chapter1_TaoistTemple_TilesetAndPortalGateBinding</color>
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+QA.Tests.QATestRunner:RunTestSuite (System.Type,int&,int&,int&,System.Text.StringBuilder) (at Assets/Editor/Tests/QATestRunner.cs:80)
+QA.Tests.QATestRunner:RunAllTests () (at Assets/Editor/Tests/QATestRunner.cs:36)
+QA.Tests.QATestRunner:RunBatchTests () (at Assets/Editor/Tests/QATestRunner.cs:59)
+
+(Filename: Assets/Editor/Tests/QATestRunner.cs Line: 80)
+
+<color=green><b>[QATestRunner] 🎉 모든 QA 검증 성공! (총 27/27 패스)</b></color>
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
 UnityEngine.StackTraceUtility:ExtractStackTrace ()
 UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
@@ -960,21 +1042,21 @@ Curl error 42: Callback aborted
 Request timed out while processing request "https://public-cdn.cloud.unity3d.com/config/production", HTTP error code 0
 .[UnityConnect] Request timed out.
 Pipeline Server stopped
-Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (Import Result ID: '24bec6481420421bf60c7c11d38a02c5') in 0.0044384 seconds [static dependencies only]. Details - ImportResultOutputID=d777934f36c664454d62eda103573334 DependenciesID=e046d43a93c0a907fcdddd9a1a7d4337 StaticDependenciesID=823d6c9442bc600624d428cc5ce54657 
-Refreshing native plugins compatible for Editor in 2.13 ms, found 6 plugins.
-Asset Pipeline Refresh (id=7587d1d8075d64840bacbce9d760b5c8): Total: 0.105 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (Import Result ID: '24bec6481420421bf60c7c11d38a02c5') in 0.0079942 seconds [static dependencies only]. Details - ImportResultOutputID=d777934f36c664454d62eda103573334 DependenciesID=e046d43a93c0a907fcdddd9a1a7d4337 StaticDependenciesID=823d6c9442bc600624d428cc5ce54657 
+Refreshing native plugins compatible for Editor in 2.57 ms, found 6 plugins.
+Asset Pipeline Refresh (id=e6b6f90cb41ee824dac6619fb36a32e3): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
 [Physics::Module] Cleanup current backend.
 [Physics::Module] Id: 0xf2b8ea05
 Input System module state changed to: ShutdownInProgress.
 Input Polling Thread exited.
 Input System module state changed to: Shutdown.
-[Licensing::IpcConnector] LicenseClient-403-08-6000.4.8-notifications channel disconnected successfully.
-[Licensing::IpcConnector] LicenseClient-403-08-6000.4.8 channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-403-08-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-403-08 channel disconnected successfully.
 AcceleratorClientConnectionCallback - disconnected - :0
 Cleanup mono
 CodeReloadManager destroyed
 Checking for leaked weakptr:
   Found no leaked weakptrs.
 [Package Manager] Server process was shutdown
-##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1785481766524,"processId":11984,"allocatedMemory":20229254,"memoryLabels":[{"Default":223816},{"Permanent":15276},{"NewDelete":65185},{"Thread":4230384},{"Manager":37485},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":849696},{"Material":24},{"GfxDevice":55320},{"Animation":392},{"Audio":3008},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":888},{"Input":9880},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155052},{"BaseObject":1625072},{"Resource":1184},{"Renderer":3008},{"Transform":4685},{"File":1088},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":15082},{"StaticString":6718},{"Utility":2673318},{"Curl":1712},{"PoolAlloc":2792},{"AI":80},{"TypeTree":13741},{"ScriptManager":448},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":120},{"GI":7792},{"Director":8320},{"CloudService":8720},{"WebRequest":845},{"VR":48050},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":472},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":128},{"EditorUtility":123520},{"VersionControl":4},{"Undo":931},{"AssetDatabase":9553546},{"EditorGi":328},{"UnityConnect":37716},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2888},{"Windowing":456},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1785718498131,"processId":20396,"allocatedMemory":20242205,"memoryLabels":[{"Default":232454},{"Permanent":15276},{"NewDelete":65497},{"Thread":4230384},{"Manager":37261},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":850092},{"Material":24},{"GfxDevice":55320},{"Animation":392},{"Audio":3008},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":888},{"Input":9880},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155052},{"BaseObject":1620432},{"Resource":1184},{"Renderer":3008},{"Transform":4685},{"File":1088},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":11184},{"StaticString":6718},{"Utility":2673318},{"Curl":1712},{"PoolAlloc":2792},{"AI":80},{"TypeTree":13741},{"ScriptManager":448},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":120},{"GI":7792},{"Director":8320},{"CloudService":7424},{"WebRequest":845},{"VR":48050},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":648},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":128},{"EditorUtility":135808},{"VersionControl":4},{"Undo":931},{"AssetDatabase":9554542},{"EditorGi":328},{"UnityConnect":37716},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":262},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2929},{"Windowing":456},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}
 ~StackAllocator(ALLOC_TEMP_MAIN) m_LastAlloc not NULL. Did you forget to call FreeAllStackAllocations()? To get more information, run app with -diag-temp-memory-leak-validation cmd line argument
