@@ -163,6 +163,8 @@ public static class Stage1ChunkBuilder
         // Tilemap_Platforms
         GameObject platObj = new GameObject("Tilemap_Platforms");
         platObj.transform.SetParent(gridRoot.transform);
+        int oneWayLayer = LayerMask.NameToLayer("OneWayPlatform");
+        if (oneWayLayer >= 0) platObj.layer = oneWayLayer;
         var platTilemap = platObj.AddComponent<Tilemap>();
         var platRenderer = platObj.AddComponent<TilemapRenderer>();
         platRenderer.sortingOrder = 5;

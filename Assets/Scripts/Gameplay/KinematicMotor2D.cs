@@ -237,7 +237,7 @@ public class KinematicMotor2D : MonoBehaviour
         float distance = move.magnitude;
         if (distance < 0.001f) return;
 
-        var filter = (yMovement && move.y <= 0f && !isPassThroughActive)
+        var filter = (!isPassThroughActive)
             ? groundWithPlatformFilter
             : solidFilter;
 
@@ -248,11 +248,29 @@ public class KinematicMotor2D : MonoBehaviour
             var hit = hitBuffer[i];
             var currentNormal = hit.normal;
 
-            if (((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0)
+            bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                                   hit.collider.GetComponent<PlatformEffector2D>() != null ||
+                                   hit.collider.GetComponent<OneWayPlatformPassThrough>() != null;
+
+            if (isOneWayPlatform)
             {
                 float feetY = physicsCollider.bounds.min.y;
                 float platformTopY = hit.collider.bounds.max.y;
-                if (feetY < platformTopY - 0.15f || isPassThroughActive)
+
+                // 1) 위로 상승 중일 때 ➔ 발판 상향 통과
+                if (yMovement && move.y > 0f)
+                {
+                    continue;
+                }
+
+                // 2) 하향 통과 입력 활성화 중일 때 ➔ 발판 하향 통과
+                if (isPassThroughActive)
+                {
+                    continue;
+                }
+
+                // 3) 수평 이동 중이거나 유닛 발 위치가 발판 상단면보다 아래일 때 ➔ 측면/하단 뚫림 통과 (껴짐 완전 방지)
+                if (!yMovement || feetY < platformTopY - 0.15f)
                 {
                     continue;
                 }
@@ -267,8 +285,7 @@ public class KinematicMotor2D : MonoBehaviour
 
             if (!yMovement && Mathf.Abs(currentNormal.x) > 0.5f)
             {
-                // 1-Way 발판(OneWayPlatformLayer) 옆면은 벽점프 대상에서 완벽 제외
-                bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0;
+                // 1-Way 발판 옆면은 벽점프/벽붙기 대상에서 완벽 제외
                 if (!isOneWayPlatform)
                 {
                     if (currentNormal.x > 0) IsWalledLeft = true;

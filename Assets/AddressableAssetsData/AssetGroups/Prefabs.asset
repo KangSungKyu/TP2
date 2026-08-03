@@ -51,6 +51,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0000000000000005db3c6d7a46ab41e
+    m_Address: Portal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a0000000000000006e0aabf3ccce87de
     m_Address: Tilemap_Room_Stage1_Boss
     m_ReadOnly: 0
@@ -59,6 +65,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a00000000000000075d8eb397b9c79a7
     m_Address: Tilemap_Room_Stage1_Battle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000bebc1b4703fa9c0c
+    m_Address: Portal_Gate
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000e30d6bf4b14d23e5
+    m_Address: Door
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
