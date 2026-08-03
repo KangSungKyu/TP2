@@ -86,9 +86,13 @@ public static class AddressablePipeline
             }
         }
 
+        EditorUtility.SetDirty(prefabsGroup);
+        EditorUtility.SetDirty(animsGroup);
+        EditorUtility.SetDirty(datasGroup);
+        EditorUtility.SetDirty(settings);
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, null, true);
         AssetDatabase.SaveAssets();
-        Debug.Log("<color=green><b>[AddressablePipeline] Addressables Datas Label 지정 전수 등록 완결!</b></color>");
+        Debug.Log("<color=green><b>[AddressablePipeline] Addressables Group Serialization & Datas Label 지정 전수 등록 완결!</b></color>");
     }
 
     [MenuItem("TP2/Build & Deploy Addressables (Addressables 빌드 및 배포)")]
