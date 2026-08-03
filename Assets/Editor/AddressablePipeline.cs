@@ -68,6 +68,7 @@ public static class AddressablePipeline
         string datasDir = "Assets/Datas";
         if (Directory.Exists(datasDir))
         {
+            settings.AddLabel("Datas");
             string[] csvFiles = Directory.GetFiles(datasDir, "*.csv", SearchOption.AllDirectories);
             foreach (string file in csvFiles)
             {
@@ -78,6 +79,7 @@ public static class AddressablePipeline
                     string addressKey = Path.GetFileNameWithoutExtension(assetPath);
                     var entry = settings.CreateOrMoveEntry(guid, datasGroup);
                     entry.address = addressKey;
+                    entry.SetLabel("Datas", true);
                 }
             }
         }

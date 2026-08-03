@@ -3,11 +3,12 @@ using UnityEngine;
 
 /// <summary>
 /// 룸/스테이지 관문 포탈 컴포넌트.
-/// 플레이어가 포탈에 접촉하거나 상호작용 시 다음 룸 청크로 비동기 전환을 유도합니다.
+/// 플레이어가 포탈에 접촉하거나 상호작용 시 정수 TargetRoomResourceIdx 참조 기반으로 다음 룸 청크 비동기 전환을 유도합니다.
 /// </summary>
 public class RoomDoorPortal : MonoBehaviour
 {
     [Header("Portal Settings")]
+    public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public string TargetRoomKey = "Tilemap_Room_Stage1_Battle";
     public bool AutoTriggerOnTouch = true;
 
@@ -28,20 +29,34 @@ public class RoomDoorPortal : MonoBehaviour
         if (isTransitioning) return;
         isTransitioning = true;
 
-        Debug.Log($"<color=cyan>[RoomDoorPortal] 포탈 관문 작동! 다음 룸('{TargetRoomKey}') 비동기 전환 개시...</color>");
+        Debug.Log($"<color=cyan>[RoomDoorPortal] 포탈 관문 작동! 다음 룸 (ResourceIdx: {TargetRoomResourceIdx}, Key: '{TargetRoomKey}') 비동기 전환 개시...</color>");
 
         if (StageManager.Instance != null)
         {
-            await StageManager.Instance.LoadNextRoomAsync(TargetRoomKey);
+            if (TargetRoomResourceIdx > 0)
+            {
+                await StageManager.Instance.LoadNextRoomAsync(TargetRoomResourceIdx);
+            }
+            else
+            {
+                await StageManager.Instance.LoadNextRoomAsync(TargetRoomKey);
+            }
         }
         else
         {
             var builder = Object.FindObjectOfType<TilemapStageBuilder>();
             if (builder != null)
             {
-                builder.TilemapAddressableKey = TargetRoomKey;
+                string addressKey = TargetRoomKey;
+                if (TargetRoomResourceIdx > 0 && StageManager.Instance != null)
+                {
+                    addressKey = StageManager.Instance.ResolveAddressableKey(TargetRoomResourceIdx);
+                }
+                builder.TilemapAddressableKey = addressKey;
                 await builder.BuildTilemapStageAsync();
             }
         }
+
+        isTransitioning = false;
     }
 }

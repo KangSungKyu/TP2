@@ -4,46 +4,106 @@ using System.Threading;
 using UnityEngine;
 
 /// <summary>
-/// 1스테이지 초심자용 룸 청크 시퀀스 & 룸 전환 총괄 매니저.
+/// StageData.csv(Type 9) 및 ResourceData.csv(Type 1) 정수 idx 참조 기반 동적 룸 로더 및 스테이지 총괄 매니저.
 /// </summary>
 public class StageManager : Singleton<StageManager>
 {
-    [Header("Stage 1 Room Sequence")]
-    public List<string> Stage1RoomSequence = new List<string>
-    {
-        "Tilemap_Room_Stage1_Entry",
-        "Tilemap_Room_Stage1_Battle",
-        "Tilemap_Room_Stage1_Boss"
-    };
+    [Header("Current Stage Configuration")]
+    public uint CurrentStageIdx = 9001; // 1Stage (TaoShrine)
+    public int CurrentRoomSequenceIndex { get; private set; } = 0;
 
-    public int CurrentRoomIndex { get; private set; } = 0;
-    public string CurrentRoomKey => (CurrentRoomIndex >= 0 && CurrentRoomIndex < Stage1RoomSequence.Count) 
-        ? Stage1RoomSequence[CurrentRoomIndex] 
-        : "Tilemap_Room_Stage1_Entry";
-
-    public async UniTask LoadNextRoomAsync(string roomKey = null, CancellationToken cancellationToken = default)
+    public StageBaseData CurrentStageData
     {
-        if (!string.IsNullOrEmpty(roomKey))
+        get
         {
-            int foundIdx = Stage1RoomSequence.IndexOf(roomKey);
-            if (foundIdx >= 0) CurrentRoomIndex = foundIdx;
+            var db = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<StageDataTable>(DataTableType.StageData) : null;
+            if (db != null && db.TryGetStageData(CurrentStageIdx, out var data))
+            {
+                return data;
+            }
+            return null;
+        }
+    }
+
+    public uint CurrentRoomResourceIdx
+    {
+        get
+        {
+            var stage = CurrentStageData;
+            if (stage != null && stage.RoomSequenceIdxList != null && stage.RoomSequenceIdxList.Length > 0)
+            {
+                int clampIdx = Mathf.Clamp(CurrentRoomSequenceIndex, 0, stage.RoomSequenceIdxList.Length - 1);
+                return stage.RoomSequenceIdxList[clampIdx];
+            }
+            return 1040; // Fallback: 1040 (Tilemap_Room_Stage1_Entry)
+        }
+    }
+
+    public string CurrentRoomAddressableKey => ResolveAddressableKey(CurrentRoomResourceIdx);
+
+    public string ResolveAddressableKey(uint resourceIdx)
+    {
+        var resDb = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource) : null;
+        if (resDb != null)
+        {
+            string path = resDb.GetResourcePath(resourceIdx);
+            if (!string.IsNullOrEmpty(path)) return path;
         }
 
-        string targetKey = !string.IsNullOrEmpty(roomKey) ? roomKey : CurrentRoomKey;
-        Debug.Log($"<color=cyan>[StageManager] 1스테이지 초심자 룸 전환: '{targetKey}' (룸 번호: {CurrentRoomIndex + 1}/{Stage1RoomSequence.Count})</color>");
-
-        var builder = FindObjectOfType<TilemapStageBuilder>();
-        if (builder != null)
+        // Fallback for direct string key resolution
+        switch (resourceIdx)
         {
-            builder.TilemapAddressableKey = targetKey;
-            await builder.BuildTilemapStageAsync(cancellationToken);
+            case 1040: return "Tilemap_Room_Stage1_Entry";
+            case 1041: return "Tilemap_Room_Stage1_Battle";
+            case 1042: return "Tilemap_Room_Stage1_Boss";
+            default: return "Tilemap_Room_Stage1_Entry";
+        }
+    }
+
+    public async UniTask LoadNextRoomAsync(uint roomResourceIdx = 0, CancellationToken cancellationToken = default)
+    {
+        string targetAddressKey = string.Empty;
+
+        if (roomResourceIdx > 0)
+        {
+            targetAddressKey = ResolveAddressableKey(roomResourceIdx);
+            var stage = CurrentStageData;
+            if (stage != null && stage.RoomSequenceIdxList != null)
+            {
+                for (int i = 0; i < stage.RoomSequenceIdxList.Length; i++)
+                {
+                    if (stage.RoomSequenceIdxList[i] == roomResourceIdx)
+                    {
+                        CurrentRoomSequenceIndex = i;
+                        break;
+                    }
+                }
+            }
         }
         else
         {
+            targetAddressKey = CurrentRoomAddressableKey;
+        }
+
+        Debug.Log($"<color=cyan>[StageManager] 정수 idx 참조 동적 룸 전환: TargetKey='{targetAddressKey}' (ResourceIdx: {roomResourceIdx}, Stage: {CurrentStageIdx})</color>");
+
+        var builder = FindObjectOfType<TilemapStageBuilder>();
+        if (builder == null)
+        {
             var builderObj = new GameObject("TilemapStageBuilder");
             builder = builderObj.AddComponent<TilemapStageBuilder>();
-            builder.TilemapAddressableKey = targetKey;
-            await builder.BuildTilemapStageAsync(cancellationToken);
         }
+
+        builder.TilemapAddressableKey = targetAddressKey;
+        await builder.BuildTilemapStageAsync(cancellationToken);
+    }
+
+    // 하위 호환성 메서드 (string 기반)
+    public async UniTask LoadNextRoomAsync(string roomKey, CancellationToken cancellationToken = default)
+    {
+        uint resIdx = 1040;
+        if (roomKey == "Tilemap_Room_Stage1_Battle") resIdx = 1041;
+        else if (roomKey == "Tilemap_Room_Stage1_Boss") resIdx = 1042;
+        await LoadNextRoomAsync(resIdx, cancellationToken);
     }
 }

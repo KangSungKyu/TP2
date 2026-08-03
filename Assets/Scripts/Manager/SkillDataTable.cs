@@ -22,7 +22,7 @@ public class SkillDataTable : IDataLoad
         {
             foreach (var item in records)
             {
-                this.skillDict[item.SkillId] = item;
+                this.skillDict[item.Idx] = item;
             }
         }
         Debug.Log($"[SkillDataTable] 총 {this.skillDict.Count}개의 스킬 데이터가 로드되었습니다.");

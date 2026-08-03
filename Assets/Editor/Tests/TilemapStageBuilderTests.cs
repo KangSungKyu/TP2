@@ -197,12 +197,11 @@ namespace QA.Tests
             GameObject stageManagerObj = new GameObject("Test_StageManager");
             var stageMgr = stageManagerObj.AddComponent<StageManager>();
 
-            Assert.IsNotNull(stageMgr, "StageManager 컴포넌트 생성 실패");
-            Assert.AreEqual(3, stageMgr.Stage1RoomSequence.Count, "1스테이지 초심자 룸 시퀀스는 3개(Entry, Battle, Boss)이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.Stage1RoomSequence[0], "0번 룸은 Entry 청크이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Battle", stageMgr.Stage1RoomSequence[1], "1번 룸은 Battle 청크이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Boss", stageMgr.Stage1RoomSequence[2], "2번 룸은 Boss 청크이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.CurrentRoomKey, "초기 CurrentRoomKey는 Entry 청크이어야 합니다.");
+            Assert.IsNotNull(stageMgr, "StageManager 생성 실패");
+            Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "기본 CurrentStageIdx는 9001이어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "ResourceIdx 1040은 Entry 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Battle", stageMgr.ResolveAddressableKey(1041), "ResourceIdx 1041은 Battle 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Tilemap_Room_Stage1_Boss", stageMgr.ResolveAddressableKey(1042), "ResourceIdx 1042는 Boss 룸 키로 해석되어야 합니다.");
 
             Object.DestroyImmediate(stageManagerObj);
         }
@@ -230,6 +229,19 @@ namespace QA.Tests
 
             string portalGatePath = "Assets/Prefabs/Structures/Portal_Gate.prefab";
             Assert.IsTrue(File.Exists(portalGatePath), $"Portal_Gate.prefab 관문 에셋이 존재해야 합니다: {portalGatePath}");
+        }
+
+        [Test]
+        public void Test13_StageData_IntegerIdx_9001_RoomSequenceRuntime_Validation()
+        {
+            string stageDataCsvPath = "Assets/Datas/StageData.csv";
+            Assert.IsTrue(File.Exists(stageDataCsvPath), $"StageData.csv 에셋 파일이 존재해야 합니다: {stageDataCsvPath}");
+
+            string text = File.ReadAllText(stageDataCsvPath);
+            Assert.IsTrue(text.Contains("9001"), "StageData.csv에 정수 idx 9001 (1스테이지)이 포함되어 있어야 합니다.");
+            Assert.IsTrue(text.Contains("1040"), "1스테이지 Entry 룸 청크 ResourceIdx (1040)가 포함되어 있어야 합니다.");
+            Assert.IsTrue(text.Contains("1041"), "1스테이지 Battle 룸 청크 ResourceIdx (1041)가 포함되어 있어야 합니다.");
+            Assert.IsTrue(text.Contains("1042"), "1스테이지 Boss 룸 청크 ResourceIdx (1042)가 포함되어 있어야 합니다.");
         }
     }
 }
