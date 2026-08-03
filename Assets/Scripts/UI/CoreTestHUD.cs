@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 코어 액션 가이드 및 보스 상태를 한눈에 확인할 수 있는 테스트용 OnGUI HUD.

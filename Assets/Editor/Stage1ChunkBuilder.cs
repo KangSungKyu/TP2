@@ -91,8 +91,9 @@ public static class Stage1ChunkBuilder
 
             // Spawners & Exit Portal Gate
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-16, 1.5f, 0), SpawnType.Player);
-            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(0, 1.5f, 0), SpawnType.Monster, "1001");
-            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(8, 1.5f, 0), SpawnType.Monster, "1001");
+            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, "3101");
+            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, "3102");
+            CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, "3103");
             CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042, "Tilemap_Room_Stage1_Boss");
         });
 

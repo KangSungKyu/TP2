@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Anims
   m_GUID: 6d4a9e3ef80af3f489a75b92e4bd6fc9
   m_SerializeEntries:
+  - m_GUID: 060b17ba3df59c84cacc3fc53f70cead
+    m_Address: SpearSentry_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 072c5f7e7b0577c43b1531080287a6a5
     m_Address: Garon_Pattern_OverheadSmash
     m_ReadOnly: 0
@@ -33,8 +39,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 130a31c14f589bc468e9e046f4bbb77f
+    m_Address: ShadowStalker_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1671e1338df7e0c49b0ecd2ed8ae2eff
+    m_Address: WaveHeavy_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e7d01fab561cf74dae834c82f75be53
     m_Address: Player_Dodge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45c94eb9d4abace4986a2007c0b119dd
+    m_Address: WaveHeavyAnimatorController
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -57,6 +81,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c6cb7d5087ad3441adf582c60e77ad7
+    m_Address: ShadowStalker_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6eb24e023a4df484291cf20c9c51d4ce
     m_Address: Garon_Idle
     m_ReadOnly: 0
@@ -69,8 +99,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b058051f1f23f74a942553c704c6910
+    m_Address: SpearSentry_Move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8e2c431091ea1c949861c7175fdbcf60
     m_Address: Player_Guard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92338070fbddd0b4a9b83ef4885e7b28
+    m_Address: WaveHeavy_Move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0ffe43cca116c443992f20ccc985a0e
+    m_Address: ShadowStalkerAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a5809a50b1cdfb145a18a0df0ae1f127
+    m_Address: ShadowStalker_Move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9de2ff61f84073499aaeef607643e94
+    m_Address: ShadowStalker_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b793b9ab6aebec5479bc430e193bd8a3
+    m_Address: SpearSentry_Attack
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -81,8 +147,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6e331642ad158f4ca5abcea0c6d0df5
+    m_Address: SpearSentry_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc261f6b92b0fa346a20d523b5f62728
     m_Address: Player_Attack_HIt1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cdd1259a845dd4342bdf18898d0a54fb
+    m_Address: WaveHeavy_Idle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -183,6 +261,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: efb83f60b9a13c144aff80139e42b83a
+    m_Address: WaveHeavy_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0000000000000000dfa17edd07f1132
     m_Address: Player_Attack_Hit1_Effect_Controller
     m_ReadOnly: 0
@@ -257,6 +341,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f745c24d564a5e04ea1b22e849e167b7
     m_Address: Garon_Pattern_Charge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa6a95e2e44d8704da7538e76b5f8a9f
+    m_Address: SpearSentryAnimatorController
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims

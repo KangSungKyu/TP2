@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31a5fe61d5c29f9448bd77f409c31bf9
+    m_Address: SpearSentry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ea9c71b289748d419e21d933ad0f605
     m_Address: Particle
     m_ReadOnly: 0
@@ -125,6 +131,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc6b49e5da713d6408839e04380fbc86
     m_Address: Tilemap_Room_TestDummy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e99f7ae641d001944ba12e8604fb4f27
+    m_Address: ShadowStalker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fab185c62ffcc0047b5deaaf4443bfd9
+    m_Address: WaveHeavy
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

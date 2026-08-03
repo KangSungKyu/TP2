@@ -5,6 +5,60 @@ TextureImporter:
   - first:
       213: -1320286744382565136
     second: SpearSentry_Death_0
+  - first:
+      213: -4512607168362579783
+    second: SpearSentry_Death_1
+  - first:
+      213: 5980377901788158635
+    second: SpearSentry_Death_2
+  - first:
+      213: 2316531640853851953
+    second: SpearSentry_Death_3
+  - first:
+      213: 6029249813289111334
+    second: SpearSentry_Death_4
+  - first:
+      213: -2897256397508314463
+    second: SpearSentry_Death_5
+  - first:
+      213: -105223853744215408
+    second: SpearSentry_Death_6
+  - first:
+      213: 763196050985632121
+    second: SpearSentry_Death_7
+  - first:
+      213: 2477340969342476346
+    second: SpearSentry_Death_8
+  - first:
+      213: -8575824880411663116
+    second: SpearSentry_Death_9
+  - first:
+      213: 1345783486607818916
+    second: SpearSentry_Death_10
+  - first:
+      213: 6945281041182217072
+    second: SpearSentry_Death_11
+  - first:
+      213: 3461256236296466667
+    second: SpearSentry_Death_12
+  - first:
+      213: 899775400240127678
+    second: SpearSentry_Death_13
+  - first:
+      213: -4037681128343338038
+    second: SpearSentry_Death_14
+  - first:
+      213: 8824449112388872357
+    second: SpearSentry_Death_15
+  - first:
+      213: -3460010207777866205
+    second: SpearSentry_Death_16
+  - first:
+      213: 3807892169560475951
+    second: SpearSentry_Death_17
+  - first:
+      213: -1123116601623414178
+    second: SpearSentry_Death_18
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +91,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +105,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 128
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -118,10 +172,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1232
-        height: 307
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -130,6 +184,402 @@ TextureImporter:
       bones: []
       spriteID: 0f49b6f73366dade0800000000000000
       internalID: -1320286744382565136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b8fdde60bfff51c0800000000000000
+      internalID: -4512607168362579783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baaddaa24029ef250800000000000000
+      internalID: 5980377901788158635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13feb0cf049f52020800000000000000
+      internalID: 2316531640853851953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62f0037c2c23ca350800000000000000
+      internalID: 6029249813289111334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aaf94328a0eac7d0800000000000000
+      internalID: -2897256397508314463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09aada7667b2a8ef0800000000000000
+      internalID: -105223853744215408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 971caf8c3ca679a00800000000000000
+      internalID: 763196050985632121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a302e217c78416220800000000000000
+      internalID: 2477340969342476346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f42b1b35bc8cf880800000000000000
+      internalID: -8575824880411663116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a088d763fe2da210800000000000000
+      internalID: 1345783486607818916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 073dbec2f48926060800000000000000
+      internalID: 6945281041182217072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_12
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be07e09553ad80030800000000000000
+      internalID: 3461256236296466667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_13
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebe92f495f4ac7c00800000000000000
+      internalID: 899775400240127678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_14
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac30cc4086647f7c0800000000000000
+      internalID: -4037681128343338038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_15
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a8237ab6bdb67a70800000000000000
+      internalID: 8824449112388872357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_16
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32ebc264c039bffc0800000000000000
+      internalID: -3460010207777866205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_17
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f29c4adc0c958d430800000000000000
+      internalID: 3807892169560475951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Death_18
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5a74eeb663e960f0800000000000000
+      internalID: -1123116601623414178
       vertices: []
       indices: 
       edges: []
@@ -149,6 +599,24 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       SpearSentry_Death_0: -1320286744382565136
+      SpearSentry_Death_1: -4512607168362579783
+      SpearSentry_Death_10: 1345783486607818916
+      SpearSentry_Death_11: 6945281041182217072
+      SpearSentry_Death_12: 3461256236296466667
+      SpearSentry_Death_13: 899775400240127678
+      SpearSentry_Death_14: -4037681128343338038
+      SpearSentry_Death_15: 8824449112388872357
+      SpearSentry_Death_16: -3460010207777866205
+      SpearSentry_Death_17: 3807892169560475951
+      SpearSentry_Death_18: -1123116601623414178
+      SpearSentry_Death_2: 5980377901788158635
+      SpearSentry_Death_3: 2316531640853851953
+      SpearSentry_Death_4: 6029249813289111334
+      SpearSentry_Death_5: -2897256397508314463
+      SpearSentry_Death_6: -105223853744215408
+      SpearSentry_Death_7: 763196050985632121
+      SpearSentry_Death_8: 2477340969342476346
+      SpearSentry_Death_9: -8575824880411663116
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
