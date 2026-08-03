@@ -23,7 +23,23 @@ public static class Stage1ChunkBuilder
 
         Tile taoGroundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_TaoShrine_Ground.asset");
         Tile groundTile = taoGroundTile != null ? taoGroundTile : AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset");
+        if (groundTile == null)
+        {
+            Sprite groundSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Terrain_Ground.png");
+            groundTile = ScriptableObject.CreateInstance<Tile>();
+            groundTile.sprite = groundSprite;
+            AssetDatabase.CreateAsset(groundTile, $"{tilesDir}/Tile_Ground.asset");
+        }
+
         Tile platTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset");
+        if (platTile == null)
+        {
+            Sprite platSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Tile_Platform_OneWay.png");
+            platTile = ScriptableObject.CreateInstance<Tile>();
+            platTile.sprite = platSprite;
+            AssetDatabase.CreateAsset(platTile, $"{tilesDir}/Tile_Platform.asset");
+        }
+
         Tile bgTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Background.asset");
 
         Material defaultSpriteMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat");

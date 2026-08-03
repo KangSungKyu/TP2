@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66b060a8bb715bb45b59e477f4dfd146
+    m_Address: Tilemap_Room_Stage1_Entry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
     m_Address: Garon
     m_ReadOnly: 0
@@ -105,10 +111,23 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d470aeb59142196408335a2172b7520d
+    m_Address: Tilemap_Room_Stage1_Boss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7e079390dddf554bb2f0c6a5e10aefd
+    m_Address: Tilemap_Room_Stage1_Battle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc6b49e5da713d6408839e04380fbc86
     m_Address: Tilemap_Room_TestDummy
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}
