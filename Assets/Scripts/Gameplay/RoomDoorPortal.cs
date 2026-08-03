@@ -18,7 +18,7 @@ public class RoomDoorPortal : MonoBehaviour
     {
         if (!AutoTriggerOnTouch || isTransitioning) return;
 
-        if (collision.CompareTag("Player") || collision.GetComponent<Player>() != null)
+        if (collision.CompareTag("Player") || collision.GetComponent<Player>() != null || collision.GetComponentInParent<Player>() != null || collision.name.Contains("Player"))
         {
             TriggerRoomTransitionAsync().Forget();
         }
