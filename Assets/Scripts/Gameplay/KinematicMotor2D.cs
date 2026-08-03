@@ -14,7 +14,7 @@ public class KinematicMotor2D : MonoBehaviour
     [Header("Motor Settings")]
     public float Gravity = 30f;
     public float MaxFallSpeed = 25f;
-    public float FallGravityMultiplier = 1.7f;
+    public float FallGravityMultiplier = 2.2f;
     public float ApexGravityMultiplier = 0.5f;
     public float SkinWidth = 0.01f;
 
@@ -213,10 +213,12 @@ public class KinematicMotor2D : MonoBehaviour
 
         float vy = Velocity.y - (Gravity * gravityScale * dt);
 
-        // 벽 슬라이딩 낙하 속도 완화
-        if (!IsGrounded && WallDir != 0 && vy < 0f)
+        // 벽 슬라이딩 낙하 속도 완화 (벽 방향 키 입력을 유지 중이고 벽점프 지원 면일 때만 발동)
+        bool isPushingWall = WallDir != 0 && ((WallDir < 0 && targetVelocityX < -0.1f) || (WallDir > 0 && targetVelocityX > 0.1f));
+        bool canSlide = WallSurface != null && WallSurface.CanWallJump;
+        if (!IsGrounded && isPushingWall && canSlide && vy < 0f)
         {
-            float slideMult = WallSurface != null ? WallSurface.SlideSpeedMultiplier : 1.0f;
+            float slideMult = WallSurface.SlideSpeedMultiplier;
             float maxSlide = MaxWallSlideSpeed * slideMult;
             vy = Mathf.Max(vy, -maxSlide);
         }

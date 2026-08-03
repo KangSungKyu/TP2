@@ -33,14 +33,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 66b060a8bb715bb45b59e477f4dfd146
+  - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
+    m_Address: Garon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000190b16dbfcc3cfb8
     m_Address: Tilemap_Room_Stage1_Entry
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
-    m_Address: Garon
+  - m_GUID: a0000000000000006e0aabf3ccce87de
+    m_Address: Tilemap_Room_Stage1_Boss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a00000000000000075d8eb397b9c79a7
+    m_Address: Tilemap_Room_Stage1_Battle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -107,18 +119,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d000000000000000f693e182c7128230
     m_Address: Garon_Shockwave_Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d470aeb59142196408335a2172b7520d
-    m_Address: Tilemap_Room_Stage1_Boss
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Prefabs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d7e079390dddf554bb2f0c6a5e10aefd
-    m_Address: Tilemap_Room_Stage1_Battle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
