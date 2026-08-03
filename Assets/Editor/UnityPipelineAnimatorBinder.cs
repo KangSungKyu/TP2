@@ -77,7 +77,7 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{playerTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 128, 256, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 128, 256, 128, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -139,7 +139,7 @@ public static class UnityPipelineAnimatorBinder
             string texPath = $"{garonTexDir}/{texName}";
             string saveClipPath = $"{animsDir}/{animName}.anim";
 
-            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 256, 512, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+            AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, fps, loop, 256, 512, 128, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
             var state = stateMachine.AddState(animName);
             if (clip != null)
@@ -188,7 +188,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, 32, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -238,12 +238,12 @@ public static class UnityPipelineAnimatorBinder
             if (File.Exists(eff.texPath))
             {
                 string saveClipPath = $"{animsDir}/{eff.clipName}.anim";
-                CreateAndSaveAnimationClip(eff.texPath, saveClipPath, eff.clipName, eff.fps, eff.loop, eff.frameW, eff.frameH, SpriteAlignment.Center, new Vector2(0.5f, 0.5f));
+                CreateAndSaveAnimationClip(eff.texPath, saveClipPath, eff.clipName, eff.fps, eff.loop, eff.frameW, eff.frameH, 128, SpriteAlignment.Center, new Vector2(0.5f, 0.5f));
             }
         }
     }
 
-    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight, SpriteAlignment alignment, Vector2 pivot)
+    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight, int ppu, SpriteAlignment alignment, Vector2 pivot)
     {
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer != null)
@@ -251,7 +251,7 @@ public static class UnityPipelineAnimatorBinder
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
             importer.filterMode = FilterMode.Point;
-            importer.spritePixelsPerUnit = 128;
+            importer.spritePixelsPerUnit = ppu;
 
             Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
             if (tex != null)

@@ -14,7 +14,7 @@ public class KinematicMotor2D : MonoBehaviour
     [Header("Motor Settings")]
     public float Gravity = 30f;
     public float MaxFallSpeed = 25f;
-    public float FallGravityMultiplier = 1.7f;
+    public float FallGravityMultiplier = 2.2f;
     public float ApexGravityMultiplier = 0.5f;
     public float SkinWidth = 0.01f;
 
@@ -50,22 +50,26 @@ public class KinematicMotor2D : MonoBehaviour
     private bool isPassThroughActive;
     private bool isJumpHeld;
 
-    private void Awake()
+    public void InitMotor()
     {
-        body = GetComponent<Rigidbody2D>();
+        if (body == null) body = GetComponent<Rigidbody2D>();
+        if (body == null) body = gameObject.AddComponent<Rigidbody2D>();
 
-        physicsCollider = null;
-        foreach (var col in GetComponents<Collider2D>())
+        if (physicsCollider == null)
         {
-            if (!col.isTrigger)
+            foreach (var col in GetComponents<Collider2D>())
             {
-                physicsCollider = col;
-                break;
+                if (!col.isTrigger)
+                {
+                    physicsCollider = col;
+                    break;
+                }
             }
         }
         if (physicsCollider == null)
         {
             physicsCollider = GetComponent<Collider2D>();
+            if (physicsCollider == null) physicsCollider = gameObject.AddComponent<BoxCollider2D>();
         }
 
         body.bodyType = RigidbodyType2D.Kinematic;
@@ -92,6 +96,11 @@ public class KinematicMotor2D : MonoBehaviour
         groundWithPlatformFilter.SetLayerMask(SolidGroundLayer | OneWayPlatformLayer);
     }
 
+    private void Awake()
+    {
+        InitMotor();
+    }
+
     // =========================================================================
     // 외부 API
     // =========================================================================
@@ -104,6 +113,11 @@ public class KinematicMotor2D : MonoBehaviour
     public void SetVelocityY(float vy)
     {
         Velocity = new Vector2(Velocity.x, vy);
+        if (vy > 0f)
+        {
+            IsGrounded = false;
+            groundNormal = Vector2.up;
+        }
     }
 
     public void SetJumpHeld(bool held)
@@ -135,23 +149,30 @@ public class KinematicMotor2D : MonoBehaviour
         targetVelocityX = 0f;
     }
 
-    // =========================================================================
-    // FixedUpdate 물리 루프
-    // =========================================================================
-
-    private void FixedUpdate()
+    public void SetGroundNormal(Vector2 normal)
     {
-        float dt = Time.deltaTime;
+        if (normal.sqrMagnitude > 0.001f)
+        {
+            groundNormal = normal.normalized;
+        }
+    }
 
-        ApplyGravity(dt);
-
-        Velocity = new Vector2(targetVelocityX, Velocity.y);
+    public void SimulateStep(float dt)
+    {
+        if (body == null || physicsCollider == null)
+        {
+            InitMotor();
+        }
 
         IsGrounded = false;
         IsWalledLeft = false;
         IsWalledRight = false;
         WallCollider = null;
         WallSurface = null;
+
+        ApplyGravity(dt);
+
+        Velocity = new Vector2(targetVelocityX, Velocity.y);
 
         var deltaPosition = Velocity * dt;
 
@@ -161,6 +182,20 @@ public class KinematicMotor2D : MonoBehaviour
 
         var verticalMove = Vector2.up * deltaPosition.y;
         PerformMovement(verticalMove, true);
+
+        if (!IsGrounded && Velocity.y <= 0f)
+        {
+            groundNormal = Vector2.up;
+        }
+    }
+
+    // =========================================================================
+    // FixedUpdate 물리 루프
+    // =========================================================================
+
+    private void FixedUpdate()
+    {
+        SimulateStep(Time.deltaTime);
     }
 
     private void ApplyGravity(float dt)
@@ -183,10 +218,12 @@ public class KinematicMotor2D : MonoBehaviour
 
         float vy = Velocity.y - (Gravity * gravityScale * dt);
 
-        // 벽 슬라이딩 낙하 속도 완화
-        if (!IsGrounded && WallDir != 0 && vy < 0f)
+        // 벽 슬라이딩 낙하 속도 완화 (벽 방향 키 입력을 유지 중이고 벽점프 지원 면일 때만 발동)
+        bool isPushingWall = WallDir != 0 && ((WallDir < 0 && targetVelocityX < -0.1f) || (WallDir > 0 && targetVelocityX > 0.1f));
+        bool canSlide = WallSurface != null && WallSurface.CanWallJump;
+        if (!IsGrounded && isPushingWall && canSlide && vy < 0f)
         {
-            float slideMult = WallSurface != null ? WallSurface.SlideSpeedMultiplier : 1.0f;
+            float slideMult = WallSurface.SlideSpeedMultiplier;
             float maxSlide = MaxWallSlideSpeed * slideMult;
             vy = Mathf.Max(vy, -maxSlide);
         }
@@ -200,7 +237,7 @@ public class KinematicMotor2D : MonoBehaviour
         float distance = move.magnitude;
         if (distance < 0.001f) return;
 
-        var filter = (yMovement && move.y <= 0f && !isPassThroughActive)
+        var filter = (!isPassThroughActive)
             ? groundWithPlatformFilter
             : solidFilter;
 
@@ -211,30 +248,44 @@ public class KinematicMotor2D : MonoBehaviour
             var hit = hitBuffer[i];
             var currentNormal = hit.normal;
 
-            if (((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0)
+            bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                                   hit.collider.GetComponent<PlatformEffector2D>() != null ||
+                                   hit.collider.GetComponent<OneWayPlatformPassThrough>() != null;
+
+            if (isOneWayPlatform)
             {
                 float feetY = physicsCollider.bounds.min.y;
                 float platformTopY = hit.collider.bounds.max.y;
-                if (feetY < platformTopY - 0.15f || isPassThroughActive)
+
+                // 1) 위로 상승 중일 때 ➔ 발판 상향 통과
+                if (yMovement && move.y > 0f)
+                {
+                    continue;
+                }
+
+                // 2) 하향 통과 입력 활성화 중일 때 ➔ 발판 하향 통과
+                if (isPassThroughActive)
+                {
+                    continue;
+                }
+
+                // 3) 수평 이동 중이거나 유닛 발 위치가 발판 상단면보다 아래일 때 ➔ 측면/하단 뚫림 통과 (껴짐 완전 방지)
+                if (!yMovement || feetY < platformTopY - 0.15f)
                 {
                     continue;
                 }
             }
 
-            if (currentNormal.y > MinGroundNormalY && !isPassThroughActive)
+            if (yMovement && move.y <= 0f && currentNormal.y > MinGroundNormalY && !isPassThroughActive)
             {
                 IsGrounded = true;
-                if (yMovement)
-                {
-                    groundNormal = currentNormal;
-                    currentNormal.x = 0;
-                }
+                groundNormal = currentNormal;
+                currentNormal.x = 0;
             }
 
             if (!yMovement && Mathf.Abs(currentNormal.x) > 0.5f)
             {
-                // 1-Way 발판(OneWayPlatformLayer) 옆면은 벽점프 대상에서 완벽 제외
-                bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0;
+                // 1-Way 발판 옆면은 벽점프/벽붙기 대상에서 완벽 제외
                 if (!isOneWayPlatform)
                 {
                     if (currentNormal.x > 0) IsWalledLeft = true;

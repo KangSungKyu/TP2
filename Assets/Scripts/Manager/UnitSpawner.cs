@@ -111,7 +111,14 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
         if (ResourceManager.Instance == null) return;
 
-        string prefabKey = "Garon";
+        string prefabKey = isBoss ? "Garon" : "SpearSentry";
+        if (!isBoss && !string.IsNullOrEmpty(monsterId))
+        {
+            if (monsterId == "3101" || monsterId == "1003" || monsterId == "5101" || monsterId == "SpearSentry") prefabKey = "SpearSentry";
+            else if (monsterId == "3102" || monsterId == "1004" || monsterId == "5102" || monsterId == "ShadowStalker") prefabKey = "ShadowStalker";
+            else if (monsterId == "3103" || monsterId == "1005" || monsterId == "5103" || monsterId == "WaveHeavy") prefabKey = "WaveHeavy";
+            else if (monsterId == "3201" || monsterId == "1002" || monsterId == "Garon") prefabKey = "Garon";
+        }
 
         ResourceManager.Instance.LoadAssetAsync<GameObject>(prefabKey, prefab =>
         {

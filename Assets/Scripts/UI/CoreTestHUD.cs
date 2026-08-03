@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 코어 액션 가이드 및 보스 상태를 한눈에 확인할 수 있는 테스트용 OnGUI HUD.
@@ -47,6 +48,28 @@ public class CoreTestHUD : MonoBehaviour
             GUILayout.Label($"<b>상태</b>: AI 패턴 순환 중");
             GUILayout.EndArea();
         }
+        // 3. 룸 청크 선택/이동 윈도우 (우측 상단 배치: Rect(Screen.width - 340, 10, 330, 160))
+        GUILayout.BeginArea(new Rect(Screen.width - 340, 10, 330, 160), "<b>[ 룸 청크 선택 & 관문 이동 ]</b>", GUI.skin.window);
+        string currentKey = StageManager.Instance != null ? StageManager.Instance.CurrentRoomAddressableKey : "Unknown";
+        GUILayout.Label($"<b>현재 룸</b>: {currentKey}");
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("🚪 1040 Entry", GUILayout.Height(35)))
+        {
+            if (StageManager.Instance != null) StageManager.Instance.LoadNextRoomAsync(1040).Forget();
+        }
+        if (GUILayout.Button("⚔️ 1041 Battle", GUILayout.Height(35)))
+        {
+            if (StageManager.Instance != null) StageManager.Instance.LoadNextRoomAsync(1041).Forget();
+        }
+        if (GUILayout.Button("👹 1042 Boss", GUILayout.Height(35)))
+        {
+            if (StageManager.Instance != null) StageManager.Instance.LoadNextRoomAsync(1042).Forget();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.Label("• 포탈 접촉 또는 위 버튼 클릭 시 비동기 이동");
+        GUILayout.EndArea();
 #endif
     }
 

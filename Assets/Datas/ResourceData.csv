@@ -16,3 +16,8 @@ idx,path
 1031,Placeholder_Guard
 1032,Placeholder_Dodge
 1033,Placeholder_Hit
+1040,Tilemap_Room_Stage1_Entry
+1041,Tilemap_Room_Stage1_Battle
+1042,Tilemap_Room_Stage1_Boss
+1043,Tilemap_Room_Stage2_Entry
+1044,Tilemap_Room_Stage2_Boss

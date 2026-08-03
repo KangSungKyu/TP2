@@ -326,8 +326,10 @@ public class EffectData
 [Serializable]
 public class SkillData
 {
-    [Name("skillid")]
-    public uint SkillId { get; set; } // Idx 역할 (7001~)
+    [Name("idx")]
+    public uint Idx { get; set; } // Idx 역할 (7001~)
+
+    public uint SkillId => Idx; // 하위 호환성 프로퍼티
 
     [Name("name")]
     public string Name { get; set; }
@@ -385,16 +387,16 @@ public class StageBaseData
     public int Chapter { get; set; }
 
     [Name("themetype")]
-    public string ThemeType { get; set; }
+    public int ThemeType { get; set; }
 
-    [Name("startroomkey")]
-    public string StartRoomKey { get; set; }
+    [Name("startroomidx")]
+    public uint StartRoomIdx { get; set; }
 
-    [Name("bossroomkey")]
-    public string BossRoomKey { get; set; }
+    [Name("bossroomidx")]
+    public uint BossRoomIdx { get; set; }
 
-    [Name("roomsequence")]
-    public string RoomSequence { get; set; }
+    [Name("roomsequenceidxlist"), TypeConverter(typeof(UIntArrayConverter))]
+    public uint[] RoomSequenceIdxList { get; set; }
 }
 
 

@@ -1,4 +1,4 @@
-skillid,name,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate
+idx,name,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate
 7001,BasicAttack,Skill_01,1.5,0.0,0.5,5,1.0,true,1,0.15,0.3,8001,7
 7002,Fireball,Skill_Fireball,5.0,0.2,3.0,20,2.5,false,1,0.12,0.8,8002,7
 7003,HeavySlash,Skill_02,2.0,0.1,1.0,10,1.5,true,2,0.1_0.25,0.4,8001,7

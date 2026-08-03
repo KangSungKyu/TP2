@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31a5fe61d5c29f9448bd77f409c31bf9
+    m_Address: SpearSentry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ea9c71b289748d419e21d933ad0f605
     m_Address: Particle
     m_ReadOnly: 0
@@ -35,6 +41,42 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
     m_Address: Garon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000190b16dbfcc3cfb8
+    m_Address: Tilemap_Room_Stage1_Entry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0000000000000005db3c6d7a46ab41e
+    m_Address: Portal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0000000000000006e0aabf3ccce87de
+    m_Address: Tilemap_Room_Stage1_Boss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a00000000000000075d8eb397b9c79a7
+    m_Address: Tilemap_Room_Stage1_Battle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000bebc1b4703fa9c0c
+    m_Address: Portal_Gate
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a000000000000000e30d6bf4b14d23e5
+    m_Address: Door
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -108,7 +150,20 @@ MonoBehaviour:
   - m_GUID: dc6b49e5da713d6408839e04380fbc86
     m_Address: Tilemap_Room_TestDummy
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e99f7ae641d001944ba12e8604fb4f27
+    m_Address: ShadowStalker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fab185c62ffcc0047b5deaaf4443bfd9
+    m_Address: WaveHeavy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 03967dd143e63db4f82aa58ae79b7237, type: 2}

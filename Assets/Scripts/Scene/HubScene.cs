@@ -2,27 +2,46 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 
 /// <summary>
-/// HubScene – UI 중심 화면. 현재는 기본 UI만 표시하고, 스테이지 입장을 담당합니다.
-/// HubUIManager 가 UI 패널을 관리하고, 사용자가 스테이지를 선택하면 MainScene 으로 전환합니다.
+/// HubScene – UI/OnGUI 중심 허브 화면.
+/// 1스테이지(9001 - TaoShrine) 등 스테이지 선택 입장 및 MainScene 전환을 담당합니다.
 /// </summary>
 public class HubScene : MonoBehaviour
 {
-    private void Awake()
-    {
-        // 현재 HubUIManager 가 구현되지 않았으므로, 필요 시 추가하거나 여기서 초기화 코드를 작성하세요.
-        // Debug.Log("HubScene Awake"); // optional placeholder
-    }
-
-    /// <summary>
-    /// Called by UI button to start a stage.
-    /// stageIndex corresponds to the CSV data index.
-    /// </summary>
     public async void EnterStage(int stageIndex)
     {
-        // 예시: 씬 이름 규칙 "stage_[index]"
-        string targetSceneName = $"stage_{stageIndex}";
-        // GameSceneManager 로 전환 (LoadingScene 을 자동 경유)
-        await GameSceneManager.Instance.TransitionTo(GameSceneManager.SceneName.Main);
-        // 실제 스테이지 이름 매핑은 GameSceneManager 혹은 Addressables 설정에 맡김.
+        uint stageIdx = stageIndex > 0 ? (uint)stageIndex : 9001;
+        Debug.Log($"<color=cyan>[HubScene] 스테이지 {stageIdx} (1스테이지 도교 신전) 입장 버튼 클릭! MainScene으로 전환...</color>");
+
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.CurrentStageIdx = stageIdx;
+        }
+
+        if (GameSceneManager.Instance != null)
+        {
+            await GameSceneManager.Instance.TransitionTo(GameSceneManager.SceneName.Main);
+        }
+    }
+
+    private void OnGUI()
+    {
+        GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
+        {
+            fontSize = 18,
+            fontStyle = FontStyle.Bold,
+            alignment = TextAnchor.MiddleCenter
+        };
+
+        float btnWidth = 360f;
+        float btnHeight = 60f;
+        float centerX = (Screen.width - btnWidth) * 0.5f;
+        float centerY = (Screen.height - btnHeight) * 0.5f;
+
+        GUI.Box(new Rect(centerX - 20, centerY - 80, btnWidth + 40, btnHeight + 140), "=== TP2 Stage Hub Scene ===");
+
+        if (GUI.Button(new Rect(centerX, centerY, btnWidth, btnHeight), "⛩️ 1스테이지 도교 신전 입장 (Stage 9001)", btnStyle))
+        {
+            EnterStage(9001);
+        }
     }
 }

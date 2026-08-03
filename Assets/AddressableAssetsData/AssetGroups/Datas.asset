@@ -51,6 +51,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Datas
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de7d670af6e22f44b80882262af37fc5
+    m_Address: StageData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb53a8d00d38ad34eaf9e6de86001286
     m_Address: EffectData
     m_ReadOnly: 0
