@@ -29,10 +29,11 @@ public class MainScene : MonoBehaviour
             Camera.main.backgroundColor = new Color(0.15f, 0.15f, 0.2f);
         }
 
-        // 3. ----- OnGUI HUD 및 테스트 플레이어 HUD 생성 -----
+        // 3. ----- OnGUI HUD, 테스트 플레이어 HUD 및 최적화 몬스터 오버레이 HUD 생성 -----
         var hudObj = new GameObject("CoreTestHUD");
         hudObj.AddComponent<CoreTestHUD>();
         hudObj.AddComponent<TestPlayerHUDUI>();
+        hudObj.AddComponent<MonsterOverheadHUD>();
 
         Debug.Log("<color=green><b>[MainScene] 1스테이지 도교 신전(9001) 룸 청크 빌드 및 플레이 환경 구축 완결!</b></color>");
     }
