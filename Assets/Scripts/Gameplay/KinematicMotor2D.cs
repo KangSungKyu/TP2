@@ -50,22 +50,26 @@ public class KinematicMotor2D : MonoBehaviour
     private bool isPassThroughActive;
     private bool isJumpHeld;
 
-    private void Awake()
+    public void InitMotor()
     {
-        body = GetComponent<Rigidbody2D>();
+        if (body == null) body = GetComponent<Rigidbody2D>();
+        if (body == null) body = gameObject.AddComponent<Rigidbody2D>();
 
-        physicsCollider = null;
-        foreach (var col in GetComponents<Collider2D>())
+        if (physicsCollider == null)
         {
-            if (!col.isTrigger)
+            foreach (var col in GetComponents<Collider2D>())
             {
-                physicsCollider = col;
-                break;
+                if (!col.isTrigger)
+                {
+                    physicsCollider = col;
+                    break;
+                }
             }
         }
         if (physicsCollider == null)
         {
             physicsCollider = GetComponent<Collider2D>();
+            if (physicsCollider == null) physicsCollider = gameObject.AddComponent<BoxCollider2D>();
         }
 
         body.bodyType = RigidbodyType2D.Kinematic;
@@ -90,6 +94,11 @@ public class KinematicMotor2D : MonoBehaviour
         groundWithPlatformFilter.useTriggers = false;
         groundWithPlatformFilter.useLayerMask = true;
         groundWithPlatformFilter.SetLayerMask(SolidGroundLayer | OneWayPlatformLayer);
+    }
+
+    private void Awake()
+    {
+        InitMotor();
     }
 
     // =========================================================================
@@ -135,13 +144,20 @@ public class KinematicMotor2D : MonoBehaviour
         targetVelocityX = 0f;
     }
 
-    // =========================================================================
-    // FixedUpdate 물리 루프
-    // =========================================================================
-
-    private void FixedUpdate()
+    public void SetGroundNormal(Vector2 normal)
     {
-        float dt = Time.deltaTime;
+        if (normal.sqrMagnitude > 0.001f)
+        {
+            groundNormal = normal.normalized;
+        }
+    }
+
+    public void SimulateStep(float dt)
+    {
+        if (body == null || physicsCollider == null)
+        {
+            InitMotor();
+        }
 
         ApplyGravity(dt);
 
@@ -161,6 +177,20 @@ public class KinematicMotor2D : MonoBehaviour
 
         var verticalMove = Vector2.up * deltaPosition.y;
         PerformMovement(verticalMove, true);
+
+        if (groundNormal.y > MinGroundNormalY && !isPassThroughActive)
+        {
+            IsGrounded = true;
+        }
+    }
+
+    // =========================================================================
+    // FixedUpdate 물리 루프
+    // =========================================================================
+
+    private void FixedUpdate()
+    {
+        SimulateStep(Time.deltaTime);
     }
 
     private void ApplyGravity(float dt)
