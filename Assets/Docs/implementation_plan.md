@@ -31,7 +31,8 @@
 | 2026-08-04 | 자동생성(스캔) | 전수 검사 및 마스터 명세서 생성 (32/32) | Assets/Docs/implementation_plan.md 및 SubPlans/폴더 생성 |
 | 2026-08-04 | PM (거버넌스) | 유닛 사망 처리 파이프라인 수립, 공격 이펙트 100% 풀링 전환 및 Unity Find* 탐색 함수 전면 철폐 동기화 (`9483a67`) | Assets/Docs/SubPlans/plan_unit_combat.md, StageManager.cs, Monster.cs, EffectPoolManager.cs |
 | 2026-08-04 | PM (거버넌스) | `TilemapStageBuilder.cs` CS0103 및 `Player.cs` CS0117 컴파일 에러 수선 동기화 (`49068a3`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, TilemapStageBuilder.cs, Player.cs |
-| 2026-08-04 | PM (거버넌스) | 중복 플레이어 생성 차단, 매니저 씬 사전 배치 및 Battle 청크 몬스터 스폰 필터링 수선 발주 | Assets/Docs/SubPlans/plan_stage_sequencer.md, UnitSpawner.cs, InitScene.cs, MainScene.cs |
+| 2026-08-04 | PM (거버넌스) | 중복 플레이어 생성 차단, 매니저 씬 사전 배치 및 Battle 청크 몬스터 스폰 필터링 수선 동기화 (`a1a9025`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, UnitSpawner.cs, InitScene.cs, MainScene.cs |
+| 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -92,4 +93,24 @@
   - 유저 피드백의 3대 핵심 원인을 파악 후 10초 이내에 하위 메인프로그래머에 핀포인트 발주 완수.
 - **차기 방어 지침**: 
   - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스는 런타임 `AddComponent` / `new` 생성을 금지하고 `InitScene/MainScene` 정적 배치 구조를 상시 강제할 것.
+
+---
+
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:20]
+- **아키텍처 반성 점**: 
+  - `UnitSpawner.cs` 내 플레이어 재배치 로직으로 중복 생성 100% 차단. `InitScene` 및 `MainScene`에 `EffectPoolManager`, `StageManager`, `UnitSpawner` 정적 사전 배치 안착 및 Battle 청크 전용 몬스터 마커 조회 수선 완수 (`a1a9025`).
+- **토큰/공정 회고**: 
+  - 하위 에이전트 병합 완료 후 NUnit 32/32 PASS 무결성 검증 및 원격 Push 완수.
+- **차기 방어 지침**: 
+  - `[PM 거버넌스 수칙]` 씬 빌딩 시 정적 매니저 노드 배치를 1차 원칙으로 하고 런타임 동적 생성은 폴백용으로만 한정할 것.
+
+---
+
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:25]
+- **아키텍처 반성 점**: 
+  - 플레이어 및 몬스터를 포함한 모든 인게임 유닛의 단일 `Instantiate`/`Destroy` 라이프사이클 의존성을 완전히 철폐하고, **`UnitPoolManager` 중심의 100% 오브젝트 풀링 아키텍처**로 개편 발주.
+- **토큰/공정 회고**: 
+  - 유저의 '플레이어 포함 전 유닛 풀링 관리' 지침 수령 후 5초 이내에 서브 명세 조립 및 발주 완료.
+- **차기 방어 지침**: 
+  - `[PM 거버넌스 수칙]` 인게임 내 `Player` 및 `Monster` 유닛 생성을 `Instantiate`/`Destroy`로 직접 수행하는 것을 금지하고 무조건 `UnitPoolManager`를 통해서만 스폰/데스파운할 것.
 

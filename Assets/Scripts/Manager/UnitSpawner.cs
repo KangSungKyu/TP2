@@ -29,14 +29,9 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
     private void CleanupExistingUnits()
     {
-        var monsters = new List<Monster>(Monster.ActiveMonsters);
-        foreach (var m in monsters)
+        if (UnitPoolManager.Instance != null)
         {
-            if (m != null && m.gameObject != null)
-            {
-                if (Application.isPlaying) Object.Destroy(m.gameObject);
-                else Object.DestroyImmediate(m.gameObject);
-            }
+            UnitPoolManager.Instance.DespawnAllMonsters();
         }
     }
 
@@ -74,87 +69,31 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
     private void SpawnPlayerAt(Vector3 spawnPos)
     {
-        if (Player.Instance != null)
+        if (UnitPoolManager.Instance != null)
         {
-            var motor = Player.Instance.GetComponent<KinematicMotor2D>();
-            if (motor != null)
-            {
-                motor.Teleport(spawnPos);
-            }
-            else
-            {
-                Player.Instance.transform.position = spawnPos;
-            }
-            Debug.Log($"<color=cyan>[UnitSpawner] 기존 플레이어 위치를 마커 위치 ({spawnPos})로 텔레포트 이동 완료!</color>");
-
-            // 씬 내 중복 플레이어 오브젝트 전면 제거
-            var allPlayers = Object.FindObjectsByType<Player>(FindObjectsSortMode.None);
-            if (allPlayers.Length > 1)
-            {
-                foreach (var p in allPlayers)
-                {
-                    if (p != Player.Instance && p.gameObject != null)
-                    {
-                        if (Application.isPlaying) Object.Destroy(p.gameObject);
-                        else Object.DestroyImmediate(p.gameObject);
-                    }
-                }
-            }
-            return;
-        }
-
-        if (ResourceManager.Instance != null)
-        {
-            ResourceManager.Instance.LoadAssetAsync<GameObject>("Player", prefab =>
-            {
-                if (prefab != null && Player.Instance == null)
-                {
-                    GameObject pObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-                    pObj.name = "Player";
-                    Debug.Log($"<color=cyan>[UnitSpawner] 플레이어 프리팹 스폰 완결 ({spawnPos})</color>");
-                }
-            });
+            UnitPoolManager.Instance.SpawnPlayerAsync(spawnPos).Forget();
         }
     }
 
     private void SpawnMonsterUnit(SpawnPointMarker marker, bool isBoss)
     {
         Vector3 spawnPos = marker.transform.position;
-        string monsterId = string.IsNullOrEmpty(marker.MonsterId) ? "1001" : marker.MonsterId;
-
-        if (ResourceManager.Instance == null) return;
-
-        string prefabKey = isBoss ? "Garon" : "SpearSentry";
-        if (!isBoss && !string.IsNullOrEmpty(monsterId))
+        string monsterIdStr = string.IsNullOrEmpty(marker.MonsterId) ? (isBoss ? "5001" : "3101") : marker.MonsterId;
+        if (!uint.TryParse(monsterIdStr, out uint unitId))
         {
-            if (monsterId == "3101" || monsterId == "1003" || monsterId == "5101" || monsterId == "SpearSentry") prefabKey = "SpearSentry";
-            else if (monsterId == "3102" || monsterId == "1004" || monsterId == "5102" || monsterId == "ShadowStalker") prefabKey = "ShadowStalker";
-            else if (monsterId == "3103" || monsterId == "1005" || monsterId == "5103" || monsterId == "WaveHeavy") prefabKey = "WaveHeavy";
-            else if (monsterId == "3201" || monsterId == "1002" || monsterId == "Garon") prefabKey = "Garon";
+            unitId = isBoss ? 5001u : 3101u;
         }
 
-        ResourceManager.Instance.LoadAssetAsync<GameObject>(prefabKey, prefab =>
+        if (UnitPoolManager.Instance != null)
         {
-            if (prefab == null)
+            UnitPoolManager.Instance.SpawnMonsterAsync(unitId, spawnPos).ContinueWith(monster =>
             {
-                GameObject fallback = new GameObject(isBoss ? "BossGaron" : "MonsterGaron");
-                fallback.transform.position = spawnPos;
-                var monsterComp = fallback.AddComponent<BossMonster>();
-                ConfigureMonsterUIAndRewards(monsterComp, isBoss);
-                return;
-            }
-
-            GameObject mObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-            mObj.name = isBoss ? $"Boss_{monsterId}" : $"Monster_{monsterId}";
-
-            var unitComp = mObj.GetComponent<UnitBase>();
-            if (unitComp != null)
-            {
-                ConfigureMonsterUIAndRewards(unitComp, isBoss);
-            }
-
-            Debug.Log($"<color={(isBoss ? "magenta" : "yellow")}>[UnitSpawner] {(isBoss ? "보스" : "일반 몬스터")} 유닛 스폰 완결 (ID: {monsterId}, Position: {spawnPos})</color>");
-        });
+                if (monster != null)
+                {
+                    ConfigureMonsterUIAndRewards(monster, isBoss);
+                }
+            }).Forget();
+        }
     }
 
     private void ConfigureMonsterUIAndRewards(UnitBase unit, bool isBoss)

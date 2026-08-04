@@ -116,7 +116,11 @@ public class Monster : UnitBase
 
         await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        if (gameObject != null)
+        if (UnitPoolManager.Instance != null)
+        {
+            UnitPoolManager.Instance.DespawnUnit(this);
+        }
+        else if (gameObject != null)
         {
             if (Application.isPlaying) Destroy(gameObject);
             else DestroyImmediate(gameObject);

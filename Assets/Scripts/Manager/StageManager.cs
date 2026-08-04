@@ -140,7 +140,12 @@ public class StageManager : Singleton<StageManager>
             CurrentRoomInstance = null;
         }
 
-        // 잔여 이펙트 풀 및 파티클 전면 정리
+        // 활성 몬스터 유닛 풀 회수 및 이펙트 풀 전면 정리
+        if (UnitPoolManager.Instance != null)
+        {
+            UnitPoolManager.Instance.DespawnAllMonsters();
+        }
+
         if (EffectPoolManager.Instance != null)
         {
             EffectPoolManager.Instance.ClearAllActiveEffects();
