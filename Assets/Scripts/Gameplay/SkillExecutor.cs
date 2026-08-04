@@ -20,13 +20,6 @@ public class SkillExecutor : MonoBehaviour
     private GameObject particlePrefab;
     private readonly Dictionary<int, float> nextAvailable = new Dictionary<int, float>();
 
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-        stats = GetComponent<CombatStats>();
-    }
-
-
     // =========================================================================
     // 2. PUBLIC METHODS (PascalCase)
     // =========================================================================
@@ -229,6 +222,7 @@ public class SkillExecutor : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null) Instance = this;
         stats = GetComponent<CombatStats>();
 
         if (ResourceManager.Instance != null)
