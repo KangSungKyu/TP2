@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,48 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
 {
     private readonly Dictionary<string, Queue<GameObject>> poolDict = new Dictionary<string, Queue<GameObject>>();
     private readonly HashSet<GameObject> activeEffects = new HashSet<GameObject>();
+
+    public async Cysharp.Threading.Tasks.UniTask<GameObject> SpawnEffect(string prefabKey, Vector3 position, Quaternion rotation = default, float duration = 1.0f, Transform parent = null)
+    {
+        if (string.IsNullOrEmpty(prefabKey)) return null;
+
+        GameObject effectObj = null;
+
+        if (poolDict.TryGetValue(prefabKey, out var queue) && queue.Count > 0)
+        {
+            effectObj = queue.Dequeue();
+            if (effectObj != null)
+            {
+                effectObj.transform.position = position;
+                effectObj.transform.rotation = rotation;
+                if (parent != null) effectObj.transform.SetParent(parent);
+                effectObj.SetActive(true);
+            }
+        }
+
+        if (effectObj == null && ResourceManager.Instance != null)
+        {
+            effectObj = await ResourceManager.Instance.InstantiateAsyncTask(prefabKey, parent != null ? parent : transform, position, rotation);
+            if (effectObj != null) effectObj.name = prefabKey;
+        }
+
+        if (effectObj != null)
+        {
+            activeEffects.Add(effectObj);
+            if (duration > 0f)
+            {
+                AutoDespawnEffectAsync(effectObj, duration, this.GetCancellationTokenOnDestroy()).Forget();
+            }
+        }
+
+        return effectObj;
+    }
+
+    private async Cysharp.Threading.Tasks.UniTaskVoid AutoDespawnEffectAsync(GameObject effectObj, float duration, System.Threading.CancellationToken cancellationToken)
+    {
+        await Cysharp.Threading.Tasks.UniTask.Delay(System.TimeSpan.FromSeconds(duration), cancellationToken: cancellationToken);
+        DespawnEffect(effectObj);
+    }
 
     public GameObject SpawnEffect(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {

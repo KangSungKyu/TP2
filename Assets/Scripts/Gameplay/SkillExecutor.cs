@@ -174,42 +174,10 @@ public class SkillExecutor : MonoBehaviour
             return null;
         }
 
-        if (SimplePoolManager.Instance != null && !SimplePoolManager.Instance.TryGetPool<Transform>(prefabKey, out _))
+        float duration = effectData.Duration > 0f ? effectData.Duration : 1.0f;
+        if (EffectPoolManager.Instance != null)
         {
-            await SimplePoolManager.Instance.CreatePoolAsync<Transform>(prefabKey, capacity: 30, prewarmCount: 10);
-        }
-
-        Transform pooledTrans = SimplePoolManager.Instance != null ? SimplePoolManager.Instance.Get<Transform>(prefabKey) : null;
-        GameObject effectObj = null;
-
-        if (pooledTrans != null)
-        {
-            effectObj = pooledTrans.gameObject;
-        }
-        else if (ResourceManager.Instance != null)
-        {
-            effectObj = await ResourceManager.Instance.InstantiateAsyncTask(prefabKey, null, position, rotation);
-            if (effectObj != null) pooledTrans = effectObj.transform;
-        }
-
-        if (effectObj != null)
-        {
-            effectObj.transform.position = position;
-            effectObj.transform.rotation = rotation;
-            effectObj.transform.localScale = Vector3.one * (effectData.Scale > 0f ? effectData.Scale : 1f);
-            effectObj.SetActive(true);
-
-            var psList = effectObj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var ps in psList)
-            {
-                ps.Clear();
-                ps.Play();
-            }
-
-            float duration = effectData.Duration > 0f ? effectData.Duration : 1.0f;
-            ReleaseEffectAfterDurationAsync(prefabKey, pooledTrans, duration, this.GetCancellationTokenOnDestroy()).Forget();
-
-            return effectObj;
+            return await EffectPoolManager.Instance.SpawnEffect(prefabKey, position, rotation, duration);
         }
 
         return null;
@@ -246,13 +214,7 @@ public class SkillExecutor : MonoBehaviour
 
         if (particlePrefab == null)
         {
-            particlePrefab = Resources.Load<GameObject>("prefabs/Particle");
-#if UNITY_EDITOR
-            if (particlePrefab == null)
-            {
-                particlePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/prefabs/Particle.prefab");
-            }
-#endif
+            Debug.LogError("[ResourceManager Error] 'Particle' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요.");
         }
     }
 

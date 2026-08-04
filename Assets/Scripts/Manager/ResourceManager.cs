@@ -241,7 +241,7 @@ public class ResourceManager : Singleton<ResourceManager>
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[ResourceManager Error] InstantiateAsyncTask 에셋 로드 실패 (Key: {key}): {ex.Message}");
+            Debug.LogError($"[ResourceManager Error] '{key}' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요. (사유: {ex.Message})");
             return null;
         }
     }

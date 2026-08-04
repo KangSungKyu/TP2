@@ -24,6 +24,7 @@ public enum PlayerState
     Execution = 8,  // 보스 무방비 처형
     Attack2 = 9,    // 검술 콤보 2타
     Attack3 = 10,   // 검술 콤보 3타
+    Hit = 11,       // 피격 및 사망
     PlayerState_End
 }
 

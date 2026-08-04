@@ -75,7 +75,8 @@ public class Monster : UnitBase
         var stats = GetComponent<CombatStats>();
         if (stats != null)
         {
-            stats.OnDeath.AddListener(Die);
+            stats.OnHpZero.AddListener(OnDeath);
+            stats.OnDeath.AddListener(OnDeath);
         }
 
         AiLoopAsync(this.GetCancellationTokenOnDestroy()).Forget();
@@ -89,10 +90,24 @@ public class Monster : UnitBase
         }
     }
 
+    public virtual void OnDeath()
+    {
+        Die();
+    }
+
     public virtual async void Die()
     {
         SetAnimState(5);
-        if (motor != null) motor.SetTargetVelocityX(0f);
+        if (animator != null && animator.runtimeAnimatorController != null)
+        {
+            try { animator.SetTrigger("Death"); } catch { }
+        }
+
+        if (motor != null)
+        {
+            motor.SetTargetVelocityX(0f);
+            motor.enabled = false;
+        }
 
         var cols = GetComponentsInChildren<Collider2D>();
         foreach (var c in cols) c.enabled = false;
@@ -101,7 +116,11 @@ public class Monster : UnitBase
 
         await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        if (gameObject != null)
+        if (UnitPoolManager.Instance != null)
+        {
+            UnitPoolManager.Instance.DespawnUnit(this);
+        }
+        else if (gameObject != null)
         {
             if (Application.isPlaying) Destroy(gameObject);
             else DestroyImmediate(gameObject);

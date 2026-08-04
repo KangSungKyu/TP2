@@ -17,6 +17,8 @@ public class TilemapStageBuilder : MonoBehaviour
     public float BufferTimeSec = 0.5f;
     public float FadeDurationSec = 0.4f;
 
+    private CanvasGroup fadeOverlayCanvasGroup;
+
     public static TilemapStageBuilder Instance { get; private set; }
 
     private void Awake()

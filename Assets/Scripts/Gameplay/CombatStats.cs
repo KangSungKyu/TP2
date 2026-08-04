@@ -41,6 +41,7 @@ public class CombatStats : MonoBehaviour
     public UnityEvent OnGroggyState;
     public UnityEvent OnGroggyEnded;
     public UnityEvent OnDeath;
+    public UnityEvent OnHpZero;
 
 
     // =========================================================================
@@ -148,6 +149,7 @@ public class CombatStats : MonoBehaviour
         {
             IsDead = true;
             Debug.Log($"[{gameObject.name}] 사망!");
+            OnHpZero?.Invoke();
             OnDeath?.Invoke();
         }
 

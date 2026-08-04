@@ -40,25 +40,19 @@ public class MainScene : MonoBehaviour
 
     private async UniTask ensureManagersReadyAsync()
     {
-        // ResourceManager 보장
-        if (ResourceManager.Instance == null)
+        if (ResourceManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<ResourceManager>() == null)
         {
-            var go = new GameObject("ResourceManager");
-            go.AddComponent<ResourceManager>();
+            Debug.LogWarning("[MainScene] 'ResourceManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
 
-        // DataTableManager 보장
-        if (DataTableManager.Instance == null)
+        if (DataTableManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<DataTableManager>() == null)
         {
-            var go = new GameObject("DataTableManager");
-            go.AddComponent<DataTableManager>();
+            Debug.LogWarning("[MainScene] 'DataTableManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
 
-        // StageManager 보장
-        if (StageManager.Instance == null)
+        if (StageManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<StageManager>() == null)
         {
-            var go = new GameObject("StageManager");
-            go.AddComponent<StageManager>();
+            Debug.LogWarning("[MainScene] 'StageManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
 
         // ResourceManager 초기화 대기

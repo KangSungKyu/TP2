@@ -41,11 +41,9 @@ public class InitScene : MonoBehaviour
 
     private void ensureManagerExists<T>(string gameObjectName) where T : MonoBehaviour
     {
-        if (FindObjectOfType<T>() == null)
+        if (UnityEngine.Object.FindFirstObjectByType<T>() == null)
         {
-            var go = new GameObject(gameObjectName);
-            go.AddComponent<T>();
-            Debug.Log($"[InitScene] '{gameObjectName}' 매니저 GameObject 자동 생성 완료.");
+            Debug.LogWarning($"[InitScene] '{typeof(T).Name}' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
     }
 }
