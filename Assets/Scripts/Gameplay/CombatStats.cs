@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
-using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// HP, MP, Posture, SuperArmor 등 전투 관련 스탯을 총괄 관리합니다.
+/// 몬스터 및 플레이어 피격 연출 (적색 플래시, 넉백, 이펙트 생성)을 담당합니다.
 /// </summary>
 public class CombatStats : MonoBehaviour
 {
@@ -51,6 +53,21 @@ public class CombatStats : MonoBehaviour
     // =========================================================================
     // 3. PUBLIC METHODS (PascalCase)
     // =========================================================================
+
+    private void Awake()
+    {
+        rb2d = GetComponent<Rigidbody2D>();
+        InitStats();
+    }
+
+    public void InitStats()
+    {
+        CurrentHp = MaxHp;
+        CurrentMp = MaxMp;
+        CurrentPosture = 0f;
+        IsGroggy = false;
+        groggyTimer = 0f;
+    }
 
     public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
     {
@@ -109,6 +126,9 @@ public class CombatStats : MonoBehaviour
         CurrentHp = Mathf.Max(CurrentHp - amount, 0f);
         OnHpChanged?.Invoke(CurrentHp / MaxHp);
 
+        // 몬스터 / 유닛 피격 반응 연출 (스프라이트 적색 플래시 & 넉백)
+        TriggerHitVisualFeedback(attacker, amount);
+
         if (CurrentHp <= 0f)
         {
             Debug.Log($"[{gameObject.name}] 사망!");
@@ -128,6 +148,8 @@ public class CombatStats : MonoBehaviour
         CurrentHp = Mathf.Max(CurrentHp - damage, 0f);
         OnHpChanged?.Invoke(CurrentHp / MaxHp);
 
+        TriggerHitVisualFeedback(attacker, damage);
+
         Debug.Log($"<color=red>[Execution Impact] {gameObject.name} (이)가 {damage} 의 처형 피해를 입었습니다!</color>");
     }
 
@@ -140,60 +162,8 @@ public class CombatStats : MonoBehaviour
 
         if (CurrentPosture >= MaxPosture)
         {
-            TriggerGroggy(DefaultGroggyDuration);
+            TriggerGroggyState();
         }
-    }
-
-    public void TriggerGroggy(float duration = DefaultGroggyDuration)
-    {
-        IsGroggy = true;
-        groggyTimer = duration;
-        Debug.Log($"[{gameObject.name}] 자세 게이지 임계치 달성! 무방비 그로기(Groggy) 진입 ({duration}초)");
-        OnGroggyState?.Invoke();
-    }
-
-    public void Heal(float amount)
-    {
-        CurrentHp = Mathf.Min(CurrentHp + amount, MaxHp);
-        OnHpChanged?.Invoke(CurrentHp / MaxHp);
-    }
-
-    public bool ConsumeMp(float cost)
-    {
-        if (CurrentMp < cost) return false;
-        CurrentMp -= cost;
-        OnMpChanged?.Invoke(CurrentMp / MaxMp);
-        return true;
-    }
-
-    public void RestoreMp(float amount)
-    {
-        CurrentMp = Mathf.Min(CurrentMp + amount, MaxMp);
-        OnMpChanged?.Invoke(CurrentMp / MaxMp);
-    }
-
-    public void SetGuarding(bool value) => IsGuarding = value;
-    public void SetDodging(bool value) => IsDodging = value;
-    public void SetParrying(bool value) => IsParrying = value;
-    public void SetJumped(bool value) => IsJumped = value;
-
-    public void InitStats()
-    {
-        CurrentHp = MaxHp;
-        CurrentMp = MaxMp;
-        CurrentPosture = 0f;
-        IsGroggy = false;
-    }
-
-
-    // =========================================================================
-    // 4. PRIVATE METHODS
-    // =========================================================================
-
-    private void Awake()
-    {
-        rb2d = GetComponent<Rigidbody2D>();
-        InitStats();
     }
 
     private void Update()
@@ -211,14 +181,45 @@ public class CombatStats : MonoBehaviour
         }
     }
 
+    private void TriggerGroggyState()
+    {
+        IsGroggy = true;
+        groggyTimer = DefaultGroggyDuration;
+        OnGroggyState?.Invoke();
+        Debug.Log($"<color=red><b>[{gameObject.name}] 그로기(Groggy) 상태 돌입!</b></color>");
+    }
+
+    private void TriggerHitVisualFeedback(CombatStats attacker, float dmg)
+    {
+        var rend = GetComponentInChildren<SpriteRenderer>();
+        if (rend != null)
+        {
+            FlashSpriteRedAsync(rend, this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        if (attacker != null && rb2d != null)
+        {
+            Vector2 pushDir = (transform.position - attacker.transform.position).normalized;
+            pushDir.y = Mathf.Max(pushDir.y, 0.2f);
+            float knockbackForce = Mathf.Clamp(dmg * 0.15f, 1.5f, 4.0f);
+            rb2d.AddForce(pushDir * knockbackForce, ForceMode2D.Impulse);
+        }
+    }
+
+    private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, CancellationToken cancellationToken)
+    {
+        if (rend == null) return;
+        Color original = rend.color;
+        rend.color = Color.red;
+        await UniTask.Delay(System.TimeSpan.FromSeconds(0.15f), cancellationToken: cancellationToken);
+        if (rend != null) rend.color = original;
+    }
+
     private void SpawnResponseEffect(uint effectIdx)
     {
-        var executor = GetComponent<SkillExecutor>();
-        if (executor != null)
+        if (SkillExecutor.Instance != null)
         {
-            Vector3 pos = transform.position + Vector3.up * 1.0f;
-            executor.SpawnEffectByEffectIdxAsync(effectIdx, pos).Forget();
+            SkillExecutor.Instance.SpawnEffectByEffectIdxAsync(effectIdx, transform.position).Forget();
         }
     }
 }
-

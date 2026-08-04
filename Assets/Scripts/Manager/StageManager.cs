@@ -140,7 +140,12 @@ public class StageManager : Singleton<StageManager>
             CurrentRoomInstance = null;
         }
 
-        // 잔여 이펙트 및 파티클 정리
+        // 잔여 이펙트 풀 및 파티클 전면 정리
+        if (EffectPoolManager.Instance != null)
+        {
+            EffectPoolManager.Instance.ClearAllActiveEffects();
+        }
+
         var particles = UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var ps in particles)
         {
