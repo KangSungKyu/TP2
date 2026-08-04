@@ -29,6 +29,7 @@
 | 날짜 | 작성자 | 변경 요약 | 관련 파일/위치 |
 |---:|---|---|---|
 | 2026-08-04 | 자동생성(스캔) | 전수 검사 및 마스터 명세서 생성 (32/32) | Assets/Docs/implementation_plan.md 및 SubPlans/폴더 생성 |
+| 2026-08-04 | PM (거버넌스) | 유닛 사망 처리 파이프라인 수립, 공격 이펙트 100% 풀링 전환 및 Unity Find* 탐색 함수 전면 철폐 지시 | Assets/Docs/SubPlans/plan_unit_combat.md, StageManager.cs, Monster.cs, EffectPoolManager.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -39,4 +40,14 @@
   - UI: Project에 PanelBase/PanelManager 파일 존재로 중앙화된 UI 생명주기/애니메이션 자동화 필요
   - Async: UniTask 사용이 광범위하나 CancellationToken 전파 규칙과 UniTaskVoid 사용에 대한 명확 가이드 부재
   - AI: MonsterPatternData/MonsterPatternDataTable가 존재하며 패턴 실행 제약·검증이 필수
+
+---
+
+### 🧠 [AGI 자율 회고록 - 2026-08-04 14:57]
+- **아키텍처 반성 점**: 
+  - 공격 시 발생하는 히트/슬래시 이펙트가 `EffectPoolManager`를 거치지 않고 직접 `Instantiate`되어 청크 이동 시 잔존했던 구조적 결함 적발. 또한 `FindObjectsByType`과 같은 O(N) 씬 탐색 연산이 `MonsterOverheadHUD` 및 `StageManager`에 잔존하여 성능 저하 및 메모리 회수 누수를 야기함.
+- **토큰/공정 회고**: 
+  - `plan_unit_combat.md` 및 `plan_enemy_behavior.md` 서브 명세서를 최우선 매핑한 후, 500줄 원본 코드 대신 정량적 제약 조건(사망 연출 시퀀스, `EffectPoolManager.SpawnEffect`, Registry 자가등록)만을 추출하여 최소 토큰으로 하위 에이전트에 발주함.
+- **차기 방어 지침**: 
+  - `[PM 거버넌스 수칙]` 씬 내 객체 탐색 시 `Find*` 계열 Unity API 호출을 코드 검출 시 무조건 에러로 차단하고, `OnEnable/OnDisable` 자가 등록 Registry 및 `EffectPoolManager` 관리를 강제 적용할 것.
 
