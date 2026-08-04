@@ -77,6 +77,381 @@ TextureImporter:
   - first:
       213: 3421391841123150883
     second: WaveHeavy_Death_24
+  - first:
+      213: -6181235150175148536
+    second: WaveHeavy_Death_25
+  - first:
+      213: 8646161822905932197
+    second: WaveHeavy_Death_26
+  - first:
+      213: -8365134616560031108
+    second: WaveHeavy_Death_27
+  - first:
+      213: 8411114739040242742
+    second: WaveHeavy_Death_28
+  - first:
+      213: -818240231185179277
+    second: WaveHeavy_Death_29
+  - first:
+      213: 201331350033079306
+    second: WaveHeavy_Death_30
+  - first:
+      213: 8081503586786509107
+    second: WaveHeavy_Death_31
+  - first:
+      213: -8402206489496622539
+    second: WaveHeavy_Death_32
+  - first:
+      213: 8670094412080846907
+    second: WaveHeavy_Death_33
+  - first:
+      213: 2915727656382314468
+    second: WaveHeavy_Death_34
+  - first:
+      213: -3305907596069587163
+    second: WaveHeavy_Death_35
+  - first:
+      213: -874879485007800478
+    second: WaveHeavy_Death_36
+  - first:
+      213: 1751264339011995004
+    second: WaveHeavy_Death_37
+  - first:
+      213: -1069427433834061038
+    second: WaveHeavy_Death_38
+  - first:
+      213: 4771890664677734487
+    second: WaveHeavy_Death_39
+  - first:
+      213: 4265993574155148318
+    second: WaveHeavy_Death_40
+  - first:
+      213: -497530901538175808
+    second: WaveHeavy_Death_41
+  - first:
+      213: -1848823531483631378
+    second: WaveHeavy_Death_42
+  - first:
+      213: 4932252637317459795
+    second: WaveHeavy_Death_43
+  - first:
+      213: 6951932542479141206
+    second: WaveHeavy_Death_44
+  - first:
+      213: 292450795239601460
+    second: WaveHeavy_Death_45
+  - first:
+      213: 9173238605845540655
+    second: WaveHeavy_Death_46
+  - first:
+      213: -8369178817593328104
+    second: WaveHeavy_Death_47
+  - first:
+      213: 8166639849417608947
+    second: WaveHeavy_Death_48
+  - first:
+      213: -5259700701454361372
+    second: WaveHeavy_Death_49
+  - first:
+      213: -7971189835984748593
+    second: WaveHeavy_Death_50
+  - first:
+      213: -437521198250075945
+    second: WaveHeavy_Death_51
+  - first:
+      213: 5504820717814908794
+    second: WaveHeavy_Death_52
+  - first:
+      213: 4031732645888087923
+    second: WaveHeavy_Death_53
+  - first:
+      213: 2769093162327749356
+    second: WaveHeavy_Death_54
+  - first:
+      213: -27146280869010307
+    second: WaveHeavy_Death_55
+  - first:
+      213: -3787929089679265581
+    second: WaveHeavy_Death_56
+  - first:
+      213: 7988628063290746982
+    second: WaveHeavy_Death_57
+  - first:
+      213: 1656291674685777777
+    second: WaveHeavy_Death_58
+  - first:
+      213: -6761749955053521584
+    second: WaveHeavy_Death_59
+  - first:
+      213: 3833659305917256507
+    second: WaveHeavy_Death_60
+  - first:
+      213: 5970510890358301909
+    second: WaveHeavy_Death_61
+  - first:
+      213: -8078382277497482406
+    second: WaveHeavy_Death_62
+  - first:
+      213: -1961062970713447233
+    second: WaveHeavy_Death_63
+  - first:
+      213: 4354305038875575766
+    second: WaveHeavy_Death_64
+  - first:
+      213: -5201052126671712392
+    second: WaveHeavy_Death_65
+  - first:
+      213: 7678490018382207719
+    second: WaveHeavy_Death_66
+  - first:
+      213: -5011354350310265648
+    second: WaveHeavy_Death_67
+  - first:
+      213: -3059319360325670627
+    second: WaveHeavy_Death_68
+  - first:
+      213: 4428980343789882894
+    second: WaveHeavy_Death_69
+  - first:
+      213: -5862766654676481417
+    second: WaveHeavy_Death_70
+  - first:
+      213: 8705185627035831561
+    second: WaveHeavy_Death_71
+  - first:
+      213: 9178485072007078607
+    second: WaveHeavy_Death_72
+  - first:
+      213: 2962338169510202757
+    second: WaveHeavy_Death_73
+  - first:
+      213: 3070343680816337146
+    second: WaveHeavy_Death_74
+  - first:
+      213: -5675964345509604718
+    second: WaveHeavy_Death_75
+  - first:
+      213: -8759874752397079432
+    second: WaveHeavy_Death_76
+  - first:
+      213: -5038876077604811748
+    second: WaveHeavy_Death_77
+  - first:
+      213: 5791539641816752330
+    second: WaveHeavy_Death_78
+  - first:
+      213: -1982732732832666147
+    second: WaveHeavy_Death_79
+  - first:
+      213: -6495690951243680264
+    second: WaveHeavy_Death_80
+  - first:
+      213: 2926310955828179474
+    second: WaveHeavy_Death_81
+  - first:
+      213: 8211134671800958014
+    second: WaveHeavy_Death_82
+  - first:
+      213: 1936726353595052610
+    second: WaveHeavy_Death_83
+  - first:
+      213: -8443354870279229904
+    second: WaveHeavy_Death_84
+  - first:
+      213: 7095733241460846129
+    second: WaveHeavy_Death_85
+  - first:
+      213: 1793998536923221362
+    second: WaveHeavy_Death_86
+  - first:
+      213: 7416822162301306804
+    second: WaveHeavy_Death_87
+  - first:
+      213: -6283655480380933821
+    second: WaveHeavy_Death_88
+  - first:
+      213: -5716503385803229139
+    second: WaveHeavy_Death_89
+  - first:
+      213: 3251497845427141990
+    second: WaveHeavy_Death_90
+  - first:
+      213: -4271594451176968921
+    second: WaveHeavy_Death_91
+  - first:
+      213: -166732043636879392
+    second: WaveHeavy_Death_92
+  - first:
+      213: -7332916076572645085
+    second: WaveHeavy_Death_93
+  - first:
+      213: -1242788543885233089
+    second: WaveHeavy_Death_94
+  - first:
+      213: -4303754854505181371
+    second: WaveHeavy_Death_95
+  - first:
+      213: 8424768576953897459
+    second: WaveHeavy_Death_96
+  - first:
+      213: 7077649861797058718
+    second: WaveHeavy_Death_97
+  - first:
+      213: -511489047503752041
+    second: WaveHeavy_Death_98
+  - first:
+      213: 1607321891770693208
+    second: WaveHeavy_Death_99
+  - first:
+      213: 7854362100437623828
+    second: WaveHeavy_Death_100
+  - first:
+      213: -2161654182818478948
+    second: WaveHeavy_Death_101
+  - first:
+      213: -18285624975715869
+    second: WaveHeavy_Death_102
+  - first:
+      213: -4142921086431330762
+    second: WaveHeavy_Death_103
+  - first:
+      213: 7968325572573294062
+    second: WaveHeavy_Death_104
+  - first:
+      213: 6729644767013132883
+    second: WaveHeavy_Death_105
+  - first:
+      213: -2862457379997432006
+    second: WaveHeavy_Death_106
+  - first:
+      213: -2164900023687547579
+    second: WaveHeavy_Death_107
+  - first:
+      213: 3355012226798946944
+    second: WaveHeavy_Death_108
+  - first:
+      213: 1314426803070858216
+    second: WaveHeavy_Death_109
+  - first:
+      213: 2157429567166011885
+    second: WaveHeavy_Death_110
+  - first:
+      213: -7826933802630282762
+    second: WaveHeavy_Death_111
+  - first:
+      213: 1289417834978993038
+    second: WaveHeavy_Death_112
+  - first:
+      213: -9171630705228707795
+    second: WaveHeavy_Death_113
+  - first:
+      213: 2467215725246817405
+    second: WaveHeavy_Death_114
+  - first:
+      213: -8244739655654911422
+    second: WaveHeavy_Death_115
+  - first:
+      213: 3988563540942680622
+    second: WaveHeavy_Death_116
+  - first:
+      213: -2155225949147481153
+    second: WaveHeavy_Death_117
+  - first:
+      213: 885339027733343667
+    second: WaveHeavy_Death_118
+  - first:
+      213: 3163553170266745430
+    second: WaveHeavy_Death_119
+  - first:
+      213: -6582603108110117327
+    second: WaveHeavy_Death_120
+  - first:
+      213: 6865394057010670802
+    second: WaveHeavy_Death_121
+  - first:
+      213: -16655414992731544
+    second: WaveHeavy_Death_122
+  - first:
+      213: 8790511519313110213
+    second: WaveHeavy_Death_123
+  - first:
+      213: -8765922469195795354
+    second: WaveHeavy_Death_124
+  - first:
+      213: -8467251544783773949
+    second: WaveHeavy_Death_125
+  - first:
+      213: -4909917556945740206
+    second: WaveHeavy_Death_126
+  - first:
+      213: 6756743622301602736
+    second: WaveHeavy_Death_127
+  - first:
+      213: -7553233327688539059
+    second: WaveHeavy_Death_128
+  - first:
+      213: -3292650282385889276
+    second: WaveHeavy_Death_129
+  - first:
+      213: -8016336835581399505
+    second: WaveHeavy_Death_130
+  - first:
+      213: 785795094384988785
+    second: WaveHeavy_Death_131
+  - first:
+      213: 6891962761677834263
+    second: WaveHeavy_Death_132
+  - first:
+      213: 2972508081679463988
+    second: WaveHeavy_Death_133
+  - first:
+      213: 6411380381431767842
+    second: WaveHeavy_Death_134
+  - first:
+      213: 679087994780486058
+    second: WaveHeavy_Death_135
+  - first:
+      213: -3941685275833619595
+    second: WaveHeavy_Death_136
+  - first:
+      213: 1893232321148264667
+    second: WaveHeavy_Death_137
+  - first:
+      213: 7176939897101085821
+    second: WaveHeavy_Death_138
+  - first:
+      213: -1633358004257677129
+    second: WaveHeavy_Death_139
+  - first:
+      213: 9094149635885670029
+    second: WaveHeavy_Death_140
+  - first:
+      213: -1301912321248120740
+    second: WaveHeavy_Death_141
+  - first:
+      213: 1291446706741618375
+    second: WaveHeavy_Death_142
+  - first:
+      213: 1562940160807641402
+    second: WaveHeavy_Death_143
+  - first:
+      213: 632662441134994169
+    second: WaveHeavy_Death_144
+  - first:
+      213: -2701353745118301778
+    second: WaveHeavy_Death_145
+  - first:
+      213: -3337868651014910054
+    second: WaveHeavy_Death_146
+  - first:
+      213: 2755592115817743651
+    second: WaveHeavy_Death_147
+  - first:
+      213: 3473168016297607472
+    second: WaveHeavy_Death_148
+  - first:
+      213: -6598660631356280419
+    second: WaveHeavy_Death_149
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -123,7 +498,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -189,7 +564,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -211,7 +586,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -233,7 +608,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -255,7 +630,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -277,7 +652,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -299,7 +674,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 320
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -321,7 +696,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -343,7 +718,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 448
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -365,7 +740,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -387,7 +762,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 576
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -409,7 +784,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 640
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -431,7 +806,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 704
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -453,7 +828,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -475,7 +850,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 832
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -497,7 +872,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 896
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -519,7 +894,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 960
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -541,7 +916,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -563,7 +938,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1088
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -585,7 +960,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1152
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -607,7 +982,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1216
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -629,7 +1004,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -651,7 +1026,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1344
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -673,7 +1048,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1408
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -695,7 +1070,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1472
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -717,7 +1092,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -730,6 +1105,2756 @@ TextureImporter:
       bones: []
       spriteID: 32ca09f80c93b7f20800000000000000
       internalID: 3421391841123150883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 806e6a86167d73aa0800000000000000
+      internalID: -6181235150175148536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_26
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a91adc5e565df770800000000000000
+      internalID: 8646161822905932197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_27
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7aad99f26219eb80800000000000000
+      internalID: -8365134616560031108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_28
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63ccb898a484ab470800000000000000
+      internalID: 8411114739040242742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_29
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d164f48d605a4f0800000000000000
+      internalID: -818240231185179277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_30
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0c1fd0dbc54bc200800000000000000
+      internalID: 201331350033079306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_31
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 331847dc1b4472070800000000000000
+      internalID: 8081503586786509107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_32
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53a6210f6bd556b80800000000000000
+      internalID: -8402206489496622539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_33
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b389d218eec525870800000000000000
+      internalID: 8670094412080846907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_34
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e73374fadeb67820800000000000000
+      internalID: 2915727656382314468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_35
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 527b10c8e8e0f12d0800000000000000
+      internalID: -3305907596069587163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_36
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26755d26ebdcbd3f0800000000000000
+      internalID: -874879485007800478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_37
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c758e9243adbd4810800000000000000
+      internalID: 1751264339011995004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_38
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 213634d3a61a821f0800000000000000
+      internalID: -1069427433834061038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_39
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7587e17e649293240800000000000000
+      internalID: 4771890664677734487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_40
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1cdd91bd8ad33b30800000000000000
+      internalID: 4265993574155148318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_41
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c48905f74a6819f0800000000000000
+      internalID: -497530901538175808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_42
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee0f8892bc8a756e0800000000000000
+      internalID: -1848823531483631378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_43
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35f6ac534a1e27440800000000000000
+      internalID: 4932252637317459795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_44
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65982f080d93a7060800000000000000
+      internalID: 6951932542479141206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_45
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4357984e27efe0400800000000000000
+      internalID: 292450795239601460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_46
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2fa25df8e3ed4f70800000000000000
+      internalID: 9173238605845540655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_47
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81e30ab0534badb80800000000000000
+      internalID: -8369178817593328104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_48
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe0611acabb55170800000000000000
+      internalID: 8166639849417608947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_49
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ec90f0441ac107b0800000000000000
+      internalID: -5259700701454361372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcfbcecc315a06190800000000000000
+      internalID: -7971189835984748593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_51
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d8d99cc9cc9de9f0800000000000000
+      internalID: -437521198250075945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_52
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a77819de64d056c40800000000000000
+      internalID: 5504820717814908794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_53
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 377518bfa7793f730800000000000000
+      internalID: 4031732645888087923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_54
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce232825f8bcd6620800000000000000
+      internalID: 2769093162327749356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_55
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7464d3f99e8f9ff0800000000000000
+      internalID: -27146280869010307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_56
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d07c4fef829e6bc0800000000000000
+      internalID: -3787929089679265581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_57
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6686923e5ee4dde60800000000000000
+      internalID: 7988628063290746982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_58
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1772512b0845cf610800000000000000
+      internalID: 1656291674685777777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_59
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 055750dbd307922a0800000000000000
+      internalID: -6761749955053521584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_60
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b33911fb3d4e33530800000000000000
+      internalID: 3833659305917256507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_61
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d4686b85048bd250800000000000000
+      internalID: 5970510890358301909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_62
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5393f5ae12d3ef80800000000000000
+      internalID: -8078382277497482406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_63
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb4e3784e97e8c4e0800000000000000
+      internalID: -1961062970713447233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_64
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d54fdddc599d6c30800000000000000
+      internalID: 4354305038875575766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_65
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87f417ba5a622d7b0800000000000000
+      internalID: -5201052126671712392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_66
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eadd054df97f8a60800000000000000
+      internalID: 7678490018382207719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_67
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dce52a05c7147ab0800000000000000
+      internalID: -5011354350310265648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_68
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d192051304d1b85d0800000000000000
+      internalID: -3059319360325670627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_69
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0e88cc2826e67d30800000000000000
+      internalID: 4428980343789882894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_70
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77ac0033ac443aea0800000000000000
+      internalID: -5862766654676481417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_71
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d8e4ba4380fc870800000000000000
+      internalID: 8705185627035831561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_72
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc225351b87806f70800000000000000
+      internalID: 9178485072007078607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_73
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58d8c3abed65c1920800000000000000
+      internalID: 2962338169510202757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_74
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af05c617f4d0c9a20800000000000000
+      internalID: 3070343680816337146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_75
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2921e14108cea31b0800000000000000
+      internalID: -5675964345509604718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_76
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87c8572135cae6680800000000000000
+      internalID: -8759874752397079432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_77
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1cc62f87e0521ab0800000000000000
+      internalID: -5038876077604811748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_78
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac0a41d8e9eaf5050800000000000000
+      internalID: 5791539641816752330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_79
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddd28fe951beb74e0800000000000000
+      internalID: -1982732732832666147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_80
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f5b668de7baad5a0800000000000000
+      internalID: -6495690951243680264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_81
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 212f8706f485c9820800000000000000
+      internalID: 2926310955828179474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_82
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3cf693ca7fc3f170800000000000000
+      internalID: 8211134671800958014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_83
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 242bb2d7b52a0ea10800000000000000
+      internalID: 1936726353595052610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_84
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03e2174fa7d23da80800000000000000
+      internalID: -8443354870279229904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_85
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13e643ec9cb197260800000000000000
+      internalID: 7095733241460846129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_86
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27d01e01a2095e810800000000000000
+      internalID: 1793998536923221362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_87
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b7c63ae578dde660800000000000000
+      internalID: 7416822162301306804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_88
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34935f002a8fbc8a0800000000000000
+      internalID: -6283655480380933821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_89
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2871eb3576eaa0b0800000000000000
+      internalID: -5716503385803229139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_90
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66df1a03014af1d20800000000000000
+      internalID: 3251497845427141990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_91
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72d21118a7f38b4c0800000000000000
+      internalID: -4271594451176968921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_92
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ef4956f616afadf0800000000000000
+      internalID: -166732043636879392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_93
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 329e2280eaf3c3a90800000000000000
+      internalID: -7332916076572645085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_94
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f34bbc6676ab0cee0800000000000000
+      internalID: -1242788543885233089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_95
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54f0bd813cdf544c0800000000000000
+      internalID: -4303754854505181371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_96
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f1d538626acae470800000000000000
+      internalID: 8424768576953897459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_97
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e989101ec0dd83260800000000000000
+      internalID: 7077649861797058718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_98
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7943909db63d6e8f0800000000000000
+      internalID: -511489047503752041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_99
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85673be9eba5e4610800000000000000
+      internalID: 1607321891770693208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_100
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41420e557bc400d60800000000000000
+      internalID: 7854362100437623828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_101
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c940ed149f24002e0800000000000000
+      internalID: -2161654182818478948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_102
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e193da22590fbff0800000000000000
+      internalID: -18285624975715869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_103
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63ef8c6d8336186c0800000000000000
+      internalID: -4142921086431330762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_104
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eed64e7e3ed259e60800000000000000
+      internalID: 7968325572573294062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_105
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35a526aa240846d50800000000000000
+      internalID: 6729644767013132883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_106
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a37ce88cd228648d0800000000000000
+      internalID: -2862457379997432006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_107
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5457ed906eab4f1e0800000000000000
+      internalID: -2164900023687547579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_108
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08a817b38d56f8e20800000000000000
+      internalID: 3355012226798946944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_109
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e37a489638cd3210800000000000000
+      internalID: 1314426803070858216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_110
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de9dad2c2cab0fd10800000000000000
+      internalID: 2157429567166011885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_111
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f189b5ec25216390800000000000000
+      internalID: -7826933802630282762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_112
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e83e9f470bee4e110800000000000000
+      internalID: 1289417834978993038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_113
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2807cb8772d7b080800000000000000
+      internalID: -9171630705228707795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_114
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d74289751af4d3220800000000000000
+      internalID: 2467215725246817405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_115
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 242dc1737fcc49d80800000000000000
+      internalID: -8244739655654911422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_116
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2276fd78693a5730800000000000000
+      internalID: 3988563540942680622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_117
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb3c5a0b691712e0800000000000000
+      internalID: -2155225949147481153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_118
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bde5dda72b594c00800000000000000
+      internalID: 885339027733343667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_119
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65a6fcdd8d237eb20800000000000000
+      internalID: 3163553170266745430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_120
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 136d6bb6955e5a4a0800000000000000
+      internalID: -6582603108110117327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_121
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dce23b3587c64f50800000000000000
+      internalID: 6865394057010670802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_122
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86285c10df3d4cff0800000000000000
+      internalID: -16655414992731544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_123
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c423a617ab2ef970800000000000000
+      internalID: 8790511519313110213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_124
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66438f645ff295680800000000000000
+      internalID: -8765922469195795354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_125
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30f1949d4974e7a80800000000000000
+      internalID: -8467251544783773949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_126
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25e9bcdeef77cdbb0800000000000000
+      internalID: -4909917556945740206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_127
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b35ca59686c4cd50800000000000000
+      internalID: 6756743622301602736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_128
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d44ab75ae468d2790800000000000000
+      internalID: -7553233327688539059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_129
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 408accc63082e42d0800000000000000
+      internalID: -3292650282385889276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_130
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2eaa43de1040c090800000000000000
+      internalID: -8016336835581399505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_131
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 172df0b9974b7ea00800000000000000
+      internalID: 785795094384988785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_132
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7180707dd9b25af50800000000000000
+      internalID: 6891962761677834263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_133
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4367b7ce958704920800000000000000
+      internalID: 2972508081679463988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_134
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 223262bec7cc9f850800000000000000
+      internalID: 6411380381431767842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_135
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa98f1ceeea9c6900800000000000000
+      internalID: 679087994780486058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_136
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57bac8520225c49c0800000000000000
+      internalID: -3941685275833619595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_137
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd0a45be3cc164a10800000000000000
+      internalID: 1893232321148264667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_138
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7ce905bfcc999360800000000000000
+      internalID: 7176939897101085821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_139
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b02e2d8c852559e0800000000000000
+      internalID: -1633358004257677129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_140
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8e963539e8e43e70800000000000000
+      internalID: 9094149635885670029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_141
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c503d4344adaeede0800000000000000
+      internalID: -1301912321248120740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_142
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c6aea9ffe32ce110800000000000000
+      internalID: 1291446706741618375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_143
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a31a122abcda0b510800000000000000
+      internalID: 1562940160807641402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_144
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f23592632ba7c800800000000000000
+      internalID: 632662441134994169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_145
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea17d89c41dd28ad0800000000000000
+      internalID: -2701353745118301778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_146
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9f085d85228da1d0800000000000000
+      internalID: -3337868651014910054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_147
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3250f29fd64dd3620800000000000000
+      internalID: 2755592115817743651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_148
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 031caa0c8eb233030800000000000000
+      internalID: 3473168016297607472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Death_149
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9177a2fd19dc64a0800000000000000
+      internalID: -6598660631356280419
       vertices: []
       indices: 
       edges: []
@@ -751,10 +3876,60 @@ TextureImporter:
       WaveHeavy_Death_0: 7370276872803174679
       WaveHeavy_Death_1: 6842941275106414104
       WaveHeavy_Death_10: -4661897363130901053
+      WaveHeavy_Death_100: 7854362100437623828
+      WaveHeavy_Death_101: -2161654182818478948
+      WaveHeavy_Death_102: -18285624975715869
+      WaveHeavy_Death_103: -4142921086431330762
+      WaveHeavy_Death_104: 7968325572573294062
+      WaveHeavy_Death_105: 6729644767013132883
+      WaveHeavy_Death_106: -2862457379997432006
+      WaveHeavy_Death_107: -2164900023687547579
+      WaveHeavy_Death_108: 3355012226798946944
+      WaveHeavy_Death_109: 1314426803070858216
       WaveHeavy_Death_11: 9161820300322548255
+      WaveHeavy_Death_110: 2157429567166011885
+      WaveHeavy_Death_111: -7826933802630282762
+      WaveHeavy_Death_112: 1289417834978993038
+      WaveHeavy_Death_113: -9171630705228707795
+      WaveHeavy_Death_114: 2467215725246817405
+      WaveHeavy_Death_115: -8244739655654911422
+      WaveHeavy_Death_116: 3988563540942680622
+      WaveHeavy_Death_117: -2155225949147481153
+      WaveHeavy_Death_118: 885339027733343667
+      WaveHeavy_Death_119: 3163553170266745430
       WaveHeavy_Death_12: -1277800818145955435
+      WaveHeavy_Death_120: -6582603108110117327
+      WaveHeavy_Death_121: 6865394057010670802
+      WaveHeavy_Death_122: -16655414992731544
+      WaveHeavy_Death_123: 8790511519313110213
+      WaveHeavy_Death_124: -8765922469195795354
+      WaveHeavy_Death_125: -8467251544783773949
+      WaveHeavy_Death_126: -4909917556945740206
+      WaveHeavy_Death_127: 6756743622301602736
+      WaveHeavy_Death_128: -7553233327688539059
+      WaveHeavy_Death_129: -3292650282385889276
       WaveHeavy_Death_13: 2134249677080051402
+      WaveHeavy_Death_130: -8016336835581399505
+      WaveHeavy_Death_131: 785795094384988785
+      WaveHeavy_Death_132: 6891962761677834263
+      WaveHeavy_Death_133: 2972508081679463988
+      WaveHeavy_Death_134: 6411380381431767842
+      WaveHeavy_Death_135: 679087994780486058
+      WaveHeavy_Death_136: -3941685275833619595
+      WaveHeavy_Death_137: 1893232321148264667
+      WaveHeavy_Death_138: 7176939897101085821
+      WaveHeavy_Death_139: -1633358004257677129
       WaveHeavy_Death_14: 5404317671612965376
+      WaveHeavy_Death_140: 9094149635885670029
+      WaveHeavy_Death_141: -1301912321248120740
+      WaveHeavy_Death_142: 1291446706741618375
+      WaveHeavy_Death_143: 1562940160807641402
+      WaveHeavy_Death_144: 632662441134994169
+      WaveHeavy_Death_145: -2701353745118301778
+      WaveHeavy_Death_146: -3337868651014910054
+      WaveHeavy_Death_147: 2755592115817743651
+      WaveHeavy_Death_148: 3473168016297607472
+      WaveHeavy_Death_149: -6598660631356280419
       WaveHeavy_Death_15: -5247889952594769874
       WaveHeavy_Death_16: -4211789022866675917
       WaveHeavy_Death_17: -2970907005470528228
@@ -766,13 +3941,88 @@ TextureImporter:
       WaveHeavy_Death_22: -449191969110244784
       WaveHeavy_Death_23: -8768400366266419370
       WaveHeavy_Death_24: 3421391841123150883
+      WaveHeavy_Death_25: -6181235150175148536
+      WaveHeavy_Death_26: 8646161822905932197
+      WaveHeavy_Death_27: -8365134616560031108
+      WaveHeavy_Death_28: 8411114739040242742
+      WaveHeavy_Death_29: -818240231185179277
       WaveHeavy_Death_3: -8266056853841021912
+      WaveHeavy_Death_30: 201331350033079306
+      WaveHeavy_Death_31: 8081503586786509107
+      WaveHeavy_Death_32: -8402206489496622539
+      WaveHeavy_Death_33: 8670094412080846907
+      WaveHeavy_Death_34: 2915727656382314468
+      WaveHeavy_Death_35: -3305907596069587163
+      WaveHeavy_Death_36: -874879485007800478
+      WaveHeavy_Death_37: 1751264339011995004
+      WaveHeavy_Death_38: -1069427433834061038
+      WaveHeavy_Death_39: 4771890664677734487
       WaveHeavy_Death_4: 2654369953960255473
+      WaveHeavy_Death_40: 4265993574155148318
+      WaveHeavy_Death_41: -497530901538175808
+      WaveHeavy_Death_42: -1848823531483631378
+      WaveHeavy_Death_43: 4932252637317459795
+      WaveHeavy_Death_44: 6951932542479141206
+      WaveHeavy_Death_45: 292450795239601460
+      WaveHeavy_Death_46: 9173238605845540655
+      WaveHeavy_Death_47: -8369178817593328104
+      WaveHeavy_Death_48: 8166639849417608947
+      WaveHeavy_Death_49: -5259700701454361372
       WaveHeavy_Death_5: -4777223511648156502
+      WaveHeavy_Death_50: -7971189835984748593
+      WaveHeavy_Death_51: -437521198250075945
+      WaveHeavy_Death_52: 5504820717814908794
+      WaveHeavy_Death_53: 4031732645888087923
+      WaveHeavy_Death_54: 2769093162327749356
+      WaveHeavy_Death_55: -27146280869010307
+      WaveHeavy_Death_56: -3787929089679265581
+      WaveHeavy_Death_57: 7988628063290746982
+      WaveHeavy_Death_58: 1656291674685777777
+      WaveHeavy_Death_59: -6761749955053521584
       WaveHeavy_Death_6: -5739410848361025635
+      WaveHeavy_Death_60: 3833659305917256507
+      WaveHeavy_Death_61: 5970510890358301909
+      WaveHeavy_Death_62: -8078382277497482406
+      WaveHeavy_Death_63: -1961062970713447233
+      WaveHeavy_Death_64: 4354305038875575766
+      WaveHeavy_Death_65: -5201052126671712392
+      WaveHeavy_Death_66: 7678490018382207719
+      WaveHeavy_Death_67: -5011354350310265648
+      WaveHeavy_Death_68: -3059319360325670627
+      WaveHeavy_Death_69: 4428980343789882894
       WaveHeavy_Death_7: -4799884014790153970
+      WaveHeavy_Death_70: -5862766654676481417
+      WaveHeavy_Death_71: 8705185627035831561
+      WaveHeavy_Death_72: 9178485072007078607
+      WaveHeavy_Death_73: 2962338169510202757
+      WaveHeavy_Death_74: 3070343680816337146
+      WaveHeavy_Death_75: -5675964345509604718
+      WaveHeavy_Death_76: -8759874752397079432
+      WaveHeavy_Death_77: -5038876077604811748
+      WaveHeavy_Death_78: 5791539641816752330
+      WaveHeavy_Death_79: -1982732732832666147
       WaveHeavy_Death_8: 5450692826415471006
+      WaveHeavy_Death_80: -6495690951243680264
+      WaveHeavy_Death_81: 2926310955828179474
+      WaveHeavy_Death_82: 8211134671800958014
+      WaveHeavy_Death_83: 1936726353595052610
+      WaveHeavy_Death_84: -8443354870279229904
+      WaveHeavy_Death_85: 7095733241460846129
+      WaveHeavy_Death_86: 1793998536923221362
+      WaveHeavy_Death_87: 7416822162301306804
+      WaveHeavy_Death_88: -6283655480380933821
+      WaveHeavy_Death_89: -5716503385803229139
       WaveHeavy_Death_9: -1525926092616223487
+      WaveHeavy_Death_90: 3251497845427141990
+      WaveHeavy_Death_91: -4271594451176968921
+      WaveHeavy_Death_92: -166732043636879392
+      WaveHeavy_Death_93: -7332916076572645085
+      WaveHeavy_Death_94: -1242788543885233089
+      WaveHeavy_Death_95: -4303754854505181371
+      WaveHeavy_Death_96: 8424768576953897459
+      WaveHeavy_Death_97: 7077649861797058718
+      WaveHeavy_Death_98: -511489047503752041
+      WaveHeavy_Death_99: 1607321891770693208
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

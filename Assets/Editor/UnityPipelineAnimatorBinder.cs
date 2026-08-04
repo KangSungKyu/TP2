@@ -188,7 +188,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, 32, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -256,24 +256,27 @@ public static class UnityPipelineAnimatorBinder
             Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
             if (tex != null)
             {
-                int cols = tex.width / frameWidth;
-                if (cols > 0)
+                int cols = Mathf.Max(1, tex.width / frameWidth);
+                int rows = Mathf.Max(1, tex.height / frameHeight);
+
+                List<SpriteMetaData> metaList = new List<SpriteMetaData>();
+                for (int r = rows - 1; r >= 0; r--)
                 {
-                    List<SpriteMetaData> metaList = new List<SpriteMetaData>();
-                    for (int i = 0; i < cols; i++)
+                    for (int c = 0; c < cols; c++)
                     {
                         SpriteMetaData meta = new SpriteMetaData();
-                        meta.name = $"{clipName}_{i}";
-                        meta.rect = new Rect(i * frameWidth, 0, frameWidth, frameHeight);
+                        meta.name = $"{clipName}_{metaList.Count}";
+                        meta.rect = new Rect(c * frameWidth, r * frameHeight, frameWidth, frameHeight);
                         meta.alignment = (int)alignment;
                         meta.pivot = pivot;
                         metaList.Add(meta);
                     }
-                    importer.spritesheet = metaList.ToArray();
                 }
+                importer.spritesheet = metaList.ToArray();
             }
 
             importer.SaveAndReimport();
+            AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
 
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath(texturePath);

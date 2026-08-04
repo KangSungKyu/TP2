@@ -77,6 +77,381 @@ TextureImporter:
   - first:
       213: -7563284323887225134
     second: WaveHeavy_Attack_24
+  - first:
+      213: 5897350790153362623
+    second: WaveHeavy_Attack_25
+  - first:
+      213: -8346821914036904502
+    second: WaveHeavy_Attack_26
+  - first:
+      213: 7833183702247649187
+    second: WaveHeavy_Attack_27
+  - first:
+      213: 6966224958906268806
+    second: WaveHeavy_Attack_28
+  - first:
+      213: 7057975982279618075
+    second: WaveHeavy_Attack_29
+  - first:
+      213: -9094150173759299352
+    second: WaveHeavy_Attack_30
+  - first:
+      213: -1142225051212773632
+    second: WaveHeavy_Attack_31
+  - first:
+      213: 1162594184810521941
+    second: WaveHeavy_Attack_32
+  - first:
+      213: 7221079360773942412
+    second: WaveHeavy_Attack_33
+  - first:
+      213: 2220338226336788140
+    second: WaveHeavy_Attack_34
+  - first:
+      213: -4555592218879234948
+    second: WaveHeavy_Attack_35
+  - first:
+      213: -3717961708062867426
+    second: WaveHeavy_Attack_36
+  - first:
+      213: 6062173099053013168
+    second: WaveHeavy_Attack_37
+  - first:
+      213: -7956372291951452742
+    second: WaveHeavy_Attack_38
+  - first:
+      213: 112660380326019204
+    second: WaveHeavy_Attack_39
+  - first:
+      213: 1777968113314757076
+    second: WaveHeavy_Attack_40
+  - first:
+      213: 4825819886515136535
+    second: WaveHeavy_Attack_41
+  - first:
+      213: 7549003012183561120
+    second: WaveHeavy_Attack_42
+  - first:
+      213: -5904256211252376596
+    second: WaveHeavy_Attack_43
+  - first:
+      213: 6413134867130572060
+    second: WaveHeavy_Attack_44
+  - first:
+      213: 183969421000058896
+    second: WaveHeavy_Attack_45
+  - first:
+      213: 7265257310701217020
+    second: WaveHeavy_Attack_46
+  - first:
+      213: 1117727895850285847
+    second: WaveHeavy_Attack_47
+  - first:
+      213: -6597771929774467589
+    second: WaveHeavy_Attack_48
+  - first:
+      213: -7129348578252790458
+    second: WaveHeavy_Attack_49
+  - first:
+      213: -1344279588808327168
+    second: WaveHeavy_Attack_50
+  - first:
+      213: 5780717506947396922
+    second: WaveHeavy_Attack_51
+  - first:
+      213: -1960515875628473584
+    second: WaveHeavy_Attack_52
+  - first:
+      213: -1943907186604557050
+    second: WaveHeavy_Attack_53
+  - first:
+      213: 8554656187138837789
+    second: WaveHeavy_Attack_54
+  - first:
+      213: -3507782069241083537
+    second: WaveHeavy_Attack_55
+  - first:
+      213: 9186821623033475516
+    second: WaveHeavy_Attack_56
+  - first:
+      213: -1869864850313905554
+    second: WaveHeavy_Attack_57
+  - first:
+      213: -3415670623520182941
+    second: WaveHeavy_Attack_58
+  - first:
+      213: -5408992910102324679
+    second: WaveHeavy_Attack_59
+  - first:
+      213: -58130277870568069
+    second: WaveHeavy_Attack_60
+  - first:
+      213: -2940533692667543051
+    second: WaveHeavy_Attack_61
+  - first:
+      213: 8452625834768383170
+    second: WaveHeavy_Attack_62
+  - first:
+      213: -8858140727239501687
+    second: WaveHeavy_Attack_63
+  - first:
+      213: 702771074494229629
+    second: WaveHeavy_Attack_64
+  - first:
+      213: 7767319193477175353
+    second: WaveHeavy_Attack_65
+  - first:
+      213: -6177600848109450870
+    second: WaveHeavy_Attack_66
+  - first:
+      213: 6693543868936573233
+    second: WaveHeavy_Attack_67
+  - first:
+      213: 8585001882057624327
+    second: WaveHeavy_Attack_68
+  - first:
+      213: 1011619723460170491
+    second: WaveHeavy_Attack_69
+  - first:
+      213: -107969116934748874
+    second: WaveHeavy_Attack_70
+  - first:
+      213: -4755284001036191267
+    second: WaveHeavy_Attack_71
+  - first:
+      213: -4670784793275960043
+    second: WaveHeavy_Attack_72
+  - first:
+      213: -5266727185753626464
+    second: WaveHeavy_Attack_73
+  - first:
+      213: 8562805557917455675
+    second: WaveHeavy_Attack_74
+  - first:
+      213: -3121378178845934245
+    second: WaveHeavy_Attack_75
+  - first:
+      213: 4135306152493096436
+    second: WaveHeavy_Attack_76
+  - first:
+      213: 5739062315150745060
+    second: WaveHeavy_Attack_77
+  - first:
+      213: -7476339114793848855
+    second: WaveHeavy_Attack_78
+  - first:
+      213: -7396096676110157174
+    second: WaveHeavy_Attack_79
+  - first:
+      213: -5764973118706030356
+    second: WaveHeavy_Attack_80
+  - first:
+      213: -174482098569716422
+    second: WaveHeavy_Attack_81
+  - first:
+      213: 8800024042816786189
+    second: WaveHeavy_Attack_82
+  - first:
+      213: 3991349854075040393
+    second: WaveHeavy_Attack_83
+  - first:
+      213: 8124364783755320143
+    second: WaveHeavy_Attack_84
+  - first:
+      213: 8564030170621617221
+    second: WaveHeavy_Attack_85
+  - first:
+      213: -4667898741638174699
+    second: WaveHeavy_Attack_86
+  - first:
+      213: 7878531545414039054
+    second: WaveHeavy_Attack_87
+  - first:
+      213: 425290580826756443
+    second: WaveHeavy_Attack_88
+  - first:
+      213: -4902468795013586311
+    second: WaveHeavy_Attack_89
+  - first:
+      213: -8677820801794930800
+    second: WaveHeavy_Attack_90
+  - first:
+      213: -7464395401068945937
+    second: WaveHeavy_Attack_91
+  - first:
+      213: 6974184000559615925
+    second: WaveHeavy_Attack_92
+  - first:
+      213: 485941742446936422
+    second: WaveHeavy_Attack_93
+  - first:
+      213: 6108904682750392750
+    second: WaveHeavy_Attack_94
+  - first:
+      213: -2076886528651645877
+    second: WaveHeavy_Attack_95
+  - first:
+      213: -4187502627386983738
+    second: WaveHeavy_Attack_96
+  - first:
+      213: 1994052670763046131
+    second: WaveHeavy_Attack_97
+  - first:
+      213: -7700062060315535274
+    second: WaveHeavy_Attack_98
+  - first:
+      213: -6812169608262154961
+    second: WaveHeavy_Attack_99
+  - first:
+      213: -7168362241802234433
+    second: WaveHeavy_Attack_100
+  - first:
+      213: -4099481825157616980
+    second: WaveHeavy_Attack_101
+  - first:
+      213: -8351374054828077791
+    second: WaveHeavy_Attack_102
+  - first:
+      213: -2565543754541573106
+    second: WaveHeavy_Attack_103
+  - first:
+      213: 2594983611876629670
+    second: WaveHeavy_Attack_104
+  - first:
+      213: -6405097757054398757
+    second: WaveHeavy_Attack_105
+  - first:
+      213: -8459367379635548461
+    second: WaveHeavy_Attack_106
+  - first:
+      213: -7889389544207206868
+    second: WaveHeavy_Attack_107
+  - first:
+      213: -7084348526746524906
+    second: WaveHeavy_Attack_108
+  - first:
+      213: -7857696491260565228
+    second: WaveHeavy_Attack_109
+  - first:
+      213: 4681187212189428348
+    second: WaveHeavy_Attack_110
+  - first:
+      213: -3594196881873649967
+    second: WaveHeavy_Attack_111
+  - first:
+      213: -3233119320123518885
+    second: WaveHeavy_Attack_112
+  - first:
+      213: -1377094311091968715
+    second: WaveHeavy_Attack_113
+  - first:
+      213: -6775595821505104276
+    second: WaveHeavy_Attack_114
+  - first:
+      213: -2966088963749324725
+    second: WaveHeavy_Attack_115
+  - first:
+      213: 4773493760566567701
+    second: WaveHeavy_Attack_116
+  - first:
+      213: -7444510696081474664
+    second: WaveHeavy_Attack_117
+  - first:
+      213: 1698355782637699536
+    second: WaveHeavy_Attack_118
+  - first:
+      213: -3270768226148718955
+    second: WaveHeavy_Attack_119
+  - first:
+      213: 6320578773522744815
+    second: WaveHeavy_Attack_120
+  - first:
+      213: -1538745762342706064
+    second: WaveHeavy_Attack_121
+  - first:
+      213: 1927672647825619744
+    second: WaveHeavy_Attack_122
+  - first:
+      213: -2424297591845114673
+    second: WaveHeavy_Attack_123
+  - first:
+      213: -4869767026727929376
+    second: WaveHeavy_Attack_124
+  - first:
+      213: 3615579695843571053
+    second: WaveHeavy_Attack_125
+  - first:
+      213: -4700051969512848434
+    second: WaveHeavy_Attack_126
+  - first:
+      213: -3954154353663832628
+    second: WaveHeavy_Attack_127
+  - first:
+      213: 5422878692947154888
+    second: WaveHeavy_Attack_128
+  - first:
+      213: -6140743430237287069
+    second: WaveHeavy_Attack_129
+  - first:
+      213: -8964497350539897919
+    second: WaveHeavy_Attack_130
+  - first:
+      213: 4483663499013606500
+    second: WaveHeavy_Attack_131
+  - first:
+      213: 7094630566819729599
+    second: WaveHeavy_Attack_132
+  - first:
+      213: -3618391276517905435
+    second: WaveHeavy_Attack_133
+  - first:
+      213: 7089675007965559874
+    second: WaveHeavy_Attack_134
+  - first:
+      213: 5462510650907435656
+    second: WaveHeavy_Attack_135
+  - first:
+      213: -2531032803266330568
+    second: WaveHeavy_Attack_136
+  - first:
+      213: -7731608357961115670
+    second: WaveHeavy_Attack_137
+  - first:
+      213: -3106344890271917501
+    second: WaveHeavy_Attack_138
+  - first:
+      213: 8198002959057069545
+    second: WaveHeavy_Attack_139
+  - first:
+      213: 7252058773223364963
+    second: WaveHeavy_Attack_140
+  - first:
+      213: -3847525101711068828
+    second: WaveHeavy_Attack_141
+  - first:
+      213: -3396481964418171802
+    second: WaveHeavy_Attack_142
+  - first:
+      213: -9057215815428262068
+    second: WaveHeavy_Attack_143
+  - first:
+      213: -8137298818348773072
+    second: WaveHeavy_Attack_144
+  - first:
+      213: 736864995524380051
+    second: WaveHeavy_Attack_145
+  - first:
+      213: 3113062210285802016
+    second: WaveHeavy_Attack_146
+  - first:
+      213: 4298138377324816617
+    second: WaveHeavy_Attack_147
+  - first:
+      213: -4112044096748158581
+    second: WaveHeavy_Attack_148
+  - first:
+      213: 6648333398354458945
+    second: WaveHeavy_Attack_149
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -123,7 +498,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -189,7 +564,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -211,7 +586,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -233,7 +608,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -255,7 +630,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -277,7 +652,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -299,7 +674,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 320
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -321,7 +696,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -343,7 +718,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 448
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -365,7 +740,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -387,7 +762,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 576
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -409,7 +784,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 640
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -431,7 +806,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 704
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -453,7 +828,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -475,7 +850,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 832
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -497,7 +872,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 896
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -519,7 +894,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 960
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -541,7 +916,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -563,7 +938,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1088
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -585,7 +960,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1152
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -607,7 +982,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1216
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -629,7 +1004,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -651,7 +1026,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1344
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -673,7 +1048,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1408
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -695,7 +1070,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1472
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -717,7 +1092,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -730,6 +1105,2756 @@ TextureImporter:
       bones: []
       spriteID: 2d6eb6bbaf0d90790800000000000000
       internalID: -7563284323887225134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbcd5f25c4997d150800000000000000
+      internalID: 5897350790153362623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_26
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acd526a41b12a2c80800000000000000
+      internalID: -8346821914036904502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_27
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3afa9d0431f05bc60800000000000000
+      internalID: 7833183702247649187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_28
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68c711501b00da060800000000000000
+      internalID: 6966224958906268806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_29
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1ee309d2c7f2f160800000000000000
+      internalID: 7057975982279618075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_30
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e0250f89961bc180800000000000000
+      internalID: -9094150173759299352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_31
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00709e02e500620f0800000000000000
+      internalID: -1142225051212773632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_32
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 555e09b504d522010800000000000000
+      internalID: 1162594184810521941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_33
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8ce5d17b6d663460800000000000000
+      internalID: 7221079360773942412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_34
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cae660e5ad930de10800000000000000
+      internalID: 2220338226336788140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_35
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c6b24730947c0c0800000000000000
+      internalID: -4555592218879234948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_36
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e10886e6685276cc0800000000000000
+      internalID: -3717961708062867426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_37
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b8dbf7905a212450800000000000000
+      internalID: 6062173099053013168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_38
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abd197d1e89459190800000000000000
+      internalID: -7956372291951452742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_39
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 480c79dd400409100800000000000000
+      internalID: 112660380326019204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_40
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d9f818349c9ca810800000000000000
+      internalID: 1777968113314757076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_41
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71820c55e91c8f240800000000000000
+      internalID: 4825819886515136535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_42
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a31e854e3273c860800000000000000
+      internalID: 7549003012183561120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_43
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ceb8869024edf0ea0800000000000000
+      internalID: -5904256211252376596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_44
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1d5df3fe28000950800000000000000
+      internalID: 6413134867130572060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_45
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0182e34b6379d8200800000000000000
+      internalID: 183969421000058896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_46
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf4e726f70163d460800000000000000
+      internalID: 7265257310701217020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_47
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71b73bb6997f28f00800000000000000
+      internalID: 1117727895850285847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_48
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf5dfb8e2610074a0800000000000000
+      internalID: -6597771929774467589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_49
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6456e41bd377f0d90800000000000000
+      internalID: -7129348578252790458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 000854616d8285de0800000000000000
+      internalID: -1344279588808327168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_51
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a353b7ce1fb393050800000000000000
+      internalID: 5780717506947396922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_52
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 013a6a8c239dac4e0800000000000000
+      internalID: -1960515875628473584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_53
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d3b1a86bad505e0800000000000000
+      internalID: -1943907186604557050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_54
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1d020a4a7e38b670800000000000000
+      internalID: 8554656187138837789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_55
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6986650bcad15fc0800000000000000
+      internalID: -3507782069241083537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_56
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb1b9cf97952e7f70800000000000000
+      internalID: 9186821623033475516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_57
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6afc0b53d7ec06e0800000000000000
+      internalID: -1869864850313905554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_58
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36da7573aa91990d0800000000000000
+      internalID: -3415670623520182941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_59
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a9eb83b956fe4b0800000000000000
+      internalID: -5408992910102324679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_60
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7d74dcf1da713ff0800000000000000
+      internalID: -58130277870568069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_61
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f1cb76af202137d0800000000000000
+      internalID: -2940533692667543051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_62
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ccb8aca962cd4570800000000000000
+      internalID: 8452625834768383170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_63
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9881876e0ff811580800000000000000
+      internalID: -8858140727239501687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_64
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7ce5ad919eb0c900800000000000000
+      internalID: 702771074494229629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_65
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 938d74847af0bcb60800000000000000
+      internalID: 7767319193477175353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_66
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a89c84c42c0c44aa0800000000000000
+      internalID: -6177600848109450870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_67
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13155745fae34ec50800000000000000
+      internalID: 6693543868936573233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_68
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70bca18f9bd042770800000000000000
+      internalID: 8585001882057624327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_69
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf25f9857cef90e00800000000000000
+      internalID: 1011619723460170491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_70
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 635446209aa608ef0800000000000000
+      internalID: -107969116934748874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_71
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd9b3284566d10eb0800000000000000
+      internalID: -4755284001036191267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_72
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5157d763af90e2fb0800000000000000
+      internalID: -4670784793275960043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_73
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a823446783d8e6b0800000000000000
+      internalID: -5266727185753626464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_74
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b351968894235d670800000000000000
+      internalID: 8562805557917455675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_75
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5d7b388513aea4d0800000000000000
+      internalID: -3121378178845934245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_76
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd96d0390f836930800000000000000
+      internalID: 4135306152493096436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_77
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ed146ec4ce35af40800000000000000
+      internalID: 5739062315150745060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_78
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9efaa5abf25be3890800000000000000
+      internalID: -7476339114793848855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_79
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8ab1006249cb5990800000000000000
+      internalID: -7396096676110157174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_80
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce8e9df1e73beffa0800000000000000
+      internalID: -5764973118706030356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_81
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3d561fa47d149df0800000000000000
+      internalID: -174482098569716422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_82
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0fcdfe0e37ff1a70800000000000000
+      internalID: 8800024042816786189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_83
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98233729b8f146730800000000000000
+      internalID: 3991349854075040393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_84
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4bdd61e9ba8fb070800000000000000
+      internalID: 8124364783755320143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_85
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54421a5e01c89d670800000000000000
+      internalID: 8564030170621617221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_86
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 518e92973da483fb0800000000000000
+      internalID: -4667898741638174699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_87
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e06fc14c2ba265d60800000000000000
+      internalID: 7878531545414039054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_88
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b559f7ca78fe6e500800000000000000
+      internalID: 425290580826756443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_89
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97227c6fa9ee6fbb0800000000000000
+      internalID: -4902468795013586311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_90
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 097848435ff229780800000000000000
+      internalID: -8677820801794930800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_91
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fedd9384ee3296890800000000000000
+      internalID: -7464395401068945937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_92
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bf819fc56749c060800000000000000
+      internalID: 6974184000559615925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_93
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 661851ca0796eb600800000000000000
+      internalID: 485941742446936422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_94
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea9be0e417037c450800000000000000
+      internalID: 6108904682750392750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_95
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4cacecb4ba6d23e0800000000000000
+      internalID: -2076886528651645877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_96
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ca7596fb8003e5c0800000000000000
+      internalID: -4187502627386983738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_97
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f41040d65c4cab10800000000000000
+      internalID: 1994052670763046131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_98
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6581e625a52e32590800000000000000
+      internalID: -7700062060315535274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_99
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2582dd65df4671a0800000000000000
+      internalID: -6812169608262154961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_100
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb51e0c458cd48c90800000000000000
+      internalID: -7168362241802234433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_101
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caa6f400007bb17c0800000000000000
+      internalID: -4099481825157616980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_102
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12d0f8b6b85f91c80800000000000000
+      internalID: -8351374054828077791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_103
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0cd3de4c8b556cd0800000000000000
+      internalID: -2565543754541573106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_104
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6acdddf98db330420800000000000000
+      internalID: 2594983611876629670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_105
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bde0f1f86858c17a0800000000000000
+      internalID: -6405097757054398757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_106
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3decb48103a4a9a80800000000000000
+      internalID: -8459367379635548461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_107
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2639d26202438290800000000000000
+      internalID: -7889389544207206868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_108
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6132636ac865fad90800000000000000
+      internalID: -7084348526746524906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_109
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 419a49d4caad3f290800000000000000
+      internalID: -7857696491260565228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_110
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7ae6ada7fae6f040800000000000000
+      internalID: 4681187212189428348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_111
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1deba139af8de1ec0800000000000000
+      internalID: -3594196881873649967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_112
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b50d59fab17a123d0800000000000000
+      internalID: -3233119320123518885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_113
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 535e62d250493ece0800000000000000
+      internalID: -1377094311091968715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_114
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c66319dbf7f38f1a0800000000000000
+      internalID: -6775595821505104276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_115
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b48d38f6dc556d6d0800000000000000
+      internalID: -2966088963749324725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_116
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5132d10c84bde3240800000000000000
+      internalID: 4773493760566567701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_117
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89bb771f6f8cfa890800000000000000
+      internalID: -7444510696081474664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_118
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d1c9560695c19710800000000000000
+      internalID: 1698355782637699536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_119
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59665c9a0a5eb92d0800000000000000
+      internalID: -3270768226148718955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_120
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe582ba18e437b750800000000000000
+      internalID: 6320578773522744815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_121
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 074ecebb1e645aae0800000000000000
+      internalID: -1538745762342706064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_122
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02bf1e85f0870ca10800000000000000
+      internalID: 1927672647825619744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_123
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fccac384f2a2b5ed0800000000000000
+      internalID: -2424297591845114673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_124
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e9b8f8b0bc1b6cb0800000000000000
+      internalID: -4869767026727929376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_125
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d65fed3c39e1d2230800000000000000
+      internalID: 3615579695843571053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_126
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec3cf4bb2af06ceb0800000000000000
+      internalID: -4700051969512848434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_127
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccd8dcab0950029c0800000000000000
+      internalID: -3954154353663832628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_128
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c75629807fe14b40800000000000000
+      internalID: 5422878692947154888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_129
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d84ef9262b7caa0800000000000000
+      internalID: -6140743430237287069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_130
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c39327d725b79380800000000000000
+      internalID: -8964497350539897919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_131
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46c4717623c293e30800000000000000
+      internalID: 4483663499013606500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_132
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb01beb59e0357260800000000000000
+      internalID: 7094630566819729599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_133
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5eb27c81e44e8cdc0800000000000000
+      internalID: -3618391276517905435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_134
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24c70c66bd5936260800000000000000
+      internalID: 7089675007965559874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_135
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8822021de7cbecb40800000000000000
+      internalID: 5462510650907435656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_136
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 830037e4317ffdcd0800000000000000
+      internalID: -2531032803266330568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_137
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae75949892fc3b490800000000000000
+      internalID: -7731608357961115670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_138
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34a1e79c7cb04e4d0800000000000000
+      internalID: -3106344890271917501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_139
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e5a232a14825c170800000000000000
+      internalID: 8198002959057069545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_140
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 369db3cf70d74a460800000000000000
+      internalID: 7252058773223364963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_141
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 461fc181e48da9ac0800000000000000
+      internalID: -3847525101711068828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_142
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66c75d016a54dd0d0800000000000000
+      internalID: -3396481964418171802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_143
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c47395bf33e4e4280800000000000000
+      internalID: -9057215815428262068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_144
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0319d1586d1821f80800000000000000
+      internalID: -8137298818348773072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_145
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39586a13fced93a00800000000000000
+      internalID: 736864995524380051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_146
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02217c72691d33b20800000000000000
+      internalID: 3113062210285802016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_147
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e86be7e41e06ab30800000000000000
+      internalID: 4298138377324816617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_148
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8185983ea51fe6c0800000000000000
+      internalID: -4112044096748158581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveHeavy_Attack_149
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 149784d5000a34c50800000000000000
+      internalID: 6648333398354458945
       vertices: []
       indices: 
       edges: []
@@ -751,10 +3876,60 @@ TextureImporter:
       WaveHeavy_Attack_0: -5924444817442428042
       WaveHeavy_Attack_1: 7054682719369878646
       WaveHeavy_Attack_10: -3335670796301059848
+      WaveHeavy_Attack_100: -7168362241802234433
+      WaveHeavy_Attack_101: -4099481825157616980
+      WaveHeavy_Attack_102: -8351374054828077791
+      WaveHeavy_Attack_103: -2565543754541573106
+      WaveHeavy_Attack_104: 2594983611876629670
+      WaveHeavy_Attack_105: -6405097757054398757
+      WaveHeavy_Attack_106: -8459367379635548461
+      WaveHeavy_Attack_107: -7889389544207206868
+      WaveHeavy_Attack_108: -7084348526746524906
+      WaveHeavy_Attack_109: -7857696491260565228
       WaveHeavy_Attack_11: -5408244664932225621
+      WaveHeavy_Attack_110: 4681187212189428348
+      WaveHeavy_Attack_111: -3594196881873649967
+      WaveHeavy_Attack_112: -3233119320123518885
+      WaveHeavy_Attack_113: -1377094311091968715
+      WaveHeavy_Attack_114: -6775595821505104276
+      WaveHeavy_Attack_115: -2966088963749324725
+      WaveHeavy_Attack_116: 4773493760566567701
+      WaveHeavy_Attack_117: -7444510696081474664
+      WaveHeavy_Attack_118: 1698355782637699536
+      WaveHeavy_Attack_119: -3270768226148718955
       WaveHeavy_Attack_12: -9132971529474000925
+      WaveHeavy_Attack_120: 6320578773522744815
+      WaveHeavy_Attack_121: -1538745762342706064
+      WaveHeavy_Attack_122: 1927672647825619744
+      WaveHeavy_Attack_123: -2424297591845114673
+      WaveHeavy_Attack_124: -4869767026727929376
+      WaveHeavy_Attack_125: 3615579695843571053
+      WaveHeavy_Attack_126: -4700051969512848434
+      WaveHeavy_Attack_127: -3954154353663832628
+      WaveHeavy_Attack_128: 5422878692947154888
+      WaveHeavy_Attack_129: -6140743430237287069
       WaveHeavy_Attack_13: 5629470688062460197
+      WaveHeavy_Attack_130: -8964497350539897919
+      WaveHeavy_Attack_131: 4483663499013606500
+      WaveHeavy_Attack_132: 7094630566819729599
+      WaveHeavy_Attack_133: -3618391276517905435
+      WaveHeavy_Attack_134: 7089675007965559874
+      WaveHeavy_Attack_135: 5462510650907435656
+      WaveHeavy_Attack_136: -2531032803266330568
+      WaveHeavy_Attack_137: -7731608357961115670
+      WaveHeavy_Attack_138: -3106344890271917501
+      WaveHeavy_Attack_139: 8198002959057069545
       WaveHeavy_Attack_14: -189095862325456603
+      WaveHeavy_Attack_140: 7252058773223364963
+      WaveHeavy_Attack_141: -3847525101711068828
+      WaveHeavy_Attack_142: -3396481964418171802
+      WaveHeavy_Attack_143: -9057215815428262068
+      WaveHeavy_Attack_144: -8137298818348773072
+      WaveHeavy_Attack_145: 736864995524380051
+      WaveHeavy_Attack_146: 3113062210285802016
+      WaveHeavy_Attack_147: 4298138377324816617
+      WaveHeavy_Attack_148: -4112044096748158581
+      WaveHeavy_Attack_149: 6648333398354458945
       WaveHeavy_Attack_15: -7676871018347904112
       WaveHeavy_Attack_16: 2625786952594031018
       WaveHeavy_Attack_17: 7724534205479158965
@@ -766,13 +3941,88 @@ TextureImporter:
       WaveHeavy_Attack_22: 527547435013847633
       WaveHeavy_Attack_23: -7593573938123350408
       WaveHeavy_Attack_24: -7563284323887225134
+      WaveHeavy_Attack_25: 5897350790153362623
+      WaveHeavy_Attack_26: -8346821914036904502
+      WaveHeavy_Attack_27: 7833183702247649187
+      WaveHeavy_Attack_28: 6966224958906268806
+      WaveHeavy_Attack_29: 7057975982279618075
       WaveHeavy_Attack_3: -4271426488936455979
+      WaveHeavy_Attack_30: -9094150173759299352
+      WaveHeavy_Attack_31: -1142225051212773632
+      WaveHeavy_Attack_32: 1162594184810521941
+      WaveHeavy_Attack_33: 7221079360773942412
+      WaveHeavy_Attack_34: 2220338226336788140
+      WaveHeavy_Attack_35: -4555592218879234948
+      WaveHeavy_Attack_36: -3717961708062867426
+      WaveHeavy_Attack_37: 6062173099053013168
+      WaveHeavy_Attack_38: -7956372291951452742
+      WaveHeavy_Attack_39: 112660380326019204
       WaveHeavy_Attack_4: -7731944724822675621
+      WaveHeavy_Attack_40: 1777968113314757076
+      WaveHeavy_Attack_41: 4825819886515136535
+      WaveHeavy_Attack_42: 7549003012183561120
+      WaveHeavy_Attack_43: -5904256211252376596
+      WaveHeavy_Attack_44: 6413134867130572060
+      WaveHeavy_Attack_45: 183969421000058896
+      WaveHeavy_Attack_46: 7265257310701217020
+      WaveHeavy_Attack_47: 1117727895850285847
+      WaveHeavy_Attack_48: -6597771929774467589
+      WaveHeavy_Attack_49: -7129348578252790458
       WaveHeavy_Attack_5: -4452542450981968499
+      WaveHeavy_Attack_50: -1344279588808327168
+      WaveHeavy_Attack_51: 5780717506947396922
+      WaveHeavy_Attack_52: -1960515875628473584
+      WaveHeavy_Attack_53: -1943907186604557050
+      WaveHeavy_Attack_54: 8554656187138837789
+      WaveHeavy_Attack_55: -3507782069241083537
+      WaveHeavy_Attack_56: 9186821623033475516
+      WaveHeavy_Attack_57: -1869864850313905554
+      WaveHeavy_Attack_58: -3415670623520182941
+      WaveHeavy_Attack_59: -5408992910102324679
       WaveHeavy_Attack_6: -5355859753003854882
+      WaveHeavy_Attack_60: -58130277870568069
+      WaveHeavy_Attack_61: -2940533692667543051
+      WaveHeavy_Attack_62: 8452625834768383170
+      WaveHeavy_Attack_63: -8858140727239501687
+      WaveHeavy_Attack_64: 702771074494229629
+      WaveHeavy_Attack_65: 7767319193477175353
+      WaveHeavy_Attack_66: -6177600848109450870
+      WaveHeavy_Attack_67: 6693543868936573233
+      WaveHeavy_Attack_68: 8585001882057624327
+      WaveHeavy_Attack_69: 1011619723460170491
       WaveHeavy_Attack_7: -4623001107343345346
+      WaveHeavy_Attack_70: -107969116934748874
+      WaveHeavy_Attack_71: -4755284001036191267
+      WaveHeavy_Attack_72: -4670784793275960043
+      WaveHeavy_Attack_73: -5266727185753626464
+      WaveHeavy_Attack_74: 8562805557917455675
+      WaveHeavy_Attack_75: -3121378178845934245
+      WaveHeavy_Attack_76: 4135306152493096436
+      WaveHeavy_Attack_77: 5739062315150745060
+      WaveHeavy_Attack_78: -7476339114793848855
+      WaveHeavy_Attack_79: -7396096676110157174
       WaveHeavy_Attack_8: -1585335147837635996
+      WaveHeavy_Attack_80: -5764973118706030356
+      WaveHeavy_Attack_81: -174482098569716422
+      WaveHeavy_Attack_82: 8800024042816786189
+      WaveHeavy_Attack_83: 3991349854075040393
+      WaveHeavy_Attack_84: 8124364783755320143
+      WaveHeavy_Attack_85: 8564030170621617221
+      WaveHeavy_Attack_86: -4667898741638174699
+      WaveHeavy_Attack_87: 7878531545414039054
+      WaveHeavy_Attack_88: 425290580826756443
+      WaveHeavy_Attack_89: -4902468795013586311
       WaveHeavy_Attack_9: 8767202789129699321
+      WaveHeavy_Attack_90: -8677820801794930800
+      WaveHeavy_Attack_91: -7464395401068945937
+      WaveHeavy_Attack_92: 6974184000559615925
+      WaveHeavy_Attack_93: 485941742446936422
+      WaveHeavy_Attack_94: 6108904682750392750
+      WaveHeavy_Attack_95: -2076886528651645877
+      WaveHeavy_Attack_96: -4187502627386983738
+      WaveHeavy_Attack_97: 1994052670763046131
+      WaveHeavy_Attack_98: -7700062060315535274
+      WaveHeavy_Attack_99: -6812169608262154961
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

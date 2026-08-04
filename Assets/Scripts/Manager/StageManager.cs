@@ -106,4 +106,59 @@ public class StageManager : Singleton<StageManager>
         else if (roomKey == "Tilemap_Room_Stage1_Boss") resIdx = 1042;
         await LoadNextRoomAsync(resIdx, cancellationToken);
     }
+
+    public GameObject CurrentRoomInstance { get; set; }
+    public List<GameObject> ActiveChunkInstances { get; } = new List<GameObject>();
+
+    public void RegisterRoomInstance(GameObject roomObj)
+    {
+        if (roomObj == null) return;
+        CurrentRoomInstance = roomObj;
+        if (!ActiveChunkInstances.Contains(roomObj))
+        {
+            ActiveChunkInstances.Add(roomObj);
+        }
+    }
+
+    public void CleanupActiveChunksAndEffects()
+    {
+        for (int i = ActiveChunkInstances.Count - 1; i >= 0; i--)
+        {
+            var chunk = ActiveChunkInstances[i];
+            if (chunk != null)
+            {
+                if (Application.isPlaying) Destroy(chunk);
+                else DestroyImmediate(chunk);
+            }
+        }
+        ActiveChunkInstances.Clear();
+
+        if (CurrentRoomInstance != null)
+        {
+            if (Application.isPlaying) Destroy(CurrentRoomInstance);
+            else DestroyImmediate(CurrentRoomInstance);
+            CurrentRoomInstance = null;
+        }
+
+        // 잔여 이펙트 및 파티클 정리
+        var particles = UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var ps in particles)
+        {
+            if (ps != null && ps.gameObject != null)
+            {
+                if (Application.isPlaying) Destroy(ps.gameObject);
+                else DestroyImmediate(ps.gameObject);
+            }
+        }
+
+        var trailRenderers = UnityEngine.Object.FindObjectsByType<TrailRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var tr in trailRenderers)
+        {
+            if (tr != null && tr.gameObject != null)
+            {
+                if (Application.isPlaying) Destroy(tr.gameObject);
+                else DestroyImmediate(tr.gameObject);
+            }
+        }
+    }
 }

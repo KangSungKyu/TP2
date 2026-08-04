@@ -257,20 +257,43 @@ public class KinematicMotor2D : MonoBehaviour
                 float feetY = physicsCollider.bounds.min.y;
                 float platformTopY = hit.collider.bounds.max.y;
 
-                // 1) 위로 상승 중일 때 ➔ 발판 상향 통과
+                // 1) 점프 도달 정점(Apex Y) 미리 계산 ➔ 최대 도달 높이가 발판 상단보다 낮으면 무조건 통과 (중간 걸침/붙음 100% 방지!)
+                float vy = Velocity.y;
+                float apexY = feetY;
+                if (vy > 0f)
+                {
+                    apexY = feetY + (vy * vy) / (2f * Mathf.Max(1f, Gravity));
+                }
+
+                bool canReachTop = apexY >= platformTopY - 0.05f;
+                if (!canReachTop)
+                {
+                    continue; // 도달 높이 미달 시 무조건 충돌 무시하고 하단 통과
+                }
+
+                // 2) 위로 상승 중일 때 (점프 상승) ➔ 발판 상향 관통
                 if (yMovement && move.y > 0f)
                 {
                     continue;
                 }
 
-                // 2) 하향 통과 입력 활성화 중일 때 ➔ 발판 하향 통과
+                // 3) 하향 통과 키 입력 중 ➔ 발판 아래로 하향 통과
                 if (isPassThroughActive)
                 {
                     continue;
                 }
 
-                // 3) 수평 이동 중이거나 유닛 발 위치가 발판 상단면보다 아래일 때 ➔ 측면/하단 뚫림 통과 (껴짐 완전 방지)
-                if (!yMovement || feetY < platformTopY - 0.15f)
+                // 4) 발판 상단을 넘을 수 있고, 하강/낙하 중 (move.y <= 0f)일 때 발 위치가 발판 상단면 근처이면 착지!
+                if (yMovement && move.y <= 0f)
+                {
+                    if (feetY < platformTopY - 0.40f)
+                    {
+                        continue;
+                    }
+                }
+
+                // 5) 수평 이동 중 (!yMovement): 발 위치가 발판 상단보다 낮으면 측면 걸림 무시
+                if (!yMovement && feetY < platformTopY - 0.15f)
                 {
                     continue;
                 }

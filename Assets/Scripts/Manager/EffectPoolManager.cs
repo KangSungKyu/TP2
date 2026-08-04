@@ -1,0 +1,73 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// 인게임 동적 생성 이펙트/파티클/스킬 비주얼 오브젝트 통합 오브젝트 풀링 매니저.
+/// 룸/스테이지 전환 시 잔여 이펙트를 100% 비활성화 및 복원하여 메모리 낭비와 잔여물 버그를 차단합니다.
+/// </summary>
+public class EffectPoolManager : Singleton<EffectPoolManager>
+{
+    private readonly Dictionary<string, Queue<GameObject>> poolDict = new Dictionary<string, Queue<GameObject>>();
+    private readonly HashSet<GameObject> activeEffects = new HashSet<GameObject>();
+
+    public GameObject SpawnEffect(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+    {
+        if (prefab == null) return null;
+
+        string key = prefab.name;
+        GameObject effectObj = null;
+
+        if (poolDict.TryGetValue(key, out var queue) && queue.Count > 0)
+        {
+            effectObj = queue.Dequeue();
+            if (effectObj != null)
+            {
+                effectObj.transform.position = position;
+                effectObj.transform.rotation = rotation;
+                if (parent != null) effectObj.transform.SetParent(parent);
+                effectObj.SetActive(true);
+            }
+        }
+
+        if (effectObj == null)
+        {
+            effectObj = Instantiate(prefab, position, rotation, parent != null ? parent : transform);
+            effectObj.name = key;
+        }
+
+        activeEffects.Add(effectObj);
+        return effectObj;
+    }
+
+    public void DespawnEffect(GameObject effectObj)
+    {
+        if (effectObj == null) return;
+
+        string key = effectObj.name;
+        effectObj.SetActive(false);
+        effectObj.transform.SetParent(transform);
+
+        activeEffects.Remove(effectObj);
+
+        if (!poolDict.TryGetValue(key, out var queue))
+        {
+            queue = new Queue<GameObject>();
+            poolDict[key] = queue;
+        }
+
+        queue.Enqueue(effectObj);
+    }
+
+    public void ClearAllActiveEffects()
+    {
+        var activeList = new List<GameObject>(activeEffects);
+        foreach (var obj in activeList)
+        {
+            if (obj != null)
+            {
+                DespawnEffect(obj);
+            }
+        }
+        activeEffects.Clear();
+    }
+}

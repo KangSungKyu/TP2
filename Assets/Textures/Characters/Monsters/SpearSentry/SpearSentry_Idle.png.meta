@@ -59,6 +59,177 @@ TextureImporter:
   - first:
       213: -2829156883104393721
     second: SpearSentry_Idle_18
+  - first:
+      213: 6093052578791496067
+    second: SpearSentry_Idle_19
+  - first:
+      213: 3586060590810430887
+    second: SpearSentry_Idle_20
+  - first:
+      213: 8371494881119902882
+    second: SpearSentry_Idle_21
+  - first:
+      213: -408008726608517573
+    second: SpearSentry_Idle_22
+  - first:
+      213: -1999204667539714047
+    second: SpearSentry_Idle_23
+  - first:
+      213: -432630281396773535
+    second: SpearSentry_Idle_24
+  - first:
+      213: 4408635052590675828
+    second: SpearSentry_Idle_25
+  - first:
+      213: -6193775327132018340
+    second: SpearSentry_Idle_26
+  - first:
+      213: 3341573938722424423
+    second: SpearSentry_Idle_27
+  - first:
+      213: 2385217381501788511
+    second: SpearSentry_Idle_28
+  - first:
+      213: -6668092721011649287
+    second: SpearSentry_Idle_29
+  - first:
+      213: -8471349076755421802
+    second: SpearSentry_Idle_30
+  - first:
+      213: -1071968726909944563
+    second: SpearSentry_Idle_31
+  - first:
+      213: -7516896455300031209
+    second: SpearSentry_Idle_32
+  - first:
+      213: 102931311781376868
+    second: SpearSentry_Idle_33
+  - first:
+      213: -2914002337412641769
+    second: SpearSentry_Idle_34
+  - first:
+      213: 2241022618759959992
+    second: SpearSentry_Idle_35
+  - first:
+      213: 1621438921604203109
+    second: SpearSentry_Idle_36
+  - first:
+      213: 7448583730258792453
+    second: SpearSentry_Idle_37
+  - first:
+      213: 7290669839776155993
+    second: SpearSentry_Idle_38
+  - first:
+      213: -2654069383879486917
+    second: SpearSentry_Idle_39
+  - first:
+      213: 1892369061806548240
+    second: SpearSentry_Idle_40
+  - first:
+      213: -1543377000462156022
+    second: SpearSentry_Idle_41
+  - first:
+      213: 8263140468726934151
+    second: SpearSentry_Idle_42
+  - first:
+      213: 791563952128737154
+    second: SpearSentry_Idle_43
+  - first:
+      213: -3383405015097672364
+    second: SpearSentry_Idle_44
+  - first:
+      213: 3821502716160671825
+    second: SpearSentry_Idle_45
+  - first:
+      213: -8935726312630226593
+    second: SpearSentry_Idle_46
+  - first:
+      213: 6937245282211578473
+    second: SpearSentry_Idle_47
+  - first:
+      213: 8303134222725863853
+    second: SpearSentry_Idle_48
+  - first:
+      213: 5885624616570982019
+    second: SpearSentry_Idle_49
+  - first:
+      213: -4017549591858011947
+    second: SpearSentry_Idle_50
+  - first:
+      213: -7928701145537739438
+    second: SpearSentry_Idle_51
+  - first:
+      213: -2882363040711741338
+    second: SpearSentry_Idle_52
+  - first:
+      213: 3742447974845001585
+    second: SpearSentry_Idle_53
+  - first:
+      213: 5320918246363112296
+    second: SpearSentry_Idle_54
+  - first:
+      213: 2423362193726014747
+    second: SpearSentry_Idle_55
+  - first:
+      213: -945388689756701056
+    second: SpearSentry_Idle_56
+  - first:
+      213: -5602758067608969428
+    second: SpearSentry_Idle_57
+  - first:
+      213: 8855662000073791875
+    second: SpearSentry_Idle_58
+  - first:
+      213: 7936890724682472585
+    second: SpearSentry_Idle_59
+  - first:
+      213: -8847108794091570102
+    second: SpearSentry_Idle_60
+  - first:
+      213: -5123201810533007541
+    second: SpearSentry_Idle_61
+  - first:
+      213: -1441281538654466146
+    second: SpearSentry_Idle_62
+  - first:
+      213: 8986158849789810129
+    second: SpearSentry_Idle_63
+  - first:
+      213: -8242844813575462541
+    second: SpearSentry_Idle_64
+  - first:
+      213: 5697590987570021545
+    second: SpearSentry_Idle_65
+  - first:
+      213: -6656499817341991162
+    second: SpearSentry_Idle_66
+  - first:
+      213: 4960078174346359351
+    second: SpearSentry_Idle_67
+  - first:
+      213: -4521253203792180930
+    second: SpearSentry_Idle_68
+  - first:
+      213: 6610462565573298600
+    second: SpearSentry_Idle_69
+  - first:
+      213: -6875428592983745168
+    second: SpearSentry_Idle_70
+  - first:
+      213: 6854606408885765323
+    second: SpearSentry_Idle_71
+  - first:
+      213: -1673533829171546489
+    second: SpearSentry_Idle_72
+  - first:
+      213: -2705330871232149629
+    second: SpearSentry_Idle_73
+  - first:
+      213: -4722669658185769686
+    second: SpearSentry_Idle_74
+  - first:
+      213: -1087960268091359014
+    second: SpearSentry_Idle_75
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -105,7 +276,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -171,7 +342,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -193,7 +364,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -215,7 +386,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -237,7 +408,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -259,7 +430,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -281,7 +452,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 320
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -303,7 +474,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -325,7 +496,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 448
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -347,7 +518,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -369,7 +540,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 576
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -391,7 +562,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 640
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -413,7 +584,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 704
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -435,7 +606,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -457,7 +628,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 832
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -479,7 +650,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 896
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -501,7 +672,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 960
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -523,7 +694,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -545,7 +716,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1088
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -567,7 +738,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1152
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -580,6 +751,1260 @@ TextureImporter:
       bones: []
       spriteID: 70616b8edc0dcb8d0800000000000000
       internalID: -2829156883104393721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38915acb90fde8450800000000000000
+      internalID: 6093052578791496067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_20
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ad784a8b1f34c130800000000000000
+      internalID: 3586060590810430887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ac17248d368d2470800000000000000
+      internalID: 8371494881119902882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_22
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b366d319936765af0800000000000000
+      internalID: -408008726608517573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_23
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1001ef572f56144e0800000000000000
+      internalID: -1999204667539714047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_24
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16d944e1d0dfef9f0800000000000000
+      internalID: -432630281396773535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_25
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 477b00ee83e9e2d30800000000000000
+      internalID: 4408635052590675828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_26
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5997bfe72a4b0aa0800000000000000
+      internalID: -6193775327132018340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_27
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 766c048fac7af5e20800000000000000
+      internalID: 3341573938722424423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_28
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f516080329ef91120800000000000000
+      internalID: 2385217381501788511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_29
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f49bb2dffc2673a0800000000000000
+      internalID: -6668092721011649287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_30
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 695e8a7d5e8bf6a80800000000000000
+      internalID: -8471349076755421802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_31
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d74365f1a9f11f0800000000000000
+      internalID: -1071968726909944563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_32
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71dd278008e9ea790800000000000000
+      internalID: -7516896455300031209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_33
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4637ef29b7fad6100800000000000000
+      internalID: 102931311781376868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_34
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71c8cdb20526f87d0800000000000000
+      internalID: -2914002337412641769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_35
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b59dc4c236b91f10800000000000000
+      internalID: 2241022618759959992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_36
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5620633cb12808610800000000000000
+      internalID: 1621438921604203109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_37
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50054d9307fae5760800000000000000
+      internalID: 7448583730258792453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_38
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95903867799ad2560800000000000000
+      internalID: 7290669839776155993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_39
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b329f9c05f9da2bd0800000000000000
+      internalID: -2654069383879486917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_40
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0152be0b2ab034a10800000000000000
+      internalID: 1892369061806548240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_41
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0ff1f49bc2d49ae0800000000000000
+      internalID: -1543377000462156022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_42
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78aaf9fe9729ca270800000000000000
+      internalID: 8263140468726934151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_43
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28f33a778333cfa00800000000000000
+      internalID: 791563952128737154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_44
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45df3d7901bbb01d0800000000000000
+      internalID: -3383405015097672364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_45
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15082f02974b80530800000000000000
+      internalID: 3821502716160671825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_46
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f51709d134cedf380800000000000000
+      internalID: -8935726312630226593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_47
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 962c9fd34db064060800000000000000
+      internalID: 6937245282211578473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_48
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da9d6fb6598aa3370800000000000000
+      internalID: 8303134222725863853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_49
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e0208c760fda150800000000000000
+      internalID: 5885624616570982019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_50
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d0a9cd9eebce38c0800000000000000
+      internalID: -4017549591858011947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_51
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2558df1f05897f190800000000000000
+      internalID: -7928701145537739438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_52
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66079acf51acff7d0800000000000000
+      internalID: -2882363040711741338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_53
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17f2403da98dfe330800000000000000
+      internalID: 3742447974845001585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_54
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8632e5124f2b7d940800000000000000
+      internalID: 5320918246363112296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_55
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b15862f531381a120800000000000000
+      internalID: 2423362193726014747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_56
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08e316cdefd41e2f0800000000000000
+      internalID: -945388689756701056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_57
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2f96b1e8310f32b0800000000000000
+      internalID: -5602758067608969428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_58
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389d2557ba1a5ea70800000000000000
+      internalID: 8855662000073791875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_59
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98c9ac90010852e60800000000000000
+      internalID: 7936890724682472585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_60
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4cffeefc61c83580800000000000000
+      internalID: -8847108794091570102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_61
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4fba82e81bb6e8b0800000000000000
+      internalID: -5123201810533007541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_62
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9f0c2ba31a8ffbe0800000000000000
+      internalID: -1441281538654466146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_63
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d554f8fcdf35bc70800000000000000
+      internalID: 8986158849789810129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_64
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 371e92480588b9d80800000000000000
+      internalID: -8242844813575462541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_65
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a40499e0d8e11f40800000000000000
+      internalID: 5697590987570021545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_66
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 607c0eb0fac5f93a0800000000000000
+      internalID: -6656499817341991162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_67
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7323518e1dcb5d440800000000000000
+      internalID: 4960078174346359351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_68
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e39ce507a284141c0800000000000000
+      internalID: -4521253203792180930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_69
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a9830efda41dbb50800000000000000
+      internalID: 6610462565573298600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_70
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07dd3ac4f129590a0800000000000000
+      internalID: -6875428592983745168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_71
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc480cc2634702f50800000000000000
+      internalID: 6854606408885765323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_72
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78671a069d966c8e0800000000000000
+      internalID: -1673533829171546489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_73
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3874f44f7ebb47ad0800000000000000
+      internalID: -2705330871232149629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_74
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2d5258b7f4b57eb0800000000000000
+      internalID: -4722669658185769686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpearSentry_Idle_75
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad00da286e9c6e0f0800000000000000
+      internalID: -1087960268091359014
       vertices: []
       indices: 
       edges: []
@@ -609,12 +2034,69 @@ TextureImporter:
       SpearSentry_Idle_16: -3536195835579655423
       SpearSentry_Idle_17: -7855628633404564992
       SpearSentry_Idle_18: -2829156883104393721
+      SpearSentry_Idle_19: 6093052578791496067
       SpearSentry_Idle_2: 3512282121869556095
+      SpearSentry_Idle_20: 3586060590810430887
+      SpearSentry_Idle_21: 8371494881119902882
+      SpearSentry_Idle_22: -408008726608517573
+      SpearSentry_Idle_23: -1999204667539714047
+      SpearSentry_Idle_24: -432630281396773535
+      SpearSentry_Idle_25: 4408635052590675828
+      SpearSentry_Idle_26: -6193775327132018340
+      SpearSentry_Idle_27: 3341573938722424423
+      SpearSentry_Idle_28: 2385217381501788511
+      SpearSentry_Idle_29: -6668092721011649287
       SpearSentry_Idle_3: 7191374013521743793
+      SpearSentry_Idle_30: -8471349076755421802
+      SpearSentry_Idle_31: -1071968726909944563
+      SpearSentry_Idle_32: -7516896455300031209
+      SpearSentry_Idle_33: 102931311781376868
+      SpearSentry_Idle_34: -2914002337412641769
+      SpearSentry_Idle_35: 2241022618759959992
+      SpearSentry_Idle_36: 1621438921604203109
+      SpearSentry_Idle_37: 7448583730258792453
+      SpearSentry_Idle_38: 7290669839776155993
+      SpearSentry_Idle_39: -2654069383879486917
       SpearSentry_Idle_4: 6400852478691014344
+      SpearSentry_Idle_40: 1892369061806548240
+      SpearSentry_Idle_41: -1543377000462156022
+      SpearSentry_Idle_42: 8263140468726934151
+      SpearSentry_Idle_43: 791563952128737154
+      SpearSentry_Idle_44: -3383405015097672364
+      SpearSentry_Idle_45: 3821502716160671825
+      SpearSentry_Idle_46: -8935726312630226593
+      SpearSentry_Idle_47: 6937245282211578473
+      SpearSentry_Idle_48: 8303134222725863853
+      SpearSentry_Idle_49: 5885624616570982019
       SpearSentry_Idle_5: 6853272402424260466
+      SpearSentry_Idle_50: -4017549591858011947
+      SpearSentry_Idle_51: -7928701145537739438
+      SpearSentry_Idle_52: -2882363040711741338
+      SpearSentry_Idle_53: 3742447974845001585
+      SpearSentry_Idle_54: 5320918246363112296
+      SpearSentry_Idle_55: 2423362193726014747
+      SpearSentry_Idle_56: -945388689756701056
+      SpearSentry_Idle_57: -5602758067608969428
+      SpearSentry_Idle_58: 8855662000073791875
+      SpearSentry_Idle_59: 7936890724682472585
       SpearSentry_Idle_6: 2785653847228154915
+      SpearSentry_Idle_60: -8847108794091570102
+      SpearSentry_Idle_61: -5123201810533007541
+      SpearSentry_Idle_62: -1441281538654466146
+      SpearSentry_Idle_63: 8986158849789810129
+      SpearSentry_Idle_64: -8242844813575462541
+      SpearSentry_Idle_65: 5697590987570021545
+      SpearSentry_Idle_66: -6656499817341991162
+      SpearSentry_Idle_67: 4960078174346359351
+      SpearSentry_Idle_68: -4521253203792180930
+      SpearSentry_Idle_69: 6610462565573298600
       SpearSentry_Idle_7: -4120530761230612312
+      SpearSentry_Idle_70: -6875428592983745168
+      SpearSentry_Idle_71: 6854606408885765323
+      SpearSentry_Idle_72: -1673533829171546489
+      SpearSentry_Idle_73: -2705330871232149629
+      SpearSentry_Idle_74: -4722669658185769686
+      SpearSentry_Idle_75: -1087960268091359014
       SpearSentry_Idle_8: -4179258704265596302
       SpearSentry_Idle_9: -8222893067278476902
   mipmapLimitGroupName: 

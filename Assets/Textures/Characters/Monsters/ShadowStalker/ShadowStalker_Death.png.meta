@@ -50,6 +50,150 @@ TextureImporter:
   - first:
       213: 4454249007870366671
     second: ShadowStalker_Death_15
+  - first:
+      213: -1106786849676155969
+    second: ShadowStalker_Death_16
+  - first:
+      213: -3175416651797426895
+    second: ShadowStalker_Death_17
+  - first:
+      213: 61074906185111111
+    second: ShadowStalker_Death_18
+  - first:
+      213: -6160926132752226809
+    second: ShadowStalker_Death_19
+  - first:
+      213: 6720424563259422044
+    second: ShadowStalker_Death_20
+  - first:
+      213: -4477492696230414417
+    second: ShadowStalker_Death_21
+  - first:
+      213: -5675787282679927855
+    second: ShadowStalker_Death_22
+  - first:
+      213: -1093886449854697816
+    second: ShadowStalker_Death_23
+  - first:
+      213: -4749991156676019000
+    second: ShadowStalker_Death_24
+  - first:
+      213: -7487823728589505946
+    second: ShadowStalker_Death_25
+  - first:
+      213: 7622305616453172835
+    second: ShadowStalker_Death_26
+  - first:
+      213: -2057373408207595681
+    second: ShadowStalker_Death_27
+  - first:
+      213: 2760125839136079977
+    second: ShadowStalker_Death_28
+  - first:
+      213: -902862636969896727
+    second: ShadowStalker_Death_29
+  - first:
+      213: -7895965474126137584
+    second: ShadowStalker_Death_30
+  - first:
+      213: 3976888280375072625
+    second: ShadowStalker_Death_31
+  - first:
+      213: 4515110326051477377
+    second: ShadowStalker_Death_32
+  - first:
+      213: 1025672304668828684
+    second: ShadowStalker_Death_33
+  - first:
+      213: -5156936909531684018
+    second: ShadowStalker_Death_34
+  - first:
+      213: -7290163984967911746
+    second: ShadowStalker_Death_35
+  - first:
+      213: -3123243547755911610
+    second: ShadowStalker_Death_36
+  - first:
+      213: -4641040440594991433
+    second: ShadowStalker_Death_37
+  - first:
+      213: -2778371029333731691
+    second: ShadowStalker_Death_38
+  - first:
+      213: 7882026783366973624
+    second: ShadowStalker_Death_39
+  - first:
+      213: -1212794673962680700
+    second: ShadowStalker_Death_40
+  - first:
+      213: -5442615344595228992
+    second: ShadowStalker_Death_41
+  - first:
+      213: 5434407090783571830
+    second: ShadowStalker_Death_42
+  - first:
+      213: 3007650252160621495
+    second: ShadowStalker_Death_43
+  - first:
+      213: -9214990432705255934
+    second: ShadowStalker_Death_44
+  - first:
+      213: -4083930124646453214
+    second: ShadowStalker_Death_45
+  - first:
+      213: 1704953450351239443
+    second: ShadowStalker_Death_46
+  - first:
+      213: -2978151211002433926
+    second: ShadowStalker_Death_47
+  - first:
+      213: -3616373394924496789
+    second: ShadowStalker_Death_48
+  - first:
+      213: 5515353033897597907
+    second: ShadowStalker_Death_49
+  - first:
+      213: 3657208521255052121
+    second: ShadowStalker_Death_50
+  - first:
+      213: -5595263171351233306
+    second: ShadowStalker_Death_51
+  - first:
+      213: -5730167408696360038
+    second: ShadowStalker_Death_52
+  - first:
+      213: -6081172987273876181
+    second: ShadowStalker_Death_53
+  - first:
+      213: -8715612377380452729
+    second: ShadowStalker_Death_54
+  - first:
+      213: -2541794134039111463
+    second: ShadowStalker_Death_55
+  - first:
+      213: 171275623587398004
+    second: ShadowStalker_Death_56
+  - first:
+      213: -2306958420596195269
+    second: ShadowStalker_Death_57
+  - first:
+      213: -4652577658025458488
+    second: ShadowStalker_Death_58
+  - first:
+      213: 4356766184106444555
+    second: ShadowStalker_Death_59
+  - first:
+      213: -5406021991469104624
+    second: ShadowStalker_Death_60
+  - first:
+      213: -2233051017493002825
+    second: ShadowStalker_Death_61
+  - first:
+      213: -6569069577684919996
+    second: ShadowStalker_Death_62
+  - first:
+      213: -6053286474473779169
+    second: ShadowStalker_Death_63
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,7 +240,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -162,7 +306,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -184,7 +328,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -206,7 +350,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -228,7 +372,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -250,7 +394,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -272,7 +416,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 320
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -294,7 +438,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -316,7 +460,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 448
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -338,7 +482,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -360,7 +504,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 576
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -382,7 +526,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 640
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -404,7 +548,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 704
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -426,7 +570,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -448,7 +592,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 832
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -470,7 +614,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 896
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -492,7 +636,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 960
-        y: 0
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -505,6 +649,1062 @@ TextureImporter:
       bones: []
       spriteID: fc3df3f7fdba0dd30800000000000000
       internalID: 4454249007870366671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb3aaf66937e3a0f0800000000000000
+      internalID: -1106786849676155969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_17
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13d01c71167aee3d0800000000000000
+      internalID: -3175416651797426895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_18
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7469ad7bd4bf8d000800000000000000
+      internalID: 61074906185111111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_19
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 706e1e1035eff7aa0800000000000000
+      internalID: -6160926132752226809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_20
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5533e0b88eb34d50800000000000000
+      internalID: 6720424563259422044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_21
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa7b7c49d10ccd1c0800000000000000
+      internalID: -4477492696230414417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_22
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dbee2bb98d8b31b0800000000000000
+      internalID: -5675787282679927855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_23
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae2ccbc11cb1d0f0800000000000000
+      internalID: -1093886449854697816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_24
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cc3414a534a41eb0800000000000000
+      internalID: -4749991156676019000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_25
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a7ea4bdf7e51890800000000000000
+      internalID: -7487823728589505946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_26
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36ef72ec29ed7c960800000000000000
+      internalID: 7622305616453172835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_27
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f57937129cdb273e0800000000000000
+      internalID: -2057373408207595681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_28
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9604511b3dfed4620800000000000000
+      internalID: 2760125839136079977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_29
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e4df6a17336873f0800000000000000
+      internalID: -902862636969896727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_30
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01776f36c35eb6290800000000000000
+      internalID: -7895965474126137584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_31
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1779b2f02deb03730800000000000000
+      internalID: 3976888280375072625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1871ff16be4e8ae30800000000000000
+      internalID: 4515110326051477377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_33
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c04edbfd68beb3e00800000000000000
+      internalID: 1025672304668828684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_34
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4363421431ee68b0800000000000000
+      internalID: -5156936909531684018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_35
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb634a90b7224da90800000000000000
+      internalID: -7290163984967911746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_36
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6466afc7a8208a4d0800000000000000
+      internalID: -3123243547755911610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_37
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b6fc1efe46b79fb0800000000000000
+      internalID: -4641040440594991433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_38
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 596935ee44e3179d0800000000000000
+      internalID: -2778371029333731691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_39
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b804b44995926d60800000000000000
+      internalID: 7882026783366973624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_40
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48ef7f07ba94b2fe0800000000000000
+      internalID: -1212794673962680700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_41
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c6af482e22f774b0800000000000000
+      internalID: -5442615344595228992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_42
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67fc403d474ea6b40800000000000000
+      internalID: 5434407090783571830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_43
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bbd5a818f15db920800000000000000
+      internalID: 3007650252160621495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_44
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 206eaf94607cd1080800000000000000
+      internalID: -9214990432705255934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_45
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2207ee07037f257c0800000000000000
+      internalID: -4083930124646453214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_46
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31123ce312639a710800000000000000
+      internalID: 1704953450351239443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_47
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7eecc4a04b7ba6d0800000000000000
+      internalID: -2978151211002433926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b681a54ce8f00ddc0800000000000000
+      internalID: -3616373394924496789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_49
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3dbd65cdc587a8c40800000000000000
+      internalID: 5515353033897597907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_50
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95360faf5c301c230800000000000000
+      internalID: 3657208521255052121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_51
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ecb8c66ac1a952b0800000000000000
+      internalID: -5595263171351233306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_52
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a93022df91b5a70b0800000000000000
+      internalID: -5730167408696360038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_53
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2de6d333655b9ba0800000000000000
+      internalID: -6081172987273876181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_54
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7868d3658bceb0780800000000000000
+      internalID: -8715612377380452729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_55
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d85d6cb3bbb9bcd0800000000000000
+      internalID: -2541794134039111463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_56
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4714c9ea54e706200800000000000000
+      internalID: 171275623587398004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_57
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3084cc0a890cffd0800000000000000
+      internalID: -2306958420596195269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_58
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c4497b3549be6fb0800000000000000
+      internalID: -4652577658025458488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_59
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b074915e2c7567c30800000000000000
+      internalID: 4356766184106444555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_60
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 012c88e14a3f9f4b0800000000000000
+      internalID: -5406021991469104624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_61
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b541094eeb9201e0800000000000000
+      internalID: -2233051017493002825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_62
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 449d345060af5d4a0800000000000000
+      internalID: -6569069577684919996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShadowStalker_Death_63
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f10505de5086efba0800000000000000
+      internalID: -6053286474473779169
       vertices: []
       indices: 
       edges: []
@@ -531,11 +1731,59 @@ TextureImporter:
       ShadowStalker_Death_13: 1358244165760253769
       ShadowStalker_Death_14: -5617102386718651183
       ShadowStalker_Death_15: 4454249007870366671
+      ShadowStalker_Death_16: -1106786849676155969
+      ShadowStalker_Death_17: -3175416651797426895
+      ShadowStalker_Death_18: 61074906185111111
+      ShadowStalker_Death_19: -6160926132752226809
       ShadowStalker_Death_2: 965624542312480146
+      ShadowStalker_Death_20: 6720424563259422044
+      ShadowStalker_Death_21: -4477492696230414417
+      ShadowStalker_Death_22: -5675787282679927855
+      ShadowStalker_Death_23: -1093886449854697816
+      ShadowStalker_Death_24: -4749991156676019000
+      ShadowStalker_Death_25: -7487823728589505946
+      ShadowStalker_Death_26: 7622305616453172835
+      ShadowStalker_Death_27: -2057373408207595681
+      ShadowStalker_Death_28: 2760125839136079977
+      ShadowStalker_Death_29: -902862636969896727
       ShadowStalker_Death_3: 8474330295879444297
+      ShadowStalker_Death_30: -7895965474126137584
+      ShadowStalker_Death_31: 3976888280375072625
+      ShadowStalker_Death_32: 4515110326051477377
+      ShadowStalker_Death_33: 1025672304668828684
+      ShadowStalker_Death_34: -5156936909531684018
+      ShadowStalker_Death_35: -7290163984967911746
+      ShadowStalker_Death_36: -3123243547755911610
+      ShadowStalker_Death_37: -4641040440594991433
+      ShadowStalker_Death_38: -2778371029333731691
+      ShadowStalker_Death_39: 7882026783366973624
       ShadowStalker_Death_4: 3560925939945646856
+      ShadowStalker_Death_40: -1212794673962680700
+      ShadowStalker_Death_41: -5442615344595228992
+      ShadowStalker_Death_42: 5434407090783571830
+      ShadowStalker_Death_43: 3007650252160621495
+      ShadowStalker_Death_44: -9214990432705255934
+      ShadowStalker_Death_45: -4083930124646453214
+      ShadowStalker_Death_46: 1704953450351239443
+      ShadowStalker_Death_47: -2978151211002433926
+      ShadowStalker_Death_48: -3616373394924496789
+      ShadowStalker_Death_49: 5515353033897597907
       ShadowStalker_Death_5: -5782740382580411021
+      ShadowStalker_Death_50: 3657208521255052121
+      ShadowStalker_Death_51: -5595263171351233306
+      ShadowStalker_Death_52: -5730167408696360038
+      ShadowStalker_Death_53: -6081172987273876181
+      ShadowStalker_Death_54: -8715612377380452729
+      ShadowStalker_Death_55: -2541794134039111463
+      ShadowStalker_Death_56: 171275623587398004
+      ShadowStalker_Death_57: -2306958420596195269
+      ShadowStalker_Death_58: -4652577658025458488
+      ShadowStalker_Death_59: 4356766184106444555
       ShadowStalker_Death_6: 1232510904167997362
+      ShadowStalker_Death_60: -5406021991469104624
+      ShadowStalker_Death_61: -2233051017493002825
+      ShadowStalker_Death_62: -6569069577684919996
+      ShadowStalker_Death_63: -6053286474473779169
       ShadowStalker_Death_7: -457984026561840070
       ShadowStalker_Death_8: -7266090664498739672
       ShadowStalker_Death_9: -4995939748598792109
