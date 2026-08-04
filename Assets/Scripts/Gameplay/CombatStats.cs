@@ -32,6 +32,7 @@ public class CombatStats : MonoBehaviour
     public bool IsParrying { get; private set; }
     public bool IsJumped { get; private set; }
     public bool IsGroggy { get; private set; }
+    public bool IsDead { get; private set; }
 
     public UnityEvent<float> OnHpChanged;
     public UnityEvent<float> OnMpChanged;
@@ -39,6 +40,7 @@ public class CombatStats : MonoBehaviour
     public UnityEvent OnParrySuccess;
     public UnityEvent OnGroggyState;
     public UnityEvent OnGroggyEnded;
+    public UnityEvent OnDeath;
 
 
     // =========================================================================
@@ -142,9 +144,11 @@ public class CombatStats : MonoBehaviour
         // 몬스터 / 유닛 피격 반응 연출 (스프라이트 적색 플래시 & 넉백)
         TriggerHitVisualFeedback(attacker, amount);
 
-        if (CurrentHp <= 0f)
+        if (CurrentHp <= 0f && !IsDead)
         {
+            IsDead = true;
             Debug.Log($"[{gameObject.name}] 사망!");
+            OnDeath?.Invoke();
         }
 
         return false;

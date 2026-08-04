@@ -87,7 +87,7 @@ public class StageManager : Singleton<StageManager>
 
         Debug.Log($"<color=cyan>[StageManager] 정수 idx 참조 동적 룸 전환: TargetKey='{targetAddressKey}' (ResourceIdx: {roomResourceIdx}, Stage: {CurrentStageIdx})</color>");
 
-        var builder = FindObjectOfType<TilemapStageBuilder>();
+        var builder = TilemapStageBuilder.Instance;
         if (builder == null)
         {
             var builderObj = new GameObject("TilemapStageBuilder");

@@ -30,10 +30,9 @@ public class MetroidvaniaCamera2D : MonoBehaviour
     {
         if (Target == null)
         {
-            var player = FindObjectOfType<Player>();
-            if (player != null)
+            if (Player.Instance != null)
             {
-                Target = player.transform;
+                Target = Player.Instance.transform;
             }
             else return;
         }

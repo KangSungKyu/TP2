@@ -17,7 +17,12 @@ public class TilemapStageBuilder : MonoBehaviour
     public float BufferTimeSec = 0.5f;
     public float FadeDurationSec = 0.4f;
 
-    private CanvasGroup fadeOverlayCanvasGroup;
+    public static TilemapStageBuilder Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+    }
 
     private void Start()
     {
@@ -49,7 +54,7 @@ public class TilemapStageBuilder : MonoBehaviour
             GameObject spawnedChunk = Instantiate(chunkPrefab, rootObj.transform);
             spawnedChunk.name = "Tilemap_Room_Chunk_Instance";
 
-            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            var spawner = UnitSpawner.Instance;
             if (spawner != null)
             {
                 spawner.SpawnUnitsFromMarkers(spawnedChunk);
@@ -59,7 +64,7 @@ public class TilemapStageBuilder : MonoBehaviour
         else
         {
             buildExpandedDummyStage(rootObj.transform);
-            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            var spawner = UnitSpawner.Instance;
             if (spawner != null)
             {
                 spawner.SpawnUnitsFromMarkers(rootObj);
@@ -169,10 +174,9 @@ public class TilemapStageBuilder : MonoBehaviour
         }
 
         metroCam.SetBounds(new Vector2(-29f, -1f), new Vector2(29f, 17f));
-        var player = FindObjectOfType<Player>();
-        if (player != null)
+        if (Player.Instance != null)
         {
-            metroCam.Target = player.transform;
+            metroCam.Target = Player.Instance.transform;
         }
     }
 

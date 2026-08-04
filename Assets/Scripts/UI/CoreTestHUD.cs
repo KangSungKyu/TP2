@@ -11,9 +11,15 @@ public class CoreTestHUD : MonoBehaviour
 
     private void Start()
     {
-        this.monster = GameObject.FindObjectOfType<Monster>();
-        if (this.monster != null)
-            this.monsterStats = this.monster.GetComponent<CombatStats>();
+        foreach (var m in Monster.ActiveMonsters)
+        {
+            if (m != null)
+            {
+                this.monster = m;
+                this.monsterStats = m.GetComponent<CombatStats>();
+                break;
+            }
+        }
     }
 
     private void OnGUI()

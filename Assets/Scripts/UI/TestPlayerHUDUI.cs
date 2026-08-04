@@ -33,13 +33,10 @@ public class TestPlayerHUDUI : Singleton<TestPlayerHUDUI>
     private void Update()
     {
         // 타겟 플레이어가 없을 경우 씬에서 자동으로 찾아 연결
-        if (this.targetPlayer == null)
+        if (this.targetPlayer == null && Player.Instance != null)
         {
-            this.targetPlayer = FindObjectOfType<Player>();
-            if (this.targetPlayer != null)
-            {
-                this.playerStats = this.targetPlayer.GetComponent<CombatStats>();
-            }
+            this.targetPlayer = Player.Instance;
+            this.playerStats = this.targetPlayer.GetComponent<CombatStats>();
         }
     }
 

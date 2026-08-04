@@ -41,21 +41,21 @@ public class MainScene : MonoBehaviour
     private async UniTask ensureManagersReadyAsync()
     {
         // ResourceManager 보장
-        if (FindObjectOfType<ResourceManager>() == null)
+        if (ResourceManager.Instance == null)
         {
             var go = new GameObject("ResourceManager");
             go.AddComponent<ResourceManager>();
         }
 
         // DataTableManager 보장
-        if (FindObjectOfType<DataTableManager>() == null)
+        if (DataTableManager.Instance == null)
         {
             var go = new GameObject("DataTableManager");
             go.AddComponent<DataTableManager>();
         }
 
         // StageManager 보장
-        if (FindObjectOfType<StageManager>() == null)
+        if (StageManager.Instance == null)
         {
             var go = new GameObject("StageManager");
             go.AddComponent<StageManager>();

@@ -361,13 +361,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: 7e660f6b72a384b10800000000000000
+      internalID: 1965885179594565351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_1
       rect:
@@ -379,13 +383,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: e148b95b813f6cb10800000000000000
+      internalID: 2001554371864396830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_2
       rect:
@@ -397,13 +405,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: 4dc4d3b4a81b26830800000000000000
+      internalID: 4063005021367520468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_3
       rect:
@@ -415,13 +427,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: c55c65b223d7ab630800000000000000
+      internalID: 3943602078145234268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_4
       rect:
@@ -433,13 +449,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: af0ddf9338c9e9f40800000000000000
+      internalID: 5737195062744174842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_5
       rect:
@@ -451,13 +471,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: 3e0f00cba3f50c250800000000000000
+      internalID: 5962870612505456867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_6
       rect:
@@ -469,13 +493,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: 644e549f595c47070800000000000000
+      internalID: 8103318877469271110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Death.png_7
       rect:
@@ -487,13 +515,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Death.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 7f8ad953489364df0800000000000000
+      internalID: -196406293746046729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SpearSentry_Death.png_0: 1965885179594565351
+      SpearSentry_Death.png_1: 2001554371864396830
+      SpearSentry_Death.png_2: 4063005021367520468
+      SpearSentry_Death.png_3: 3943602078145234268
+      SpearSentry_Death.png_4: 5737195062744174842
+      SpearSentry_Death.png_5: 5962870612505456867
+      SpearSentry_Death.png_6: 8103318877469271110
+      SpearSentry_Death.png_7: -196406293746046729
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

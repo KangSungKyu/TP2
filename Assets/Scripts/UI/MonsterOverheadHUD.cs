@@ -29,23 +29,16 @@ public class MonsterOverheadHUD : MonoBehaviour
     private void Update()
     {
         if (mainCam == null) mainCam = Camera.main;
-
-        // 0.5초 주기로 씬 내 몬스터 검색 (GC 및 연산 최적화)
-        if (Time.time - lastSearchTime > 0.5f)
-        {
-            lastSearchTime = Time.time;
-            cachedMonsters = FindObjectsByType<Monster>(FindObjectsSortMode.None);
-        }
     }
 
     private void OnGUI()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (mainCam == null || cachedMonsters == null || cachedMonsters.Length == 0) return;
+        if (mainCam == null || Monster.ActiveMonsters == null || Monster.ActiveMonsters.Count == 0) return;
 
         InitStyleIfNeeded();
 
-        foreach (var monster in cachedMonsters)
+        foreach (var monster in Monster.ActiveMonsters)
         {
             if (monster == null || !monster.gameObject.activeInHierarchy) continue;
 

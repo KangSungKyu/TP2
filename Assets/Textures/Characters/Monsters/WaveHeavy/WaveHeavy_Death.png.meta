@@ -583,13 +583,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: 2ef4538e2b04ecef0800000000000000
+      internalID: -86060205729296414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_1
       rect:
@@ -601,13 +605,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: 2663c83379b9785e0800000000000000
+      internalID: -1907384843460921758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_2
       rect:
@@ -619,13 +627,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: e1423436b13a75220800000000000000
+      internalID: 2474625858288165918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_3
       rect:
@@ -637,13 +649,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: e68ecb34c0b32d720800000000000000
+      internalID: 2869420836450527342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_4
       rect:
@@ -655,13 +671,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: 1d16e0889e894f160800000000000000
+      internalID: 7058434644773855697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_5
       rect:
@@ -673,13 +693,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: 0387ccf2792b3ffe0800000000000000
+      internalID: -1156384316892350416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_6
       rect:
@@ -691,13 +715,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: f8bf8001e6a2c3e80800000000000000
+      internalID: -8197630569517352049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Death.png_7
       rect:
@@ -709,13 +737,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Death.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 65a34eb8e49bad770800000000000000
+      internalID: 8636418982441925206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaveHeavy_Death.png_0: -86060205729296414
+      WaveHeavy_Death.png_1: -1907384843460921758
+      WaveHeavy_Death.png_2: 2474625858288165918
+      WaveHeavy_Death.png_3: 2869420836450527342
+      WaveHeavy_Death.png_4: 7058434644773855697
+      WaveHeavy_Death.png_5: -1156384316892350416
+      WaveHeavy_Death.png_6: -8197630569517352049
+      WaveHeavy_Death.png_7: 8636418982441925206
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

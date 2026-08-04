@@ -325,13 +325,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: e5b964fb318860990800000000000000
+      internalID: -7420093717651481762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_1
       rect:
@@ -343,13 +347,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: 92bf3c695d58797a0800000000000000
+      internalID: -6370475995488322775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_2
       rect:
@@ -361,13 +369,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: 5c2378d07ea18c1e0800000000000000
+      internalID: -2177460840166903099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_3
       rect:
@@ -379,13 +391,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: fe7f200d9f9b89440800000000000000
+      internalID: 4942905073626970095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_4
       rect:
@@ -397,13 +413,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: ef805bab43b8b2330800000000000000
+      internalID: 3687193778519869694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_5
       rect:
@@ -415,13 +435,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: 6c87308baf339d740800000000000000
+      internalID: 5177226398561171654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_6
       rect:
@@ -433,13 +457,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: 692a331286320ef80800000000000000
+      internalID: -8079418801362066794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Attack.png_7
       rect:
@@ -451,13 +479,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Attack.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 7daa425a2211ed560800000000000000
+      internalID: 7340323283157691095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShadowStalker_Attack.png_0: -7420093717651481762
+      ShadowStalker_Attack.png_1: -6370475995488322775
+      ShadowStalker_Attack.png_2: -2177460840166903099
+      ShadowStalker_Attack.png_3: 4942905073626970095
+      ShadowStalker_Attack.png_4: 3687193778519869694
+      ShadowStalker_Attack.png_5: 5177226398561171654
+      ShadowStalker_Attack.png_6: -8079418801362066794
+      ShadowStalker_Attack.png_7: 7340323283157691095
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -325,13 +325,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: d3af96782624dfe50800000000000000
+      internalID: 6844699999619119677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_1
       rect:
@@ -343,13 +347,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: 51bd1287e69e1a120800000000000000
+      internalID: 2423474735173196565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_2
       rect:
@@ -361,13 +369,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: 3726ce72224697910800000000000000
+      internalID: 1835608420991656563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_3
       rect:
@@ -379,13 +391,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: c7808bf646dd08600800000000000000
+      internalID: 468617784687331452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_4
       rect:
@@ -397,13 +413,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: c86e632f32f95f9d0800000000000000
+      internalID: -2741109821448722804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_5
       rect:
@@ -415,13 +435,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: a0a2c9e8d03a49180800000000000000
+      internalID: -9109476867641169398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_6
       rect:
@@ -433,13 +457,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: 9b82618adf116bef0800000000000000
+      internalID: -92866961170093895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: ShadowStalker_Idle.png_7
       rect:
@@ -451,13 +479,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: ShadowStalker_Idle.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 2a104f2d10f8993d0800000000000000
+      internalID: -3199368822273080926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShadowStalker_Idle.png_0: 6844699999619119677
+      ShadowStalker_Idle.png_1: 2423474735173196565
+      ShadowStalker_Idle.png_2: 1835608420991656563
+      ShadowStalker_Idle.png_3: 468617784687331452
+      ShadowStalker_Idle.png_4: -2741109821448722804
+      ShadowStalker_Idle.png_5: -9109476867641169398
+      ShadowStalker_Idle.png_6: -92866961170093895
+      ShadowStalker_Idle.png_7: -3199368822273080926
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
