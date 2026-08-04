@@ -498,7 +498,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 102
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -578,198 +578,144 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 0b4cdd3eed1296330800000000000000
-      internalID: 3704529409678361776
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_0_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_1
       rect:
         serializedVersion: 2
-        x: 128
+        x: 205
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 3e53277ac7d6cd600800000000000000
-      internalID: 494390441256564195
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_1_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_2
       rect:
         serializedVersion: 2
-        x: 256
+        x: 410
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 6a05b373ead591040800000000000000
-      internalID: 4618825895677481126
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_2_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_3
       rect:
         serializedVersion: 2
-        x: 384
+        x: 615
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: c46f797c2fd04f130800000000000000
-      internalID: 3599517338557740620
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_3_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_4
       rect:
         serializedVersion: 2
-        x: 512
+        x: 820
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: e7a514b3e9edd3530800000000000000
-      internalID: 3836467228769868414
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_4_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_5
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1025
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: b5c4649cecf6c7b90800000000000000
-      internalID: -7242791166787826597
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_5_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_6
       rect:
         serializedVersion: 2
-        x: 768
+        x: 1230
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: ca20f05e76c700610800000000000000
-      internalID: 1585403854500856492
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_6_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Idle.png_7
       rect:
         serializedVersion: 2
-        x: 896
+        x: 1435
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 26f4be9220a543ee0800000000000000
-      internalID: -1282301028554027166
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    outline: []
-    customData: 
-    physicsShape: []
-    bones: []
-    spriteID: 
-    internalID: 0
-    vertices: []
-    indices: 
-    edges: []
-    weights: []
-    secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
-    nameFileIdTable:
-      WaveHeavy_Idle.png_0: 3704529409678361776
-      WaveHeavy_Idle.png_1: 494390441256564195
-      WaveHeavy_Idle.png_2: 4618825895677481126
-      WaveHeavy_Idle.png_3: 3599517338557740620
-      WaveHeavy_Idle.png_4: 3836467228769868414
-      WaveHeavy_Idle.png_5: -7242791166787826597
-      WaveHeavy_Idle.png_6: 1585403854500856492
-      WaveHeavy_Idle.png_7: -1282301028554027166
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Idle.png_7_id
+      internalID: 0
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

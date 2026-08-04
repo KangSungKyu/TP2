@@ -197,7 +197,7 @@ public class Monster : UnitBase
         if (!isDistanceOverPattern && currentDist > attackRange)
         {
             SetFacingRight(playerTarget.position.x >= transform.position.x);
-            if (animator != null)
+            if (animator != null && animator.runtimeAnimatorController != null)
             {
                 animator.SetInteger("State", 2);
             }
@@ -337,10 +337,8 @@ public class Monster : UnitBase
 
     protected void SetAnimState(int stateValue)
     {
-        if (animator != null)
-        {
-            animator.SetInteger("State", stateValue);
-        }
+        if (animator == null || animator.runtimeAnimatorController == null) return;
+        animator.SetInteger("State", stateValue);
     }
 }
 

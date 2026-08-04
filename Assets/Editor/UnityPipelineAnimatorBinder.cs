@@ -166,14 +166,24 @@ public static class UnityPipelineAnimatorBinder
     {
         string animsDir = "Assets/Anims/Monster";
         string monsterTexDir = "Assets/Textures/Characters/Monsters";
-        string[] monsters = new string[] { "SpearSentry", "ShadowStalker", "WaveHeavy" };
+
+        var monsterSpecs = new Dictionary<string, (int frameW, int frameH, int ppu)>()
+        {
+            { "ShadowStalker", (128, 256, 64) },
+            { "SpearSentry", (154, 307, 77) },
+            { "WaveHeavy", (205, 410, 102) }
+        };
+
         var monsterMap = new Dictionary<int, (string actName, bool loop)>()
         {
             { 1, ("Idle", true) }, { 2, ("Move", true) }, { 3, ("Jump", false) }, { 7, ("Attack", false) }, { 8, ("Death", false) }
         };
 
-        foreach (string mName in monsters)
+        foreach (var specKvp in monsterSpecs)
         {
+            string mName = specKvp.Key;
+            var spec = specKvp.Value;
+
             string controllerPath = $"{animsDir}/{mName}AnimatorController.controller";
             AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
             EnsureIntParameter(controller, "State");
@@ -188,7 +198,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 128, 256, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, spec.frameW, spec.frameH, spec.ppu, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)

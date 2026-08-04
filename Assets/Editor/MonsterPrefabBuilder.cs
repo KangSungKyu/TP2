@@ -15,6 +15,9 @@ public static class MonsterPrefabBuilder
         public uint unitId;
         public Vector2 colliderSize;
         public Vector2 colliderOffset;
+        public int frameWidth;
+        public int frameHeight;
+        public int ppu;
     }
 
     [MenuItem("TP2/Build Stage 1 Regular Monster Prefabs (1스테이지 일반 몬스터 3종 프리팹 빌드)")]
@@ -31,9 +34,9 @@ public static class MonsterPrefabBuilder
 
         MonsterSpec[] monsterSpecs = new MonsterSpec[]
         {
-            new MonsterSpec { name = "SpearSentry", unitId = 3101, colliderSize = new Vector2(1.2f, 1.8f), colliderOffset = new Vector2(0f, 0.9f) },
-            new MonsterSpec { name = "ShadowStalker", unitId = 3102, colliderSize = new Vector2(1.0f, 1.6f), colliderOffset = new Vector2(0f, 0.8f) },
-            new MonsterSpec { name = "WaveHeavy", unitId = 3103, colliderSize = new Vector2(1.6f, 2.0f), colliderOffset = new Vector2(0f, 1.0f) }
+            new MonsterSpec { name = "SpearSentry", unitId = 3101, colliderSize = new Vector2(1.2f, 1.8f), colliderOffset = new Vector2(0f, 0.9f), frameWidth = 154, frameHeight = 307, ppu = 77 },
+            new MonsterSpec { name = "ShadowStalker", unitId = 3102, colliderSize = new Vector2(1.0f, 1.6f), colliderOffset = new Vector2(0f, 0.8f), frameWidth = 128, frameHeight = 256, ppu = 64 },
+            new MonsterSpec { name = "WaveHeavy", unitId = 3103, colliderSize = new Vector2(1.6f, 2.0f), colliderOffset = new Vector2(0f, 1.0f), frameWidth = 205, frameHeight = 410, ppu = 102 }
         };
 
         foreach (var spec in monsterSpecs)

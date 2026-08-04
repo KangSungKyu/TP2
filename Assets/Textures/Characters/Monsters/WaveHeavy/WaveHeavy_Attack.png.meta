@@ -498,7 +498,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 102
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -578,198 +578,144 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: a5aca804655325930800000000000000
-      internalID: 4130422452818463322
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_0_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_1
       rect:
         serializedVersion: 2
-        x: 128
+        x: 205
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 0762243914cee0520800000000000000
-      internalID: 2670331395464898160
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_1_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_2
       rect:
         serializedVersion: 2
-        x: 256
+        x: 410
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 49b91a1a01ccf8590800000000000000
-      internalID: -7669687268585399404
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_2_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_3
       rect:
         serializedVersion: 2
-        x: 384
+        x: 615
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: f7f4dbbd23ac25b50800000000000000
-      internalID: 6580544325325508479
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_3_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_4
       rect:
         serializedVersion: 2
-        x: 512
+        x: 820
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 8510890e77e6f2700800000000000000
-      internalID: 517753943319118168
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_4_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_5
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1025
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: bc6f80ea7e8e51580800000000000000
-      internalID: -8856917010399299893
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_5_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_6
       rect:
         serializedVersion: 2
-        x: 768
+        x: 1230
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 2cfe6a2803d2261d0800000000000000
-      internalID: -3359072685691310142
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_6_id
+      internalID: 0
     - serializedVersion: 2
       name: WaveHeavy_Attack.png_7
       rect:
         serializedVersion: 2
-        x: 896
+        x: 1435
         y: 0
-        width: 128
-        height: 256
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 53fef911405609cb0800000000000000
-      internalID: -4859272929782796491
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    outline: []
-    customData: 
-    physicsShape: []
-    bones: []
-    spriteID: 
-    internalID: 0
-    vertices: []
-    indices: 
-    edges: []
-    weights: []
-    secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
-    nameFileIdTable:
-      WaveHeavy_Attack.png_0: 4130422452818463322
-      WaveHeavy_Attack.png_1: 2670331395464898160
-      WaveHeavy_Attack.png_2: -7669687268585399404
-      WaveHeavy_Attack.png_3: 6580544325325508479
-      WaveHeavy_Attack.png_4: 517753943319118168
-      WaveHeavy_Attack.png_5: -8856917010399299893
-      WaveHeavy_Attack.png_6: -3359072685691310142
-      WaveHeavy_Attack.png_7: -4859272929782796491
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Attack.png_7_id
+      internalID: 0
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -325,17 +325,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 6abecf07f3443e630800000000000000
-      internalID: 3955079937030679462
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_0_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_1
       rect:
@@ -347,17 +343,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: d621a1c942d889690800000000000000
-      internalID: -7595165583183048083
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_1_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_2
       rect:
@@ -369,17 +361,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 811741f92a763c030800000000000000
-      internalID: 3513766082430398744
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_2_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_3
       rect:
@@ -391,17 +379,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 92002669ebd25c830800000000000000
-      internalID: 4090726133126004777
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_3_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_4
       rect:
@@ -413,17 +397,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 38aee4c636940d280800000000000000
-      internalID: -9020629362255402365
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_4_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_5
       rect:
@@ -435,17 +415,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: cee60aab41f2d3d50800000000000000
-      internalID: 6718577985183575788
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_5_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_6
       rect:
@@ -457,17 +433,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 426b21d5e7a1cd340800000000000000
-      internalID: 4889812425447224868
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_6_id
+      internalID: 0
     - serializedVersion: 2
       name: ShadowStalker_Move.png_7
       rect:
@@ -479,39 +451,13 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
-      spriteID: 978d4d02eb69fc7f0800000000000000
-      internalID: -590087282823473031
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    outline: []
-    customData: 
-    physicsShape: []
-    bones: []
-    spriteID: 
-    internalID: 0
-    vertices: []
-    indices: 
-    edges: []
-    weights: []
-    secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
-    nameFileIdTable:
-      ShadowStalker_Move.png_0: 3955079937030679462
-      ShadowStalker_Move.png_1: -7595165583183048083
-      ShadowStalker_Move.png_2: 3513766082430398744
-      ShadowStalker_Move.png_3: 4090726133126004777
-      ShadowStalker_Move.png_4: -9020629362255402365
-      ShadowStalker_Move.png_5: 6718577985183575788
-      ShadowStalker_Move.png_6: 4889812425447224868
-      ShadowStalker_Move.png_7: -590087282823473031
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: ShadowStalker_Move.png_7_id
+      internalID: 0
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
