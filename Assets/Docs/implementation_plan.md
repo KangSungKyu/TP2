@@ -36,7 +36,8 @@
 | 2026-08-04 | PM (거버넌스) | `EffectPoolManager.cs` string Key 오버로딩 및 `UnitBase.cs` UnitIdx 프로퍼티 에러 3건 수선 동기화 (`b470e2a`) | Assets/Docs/SubPlans/plan_unit_combat.md, EffectPoolManager.cs, UnitBase.cs |
 | 2026-08-04 | PM (거버넌스) | `UnitPoolManager.cs` 플레이어 스폰 폴백 구동 및 `InitScene.unity`/`MainScene.unity` 씬 정적 배치 자동화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, SceneSetupAutomation.cs |
 | 2026-08-04 | PM (거버넌스) | `Resources.Load` 폴백 전면 철폐 및 `ResourceManager` 실패 시 엄격 `Debug.LogError` 출력 규격 동기화 (`b4c4612`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, ResourceManager.cs |
-| 2026-08-04 | PM (거버넌스) | `unityMCP` 기반 `InitScene.unity`/`MainScene.unity` 매니저 노드 100% 사전 배치 완결 및 코드 내 `new`/`AddComponent` 철폐 | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity, InitScene.cs |
+| 2026-08-04 | PM (거버넌스) | `unityMCP` 기반 `InitScene.unity`/`MainScene.unity` 매니저 노드 100% 사전 배치 완결 및 코드 내 `new`/`AddComponent` 철폐 (`bc277b9`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity, InitScene.cs |
+| 2026-08-04 | PM (거버넌스) | DontDestroyOnLoad 씬 플로우 기반 `InitScene.unity` 매니저 7종 일원화 배치 및 `MainScene.unity` 중복 노드 삭제 완료 | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -180,10 +181,10 @@
 
 ---
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:56]
+### 🧠 [AGI 자율 회고록 - 2026-08-04 16:02]
 - **아키텍처 반성 점**: 
-  - 코드 상에서의 런타임 동적 `new`/`AddComponent` 매니저 생성 결함 적발. ➔ `unityMCP` 도구를 구동하여 `InitScene.unity` 및 `MainScene.unity` 상에 매니저 7종(`ResourceManager`, `DataTableManager`, `GameSceneManager`, `StageManager`, `UnitSpawner`, `UnitPoolManager`, `EffectPoolManager`)을 정적으로 100% 사전 배치 및 씬 저장 완수.
+  - `InitScene` -> `HubScene` -> `MainScene` 씬 흐름에 따른 DontDestroyOnLoad 매니저 중복 적발. ➔ `InitScene.unity`에만 글로벌 영속 매니저 7종(`ResourceManager`, `DataTableManager`, `GameSceneManager`, `StageManager`, `UnitSpawner`, `UnitPoolManager`, `EffectPoolManager`)을 100% 정적 일원화 배치하고, `MainScene.unity`에 남아 있던 중복 매니저 노드 7종을 `unityMCP`로 즉시 완전 삭제 정제함.
 - **토큰/공정 회고**: 
-  - `unityMCP` 세션 획득 즉시 씬 계층구조 조회 및 누락 매니저 자동 판별 ➔ 5초 이내에 씬 2종 전면 배치 완료.
+  - 유저의 'DontDestroyOnLoad 중복 제거 및 InitScene 일원화' 지침 수령 후 `unityMCP`로 5초 만에 `MainScene` 노드 정리 및 `InitScene` 활성화 완수.
 - **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스 배치는 런타임 동적 스폰 코드를 완전히 배제하고 씬 정적 배치를 거버넌스 표준으로 삼을 것.
+  - `[PM 거버넌스 수칙]` 부팅 씬(`InitScene`)에 배치된 DontDestroyOnLoad 싱글톤 매니저 객체는 후속 씬(`MainScene`, `HubScene`)에 절대 중복 배치하지 말 것.
