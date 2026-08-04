@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class SkillExecutor : MonoBehaviour
 {
+    public static SkillExecutor Instance { get; private set; }
+
     // =========================================================================
     // 1. CONST & PRIVATE FIELDS
     // =========================================================================
@@ -17,6 +19,12 @@ public class SkillExecutor : MonoBehaviour
     private CombatStats stats;
     private GameObject particlePrefab;
     private readonly Dictionary<int, float> nextAvailable = new Dictionary<int, float>();
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        stats = GetComponent<CombatStats>();
+    }
 
 
     // =========================================================================

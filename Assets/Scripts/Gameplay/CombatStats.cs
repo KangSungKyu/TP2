@@ -69,6 +69,19 @@ public class CombatStats : MonoBehaviour
         groggyTimer = 0f;
     }
 
+    public void SetGuarding(bool state) => IsGuarding = state;
+    public void SetDodging(bool state) => IsDodging = state;
+    public void SetParrying(bool state) => IsParrying = state;
+    public void SetJumped(bool state) => IsJumped = state;
+
+    public bool ConsumeMp(float amount)
+    {
+        if (CurrentMp < amount) return false;
+        CurrentMp = Mathf.Max(CurrentMp - amount, 0f);
+        OnMpChanged?.Invoke(CurrentMp / MaxMp);
+        return true;
+    }
+
     public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
     {
         if (IsGroggy)
