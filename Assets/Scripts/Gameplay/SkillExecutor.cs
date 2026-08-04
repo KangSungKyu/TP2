@@ -214,13 +214,7 @@ public class SkillExecutor : MonoBehaviour
 
         if (particlePrefab == null)
         {
-            particlePrefab = Resources.Load<GameObject>("prefabs/Particle");
-#if UNITY_EDITOR
-            if (particlePrefab == null)
-            {
-                particlePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/prefabs/Particle.prefab");
-            }
-#endif
+            Debug.LogError("[ResourceManager Error] 'Particle' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요.");
         }
     }
 

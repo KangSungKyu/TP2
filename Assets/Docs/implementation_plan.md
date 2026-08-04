@@ -35,6 +35,7 @@
 | 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 동기화 (`487f309`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
 | 2026-08-04 | PM (거버넌스) | `EffectPoolManager.cs` string Key 오버로딩 및 `UnitBase.cs` UnitIdx 프로퍼티 에러 3건 수선 동기화 (`b470e2a`) | Assets/Docs/SubPlans/plan_unit_combat.md, EffectPoolManager.cs, UnitBase.cs |
 | 2026-08-04 | PM (거버넌스) | `UnitPoolManager.cs` 플레이어 스폰 폴백 구동 및 `InitScene.unity`/`MainScene.unity` 씬 정적 배치 자동화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, SceneSetupAutomation.cs |
+| 2026-08-04 | PM (거버넌스) | `Resources.Load` 폴백 전면 철폐 및 `ResourceManager` 실패 시 엄격 `Debug.LogError` 출력 규격 동기화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, ResourceManager.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -178,10 +179,10 @@
 
 ---
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:47]
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:50]
 - **아키텍처 반성 점**: 
-  - `UnitPoolManager.cs` 내 Addressables `"Player"` 인스턴스화 실패 시 플레이어 미스폰 현상 적발. ➔ `Resources.Load<GameObject>("Prefabs/Player")` 폴백 구동 및 `Assets/Editor/SceneSetupAutomation.cs` 에디터 자동 배치 스크립트 작성 발주.
+  - 유저의 `Resources.Load` 폴백 절대 사용 금지 지침 적발. ➔ `Resources.Load` 폴백 구문을 전면 삭제/철폐하고, `ResourceManager` 로드 실패 시 엄격 `Debug.LogError`를 출력하도록 수선 발주.
 - **토큰/공정 회고**: 
-  - 유저의 MCP/에디터 직접 배치 가능 여부 질의에 답하고, `unityMCP` 도구 및 에디터 스크립트 결합 파이프라인 수립.
+  - `unityMCP` 서버 핑 상태 재확인(No Editor instance detected) ➔ 유저에게 유니티 에디터 상의 `Tools -> MCP for Unity` 브릿지 활성화 안내 5초 만에 전달 완수.
 - **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 어드레스블 기반 리소스 로딩 시 항상 `Resources.Load` 또는 direct asset 폴백 경로를 이중 구성할 것.
+  - `[PM 거버넌스 수칙]` 어드레스블 Single Source of Truth 아키텍처 수호 시 `Resources.Load` 묵인 폴백 조치를 일체 금지하고 에러 로그를 투명하게 노출할 것.

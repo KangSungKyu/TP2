@@ -50,31 +50,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
 
         if (playerObj == null)
         {
-            // 1단계 폴백: Resources.Load
-            GameObject resPrefab = Resources.Load<GameObject>("Prefabs/Player");
-            if (resPrefab == null) resPrefab = Resources.Load<GameObject>("Player");
-
-#if UNITY_EDITOR
-            // 2단계 폴백: UnityEditor AssetDatabase 로드 (에디터 테스트 환경)
-            if (resPrefab == null)
-            {
-                resPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player.prefab");
-            }
-#endif
-
-            if (resPrefab != null)
-            {
-                playerObj = Instantiate(resPrefab, position, Quaternion.identity);
-                Debug.Log("<color=green>[UnitPoolManager] Resources / AssetDatabase 폴백 플레이어 스폰 성공!</color>");
-            }
-            else
-            {
-                // 3단계 폴백: 동적 GameObject 및 Player 컴포넌트 신설
-                playerObj = new GameObject("Player");
-                playerObj.transform.position = position;
-                playerObj.AddComponent<Player>();
-                Debug.LogWarning("[UnitPoolManager] 플레이어 프리팹 미발견 ➔ 기본 Player 런타임 폴백 생성!");
-            }
+            Debug.LogError($"[ResourceManager Error] '{poolKey}' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요.");
+            return null;
         }
 
         if (playerObj != null)
