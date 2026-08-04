@@ -23,7 +23,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
         foreach (var marker in markers)
         {
-            ProcessSpawnMarker(marker);
+            ProcessSpawnMarker(marker, roomInstance);
         }
     }
 
@@ -40,12 +40,14 @@ public class UnitSpawner : Singleton<UnitSpawner>
         }
     }
 
-    private void ProcessSpawnMarker(SpawnPointMarker marker)
+    private void ProcessSpawnMarker(SpawnPointMarker marker, GameObject roomInstance)
     {
         if (marker == null || !marker.EnableSpawn || marker.Type == SpawnType.None)
         {
             return;
         }
+
+        bool isBossRoom = roomInstance != null && (roomInstance.name.Contains("Boss") || roomInstance.name.Contains("1042"));
 
         switch (marker.Type)
         {
@@ -58,41 +60,60 @@ public class UnitSpawner : Singleton<UnitSpawner>
                 break;
 
             case SpawnType.Boss:
-                SpawnMonsterUnit(marker, isBoss: true);
+                if (isBossRoom)
+                {
+                    SpawnMonsterUnit(marker, isBoss: true);
+                }
+                else
+                {
+                    Debug.Log($"<color=yellow>[UnitSpawner] 일반 룸 청크 '{roomInstance.name}' 내 보스 마커 스폰 차단.</color>");
+                }
                 break;
         }
     }
 
     private void SpawnPlayerAt(Vector3 spawnPos)
     {
-        Player player = Player.Instance;
-        if (player != null)
+        if (Player.Instance != null)
         {
-            var motor = player.GetComponent<KinematicMotor2D>();
+            var motor = Player.Instance.GetComponent<KinematicMotor2D>();
             if (motor != null)
             {
                 motor.Teleport(spawnPos);
             }
             else
             {
-                player.transform.position = spawnPos;
+                Player.Instance.transform.position = spawnPos;
             }
-            Debug.Log($"<color=cyan>[UnitSpawner] 기존 플레이어 위치를 마커 위치 ({spawnPos})로 텔레포트 이동완료!</color>");
-        }
-        else
-        {
-            if (ResourceManager.Instance != null)
+            Debug.Log($"<color=cyan>[UnitSpawner] 기존 플레이어 위치를 마커 위치 ({spawnPos})로 텔레포트 이동 완료!</color>");
+
+            // 씬 내 중복 플레이어 오브젝트 전면 제거
+            var allPlayers = Object.FindObjectsByType<Player>(FindObjectsSortMode.None);
+            if (allPlayers.Length > 1)
             {
-                ResourceManager.Instance.LoadAssetAsync<GameObject>("Player", prefab =>
+                foreach (var p in allPlayers)
                 {
-                    if (prefab != null)
+                    if (p != Player.Instance && p.gameObject != null)
                     {
-                        GameObject pObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-                        pObj.name = "Player";
-                        Debug.Log($"<color=cyan>[UnitSpawner] 플레이어 프리팹 스폰 완결 ({spawnPos})</color>");
+                        if (Application.isPlaying) Object.Destroy(p.gameObject);
+                        else Object.DestroyImmediate(p.gameObject);
                     }
-                });
+                }
             }
+            return;
+        }
+
+        if (ResourceManager.Instance != null)
+        {
+            ResourceManager.Instance.LoadAssetAsync<GameObject>("Player", prefab =>
+            {
+                if (prefab != null && Player.Instance == null)
+                {
+                    GameObject pObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+                    pObj.name = "Player";
+                    Debug.Log($"<color=cyan>[UnitSpawner] 플레이어 프리팹 스폰 완결 ({spawnPos})</color>");
+                }
+            });
         }
     }
 

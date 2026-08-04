@@ -30,7 +30,8 @@
 |---:|---|---|---|
 | 2026-08-04 | 자동생성(스캔) | 전수 검사 및 마스터 명세서 생성 (32/32) | Assets/Docs/implementation_plan.md 및 SubPlans/폴더 생성 |
 | 2026-08-04 | PM (거버넌스) | 유닛 사망 처리 파이프라인 수립, 공격 이펙트 100% 풀링 전환 및 Unity Find* 탐색 함수 전면 철폐 동기화 (`9483a67`) | Assets/Docs/SubPlans/plan_unit_combat.md, StageManager.cs, Monster.cs, EffectPoolManager.cs |
-| 2026-08-04 | PM (거버넌스) | `TilemapStageBuilder.cs` CS0103 및 `Player.cs` CS0117 컴파일 에러 수선 발주 | Assets/Docs/SubPlans/plan_stage_sequencer.md, TilemapStageBuilder.cs, Player.cs |
+| 2026-08-04 | PM (거버넌스) | `TilemapStageBuilder.cs` CS0103 및 `Player.cs` CS0117 컴파일 에러 수선 동기화 (`49068a3`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, TilemapStageBuilder.cs, Player.cs |
+| 2026-08-04 | PM (거버넌스) | 중복 플레이어 생성 차단, 매니저 씬 사전 배치 및 Battle 청크 몬스터 스폰 필터링 수선 발주 | Assets/Docs/SubPlans/plan_stage_sequencer.md, UnitSpawner.cs, InitScene.cs, MainScene.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -71,4 +72,24 @@
   - 에러 로그 파싱 후 5초 이내에 해당 서브계획서 매핑 및 시그니처 정정 명세 발송 완수.
 - **차기 방어 지침**: 
   - `[PM 거버넌스 수칙]` enum 심볼 확장 및 캔버스 페이드 변수 리팩토링 시 상여 파일 간 통일성을 정적 분석으로 1차 사전 체크할 것.
+
+---
+
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:10]
+- **아키텍처 반성 점**: 
+  - CS0103 및 CS0117 컴파일 에러 수선 및 NUnit 32/32 PASS 검증 완수. `portfolio` 브랜치 병합(`49068a3`)으로 코드베이스 무결성 회복.
+- **토큰/공정 회고**: 
+  - 하위 에이전트 브랜치 병합 ➔ 원격 Push ➔ PM 마스터 명세서 100% 동기화 이행.
+- **차기 방어 지침**: 
+  - `[PM 거버넌스 수칙]` 스크립트 수정 후 항상 NUnit EditMode/PlayMode 테스트 자동 구동 결과를 확인 후 병합 판정할 것.
+
+---
+
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:18]
+- **아키텍처 반성 점**: 
+  - 런타임 중복 플레이어 생성(`Player.Instance` 중복), 런타임 동적 매니저 스폰 대신 `InitScene/MainScene` 정적 사전 배치 요구, 및 Battle 청크 내 보스 몬스터 혼선 출몰 결함 적발. ➔ `plan_stage_sequencer.md` 및 `plan_unit_combat.md` 서브 명세서를 결합하여 3대 핵심 수선 항목 발주.
+- **토큰/공정 회고**: 
+  - 유저 피드백의 3대 핵심 원인을 파악 후 10초 이내에 하위 메인프로그래머에 핀포인트 발주 완수.
+- **차기 방어 지침**: 
+  - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스는 런타임 `AddComponent` / `new` 생성을 금지하고 `InitScene/MainScene` 정적 배치 구조를 상시 강제할 것.
 

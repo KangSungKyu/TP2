@@ -174,42 +174,10 @@ public class SkillExecutor : MonoBehaviour
             return null;
         }
 
-        if (SimplePoolManager.Instance != null && !SimplePoolManager.Instance.TryGetPool<Transform>(prefabKey, out _))
+        float duration = effectData.Duration > 0f ? effectData.Duration : 1.0f;
+        if (EffectPoolManager.Instance != null)
         {
-            await SimplePoolManager.Instance.CreatePoolAsync<Transform>(prefabKey, capacity: 30, prewarmCount: 10);
-        }
-
-        Transform pooledTrans = SimplePoolManager.Instance != null ? SimplePoolManager.Instance.Get<Transform>(prefabKey) : null;
-        GameObject effectObj = null;
-
-        if (pooledTrans != null)
-        {
-            effectObj = pooledTrans.gameObject;
-        }
-        else if (ResourceManager.Instance != null)
-        {
-            effectObj = await ResourceManager.Instance.InstantiateAsyncTask(prefabKey, null, position, rotation);
-            if (effectObj != null) pooledTrans = effectObj.transform;
-        }
-
-        if (effectObj != null)
-        {
-            effectObj.transform.position = position;
-            effectObj.transform.rotation = rotation;
-            effectObj.transform.localScale = Vector3.one * (effectData.Scale > 0f ? effectData.Scale : 1f);
-            effectObj.SetActive(true);
-
-            var psList = effectObj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var ps in psList)
-            {
-                ps.Clear();
-                ps.Play();
-            }
-
-            float duration = effectData.Duration > 0f ? effectData.Duration : 1.0f;
-            ReleaseEffectAfterDurationAsync(prefabKey, pooledTrans, duration, this.GetCancellationTokenOnDestroy()).Forget();
-
-            return effectObj;
+            return await EffectPoolManager.Instance.SpawnEffect(prefabKey, position, rotation, duration);
         }
 
         return null;
