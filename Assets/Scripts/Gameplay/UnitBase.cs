@@ -15,6 +15,8 @@ public class UnitBase : MonoBehaviour
 
     public UnitBaseData UnitData { get; protected set; }
     public string UnitName { get; protected set; } = string.Empty;
+    public uint UnitIdx { get; protected set; }
+    public uint UnitId => UnitIdx;
 
 
     // =========================================================================
@@ -43,6 +45,8 @@ public class UnitBase : MonoBehaviour
     /// </summary>
     public virtual async UniTask InitUnitAsync(uint unitIdx)
     {
+        this.UnitIdx = unitIdx;
+        await UniTask.Yield();
         if (DataTableManager.Instance != null)
         {
             await DataTableManager.Instance.EnsureDataLoadedAsync();

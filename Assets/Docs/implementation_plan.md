@@ -32,23 +32,13 @@
 | 2026-08-04 | PM (거버넌스) | 유닛 사망 처리 파이프라인 수립, 공격 이펙트 100% 풀링 전환 및 Unity Find* 탐색 함수 전면 철폐 동기화 (`9483a67`) | Assets/Docs/SubPlans/plan_unit_combat.md, StageManager.cs, Monster.cs, EffectPoolManager.cs |
 | 2026-08-04 | PM (거버넌스) | `TilemapStageBuilder.cs` CS0103 및 `Player.cs` CS0117 컴파일 에러 수선 동기화 (`49068a3`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, TilemapStageBuilder.cs, Player.cs |
 | 2026-08-04 | PM (거버넌스) | 중복 플레이어 생성 차단, 매니저 씬 사전 배치 및 Battle 청크 몬스터 스폰 필터링 수선 동기화 (`a1a9025`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, UnitSpawner.cs, InitScene.cs, MainScene.cs |
-| 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
+| 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 동기화 (`487f309`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
+| 2026-08-04 | PM (거버넌스) | `EffectPoolManager.cs` string Key 오버로딩 및 `UnitBase.cs` UnitIdx 프로퍼티 에러 3건 수선 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, EffectPoolManager.cs, UnitBase.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
   - UI 자동화 및 캔버스 아키텍처: Assets/Docs/SubPlans/plan_ui_canvas.md
   - 비동기 마이그레이션 및 수명 주기: Assets/Docs/SubPlans/plan_async_lifecycle.md
-  - 몬스터 AI 패턴 및 상태 머신: Assets/Docs/SubPlans/plan_enemy_behavior.md
-- 자동 결정 근거 요약:
-  - UI: Project에 PanelBase/PanelManager 파일 존재로 중앙화된 UI 생명주기/애니메이션 자동화 필요
-  - Async: UniTask 사용이 광범위하나 CancellationToken 전파 규칙과 UniTaskVoid 사용에 대한 명확 가이드 부재
-  - AI: MonsterPatternData/MonsterPatternDataTable가 존재하며 패턴 실행 제약·검증이 필수
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 14:57]
-- **아키텍처 반성 점**: 
-  - 공격 시 발생하는 히트/슬래시 이펙트가 `EffectPoolManager`를 거치지 않고 직접 `Instantiate`되어 청크 이동 시 잔존했던 구조적 결함 적발. 또한 `FindObjectsByType`과 같은 O(N) 씬 탐색 연산이 `MonsterOverheadHUD` 및 `StageManager`에 잔존하여 성능 저하 및 메모리 회수 누수를 야기함.
 - **토큰/공정 회고**: 
   - `plan_unit_combat.md` 및 `plan_enemy_behavior.md` 서브 명세서를 최우선 매핑한 후, 500줄 원본 코드 대신 정량적 제약 조건(사망 연출 시퀀스, `EffectPoolManager.SpawnEffect`, Registry 자가등록)만을 추출하여 최소 토큰으로 하위 에이전트에 발주함.
 - **차기 방어 지침**: 
@@ -113,4 +103,3 @@
   - 유저의 '플레이어 포함 전 유닛 풀링 관리' 지침 수령 후 5초 이내에 서브 명세 조립 및 발주 완료.
 - **차기 방어 지침**: 
   - `[PM 거버넌스 수칙]` 인게임 내 `Player` 및 `Monster` 유닛 생성을 `Instantiate`/`Destroy`로 직접 수행하는 것을 금지하고 무조건 `UnitPoolManager`를 통해서만 스폰/데스파운할 것.
-
