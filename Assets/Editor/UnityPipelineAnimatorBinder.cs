@@ -188,7 +188,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 128, 256, 64, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)

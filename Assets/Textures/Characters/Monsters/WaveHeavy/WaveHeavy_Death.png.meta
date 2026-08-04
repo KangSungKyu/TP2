@@ -560,22 +560,150 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WaveHeavy_Death_0
+      name: WaveHeavy_Death.png_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 320
-        width: 64
-        height: 64
+        y: 0
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 719c5b334cb784660800000000000000
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_0_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_1_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_2_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_3_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1024
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_4_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1280
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_5_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1536
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_6_id
+      internalID: 0
+    - serializedVersion: 2
+      name: WaveHeavy_Death.png_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1792
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      boneTimeStamps: []
+      atlasRectOffset: {x: 0, y: 0}
+      spriteID: WaveHeavy_Death.png_7_id
+      internalID: 0
+  spriteID: 719c5b334cb784660800000000000000
       internalID: 7370276872803174679
       vertices: []
       indices: 
