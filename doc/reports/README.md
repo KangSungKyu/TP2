@@ -13,6 +13,9 @@
 
 ## 📅 일일 보고서 (Daily Reports)
 
+### 2026년 08월
+- 📄 [2026-08-03 (월) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-08/2026-08-03_일일보고서.md)
+
 ### 2026년 07월
 - 📄 [2026-07-31 (금) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-31_일일보고서.md)
 - 📄 [2026-07-28 (화) 일일 보고서](file:///c:/Users/PC/Projects/TP2/doc/reports/2026-07/2026-07-28_일일보고서.md)
