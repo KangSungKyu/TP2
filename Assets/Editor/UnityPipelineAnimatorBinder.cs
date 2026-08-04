@@ -257,20 +257,15 @@ public static class UnityPipelineAnimatorBinder
             if (tex != null)
             {
                 int cols = Mathf.Max(1, tex.width / frameWidth);
-                int rows = Mathf.Max(1, tex.height / frameHeight);
-
                 List<SpriteMetaData> metaList = new List<SpriteMetaData>();
-                for (int r = rows - 1; r >= 0; r--)
+                for (int c = 0; c < cols; c++)
                 {
-                    for (int c = 0; c < cols; c++)
-                    {
-                        SpriteMetaData meta = new SpriteMetaData();
-                        meta.name = $"{clipName}_{metaList.Count}";
-                        meta.rect = new Rect(c * frameWidth, r * frameHeight, frameWidth, frameHeight);
-                        meta.alignment = (int)alignment;
-                        meta.pivot = pivot;
-                        metaList.Add(meta);
-                    }
+                    SpriteMetaData meta = new SpriteMetaData();
+                    meta.name = $"{clipName}_{c}";
+                    meta.rect = new Rect(c * frameWidth, 0, frameWidth, frameHeight);
+                    meta.alignment = (int)alignment;
+                    meta.pivot = pivot;
+                    metaList.Add(meta);
                 }
                 importer.spritesheet = metaList.ToArray();
             }
