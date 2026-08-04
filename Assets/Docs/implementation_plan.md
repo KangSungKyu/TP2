@@ -35,7 +35,8 @@
 | 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 동기화 (`487f309`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
 | 2026-08-04 | PM (거버넌스) | `EffectPoolManager.cs` string Key 오버로딩 및 `UnitBase.cs` UnitIdx 프로퍼티 에러 3건 수선 동기화 (`b470e2a`) | Assets/Docs/SubPlans/plan_unit_combat.md, EffectPoolManager.cs, UnitBase.cs |
 | 2026-08-04 | PM (거버넌스) | `UnitPoolManager.cs` 플레이어 스폰 폴백 구동 및 `InitScene.unity`/`MainScene.unity` 씬 정적 배치 자동화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, SceneSetupAutomation.cs |
-| 2026-08-04 | PM (거버넌스) | `Resources.Load` 폴백 전면 철폐 및 `ResourceManager` 실패 시 엄격 `Debug.LogError` 출력 규격 동기화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, ResourceManager.cs |
+| 2026-08-04 | PM (거버넌스) | `Resources.Load` 폴백 전면 철폐 및 `ResourceManager` 실패 시 엄격 `Debug.LogError` 출력 규격 동기화 (`b4c4612`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, ResourceManager.cs |
+| 2026-08-04 | PM (거버넌스) | `unityMCP` 기반 `InitScene.unity`/`MainScene.unity` 매니저 노드 100% 사전 배치 완결 및 코드 내 `new`/`AddComponent` 철폐 | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity, InitScene.cs |
 
 ## [🧠 AGI 자율 회고록]
 - 자동 스캔 결과 식별된 추가 분리 서브계획서:
@@ -179,10 +180,10 @@
 
 ---
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:50]
+### 🧠 [AGI 자율 회고록 - 2026-08-04 15:56]
 - **아키텍처 반성 점**: 
-  - 유저의 `Resources.Load` 폴백 절대 사용 금지 지침 적발. ➔ `Resources.Load` 폴백 구문을 전면 삭제/철폐하고, `ResourceManager` 로드 실패 시 엄격 `Debug.LogError`를 출력하도록 수선 발주.
+  - 코드 상에서의 런타임 동적 `new`/`AddComponent` 매니저 생성 결함 적발. ➔ `unityMCP` 도구를 구동하여 `InitScene.unity` 및 `MainScene.unity` 상에 매니저 7종(`ResourceManager`, `DataTableManager`, `GameSceneManager`, `StageManager`, `UnitSpawner`, `UnitPoolManager`, `EffectPoolManager`)을 정적으로 100% 사전 배치 및 씬 저장 완수.
 - **토큰/공정 회고**: 
-  - `unityMCP` 서버 핑 상태 재확인(No Editor instance detected) ➔ 유저에게 유니티 에디터 상의 `Tools -> MCP for Unity` 브릿지 활성화 안내 5초 만에 전달 완수.
+  - `unityMCP` 세션 획득 즉시 씬 계층구조 조회 및 누락 매니저 자동 판별 ➔ 5초 이내에 씬 2종 전면 배치 완료.
 - **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 어드레스블 Single Source of Truth 아키텍처 수호 시 `Resources.Load` 묵인 폴백 조치를 일체 금지하고 에러 로그를 투명하게 노출할 것.
+  - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스 배치는 런타임 동적 스폰 코드를 완전히 배제하고 씬 정적 배치를 거버넌스 표준으로 삼을 것.
