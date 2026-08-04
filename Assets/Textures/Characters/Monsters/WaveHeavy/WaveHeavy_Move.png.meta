@@ -583,13 +583,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: 2e07e10605bb08b80800000000000000
+      internalID: -8394503751534219038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_1
       rect:
@@ -601,13 +605,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: a681db9ee22ae39f0800000000000000
+      internalID: -486773387335755670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_2
       rect:
@@ -619,13 +627,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: baa0411ca3bdece80800000000000000
+      internalID: -8156340829727487317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_3
       rect:
@@ -637,13 +649,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: 27c1c944363a7e3a0800000000000000
+      internalID: -6636155879158965134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_4
       rect:
@@ -655,13 +671,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: 828c52db052ae7430800000000000000
+      internalID: 3782639204692248616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_5
       rect:
@@ -673,13 +693,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: e43d270a7092e0a60800000000000000
+      internalID: 7642090730427700046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_6
       rect:
@@ -691,13 +715,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: 21ab41de6b36ee9b0800000000000000
+      internalID: -5048988494922991086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: WaveHeavy_Move.png_7
       rect:
@@ -709,13 +737,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: WaveHeavy_Move.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 7e5bb93963bd625a0800000000000000
+      internalID: -6546303980885264921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaveHeavy_Move.png_0: -8394503751534219038
+      WaveHeavy_Move.png_1: -486773387335755670
+      WaveHeavy_Move.png_2: -8156340829727487317
+      WaveHeavy_Move.png_3: -6636155879158965134
+      WaveHeavy_Move.png_4: 3782639204692248616
+      WaveHeavy_Move.png_5: 7642090730427700046
+      WaveHeavy_Move.png_6: -5048988494922991086
+      WaveHeavy_Move.png_7: -6546303980885264921
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

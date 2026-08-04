@@ -361,13 +361,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_0_id
-      internalID: 0
+      bones: []
+      spriteID: 93c8e0085ffa88530800000000000000
+      internalID: 3857526549793115193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_1
       rect:
@@ -379,13 +383,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_1_id
-      internalID: 0
+      bones: []
+      spriteID: 5202be2d1dca0ee90800000000000000
+      internalID: -6998403803746983899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_2
       rect:
@@ -397,13 +405,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_2_id
-      internalID: 0
+      bones: []
+      spriteID: be9c0f59179a72910800000000000000
+      internalID: 1812603680351898091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_3
       rect:
@@ -415,13 +427,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_3_id
-      internalID: 0
+      bones: []
+      spriteID: 67b00e40ce275a240800000000000000
+      internalID: 4802370935680142198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_4
       rect:
@@ -433,13 +449,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_4_id
-      internalID: 0
+      bones: []
+      spriteID: 4b1a260a07e72fd80800000000000000
+      internalID: -8218367347805478476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_5
       rect:
@@ -451,13 +471,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_5_id
-      internalID: 0
+      bones: []
+      spriteID: 1700d86aa2c828a50800000000000000
+      internalID: 6521929325196673137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_6
       rect:
@@ -469,13 +493,17 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_6_id
-      internalID: 0
+      bones: []
+      spriteID: e79050e0817f1f0c0800000000000000
+      internalID: -4543578866353632898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: SpearSentry_Move.png_7
       rect:
@@ -487,13 +515,39 @@ TextureImporter:
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      boneTimeStamps: []
-      atlasRectOffset: {x: 0, y: 0}
-      spriteID: SpearSentry_Move.png_7_id
-      internalID: 0
+      bones: []
+      spriteID: 775f4f28a503d2a70800000000000000
+      internalID: 8803746011881469303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SpearSentry_Move.png_0: 3857526549793115193
+      SpearSentry_Move.png_1: -6998403803746983899
+      SpearSentry_Move.png_2: 1812603680351898091
+      SpearSentry_Move.png_3: 4802370935680142198
+      SpearSentry_Move.png_4: -8218367347805478476
+      SpearSentry_Move.png_5: 6521929325196673137
+      SpearSentry_Move.png_6: -4543578866353632898
+      SpearSentry_Move.png_7: 8803746011881469303
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
