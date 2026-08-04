@@ -63,16 +63,20 @@ public class SkillEffect : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         var targetUnit = other.GetComponentInParent<UnitBase>();
-        if (targetUnit == null || targetUnit.UnitData == null) return;
+        CombatStats targetStats = targetUnit != null ? targetUnit.GetComponent<CombatStats>() : other.GetComponentInParent<CombatStats>();
 
-        if (targetUnit.UnitData.Faction == (uint)ownerFaction) return;
-
-        var targetStats = targetUnit.GetComponent<CombatStats>();
         if (targetStats == null) return;
+        if (attackerStats != null && targetStats.gameObject == attackerStats.gameObject) return;
+
+        // Faction check
+        if (targetUnit != null && targetUnit.UnitData != null)
+        {
+            if (targetUnit.UnitData.Faction == (uint)ownerFaction) return;
+        }
 
         if (targetStats.IsParrying)
         {
-            Debug.Log($"<color=magenta><b>[SkillEffect] '{targetUnit.gameObject.name}' 패링 성공!</b></color>");
+            Debug.Log($"<color=magenta><b>[SkillEffect] '{targetStats.gameObject.name}' 패링 성공!</b></color>");
             ReturnToPool();
             return;
         }
@@ -81,13 +85,13 @@ public class SkillEffect : MonoBehaviour
         {
             float guardDamage = damage * 0.2f;
             targetStats.TakeDamage(guardDamage, isGroundAttack: false, isJumped: false, attacker: attackerStats);
-            Debug.Log($"<color=yellow><b>[SkillEffect] '{targetUnit.gameObject.name}' 가드 성공! 경감 데미지: {guardDamage:F1}</b></color>");
+            Debug.Log($"<color=yellow><b>[SkillEffect] '{targetStats.gameObject.name}' 가드 성공! 경감 데미지: {guardDamage:F1}</b></color>");
             ReturnToPool();
             return;
         }
 
         targetStats.TakeDamage(damage, isGroundAttack: false, isJumped: false, attacker: attackerStats);
-        Debug.Log($"<color=red><b>[SkillEffect] '{targetUnit.gameObject.name}' 피격! 데미지: {damage:F1}</b></color>");
+        Debug.Log($"<color=red><b>[SkillEffect] '{targetStats.gameObject.name}' 피격! 데미지: {damage:F1}</b></color>");
 
         ReturnToPool();
     }
@@ -101,4 +105,3 @@ public class SkillEffect : MonoBehaviour
         }
     }
 }
-

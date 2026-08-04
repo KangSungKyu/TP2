@@ -48,6 +48,18 @@ public class Monster : UnitBase
     // 4. PROTECTED & PRIVATE METHODS
     // =========================================================================
 
+    public static HashSet<Monster> ActiveMonsters { get; } = new HashSet<Monster>();
+
+    protected virtual void OnEnable()
+    {
+        ActiveMonsters.Add(this);
+    }
+
+    protected virtual void OnDisable()
+    {
+        ActiveMonsters.Remove(this);
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -55,15 +67,44 @@ public class Monster : UnitBase
 
     protected virtual void Start()
     {
+        if (playerTarget == null && Player.Instance != null)
+        {
+            playerTarget = Player.Instance.transform;
+        }
+
+        var stats = GetComponent<CombatStats>();
+        if (stats != null)
+        {
+            stats.OnDeath.AddListener(Die);
+        }
+
         AiLoopAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
     protected virtual void Update()
     {
-        if (playerTarget == null)
+        if (playerTarget == null && Player.Instance != null)
         {
-            var player = GameObject.FindWithTag("Player");
-            if (player != null) playerTarget = player.transform;
+            playerTarget = Player.Instance.transform;
+        }
+    }
+
+    public virtual async void Die()
+    {
+        SetAnimState(5);
+        if (motor != null) motor.SetTargetVelocityX(0f);
+
+        var cols = GetComponentsInChildren<Collider2D>();
+        foreach (var c in cols) c.enabled = false;
+
+        ActiveMonsters.Remove(this);
+
+        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        if (gameObject != null)
+        {
+            if (Application.isPlaying) Destroy(gameObject);
+            else DestroyImmediate(gameObject);
         }
     }
 
@@ -197,7 +238,7 @@ public class Monster : UnitBase
         if (!isDistanceOverPattern && currentDist > attackRange)
         {
             SetFacingRight(playerTarget.position.x >= transform.position.x);
-            if (animator != null)
+            if (animator != null && animator.runtimeAnimatorController != null)
             {
                 animator.SetInteger("State", 2);
             }
@@ -337,10 +378,8 @@ public class Monster : UnitBase
 
     protected void SetAnimState(int stateValue)
     {
-        if (animator != null)
-        {
-            animator.SetInteger("State", stateValue);
-        }
+        if (animator == null || animator.runtimeAnimatorController == null) return;
+        animator.SetInteger("State", stateValue);
     }
 }
 

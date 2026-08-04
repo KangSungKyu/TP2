@@ -77,6 +77,381 @@ TextureImporter:
   - first:
       213: 3811501784689815337
     second: WaveHeavy_Idle_24
+  - first:
+      213: 247967015024420168
+    second: WaveHeavy_Idle_25
+  - first:
+      213: 7807094638522656581
+    second: WaveHeavy_Idle_26
+  - first:
+      213: -8906482017142433067
+    second: WaveHeavy_Idle_27
+  - first:
+      213: -3251700850814073735
+    second: WaveHeavy_Idle_28
+  - first:
+      213: -7972840177497205499
+    second: WaveHeavy_Idle_29
+  - first:
+      213: 4580651782700811675
+    second: WaveHeavy_Idle_30
+  - first:
+      213: 2634877286110430426
+    second: WaveHeavy_Idle_31
+  - first:
+      213: 2506222868715259369
+    second: WaveHeavy_Idle_32
+  - first:
+      213: 1907081632392462264
+    second: WaveHeavy_Idle_33
+  - first:
+      213: 394921416507532041
+    second: WaveHeavy_Idle_34
+  - first:
+      213: 6919168528052179838
+    second: WaveHeavy_Idle_35
+  - first:
+      213: -1767647592248720324
+    second: WaveHeavy_Idle_36
+  - first:
+      213: 1466119937157253003
+    second: WaveHeavy_Idle_37
+  - first:
+      213: 847977468924411043
+    second: WaveHeavy_Idle_38
+  - first:
+      213: -592039101241175893
+    second: WaveHeavy_Idle_39
+  - first:
+      213: -5032835975756420976
+    second: WaveHeavy_Idle_40
+  - first:
+      213: -5256670748319291674
+    second: WaveHeavy_Idle_41
+  - first:
+      213: 3001559821013161576
+    second: WaveHeavy_Idle_42
+  - first:
+      213: -3954835287363704722
+    second: WaveHeavy_Idle_43
+  - first:
+      213: 3505759084730454798
+    second: WaveHeavy_Idle_44
+  - first:
+      213: 468915317885907095
+    second: WaveHeavy_Idle_45
+  - first:
+      213: -5006136697502459894
+    second: WaveHeavy_Idle_46
+  - first:
+      213: 673105657507019678
+    second: WaveHeavy_Idle_47
+  - first:
+      213: 1042066360584657943
+    second: WaveHeavy_Idle_48
+  - first:
+      213: -6492380021948999687
+    second: WaveHeavy_Idle_49
+  - first:
+      213: 2910922638998498941
+    second: WaveHeavy_Idle_50
+  - first:
+      213: -6316771976537425918
+    second: WaveHeavy_Idle_51
+  - first:
+      213: -343218428561689629
+    second: WaveHeavy_Idle_52
+  - first:
+      213: -3627469486131969891
+    second: WaveHeavy_Idle_53
+  - first:
+      213: -8671140975125959326
+    second: WaveHeavy_Idle_54
+  - first:
+      213: 2125401289829110867
+    second: WaveHeavy_Idle_55
+  - first:
+      213: 2560232170963352470
+    second: WaveHeavy_Idle_56
+  - first:
+      213: -8386357292325222922
+    second: WaveHeavy_Idle_57
+  - first:
+      213: -2540170808446389832
+    second: WaveHeavy_Idle_58
+  - first:
+      213: -7099857420713778879
+    second: WaveHeavy_Idle_59
+  - first:
+      213: -1608302002227415478
+    second: WaveHeavy_Idle_60
+  - first:
+      213: -7518255493936236486
+    second: WaveHeavy_Idle_61
+  - first:
+      213: -4484274469034165972
+    second: WaveHeavy_Idle_62
+  - first:
+      213: -5883126998817525225
+    second: WaveHeavy_Idle_63
+  - first:
+      213: 9203893875439184366
+    second: WaveHeavy_Idle_64
+  - first:
+      213: 1494321671588625836
+    second: WaveHeavy_Idle_65
+  - first:
+      213: 909340924748578507
+    second: WaveHeavy_Idle_66
+  - first:
+      213: -4747351139397898712
+    second: WaveHeavy_Idle_67
+  - first:
+      213: 595764753029909358
+    second: WaveHeavy_Idle_68
+  - first:
+      213: 1377305915510275239
+    second: WaveHeavy_Idle_69
+  - first:
+      213: -6265115106193985782
+    second: WaveHeavy_Idle_70
+  - first:
+      213: 7821143670463448784
+    second: WaveHeavy_Idle_71
+  - first:
+      213: -3702703689957664458
+    second: WaveHeavy_Idle_72
+  - first:
+      213: -2613366561789293531
+    second: WaveHeavy_Idle_73
+  - first:
+      213: -3663698192091743910
+    second: WaveHeavy_Idle_74
+  - first:
+      213: 9029504524259682687
+    second: WaveHeavy_Idle_75
+  - first:
+      213: -1517770821124577726
+    second: WaveHeavy_Idle_76
+  - first:
+      213: 3935418504915254992
+    second: WaveHeavy_Idle_77
+  - first:
+      213: -8795068623542947291
+    second: WaveHeavy_Idle_78
+  - first:
+      213: -3813859405416429
+    second: WaveHeavy_Idle_79
+  - first:
+      213: 2345660017946976794
+    second: WaveHeavy_Idle_80
+  - first:
+      213: -4746747228111704514
+    second: WaveHeavy_Idle_81
+  - first:
+      213: -3548227390101639548
+    second: WaveHeavy_Idle_82
+  - first:
+      213: -6798955558179084389
+    second: WaveHeavy_Idle_83
+  - first:
+      213: 7370609831212291970
+    second: WaveHeavy_Idle_84
+  - first:
+      213: 1669070444996681767
+    second: WaveHeavy_Idle_85
+  - first:
+      213: -6632780310496931963
+    second: WaveHeavy_Idle_86
+  - first:
+      213: 1974447883960879199
+    second: WaveHeavy_Idle_87
+  - first:
+      213: 2924315655028803324
+    second: WaveHeavy_Idle_88
+  - first:
+      213: -7866301385372648086
+    second: WaveHeavy_Idle_89
+  - first:
+      213: -6704563054457520186
+    second: WaveHeavy_Idle_90
+  - first:
+      213: -2649321047748381059
+    second: WaveHeavy_Idle_91
+  - first:
+      213: -5242305373184788917
+    second: WaveHeavy_Idle_92
+  - first:
+      213: 334790116473089285
+    second: WaveHeavy_Idle_93
+  - first:
+      213: 5702099690060266770
+    second: WaveHeavy_Idle_94
+  - first:
+      213: -5629564723532887499
+    second: WaveHeavy_Idle_95
+  - first:
+      213: -1848922265955852077
+    second: WaveHeavy_Idle_96
+  - first:
+      213: 6962737789363434471
+    second: WaveHeavy_Idle_97
+  - first:
+      213: -525832927620699600
+    second: WaveHeavy_Idle_98
+  - first:
+      213: -9200366466101508450
+    second: WaveHeavy_Idle_99
+  - first:
+      213: 5150016499950106709
+    second: WaveHeavy_Idle_100
+  - first:
+      213: 5690946334777384352
+    second: WaveHeavy_Idle_101
+  - first:
+      213: -4893727784639378003
+    second: WaveHeavy_Idle_102
+  - first:
+      213: -169738338539293246
+    second: WaveHeavy_Idle_103
+  - first:
+      213: -5957118011131914124
+    second: WaveHeavy_Idle_104
+  - first:
+      213: 6164229821782027534
+    second: WaveHeavy_Idle_105
+  - first:
+      213: -5975961881973889198
+    second: WaveHeavy_Idle_106
+  - first:
+      213: 7211211075655976868
+    second: WaveHeavy_Idle_107
+  - first:
+      213: 5142837649409910352
+    second: WaveHeavy_Idle_108
+  - first:
+      213: 1158386854903445352
+    second: WaveHeavy_Idle_109
+  - first:
+      213: -7809851350738808571
+    second: WaveHeavy_Idle_110
+  - first:
+      213: 900590849134977662
+    second: WaveHeavy_Idle_111
+  - first:
+      213: -767108628963324367
+    second: WaveHeavy_Idle_112
+  - first:
+      213: 8970643365556743430
+    second: WaveHeavy_Idle_113
+  - first:
+      213: -8632473689592833356
+    second: WaveHeavy_Idle_114
+  - first:
+      213: -8575057579410229869
+    second: WaveHeavy_Idle_115
+  - first:
+      213: 3635856886039554469
+    second: WaveHeavy_Idle_116
+  - first:
+      213: -8386460786684612191
+    second: WaveHeavy_Idle_117
+  - first:
+      213: -7285702445311795526
+    second: WaveHeavy_Idle_118
+  - first:
+      213: 6409785955779194977
+    second: WaveHeavy_Idle_119
+  - first:
+      213: -515740884889723854
+    second: WaveHeavy_Idle_120
+  - first:
+      213: -1839667015806380596
+    second: WaveHeavy_Idle_121
+  - first:
+      213: 4058947555663930584
+    second: WaveHeavy_Idle_122
+  - first:
+      213: -2644558490963552607
+    second: WaveHeavy_Idle_123
+  - first:
+      213: -8486368585011379273
+    second: WaveHeavy_Idle_124
+  - first:
+      213: 5447641863702184547
+    second: WaveHeavy_Idle_125
+  - first:
+      213: -927939952466154435
+    second: WaveHeavy_Idle_126
+  - first:
+      213: -1592174639952107176
+    second: WaveHeavy_Idle_127
+  - first:
+      213: 5726660623032558928
+    second: WaveHeavy_Idle_128
+  - first:
+      213: -7204253767851754714
+    second: WaveHeavy_Idle_129
+  - first:
+      213: -4810148164450257610
+    second: WaveHeavy_Idle_130
+  - first:
+      213: -3955823691906646589
+    second: WaveHeavy_Idle_131
+  - first:
+      213: 8043913726505450280
+    second: WaveHeavy_Idle_132
+  - first:
+      213: -1917237392621336368
+    second: WaveHeavy_Idle_133
+  - first:
+      213: 5896324404525993137
+    second: WaveHeavy_Idle_134
+  - first:
+      213: 7790645253320765060
+    second: WaveHeavy_Idle_135
+  - first:
+      213: -2974400820362879988
+    second: WaveHeavy_Idle_136
+  - first:
+      213: 5839741508296202019
+    second: WaveHeavy_Idle_137
+  - first:
+      213: -1432693310942960521
+    second: WaveHeavy_Idle_138
+  - first:
+      213: 4365122283958684895
+    second: WaveHeavy_Idle_139
+  - first:
+      213: 5964544627145993346
+    second: WaveHeavy_Idle_140
+  - first:
+      213: -5674945289769197092
+    second: WaveHeavy_Idle_141
+  - first:
+      213: -2828133272779979177
+    second: WaveHeavy_Idle_142
+  - first:
+      213: -4135142565138438031
+    second: WaveHeavy_Idle_143
+  - first:
+      213: -543053063554138513
+    second: WaveHeavy_Idle_144
+  - first:
+      213: 6990747756444685479
+    second: WaveHeavy_Idle_145
+  - first:
+      213: -481094777917547745
+    second: WaveHeavy_Idle_146
+  - first:
+      213: 1764903844532021294
+    second: WaveHeavy_Idle_147
+  - first:
+      213: 6865472479803932840
+    second: WaveHeavy_Idle_148
+  - first:
+      213: -8719863029641017095
+    second: WaveHeavy_Idle_149
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -123,7 +498,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 102
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -138,9 +513,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -181,555 +556,194 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WaveHeavy_Idle_0
+      name: WaveHeavy_Idle.png_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: db42115e656241930800000000000000
-      internalID: 4112954514348254397
+      spriteID: 0b4cdd3eed1296330800000000000000
+      internalID: 3704529409678361776
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_1
+      name: WaveHeavy_Idle.png_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 205
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f1f6bfab2f93a3bb0800000000000000
-      internalID: -4955584725285900513
+      spriteID: 3e53277ac7d6cd600800000000000000
+      internalID: 494390441256564195
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_2
+      name: WaveHeavy_Idle.png_2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 410
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 054e9d136bfbf8ad0800000000000000
-      internalID: -2697726862530321328
+      spriteID: 6a05b373ead591040800000000000000
+      internalID: 4618825895677481126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_3
+      name: WaveHeavy_Idle.png_3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 615
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 806f2824b5f51c7e0800000000000000
-      internalID: -1747010334880500216
+      spriteID: c46f797c2fd04f130800000000000000
+      internalID: 3599517338557740620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_4
+      name: WaveHeavy_Idle.png_4
       rect:
         serializedVersion: 2
-        x: 256
+        x: 820
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67e5da85fd1b5c650800000000000000
-      internalID: 6252599230497382006
+      spriteID: e7a514b3e9edd3530800000000000000
+      internalID: 3836467228769868414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_5
+      name: WaveHeavy_Idle.png_5
       rect:
         serializedVersion: 2
-        x: 320
+        x: 1025
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3a428800057c030f0800000000000000
-      internalID: -1139191559304502109
+      spriteID: b5c4649cecf6c7b90800000000000000
+      internalID: -7242791166787826597
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_6
+      name: WaveHeavy_Idle.png_6
       rect:
         serializedVersion: 2
-        x: 384
+        x: 1230
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c8e226592e83cf60800000000000000
-      internalID: 8053436866858510533
+      spriteID: ca20f05e76c700610800000000000000
+      internalID: 1585403854500856492
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WaveHeavy_Idle_7
+      name: WaveHeavy_Idle.png_7
       rect:
         serializedVersion: 2
-        x: 448
+        x: 1435
         y: 0
-        width: 64
-        height: 64
+        width: 205
+        height: 410
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 947c04aea9d902af0800000000000000
-      internalID: -423165076292188343
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_8
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 83ab52aa265f89480800000000000000
-      internalID: -8892087660132845000
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_9
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8cbccc88abe85b0c0800000000000000
-      internalID: -4560582115832575032
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_10
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32458b021a9154760800000000000000
-      internalID: 7441382139128992803
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_11
-      rect:
-        serializedVersion: 2
-        x: 704
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 132528f8004824db0800000000000000
-      internalID: -4809136314135719375
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_12
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 80a270d6aca8d2aa0800000000000000
-      internalID: -6184134111292610040
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_13
-      rect:
-        serializedVersion: 2
-        x: 832
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6feb4bf3b60683540800000000000000
-      internalID: 4987842601059401462
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_14
-      rect:
-        serializedVersion: 2
-        x: 896
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4f14e4ba8564d7c60800000000000000
-      internalID: 7817481874830148084
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_15
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5e8d94f3c99632520800000000000000
-      internalID: 2676098723385825509
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_16
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3abd543ee96d83a20800000000000000
-      internalID: 3042417526194953123
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_17
-      rect:
-        serializedVersion: 2
-        x: 1088
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6253357d3245a2350800000000000000
-      internalID: 5992694767083009318
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_18
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 12f65c0d755893930800000000000000
-      internalID: 4123473546045648673
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_19
-      rect:
-        serializedVersion: 2
-        x: 1216
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9b3dd8421dcf97490800000000000000
-      internalID: -7747883708722588743
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_20
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8a1acf76e44a39c90800000000000000
-      internalID: -7164201925557313112
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_21
-      rect:
-        serializedVersion: 2
-        x: 1344
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 04b2f66dcaaaf36e0800000000000000
-      internalID: -1855576862144648384
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_22
-      rect:
-        serializedVersion: 2
-        x: 1408
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9ca3e3babc96fd040800000000000000
-      internalID: 4674571261706123977
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_23
-      rect:
-        serializedVersion: 2
-        x: 1472
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b2215e2579c3be130800000000000000
-      internalID: 3597035348013945387
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: WaveHeavy_Idle_24
-      rect:
-        serializedVersion: 2
-        x: 1536
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 92f2431ddac25e430800000000000000
-      internalID: 3811501784689815337
+      spriteID: 26f4be9220a543ee0800000000000000
+      internalID: -1282301028554027166
       vertices: []
       indices: 
       edges: []
@@ -748,31 +762,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      WaveHeavy_Idle_0: 4112954514348254397
-      WaveHeavy_Idle_1: -4955584725285900513
-      WaveHeavy_Idle_10: 7441382139128992803
-      WaveHeavy_Idle_11: -4809136314135719375
-      WaveHeavy_Idle_12: -6184134111292610040
-      WaveHeavy_Idle_13: 4987842601059401462
-      WaveHeavy_Idle_14: 7817481874830148084
-      WaveHeavy_Idle_15: 2676098723385825509
-      WaveHeavy_Idle_16: 3042417526194953123
-      WaveHeavy_Idle_17: 5992694767083009318
-      WaveHeavy_Idle_18: 4123473546045648673
-      WaveHeavy_Idle_19: -7747883708722588743
-      WaveHeavy_Idle_2: -2697726862530321328
-      WaveHeavy_Idle_20: -7164201925557313112
-      WaveHeavy_Idle_21: -1855576862144648384
-      WaveHeavy_Idle_22: 4674571261706123977
-      WaveHeavy_Idle_23: 3597035348013945387
-      WaveHeavy_Idle_24: 3811501784689815337
-      WaveHeavy_Idle_3: -1747010334880500216
-      WaveHeavy_Idle_4: 6252599230497382006
-      WaveHeavy_Idle_5: -1139191559304502109
-      WaveHeavy_Idle_6: 8053436866858510533
-      WaveHeavy_Idle_7: -423165076292188343
-      WaveHeavy_Idle_8: -8892087660132845000
-      WaveHeavy_Idle_9: -4560582115832575032
+      WaveHeavy_Idle.png_0: 3704529409678361776
+      WaveHeavy_Idle.png_1: 494390441256564195
+      WaveHeavy_Idle.png_2: 4618825895677481126
+      WaveHeavy_Idle.png_3: 3599517338557740620
+      WaveHeavy_Idle.png_4: 3836467228769868414
+      WaveHeavy_Idle.png_5: -7242791166787826597
+      WaveHeavy_Idle.png_6: 1585403854500856492
+      WaveHeavy_Idle.png_7: -1282301028554027166
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

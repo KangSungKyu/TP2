@@ -17,7 +17,12 @@ public class TilemapStageBuilder : MonoBehaviour
     public float BufferTimeSec = 0.5f;
     public float FadeDurationSec = 0.4f;
 
-    private CanvasGroup fadeOverlayCanvasGroup;
+    public static TilemapStageBuilder Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+    }
 
     private void Start()
     {
@@ -49,7 +54,7 @@ public class TilemapStageBuilder : MonoBehaviour
             GameObject spawnedChunk = Instantiate(chunkPrefab, rootObj.transform);
             spawnedChunk.name = "Tilemap_Room_Chunk_Instance";
 
-            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            var spawner = UnitSpawner.Instance;
             if (spawner != null)
             {
                 spawner.SpawnUnitsFromMarkers(spawnedChunk);
@@ -59,7 +64,7 @@ public class TilemapStageBuilder : MonoBehaviour
         else
         {
             buildExpandedDummyStage(rootObj.transform);
-            var spawner = UnitSpawner.Instance != null ? UnitSpawner.Instance : FindObjectOfType<UnitSpawner>();
+            var spawner = UnitSpawner.Instance;
             if (spawner != null)
             {
                 spawner.SpawnUnitsFromMarkers(rootObj);
@@ -76,11 +81,7 @@ public class TilemapStageBuilder : MonoBehaviour
             fadeOverlayCanvasGroup.alpha = 1f;
         }
 
-        GameObject existingStage = GameObject.Find("TilemapStage_Root");
-        if (existingStage != null)
-        {
-            DestroyImmediate(existingStage);
-        }
+        CleanupPreviousStageAndEffects();
 
         GameObject rootObj = new GameObject("TilemapStage_Root");
         GameObject chunkPrefab = null;
@@ -117,6 +118,11 @@ public class TilemapStageBuilder : MonoBehaviour
             GameObject spawnedChunk = Instantiate(chunkPrefab, rootObj.transform);
             spawnedChunk.name = "Tilemap_Room_Chunk_Instance";
             loadedFromPrefab = true;
+            if (StageManager.Instance != null)
+            {
+                StageManager.Instance.RegisterRoomInstance(spawnedChunk);
+                StageManager.Instance.RegisterRoomInstance(rootObj);
+            }
 
             // SpawnPointMarker를 탐색하여 플레이어, 일반 몬스터, 보스 동적 스폰 파이프라인 구동
             if (UnitSpawner.Instance != null)
@@ -168,10 +174,9 @@ public class TilemapStageBuilder : MonoBehaviour
         }
 
         metroCam.SetBounds(new Vector2(-29f, -1f), new Vector2(29f, 17f));
-        var player = FindObjectOfType<Player>();
-        if (player != null)
+        if (Player.Instance != null)
         {
-            metroCam.Target = player.transform;
+            metroCam.Target = Player.Instance.transform;
         }
     }
 
@@ -356,6 +361,26 @@ public class TilemapStageBuilder : MonoBehaviour
             fadeOverlayCanvasGroup.alpha = 0f;
             Destroy(fadeOverlayCanvasGroup.gameObject);
             fadeOverlayCanvasGroup = null;
+        }
+    }
+
+    private void CleanupPreviousStageAndEffects()
+    {
+        // 1. StageManager 동적 청크 리스트 & 잔여 이펙트 통합 청소
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.CleanupActiveChunksAndEffects();
+        }
+
+        // 2. 씬 상에 남아있는 구 스테이지 루트 및 잔여 청크 안전 제거
+        var oldRoots = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var go in oldRoots)
+        {
+            if (go != null && (go.name.Contains("TilemapStage_Root") || go.name.Contains("DummyStage_Root") || go.name.Contains("Tilemap_Room_Chunk_Instance")))
+            {
+                if (Application.isPlaying) Destroy(go);
+                else DestroyImmediate(go);
+            }
         }
     }
 }

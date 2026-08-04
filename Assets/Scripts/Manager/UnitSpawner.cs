@@ -29,21 +29,13 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
     private void CleanupExistingUnits()
     {
-        var existingUnits = Object.FindObjectsOfType<UnitBase>();
-        foreach (var unit in existingUnits)
+        var monsters = new List<Monster>(Monster.ActiveMonsters);
+        foreach (var m in monsters)
         {
-            if (unit is Player) continue;
-            if (Application.isPlaying) Object.Destroy(unit.gameObject);
-            else Object.DestroyImmediate(unit.gameObject);
-        }
-
-        var players = Object.FindObjectsOfType<Player>();
-        if (players.Length > 1)
-        {
-            for (int i = 1; i < players.Length; i++)
+            if (m != null && m.gameObject != null)
             {
-                if (Application.isPlaying) Object.Destroy(players[i].gameObject);
-                else Object.DestroyImmediate(players[i].gameObject);
+                if (Application.isPlaying) Object.Destroy(m.gameObject);
+                else Object.DestroyImmediate(m.gameObject);
             }
         }
     }
@@ -73,7 +65,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
     private void SpawnPlayerAt(Vector3 spawnPos)
     {
-        Player player = FindObjectOfType<Player>();
+        Player player = Player.Instance;
         if (player != null)
         {
             var motor = player.GetComponent<KinematicMotor2D>();
@@ -150,7 +142,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
 
         if (isBoss)
         {
-            var testHud = FindObjectOfType<TestPlayerHUDUI>();
+            var testHud = TestPlayerHUDUI.Instance;
             if (testHud != null)
             {
                 testHud.BindBossTarget(unit);

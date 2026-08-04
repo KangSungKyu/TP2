@@ -166,14 +166,24 @@ public static class UnityPipelineAnimatorBinder
     {
         string animsDir = "Assets/Anims/Monster";
         string monsterTexDir = "Assets/Textures/Characters/Monsters";
-        string[] monsters = new string[] { "SpearSentry", "ShadowStalker", "WaveHeavy" };
+
+        var monsterSpecs = new Dictionary<string, (int frameW, int frameH, int ppu)>()
+        {
+            { "ShadowStalker", (128, 256, 64) },
+            { "SpearSentry", (154, 307, 77) },
+            { "WaveHeavy", (205, 410, 102) }
+        };
+
         var monsterMap = new Dictionary<int, (string actName, bool loop)>()
         {
             { 1, ("Idle", true) }, { 2, ("Move", true) }, { 3, ("Jump", false) }, { 7, ("Attack", false) }, { 8, ("Death", false) }
         };
 
-        foreach (string mName in monsters)
+        foreach (var specKvp in monsterSpecs)
         {
+            string mName = specKvp.Key;
+            var spec = specKvp.Value;
+
             string controllerPath = $"{animsDir}/{mName}AnimatorController.controller";
             AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
             EnsureIntParameter(controller, "State");
@@ -188,7 +198,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, 64, 64, 32, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, spec.frameW, spec.frameH, spec.ppu, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -256,24 +266,22 @@ public static class UnityPipelineAnimatorBinder
             Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
             if (tex != null)
             {
-                int cols = tex.width / frameWidth;
-                if (cols > 0)
+                int cols = Mathf.Max(1, tex.width / frameWidth);
+                List<SpriteMetaData> metaList = new List<SpriteMetaData>();
+                for (int c = 0; c < cols; c++)
                 {
-                    List<SpriteMetaData> metaList = new List<SpriteMetaData>();
-                    for (int i = 0; i < cols; i++)
-                    {
-                        SpriteMetaData meta = new SpriteMetaData();
-                        meta.name = $"{clipName}_{i}";
-                        meta.rect = new Rect(i * frameWidth, 0, frameWidth, frameHeight);
-                        meta.alignment = (int)alignment;
-                        meta.pivot = pivot;
-                        metaList.Add(meta);
-                    }
-                    importer.spritesheet = metaList.ToArray();
+                    SpriteMetaData meta = new SpriteMetaData();
+                    meta.name = $"{clipName}_{c}";
+                    meta.rect = new Rect(c * frameWidth, 0, frameWidth, frameHeight);
+                    meta.alignment = (int)alignment;
+                    meta.pivot = pivot;
+                    metaList.Add(meta);
                 }
+                importer.spritesheet = metaList.ToArray();
             }
 
             importer.SaveAndReimport();
+            AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
 
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath(texturePath);

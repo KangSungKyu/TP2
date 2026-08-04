@@ -50,6 +50,150 @@ TextureImporter:
   - first:
       213: 6017333412234735488
     second: ShadowStalker_Idle_15
+  - first:
+      213: 3825105230820375976
+    second: ShadowStalker_Idle_16
+  - first:
+      213: 8445133819245328344
+    second: ShadowStalker_Idle_17
+  - first:
+      213: -5539883442598706460
+    second: ShadowStalker_Idle_18
+  - first:
+      213: -5687049242636335515
+    second: ShadowStalker_Idle_19
+  - first:
+      213: 690653605676877358
+    second: ShadowStalker_Idle_20
+  - first:
+      213: -9067658613855006864
+    second: ShadowStalker_Idle_21
+  - first:
+      213: 3364287062438594867
+    second: ShadowStalker_Idle_22
+  - first:
+      213: -1727225859931492834
+    second: ShadowStalker_Idle_23
+  - first:
+      213: 984029245408945130
+    second: ShadowStalker_Idle_24
+  - first:
+      213: -77689472964629740
+    second: ShadowStalker_Idle_25
+  - first:
+      213: 2815804415392468663
+    second: ShadowStalker_Idle_26
+  - first:
+      213: 2646171951576199481
+    second: ShadowStalker_Idle_27
+  - first:
+      213: 5579654833291269843
+    second: ShadowStalker_Idle_28
+  - first:
+      213: 5780655541563350392
+    second: ShadowStalker_Idle_29
+  - first:
+      213: 2471892011807111023
+    second: ShadowStalker_Idle_30
+  - first:
+      213: -2781680837637517805
+    second: ShadowStalker_Idle_31
+  - first:
+      213: 8049337262187834515
+    second: ShadowStalker_Idle_32
+  - first:
+      213: 4326113827699917971
+    second: ShadowStalker_Idle_33
+  - first:
+      213: -963048313321820491
+    second: ShadowStalker_Idle_34
+  - first:
+      213: 8795088772380347931
+    second: ShadowStalker_Idle_35
+  - first:
+      213: -1986467171877000864
+    second: ShadowStalker_Idle_36
+  - first:
+      213: 6457865366381913254
+    second: ShadowStalker_Idle_37
+  - first:
+      213: -3555761498439013176
+    second: ShadowStalker_Idle_38
+  - first:
+      213: 3012731834751975555
+    second: ShadowStalker_Idle_39
+  - first:
+      213: 7521852498501241942
+    second: ShadowStalker_Idle_40
+  - first:
+      213: 2912309294540884447
+    second: ShadowStalker_Idle_41
+  - first:
+      213: 4450399414878019764
+    second: ShadowStalker_Idle_42
+  - first:
+      213: 8572950764867192878
+    second: ShadowStalker_Idle_43
+  - first:
+      213: -6638952081591639800
+    second: ShadowStalker_Idle_44
+  - first:
+      213: 6080336812415791356
+    second: ShadowStalker_Idle_45
+  - first:
+      213: 1229867171590658146
+    second: ShadowStalker_Idle_46
+  - first:
+      213: -1293978501392294541
+    second: ShadowStalker_Idle_47
+  - first:
+      213: 2849149838689431003
+    second: ShadowStalker_Idle_48
+  - first:
+      213: -7068173283105405075
+    second: ShadowStalker_Idle_49
+  - first:
+      213: -2612311460944928171
+    second: ShadowStalker_Idle_50
+  - first:
+      213: 8609190076446460131
+    second: ShadowStalker_Idle_51
+  - first:
+      213: 6407659064169843687
+    second: ShadowStalker_Idle_52
+  - first:
+      213: 980687638743597743
+    second: ShadowStalker_Idle_53
+  - first:
+      213: 7667719997106665418
+    second: ShadowStalker_Idle_54
+  - first:
+      213: -3155584201275141017
+    second: ShadowStalker_Idle_55
+  - first:
+      213: -8857348772782893525
+    second: ShadowStalker_Idle_56
+  - first:
+      213: 2601415316755607499
+    second: ShadowStalker_Idle_57
+  - first:
+      213: -8758410036917303260
+    second: ShadowStalker_Idle_58
+  - first:
+      213: -9164852792858371049
+    second: ShadowStalker_Idle_59
+  - first:
+      213: -6253439686464572028
+    second: ShadowStalker_Idle_60
+  - first:
+      213: -1372805696023147119
+    second: ShadowStalker_Idle_61
+  - first:
+      213: 445291041389514369
+    second: ShadowStalker_Idle_62
+  - first:
+      213: -8885693797584028355
+    second: ShadowStalker_Idle_63
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,7 +240,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -111,9 +255,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -154,357 +298,194 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ShadowStalker_Idle_0
+      name: ShadowStalker_Idle.png_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0c31b455f65e07f40800000000000000
-      internalID: 5724327392723014592
+      spriteID: d3af96782624dfe50800000000000000
+      internalID: 6844699999619119677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_1
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ee1e0834c8815e740800000000000000
-      internalID: 5180573937066631662
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_2
+      name: ShadowStalker_Idle.png_1
       rect:
         serializedVersion: 2
         x: 128
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bb08e1569a68f380800000000000000
-      internalID: -8937276266664948815
+      spriteID: 51bd1287e69e1a120800000000000000
+      internalID: 2423474735173196565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_3
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a1a694799cc347ce0800000000000000
-      internalID: -1408433946935858662
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_4
+      name: ShadowStalker_Idle.png_2
       rect:
         serializedVersion: 2
         x: 256
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f4bcb3771ecf22b80800000000000000
-      internalID: -8420890307931157681
+      spriteID: 3726ce72224697910800000000000000
+      internalID: 1835608420991656563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_5
-      rect:
-        serializedVersion: 2
-        x: 320
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ccb5df60d5027f780800000000000000
-      internalID: -8649408975420433460
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_6
+      name: ShadowStalker_Idle.png_3
       rect:
         serializedVersion: 2
         x: 384
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 036507b23c2606d30800000000000000
-      internalID: 4422643424464754224
+      spriteID: c7808bf646dd08600800000000000000
+      internalID: 468617784687331452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_7
-      rect:
-        serializedVersion: 2
-        x: 448
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 47aaf459df038c340800000000000000
-      internalID: 4884207661573188212
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_8
+      name: ShadowStalker_Idle.png_4
       rect:
         serializedVersion: 2
         x: 512
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 88dd16adc4c47c4d0800000000000000
-      internalID: -3114436724338336376
+      spriteID: c86e632f32f95f9d0800000000000000
+      internalID: -2741109821448722804
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_9
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 55ce52034fe825630800000000000000
-      internalID: 3914348205569338453
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_10
+      name: ShadowStalker_Idle.png_5
       rect:
         serializedVersion: 2
         x: 640
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65692ed70afc3ff60800000000000000
-      internalID: 8067019645764408918
+      spriteID: a0a2c9e8d03a49180800000000000000
+      internalID: -9109476867641169398
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_11
-      rect:
-        serializedVersion: 2
-        x: 704
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dcf3a68f101b2e050800000000000000
-      internalID: 5828415489791639501
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_12
+      name: ShadowStalker_Idle.png_6
       rect:
         serializedVersion: 2
         x: 768
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9a8948d25743eac10800000000000000
-      internalID: 2066646956889118889
+      spriteID: 9b82618adf116bef0800000000000000
+      internalID: -92866961170093895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ShadowStalker_Idle_13
-      rect:
-        serializedVersion: 2
-        x: 832
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a1b49ca0810b6b980800000000000000
-      internalID: -8523431627445417190
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_14
+      name: ShadowStalker_Idle.png_7
       rect:
         serializedVersion: 2
         x: 896
         y: 0
-        width: 64
-        height: 64
+        width: 128
+        height: 256
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44e4ffe52d150e000800000000000000
-      internalID: 63140358761958980
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShadowStalker_Idle_15
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 08f27537bdcd18350800000000000000
-      internalID: 6017333412234735488
+      spriteID: 2a104f2d10f8993d0800000000000000
+      internalID: -3199368822273080926
       vertices: []
       indices: 
       edges: []
@@ -523,22 +504,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ShadowStalker_Idle_0: 5724327392723014592
-      ShadowStalker_Idle_1: 5180573937066631662
-      ShadowStalker_Idle_10: 8067019645764408918
-      ShadowStalker_Idle_11: 5828415489791639501
-      ShadowStalker_Idle_12: 2066646956889118889
-      ShadowStalker_Idle_13: -8523431627445417190
-      ShadowStalker_Idle_14: 63140358761958980
-      ShadowStalker_Idle_15: 6017333412234735488
-      ShadowStalker_Idle_2: -8937276266664948815
-      ShadowStalker_Idle_3: -1408433946935858662
-      ShadowStalker_Idle_4: -8420890307931157681
-      ShadowStalker_Idle_5: -8649408975420433460
-      ShadowStalker_Idle_6: 4422643424464754224
-      ShadowStalker_Idle_7: 4884207661573188212
-      ShadowStalker_Idle_8: -3114436724338336376
-      ShadowStalker_Idle_9: 3914348205569338453
+      ShadowStalker_Idle.png_0: 6844699999619119677
+      ShadowStalker_Idle.png_1: 2423474735173196565
+      ShadowStalker_Idle.png_2: 1835608420991656563
+      ShadowStalker_Idle.png_3: 468617784687331452
+      ShadowStalker_Idle.png_4: -2741109821448722804
+      ShadowStalker_Idle.png_5: -9109476867641169398
+      ShadowStalker_Idle.png_6: -92866961170093895
+      ShadowStalker_Idle.png_7: -3199368822273080926
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

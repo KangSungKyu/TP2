@@ -59,6 +59,177 @@ TextureImporter:
   - first:
       213: 302481745630134775
     second: SpearSentry_Attack_18
+  - first:
+      213: -3295160720748619996
+    second: SpearSentry_Attack_19
+  - first:
+      213: 4014294460082202576
+    second: SpearSentry_Attack_20
+  - first:
+      213: -4579885468014010704
+    second: SpearSentry_Attack_21
+  - first:
+      213: -908287231753329067
+    second: SpearSentry_Attack_22
+  - first:
+      213: 5485085661790255493
+    second: SpearSentry_Attack_23
+  - first:
+      213: -2836047894226949189
+    second: SpearSentry_Attack_24
+  - first:
+      213: 33661922680470352
+    second: SpearSentry_Attack_25
+  - first:
+      213: 5103142876571005707
+    second: SpearSentry_Attack_26
+  - first:
+      213: -795415788992720015
+    second: SpearSentry_Attack_27
+  - first:
+      213: -6137226014711930608
+    second: SpearSentry_Attack_28
+  - first:
+      213: -6718645366216366191
+    second: SpearSentry_Attack_29
+  - first:
+      213: 8118680935052343468
+    second: SpearSentry_Attack_30
+  - first:
+      213: -2806268643254836195
+    second: SpearSentry_Attack_31
+  - first:
+      213: 3212728940172505812
+    second: SpearSentry_Attack_32
+  - first:
+      213: -6765777593327441312
+    second: SpearSentry_Attack_33
+  - first:
+      213: 3298733932869179276
+    second: SpearSentry_Attack_34
+  - first:
+      213: -2564002295993837875
+    second: SpearSentry_Attack_35
+  - first:
+      213: -7582396694997208194
+    second: SpearSentry_Attack_36
+  - first:
+      213: -8926265566899088938
+    second: SpearSentry_Attack_37
+  - first:
+      213: -7991258731272052712
+    second: SpearSentry_Attack_38
+  - first:
+      213: -8596458134059053817
+    second: SpearSentry_Attack_39
+  - first:
+      213: 8966768755100034761
+    second: SpearSentry_Attack_40
+  - first:
+      213: 8390916228128918587
+    second: SpearSentry_Attack_41
+  - first:
+      213: 931906975454107733
+    second: SpearSentry_Attack_42
+  - first:
+      213: 6608971259505595359
+    second: SpearSentry_Attack_43
+  - first:
+      213: 4043166573155917276
+    second: SpearSentry_Attack_44
+  - first:
+      213: 2942012297939971625
+    second: SpearSentry_Attack_45
+  - first:
+      213: 2322978150122075120
+    second: SpearSentry_Attack_46
+  - first:
+      213: -8068291221886357154
+    second: SpearSentry_Attack_47
+  - first:
+      213: 4681225197347668758
+    second: SpearSentry_Attack_48
+  - first:
+      213: 235370458233260125
+    second: SpearSentry_Attack_49
+  - first:
+      213: 6413168526746971258
+    second: SpearSentry_Attack_50
+  - first:
+      213: 5219908967255860317
+    second: SpearSentry_Attack_51
+  - first:
+      213: 8395725699476779292
+    second: SpearSentry_Attack_52
+  - first:
+      213: -3819875545931820672
+    second: SpearSentry_Attack_53
+  - first:
+      213: -1577363983227976870
+    second: SpearSentry_Attack_54
+  - first:
+      213: -719384489670750594
+    second: SpearSentry_Attack_55
+  - first:
+      213: -6284917399270940706
+    second: SpearSentry_Attack_56
+  - first:
+      213: -3694737471138881702
+    second: SpearSentry_Attack_57
+  - first:
+      213: -475939576370521513
+    second: SpearSentry_Attack_58
+  - first:
+      213: -8555460814092678150
+    second: SpearSentry_Attack_59
+  - first:
+      213: -1019016340126308128
+    second: SpearSentry_Attack_60
+  - first:
+      213: 3226888476731147232
+    second: SpearSentry_Attack_61
+  - first:
+      213: 3030855541315404254
+    second: SpearSentry_Attack_62
+  - first:
+      213: 4587837170700871404
+    second: SpearSentry_Attack_63
+  - first:
+      213: -8116384154693263507
+    second: SpearSentry_Attack_64
+  - first:
+      213: -7522153191824267223
+    second: SpearSentry_Attack_65
+  - first:
+      213: 6050752233060930868
+    second: SpearSentry_Attack_66
+  - first:
+      213: -153046881050450639
+    second: SpearSentry_Attack_67
+  - first:
+      213: -5246354397683276048
+    second: SpearSentry_Attack_68
+  - first:
+      213: 4351898442526863176
+    second: SpearSentry_Attack_69
+  - first:
+      213: 4310395023398273001
+    second: SpearSentry_Attack_70
+  - first:
+      213: -3990724079192865131
+    second: SpearSentry_Attack_71
+  - first:
+      213: -6284879335008145959
+    second: SpearSentry_Attack_72
+  - first:
+      213: 1369785925066789365
+    second: SpearSentry_Attack_73
+  - first:
+      213: 6373837252467111845
+    second: SpearSentry_Attack_74
+  - first:
+      213: 7078726002258520821
+    second: SpearSentry_Attack_75
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -105,7 +276,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 77
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -120,9 +291,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -163,423 +334,194 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SpearSentry_Attack_0
+      name: SpearSentry_Attack.png_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fb9e3ec39147b1740800000000000000
-      internalID: 5123816652808645055
+      spriteID: 20d9ccb2e3cd32290800000000000000
+      internalID: -7916241560406287102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_1
+      name: SpearSentry_Attack.png_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 154
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ed99101030f6a9750800000000000000
-      internalID: 6312479886405638622
+      spriteID: bf3a8e885fbe93570800000000000000
+      internalID: 8447042015906538491
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_2
+      name: SpearSentry_Attack.png_2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 308
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 090f5fff593c117c0800000000000000
-      internalID: -4102282736545959792
+      spriteID: 17785f2128f899030800000000000000
+      internalID: 3501987974083872625
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_3
+      name: SpearSentry_Attack.png_3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 462
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6cd2d6befc76d5220800000000000000
-      internalID: 2476249512829332934
+      spriteID: 01f06e3a0a92a6500800000000000000
+      internalID: 390170087642238736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_4
+      name: SpearSentry_Attack.png_4
       rect:
         serializedVersion: 2
-        x: 256
+        x: 616
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4a38abfa26ce2880800000000000000
-      internalID: -8633745547709629875
+      spriteID: 8e5184d67b1c06ff0800000000000000
+      internalID: -44823002717088280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_5
+      name: SpearSentry_Attack.png_5
       rect:
         serializedVersion: 2
-        x: 320
+        x: 770
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6e9f5277cb9b0a900800000000000000
-      internalID: 693758561719024102
+      spriteID: 4c9db87a51d2af170800000000000000
+      internalID: 8212926441492044228
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_6
+      name: SpearSentry_Attack.png_6
       rect:
         serializedVersion: 2
-        x: 384
+        x: 924
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8515c2d5de06996f0800000000000000
-      internalID: -677403696355847848
+      spriteID: 843cb728e2ca53ce0800000000000000
+      internalID: -1426044391235271864
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SpearSentry_Attack_7
+      name: SpearSentry_Attack.png_7
       rect:
         serializedVersion: 2
-        x: 448
+        x: 1078
         y: 0
-        width: 64
-        height: 64
+        width: 154
+        height: 307
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1cfe4f80a6bb0e6d0800000000000000
-      internalID: -2963162490718588991
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_8
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1156157af09469a80800000000000000
-      internalID: -8460494518388431599
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_9
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 054ce9b0f38a08bb0800000000000000
-      internalID: -4935760202866703280
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_10
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9004bdbf3ad15aeb0800000000000000
-      internalID: -4709325245203660791
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_11
-      rect:
-        serializedVersion: 2
-        x: 704
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 22c40ee1f16f5e280800000000000000
-      internalID: -9014528465589744606
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_12
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 01f1a76f9f3f5d590800000000000000
-      internalID: -7649940137111314672
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_13
-      rect:
-        serializedVersion: 2
-        x: 832
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a87f6e627bc747c30800000000000000
-      internalID: 4356243865647642506
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_14
-      rect:
-        serializedVersion: 2
-        x: 896
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 383b5b38b2427efc0800000000000000
-      internalID: -3465761618926390397
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_15
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c2a05e591294b3ca0800000000000000
-      internalID: -6036150466962453972
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_16
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5ff10f0371ba9f2e0800000000000000
-      internalID: -2091452435843244043
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_17
-      rect:
-        serializedVersion: 2
-        x: 1088
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e85ab2a3d4ae569c0800000000000000
-      internalID: -3934481082028939890
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpearSentry_Attack_18
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7f103578b81a23400800000000000000
-      internalID: 302481745630134775
+      spriteID: e3d8eccd2cf8ddc20800000000000000
+      internalID: 3232898174612835646
       vertices: []
       indices: 
       edges: []
@@ -598,25 +540,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      SpearSentry_Attack_0: 5123816652808645055
-      SpearSentry_Attack_1: 6312479886405638622
-      SpearSentry_Attack_10: -4709325245203660791
-      SpearSentry_Attack_11: -9014528465589744606
-      SpearSentry_Attack_12: -7649940137111314672
-      SpearSentry_Attack_13: 4356243865647642506
-      SpearSentry_Attack_14: -3465761618926390397
-      SpearSentry_Attack_15: -6036150466962453972
-      SpearSentry_Attack_16: -2091452435843244043
-      SpearSentry_Attack_17: -3934481082028939890
-      SpearSentry_Attack_18: 302481745630134775
-      SpearSentry_Attack_2: -4102282736545959792
-      SpearSentry_Attack_3: 2476249512829332934
-      SpearSentry_Attack_4: -8633745547709629875
-      SpearSentry_Attack_5: 693758561719024102
-      SpearSentry_Attack_6: -677403696355847848
-      SpearSentry_Attack_7: -2963162490718588991
-      SpearSentry_Attack_8: -8460494518388431599
-      SpearSentry_Attack_9: -4935760202866703280
+      SpearSentry_Attack.png_0: -7916241560406287102
+      SpearSentry_Attack.png_1: 8447042015906538491
+      SpearSentry_Attack.png_2: 3501987974083872625
+      SpearSentry_Attack.png_3: 390170087642238736
+      SpearSentry_Attack.png_4: -44823002717088280
+      SpearSentry_Attack.png_5: 8212926441492044228
+      SpearSentry_Attack.png_6: -1426044391235271864
+      SpearSentry_Attack.png_7: 3232898174612835646
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

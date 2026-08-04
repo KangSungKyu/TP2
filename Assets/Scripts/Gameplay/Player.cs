@@ -89,15 +89,47 @@ public class Player : UnitBase
     // 4. PROTECTED & PRIVATE METHODS
     // =========================================================================
 
+    public static Player Instance { get; private set; }
+
     protected override void Awake()
     {
         base.Awake();
+        Instance = this;
         motor = GetComponent<KinematicMotor2D>();
         if (motor == null)
         {
             motor = gameObject.AddComponent<KinematicMotor2D>();
         }
         InitUnitAsync(3001).Forget();
+    }
+
+    private void Start()
+    {
+        var stats = GetComponent<CombatStats>();
+        if (stats != null)
+        {
+            stats.OnDeath.AddListener(Die);
+        }
+    }
+
+    public void Die()
+    {
+        SetState(PlayerState.Hit, true);
+        if (motor != null) motor.SetTargetVelocityX(0f);
+        var cols = GetComponentsInChildren<Collider2D>();
+        foreach (var c in cols) c.enabled = false;
+
+        Debug.Log("<color=red><b>[Player] 플레이어 사망! 2.0초 후 1스테이지 리로드...</b></color>");
+        ReloadStageAsync().Forget();
+    }
+
+    private async UniTaskVoid ReloadStageAsync()
+    {
+        await UniTask.Delay(System.TimeSpan.FromSeconds(2.0f), cancellationToken: this.GetCancellationTokenOnDestroy());
+        if (StageManager.Instance != null)
+        {
+            await StageManager.Instance.LoadNextRoomAsync(0, this.GetCancellationTokenOnDestroy());
+        }
     }
 
     private void Update()
@@ -234,8 +266,7 @@ public class Player : UnitBase
     {
         if (keyboard.leftCtrlKey.wasPressedThisFrame)
         {
-            var monsters = GameObject.FindObjectsOfType<Monster>();
-            foreach (var monster in monsters)
+            foreach (var monster in Monster.ActiveMonsters)
             {
                 if (monster != null && Vector3.Distance(transform.position, monster.transform.position) <= 2.5f)
                 {
@@ -517,10 +548,18 @@ public class Player : UnitBase
         if (skillNum > 0)
         {
             SetState(PlayerState.Attack);
-            var monster = GameObject.FindObjectOfType<Monster>();
-            if (monster != null && skillExecutor != null)
+            Monster monsterTarget = null;
+            foreach (var m in Monster.ActiveMonsters)
             {
-                skillExecutor.ExecuteSkill((int)skillNum, transform, monster.transform);
+                if (m != null && m.gameObject.activeInHierarchy)
+                {
+                    monsterTarget = m;
+                    break;
+                }
+            }
+            if (monsterTarget != null && skillExecutor != null)
+            {
+                skillExecutor.ExecuteSkill((int)skillNum, transform, monsterTarget.transform);
             }
         }
     }

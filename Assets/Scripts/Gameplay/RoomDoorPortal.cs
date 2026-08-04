@@ -44,7 +44,7 @@ public class RoomDoorPortal : MonoBehaviour
         }
         else
         {
-            var builder = Object.FindObjectOfType<TilemapStageBuilder>();
+            var builder = TilemapStageBuilder.Instance;
             if (builder != null)
             {
                 string addressKey = TargetRoomKey;
