@@ -15,6 +15,18 @@ MonoBehaviour:
   m_GroupName: Datas
   m_GUID: ac55683b387992d42882d42aa6caaca6
   m_SerializeEntries:
+  - m_GUID: 2440dc3a56dbd50448ce0c69156fa224
+    m_Address: ChunkResourceData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a30088b38b7e7e44f940b9b1c2b4bccb
+    m_Address: MonsterEncounterData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b25a4000b4f874042afc7cb1962d1054
     m_Address: BossPatternData
     m_ReadOnly: 0
@@ -53,6 +65,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de7d670af6e22f44b80882262af37fc5
     m_Address: StageData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8d873c9dc37dd745842f298f5360091
+    m_Address: StageLayoutData
     m_ReadOnly: 0
     m_SerializedLabels:
     - Datas

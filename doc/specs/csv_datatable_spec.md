@@ -1,36 +1,45 @@
-# 📄 9종 CSV 데이터 테이블 & 파서 사양서
+# CSV 데이터 테이블 및 정수 idx 명세
 
-## 📌 1. 개요 (Overview)
-본 사양서는 `TP2` 프로젝트의 `Assets/Datas/` 내 9종 CSV 데이터 테이블, `int idx` PK/FK 표준화 규격 및 Addressables 배포 라벨링 정책을 정의합니다.
+## 1. 식별 규칙
 
----
+- 모든 테이블의 PK 컬럼은 소문자 `idx`다.
+- 테이블 간 런타임 참조는 문자열 키가 아닌 `uint idx` PK/FK로 수행한다.
+- 리소스 주소는 공용 `ResourceData`의 정수 `idx`를 통해서만 해석한다.
+- 파싱 실패, 중복 idx, 누락 FK, 빈 리소스 경로는 해당 레코드를 사용할 수 없는 데이터로 처리하고 오류를 기록한다.
+- 매니저와 유닛은 Addressables API를 직접 호출하지 않고 `ResourceManager`에 로딩·인스턴스화를 위임한다.
 
-## ⚙️ 2. 데이터 테이블 규격 & 표준 교정 (CSV Standards)
+## 2. 주요 연결
 
-### 2.1 PK / FK 컬럼명 표준화 (`idx`)
-- **PK 컬럼 규칙**: 모든 데이터 테이블의 Primary Key 컬럼명은 예외 없이 **`idx` (소문자)**로 통일
-- **교정 내역**: `SkillData.csv` 내 기존 `skillid` 컬럼 ➔ **`idx`**로 100% 교정 (`1a39376`)
-- **헤더 규격**: 전체 9종 CSV 파일 헤더 전수 소문자(lowercase) 검증 완료
+- `StageData.startroomidx`, `bossroomidx`, `roomsequenceidxlist` -> `ResourceData.idx`
+- `UnitBaseData.prefabid`, `animatorid` -> `ResourceData.idx`
+- `EffectData.prefabidx` -> `ResourceData.idx`
+- `SpawnPointMarker.MonsterId` -> `UnitBaseData.idx` -> `ResourceData.idx`
 
-### 2.2 StageData.csv 정수화 및 Addressables 라벨링
-- **`themetype` 정수 변환**:
-  - `9001` (1장 TaoShrine): `themetype = 1`
-  - `9002` (2장 CyberRuins): `themetype = 2`
-- **룸 연계 인덱스**: `startroomidx` (`1040`), `bossroomidx` (`1042`), `roomsequenceidxlist` (`1040_1041_1042`)
-- **Addressables Label**: `Datas` 라벨 자동 등록 보장 (`ac90b50`)
+1스테이지(`9001`) 기본값:
 
----
+- `themetype = 1`
+- `startroomidx = 1040`
+- `bossroomidx = 1042`
+- `roomsequenceidxlist = 1040_1041_1042`
 
-## 📊 3. 9종 CSV 테이블 목록
-1. `StageData.csv`: 스테이지 / 룸 연계 데이터
-2. `SkillData.csv`: 유닛/플레이어 스킬 수치 데이터 (PK: `idx`)
-3. `ResourceData.csv`: 에셋 주소 1:1 무결성 매핑 데이터
-4. `MonsterDataTable.csv`: 몬스터 능력치 및 스폰 데이터
-5. `EffectDataTable.csv`: VFX 이펙트 파라미터 데이터
-6. `ItemData.csv`, `StatData.csv`, `SoundData.csv`, `DialogueData.csv`
+## 3. 테이블
 
----
+- `StageData.csv`
+- `SkillData.csv`
+- `ResourceData.csv`
+- `UnitBaseData.csv`
+- `MonsterBaseData.csv`
+- `MonsterPatternData.csv`
+- `BossPatternData.csv`
+- `EffectData.csv`
+- `TextData.csv`
 
-## ✅ 4. 검증 결과 (QA Test Suite)
-- **CSV 데이터 파서 검증**: 27/27 테스트 항목 100% PASS
-- **StageData 룸 런타임 로딩**: 28/28 QA PASS 완료
+실제 파일 추가·삭제 시 이 목록과 `DataTableManager` 등록을 함께 갱신한다.
+
+## 4. 검증
+
+- `Assets/Editor/Tests/CSVDataPipelineTests.cs`: 파싱, 정수 키, FK 및 스테이지 룸 연결 검증
+- `Assets/Editor/Tests/TilemapStageBuilderTests.cs`: 룸 `ResourceData.idx`와 스폰 마커 검증
+- 과거 PASS 숫자를 고정 기록하지 않는다. 최신 결과는 `Logs/qa_test_results.txt`를 기준으로 한다.
+
+최종 소급 점검: 2026-08-05

@@ -33,8 +33,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31d72f9f46be05c44bee462edb83caaa
+    m_Address: Tilemap_Room_Stage1_1051
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ea9c71b289748d419e21d933ad0f605
     m_Address: Particle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b385ea7c9e07d34bb907566200d5178
+    m_Address: Tilemap_Room_Stage1_1056
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 813ae21e14e165949861d0d53b94ddb9
+    m_Address: Tilemap_Room_Stage1_1057
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -77,6 +95,24 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a000000000000000e30d6bf4b14d23e5
     m_Address: Door
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1211580465d53c4dbe68bb95b582356
+    m_Address: Tilemap_Room_Stage1_1050
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0b02419ac3e82b4686c37922f9d44c8
+    m_Address: Tilemap_Room_Stage1_1061
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7b2bb7ba60f4c74bab0ca94e7e80392
+    m_Address: Tilemap_Room_Stage1_1063
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -147,6 +183,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4e2698b21b5891438fdca4aefaba5c4
+    m_Address: Tilemap_Room_Stage1_1053
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc6b49e5da713d6408839e04380fbc86
     m_Address: Tilemap_Room_TestDummy
     m_ReadOnly: 0
@@ -155,6 +197,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e99f7ae641d001944ba12e8604fb4f27
     m_Address: ShadowStalker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f80194258bf2acc49a5a3fdcae2da95e
+    m_Address: Tilemap_Room_Stage1_1052
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

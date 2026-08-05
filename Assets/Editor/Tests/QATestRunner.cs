@@ -10,6 +10,14 @@ namespace QA.Tests
     public class QATestRunner
     {
         private static readonly string LogPath = "Logs/qa_test_results.txt";
+        private static readonly string ExceptionLogPath = "Logs/qa_exception_results.txt";
+
+        public static void AppendExceptionResult(string system, string mitigation)
+        {
+            Directory.CreateDirectory("Logs");
+            File.AppendAllText(ExceptionLogPath,
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {system} | PASS | {mitigation}{Environment.NewLine}");
+        }
 
         [MenuItem("QA/Run All QA Architecture Tests")]
         public static void RunAllTests()
@@ -35,7 +43,10 @@ namespace QA.Tests
             // 4. Tilemap Stage & 60x30 Room Chunk & Physics Tests
             RunTestSuite(typeof(TilemapStageBuilderTests), ref totalTests, ref passedTests, ref failedTests, sb);
 
-            // 5. 요약 및 출력
+            // 5. Stage 1 MVP regression and implementation-gap tests
+            RunTestSuite(typeof(Stage1MvpRegressionTests), ref totalTests, ref passedTests, ref failedTests, sb);
+
+            // 6. 요약 및 출력
             sb.AppendLine("--------------------------------------------------------------------------------");
             if (failedTests == 0)
             {

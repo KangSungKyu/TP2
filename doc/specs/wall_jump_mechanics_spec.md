@@ -1,26 +1,34 @@
-# 📄 메트로배니아 2D 벽점프(Wall Jump) 메카닉 기술 사양서
+# 플레이어 점프·벽점프·회피 상호작용 명세
 
-## 📌 1. 개요 (Overview)
-본 사양서는 `TP2` 프로젝트의 메트로배니아 2D 액션 환경에서 적용되는 벽점프(Wall Jump) 조작 메카닉 및 지형 속성 판정 시스템의 기술적 명세를 정의합니다.
+## 1. 운동학 기준
 
----
+- 플레이어 이동은 `KinematicMotor2D`의 `FixedUpdate`와 `Collider2D.Cast()` 기반 커스텀 운동학 해석을 사용한다.
+- Rigidbody2D Dynamic 물리 이동을 게임플레이 이동의 기준으로 사용하지 않는다.
+- 수평·수직 이동은 분리된 Cast pass로 충돌 거리를 보정하고, 피부 폭보다 안쪽으로 진입하지 않는다.
 
-## ⚙️ 2. 핵심 메카닉 명세 (Core Mechanics)
+## 2. 점프와 벽점프
 
-### 2.1 벽 접촉 및 감지 판정 (`WallJumpSurface`)
-- **지형 속성 지정**: 벽점프가 가능한 지형/벽면에 `WallJumpSurface` 컴포넌트 또는 전용 레이어/태그 부여
-- **예외 처리 (Edge Filtering)**: 1-Way 발판 측면 또는 단차 경계면의 무분별한 벽점프 방지를 위한 측면 에지 필터링 적용 (`24ce082`)
+- 일반 점프는 접지, 코요테 타임, 점프 버퍼를 사용한다.
+- 벽점프는 공중에서 `WallDir != 0`이고 `WallJumpSurface.CanWallJump`가 허용할 때만 가능하다.
+- 벽점프 직후 `0.18초` 동안 수평 입력을 잠가 반동 궤적을 보존한다.
+- `AllowSameWall = false`인 벽에서는 동일 벽 연속 점프를 허용하지 않는다.
+- 1-Way 플랫폼 측면은 벽점프 표면으로 판정하지 않는다.
 
-### 2.2 벽 슬라이딩 & 반동 가속 (Trajectory & Force)
-- **반동 입력 벡터**: 벽 반대 방향 사각(대각선 ~45도) 반동 벡터 가속 적용
-- **좌우 이동 잠금 (Lockout)**: 벽점프 발사 직후 **0.18초 동안 수평 조작 입력 잠금**을 적용하여 자연스러운 반동 궤적 보장
+## 3. 회피·가드와 입력 배타성
 
-### 2.3 캔슬 연계 (Dodge-Cancel)
-- **회피(Dodge) 연계**: 벽점프 궤적 진행 도중 회피(Space/Shift) 입력 시 잠금을 캔슬하고 즉시 공중 회피 동작으로 전이 가능
+- 회피, 가드, 패링 중에는 일반 점프 입력과 일반 수평 이동 입력을 무시한다.
+- 공중 회피 중 방향키를 바꿔도 회피 시작 시 결정된 수평 대시 속도를 덮어쓰지 않는다.
+- 회피 중 벽에 접촉하면 회피 상태를 해제하고 유효한 경우 벽점프로 전이할 수 있다.
+- 점프·회피·가드 입력 연타로 비동기 동작이 중첩되지 않도록 각 상태 진입 전에 `IsDodging`, `IsGuarding`, `IsParrying`, 공격 상태를 검증한다.
+- 지면 관통은 명시적인 하향 점프 입력에서만 요청하며 일반 점프·회피·가드 연타로 활성화하지 않는다.
+- 취소 토큰 발생 시 상태가 영구 고정되지 않도록 비동기 방어 동작은 상태 복구 경로를 유지한다.
 
----
+## 4. 관련 구현 및 검증
 
-## 🛠️ 3. 연관 클래스 및 구현 파일
-- `Assets/Scripts/Gameplay/KinematicMotor2D.cs`: 이동 및 벽점프 궤적 갱신 (`FixedUpdate` 동기화)
-- `Assets/Scripts/Gameplay/Player.cs`: 벽점프 입력 검증 및 캔슬 큐 파이프라인
-- `Assets/Scripts/Gameplay/WallJumpSurface.cs`: 벽점프 전용 감지 컴포넌트
+- `Assets/Scripts/Gameplay/Player.cs`
+- `Assets/Scripts/Gameplay/KinematicMotor2D.cs`
+- `Assets/Scripts/Gameplay/WallJumpSurface.cs`
+- `Assets/Scripts/Gameplay/OneWayPlatformPassThrough.cs`
+- `Assets/Editor/Tests/TilemapStageBuilderTests.cs`
+
+최종 소급 점검: 2026-08-05

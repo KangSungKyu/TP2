@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -149,6 +150,27 @@ public class TilemapStageBuilder : MonoBehaviour
 
         await fadeInScreenAsync(cancellationToken);
         Debug.Log("<color=green>[TilemapStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
+    }
+
+    public void BuildSceneFromChunks(IEnumerable<GameObject> roomChunks)
+    {
+        if (roomChunks == null) return;
+        int retained = 0;
+        foreach (GameObject roomChunk in roomChunks)
+        {
+            if (roomChunk == null) continue;
+            if (retained >= 4)
+            {
+                roomChunk.SetActive(false);
+                continue;
+            }
+
+            retained++;
+            if (StageManager.Instance != null)
+            {
+                StageManager.Instance.RegisterRoomInstance(roomChunk);
+            }
+        }
     }
 
     private void SetupMetroidvaniaCamera()
