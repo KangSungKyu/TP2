@@ -117,6 +117,7 @@ public class TilemapStageBuilder : MonoBehaviour
             {
                 StageManager.Instance.RegisterRoomInstance(spawnedChunk);
                 StageManager.Instance.RegisterRoomInstance(rootObj);
+                await ConfigureChunkPortalsAsync(spawnedChunk, cancellationToken);
             }
 
             // SpawnPointMarker를 탐색하여 플레이어, 일반 몬스터, 보스 동적 스폰 파이프라인 구동
@@ -150,6 +151,50 @@ public class TilemapStageBuilder : MonoBehaviour
 
         await fadeInScreenAsync(cancellationToken);
         Debug.Log("<color=green>[TilemapStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
+    }
+
+    private async UniTask ConfigureChunkPortalsAsync(GameObject chunk, CancellationToken cancellationToken)
+    {
+        StageManager stageManager = StageManager.Instance;
+        if (chunk == null || stageManager == null || stageManager.CurrentRun == null) return;
+
+        ChunkSocketMarker[] sockets = chunk.GetComponentsInChildren<ChunkSocketMarker>(true);
+        var portals = new List<GameObject>(sockets.Length);
+        Transform entrance = null;
+        foreach (ChunkSocketMarker socket in sockets)
+        {
+            socket.gameObject.SetActive(false);
+            if (!stageManager.TryGetConnectedSlot(socket.Direction, out byte targetSlotIdx) ||
+                ResourceManager.Instance == null) continue;
+
+            cancellationToken.ThrowIfCancellationRequested();
+            GameObject portalObject = await ResourceManager.Instance.InstantiateAsyncTask(
+                "Portal_Gate", socket.transform, socket.transform.position, Quaternion.identity);
+            if (portalObject == null) continue;
+
+            portalObject.SetActive(false);
+            ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
+            portals.Add(portalObject);
+            if (targetSlotIdx == stageManager.CurrentRun.PreviousSlotIdx && socket.EntryMarker != null)
+                entrance = socket.EntryMarker;
+        }
+
+        if (entrance != null && Player.Instance != null)
+            Player.Instance.transform.position = entrance.position;
+
+        foreach (GameObject portal in portals) portal.SetActive(true);
+    }
+
+    public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx)
+    {
+        if (socket == null || portalObject == null) return null;
+        socket.gameObject.SetActive(true);
+        portalObject.transform.SetParent(socket.transform, true);
+        portalObject.transform.position = socket.transform.position;
+        RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
+        portal.TargetSlotIdx = targetSlotIdx;
+        portalObject.SetActive(false);
+        return portal;
     }
 
     public void BuildSceneFromChunks(IEnumerable<GameObject> roomChunks)

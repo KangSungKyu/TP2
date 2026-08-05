@@ -113,6 +113,61 @@ namespace QA.Tests
             string source = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
             StringAssert.Contains("Boss room transition rejected before reaching the BossGate slot", source);
             StringAssert.DoesNotContain("roomResourceIdx = 1041", source);
+            StringAssert.Contains("CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx", source);
+            Assert.AreEqual("Tilemap_Room_Stage1_Boss", CreateManager().ResolveAddressableKey(1042));
+        }
+
+        [Test]
+        public void Test_100Seeds_SixMoves_AreMutualAdjacentAndLoadDestinationResource()
+        {
+            for (uint seed = 0; seed < 100; seed++)
+            {
+                var manager = CreateManager();
+                try
+                {
+                    StageRunData run = Stage1RunGenerator.Generate(seed);
+                    foreach (var slot in run.Slots) slot.ChunkResourceIdx = 1050u + slot.SlotIdx;
+                    SetCurrentRun(manager, run);
+
+                    for (int move = 0; move < 6; move++)
+                    {
+                        byte previous = run.CurrentSlotIdx;
+                        Assert.IsTrue(manager.TryMoveToConnectedSlot(byte.MaxValue, out uint resourceIdx));
+                        Assert.AreNotEqual(previous, run.CurrentSlotIdx);
+                        Assert.IsTrue(run.TryGetSlot(run.CurrentSlotIdx, out var destination));
+                        Assert.AreEqual(destination.ChunkResourceIdx, resourceIdx);
+                        Assert.IsTrue(IsMutualAdjacent(run, previous, run.CurrentSlotIdx));
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(manager.gameObject); }
+            }
+        }
+
+        [Test]
+        public void Test_1041_IsUsedOnlyWhenDestinationChunkResourceIsMissing()
+        {
+            var manager = CreateManager();
+            try
+            {
+                var run = new StageRunData
+                {
+                    Rows = 1, Columns = 2, CurrentSlotIdx = 0,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 0, ChunkResourceIdx = 1040, ConnectionMask = 2 },
+                        new ChunkSlotData { SlotIdx = 1, ChunkResourceIdx = 0, ConnectionMask = 8 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(1, out uint fallback));
+                Assert.AreEqual(1041u, fallback);
+
+                run.CurrentSlotIdx = 0;
+                run.Slots[1].ChunkResourceIdx = 1056;
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(1, out uint configured));
+                Assert.AreEqual(1056u, configured);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(manager.gameObject); }
         }
 
         [Test]
@@ -164,6 +219,51 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_ChunkSockets_BindOnlyReciprocalConnections_WithTargetAndTriggerVisual()
+        {
+            var managerObject = new GameObject("Stage1_Socket_Manager_QA");
+            var socketObject = new GameObject("Socket_East_QA");
+            var portalObject = new GameObject("Portal_QA");
+            try
+            {
+                var manager = managerObject.AddComponent<StageManager>();
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 4,
+                    CurrentSlotIdx = 0,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 0, ConnectionMask = 2 },
+                        new ChunkSlotData { SlotIdx = 1, ConnectionMask = 8 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+
+                Assert.IsTrue(manager.TryGetConnectedSlot(ChunkSocketDirection.East, out byte target));
+                Assert.AreEqual(1, target);
+                Assert.IsFalse(manager.TryGetConnectedSlot(ChunkSocketDirection.North, out _));
+
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                var collider = portalObject.AddComponent<BoxCollider2D>();
+                collider.isTrigger = true;
+                var renderer = portalObject.AddComponent<SpriteRenderer>();
+                RoomDoorPortal portal = TilemapStageBuilder.ConfigureSocketPortal(socket, portalObject, target);
+
+                Assert.AreEqual(target, portal.TargetSlotIdx);
+                Assert.IsTrue(collider.isTrigger);
+                Assert.NotNull(renderer);
+                Assert.IsFalse(portalObject.activeSelf, "Portal remains disabled until the player is repositioned.");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(portalObject);
+                UnityEngine.Object.DestroyImmediate(socketObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+            }
+        }
+
+        [Test]
         public void Test_BossCompletion_SurvivesBossObjectDestructionDuringDelay()
         {
             string source = File.ReadAllText("Assets/Scripts/Gameplay/BossMonster.cs");
@@ -175,8 +275,9 @@ namespace QA.Tests
         public void Test_HubFailure_DoesNotPermanentlyConsumeCompletionLock()
         {
             string source = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
-            int lockIndex = source.IndexOf("TryLockCompletion()", StringComparison.Ordinal);
-            int hubIndex = source.IndexOf("await ReturnToHubAsync", lockIndex, StringComparison.Ordinal);
+            int methodIndex = source.IndexOf("CompleteStage1Async", StringComparison.Ordinal);
+            int lockIndex = source.IndexOf("TryLockCompletion()", methodIndex, StringComparison.Ordinal);
+            int hubIndex = source.IndexOf("await ReturnToHubAsync", methodIndex, StringComparison.Ordinal);
             Assert.Greater(lockIndex, hubIndex,
                 "Hub 전환 성공 전에 completion lock을 소비하여 실패 후 재시도가 불가능합니다.");
         }
@@ -208,6 +309,22 @@ namespace QA.Tests
         {
             typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))
                 .GetSetMethod(true).Invoke(manager, new object[] { run });
+        }
+
+        private static StageManager CreateManager()
+        {
+            return new GameObject("Stage1_CodeGate_QA").AddComponent<StageManager>();
+        }
+
+        private static bool IsMutualAdjacent(StageRunData run, byte fromIdx, byte toIdx)
+        {
+            if (!run.TryGetSlot(fromIdx, out var from) || !run.TryGetSlot(toIdx, out var to)) return false;
+            int delta = toIdx - fromIdx;
+            if (delta == -run.Columns) return (from.ConnectionMask & 1) != 0 && (to.ConnectionMask & 4) != 0;
+            if (delta == 1 && fromIdx / run.Columns == toIdx / run.Columns) return (from.ConnectionMask & 2) != 0 && (to.ConnectionMask & 8) != 0;
+            if (delta == run.Columns) return (from.ConnectionMask & 4) != 0 && (to.ConnectionMask & 1) != 0;
+            if (delta == -1 && fromIdx / run.Columns == toIdx / run.Columns) return (from.ConnectionMask & 8) != 0 && (to.ConnectionMask & 2) != 0;
+            return false;
         }
 
     }
