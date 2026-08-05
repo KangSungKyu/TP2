@@ -370,7 +370,8 @@ public class Player : UnitBase
 
     private void HandleDefensiveActions(Keyboard keyboard)
     {
-        if (isAttacking) return;
+        if (isAttacking || stats.IsDodging || stats.IsGuarding || stats.IsParrying ||
+            (motor != null && motor.IsPassingThrough)) return;
 
         if (keyboard.spaceKey.wasPressedThisFrame && !IsJumping)
         {
@@ -512,6 +513,7 @@ public class Player : UnitBase
 
     private async UniTaskVoid DodgeAsync(Vector3 dodgeDir, CancellationToken cancellationToken)
     {
+        if (stats.IsDodging || stats.IsGuarding || stats.IsParrying) return;
         stats.SetDodging(true);
         SetState(PlayerState.Dodge);
 

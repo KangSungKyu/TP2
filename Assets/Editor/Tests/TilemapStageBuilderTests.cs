@@ -123,9 +123,16 @@ namespace QA.Tests
             metroCam.MinBounds = new Vector2(-29f, -1f);
             metroCam.MaxBounds = new Vector2(29f, 17f);
 
+            GameObject targetObj = new GameObject("Test_CameraTarget");
+            targetObj.transform.position = new Vector3(10f, 3f, 0f);
+            metroCam.Target = targetObj.transform;
+            metroCam.SnapToTarget();
+
             Assert.IsNotNull(metroCam, "MetroidvaniaCamera2D 생성 실패");
             Assert.IsTrue(metroCam.UseBounds, "카메라 바운더리 활성화 여부 확인");
 
+            Assert.AreEqual(targetObj.transform.position.x, camObj.transform.position.x, 0.01f);
+            Object.DestroyImmediate(targetObj);
             Object.DestroyImmediate(camObj);
         }
 

@@ -171,6 +171,7 @@ public class TilemapStageBuilder : MonoBehaviour
         if (Player.Instance != null)
         {
             metroCam.Target = Player.Instance.transform;
+            metroCam.SnapToTarget();
         }
     }
 
