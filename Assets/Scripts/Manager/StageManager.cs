@@ -53,13 +53,6 @@ public sealed class StageRunData
         return true;
     }
 
-    public bool TryLockCompletion()
-    {
-        if (CompletionLocked) return false;
-        CompletionLocked = true;
-        return true;
-    }
-
     private ChunkSlotData GetSlot(byte slotIdx)
     {
         if (Slots == null) return null;
@@ -131,6 +124,38 @@ public static class Stage1RunGenerator
             CurrentSlotIdx = 0,
             Slots = slots.ToArray()
         };
+    }
+
+    public static StageRunData Generate(uint seed, StageLayoutData layout,
+        IReadOnlyList<ChunkResourceData> chunks, IReadOnlyList<MonsterEncounterData> encounters)
+    {
+        StageRunData run = Generate(seed);
+        if (layout == null || layout.StageDataIdx != 9001 ||
+            layout.MinActiveChunks > run.Slots.Length || layout.MaxActiveChunks < run.Slots.Length)
+            return run;
+
+        for (int i = 0; i < run.Slots.Length; i++)
+        {
+            ChunkSlotData slot = run.Slots[i];
+            if (slot.SlotIdx == run.StartSlotIdx || slot.SlotIdx == run.BossGateSlotIdx) continue;
+
+            if (chunks != null && chunks.Count > 0)
+            {
+                var validChunks = new List<ChunkResourceData>();
+                foreach (ChunkResourceData chunk in chunks)
+                    if ((chunk.SupportedConnectionMask & slot.ConnectionMask) == slot.ConnectionMask)
+                        validChunks.Add(chunk);
+                if (validChunks.Count > 0)
+                    slot.ChunkResourceIdx = validChunks[(int)((seed + slot.SlotIdx) % (uint)validChunks.Count)].ResourceIdx;
+            }
+
+            if (encounters != null && encounters.Count > 0)
+            {
+                MonsterEncounterData encounter = encounters[(int)((seed + slot.SlotIdx) % (uint)encounters.Count)];
+                slot.MonsterUnitIdxList = encounter.UnitIdxList ?? Array.Empty<uint>();
+            }
+        }
+        return run;
     }
 
     public static bool Validate(StageRunData run)
@@ -225,6 +250,7 @@ public class StageManager : Singleton<StageManager>
     public int CurrentRoomSequenceIndex { get; private set; } = 0;
     public StageRunData CurrentRun { get; private set; }
     private bool isLoadingRoom;
+    private bool completionTransitionInProgress;
 
     public StageBaseData CurrentStageData
     {
@@ -279,7 +305,14 @@ public class StageManager : Singleton<StageManager>
         }
 
         CurrentStageIdx = stageIdx;
-        CurrentRun = Stage1RunGenerator.Generate(unchecked((uint)DateTime.UtcNow.Ticks));
+        uint seed = unchecked((uint)DateTime.UtcNow.Ticks);
+        var layoutTable = DataTableManager.Instance.GetDB<StageLayoutDataTable>(DataTableType.StageLayout);
+        var chunkTable = DataTableManager.Instance.GetDB<ChunkResourceDataTable>(DataTableType.ChunkResource);
+        var encounterTable = DataTableManager.Instance.GetDB<MonsterEncounterDataTable>(DataTableType.MonsterEncounter);
+        StageLayoutData layout = null;
+        layoutTable?.TryGetByStage(stageIdx, out layout);
+        CurrentRun = Stage1RunGenerator.Generate(seed, layout,
+            chunkTable?.GetForStage(stageIdx), encounterTable?.GetForStage(stageIdx));
         if (!Stage1RunGenerator.Validate(CurrentRun))
         {
             Debug.LogError("[StageManager] Stage 1 safe graph validation failed.");
@@ -390,8 +423,16 @@ public class StageManager : Singleton<StageManager>
 
     public async UniTask CompleteStage1Async(CancellationToken cancellationToken = default)
     {
-        if (CurrentRun == null || !CurrentRun.TryLockCompletion()) return;
-        await ReturnToHubAsync(cancellationToken);
+        if (CurrentRun == null || CurrentRun.CompletionLocked || completionTransitionInProgress) return;
+        completionTransitionInProgress = true;
+        try
+        {
+            if (await ReturnToHubAsync(cancellationToken)) CurrentRun.TryLockCompletion();
+        }
+        finally
+        {
+            completionTransitionInProgress = false;
+        }
     }
 
     private void AdvanceTowardBoss()
@@ -402,15 +443,24 @@ public class StageManager : Singleton<StageManager>
         CurrentRun.TryVisit(CurrentRun.CurrentSlotIdx);
     }
 
-    private static async UniTask ReturnToHubAsync(CancellationToken cancellationToken)
+    private static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (GameSceneManager.Instance == null)
         {
             Debug.LogError("[StageManager] GameSceneManager unavailable; Hub fallback could not start.");
-            return;
+            return false;
         }
-        await GameSceneManager.Instance.TransitionTo(GameSceneManager.SceneName.Hub);
+        try
+        {
+            await GameSceneManager.Instance.TransitionTo(GameSceneManager.SceneName.Hub);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            return false;
+        }
     }
 
     // 하위 호환성 메서드 (string 기반)

@@ -30,9 +30,7 @@ public partial class Util
         return new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Delimiter = ",",
-            PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-            HeaderValidated = null,
-            MissingFieldFound = null
+            PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()
         };
     }
 

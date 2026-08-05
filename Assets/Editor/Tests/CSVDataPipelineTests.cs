@@ -27,8 +27,8 @@ namespace QA.Tests
         [Test]
         public void Test03_UnitBaseDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,nametextidx,unittype,prefabpath,maxhp,maxmp,movespeed,jumpforce,attackpower,defense,maxposture,posturerecoverrate,groggyduration\n" +
-                               "3001,2001,1,Prefabs/Units/Player,100,50,5.0,8.0,10,2,100,10,3.0";
+            string csvContent = "idx,nametextidx,unittype,prefabid,animatorid,maxhp,maxmp,maxposture,atk,def,movespeed,visualoffsety,hitboxradius,faction\n" +
+                               "3001,2001,1,1001,1010,100,50,100,10,2,5.0,0.6,0.5,1";
             UnitBaseDataTable table = new UnitBaseDataTable();
             table.LoadData(csvContent);
             Assert.AreEqual(1, table.GetDataCount(), "UnitBaseDataTable 파싱 검증");
@@ -37,8 +37,8 @@ namespace QA.Tests
         [Test]
         public void Test04_MonsterBaseDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,unitbaseidx,monstertype,detectrange,attackrange,patrolrange,phasecount,patternlist\n" +
-                               "4001,3001,1,10.0,2.0,5.0,1,5001_5002";
+            string csvContent = "idx,detectrange,attackrange,patternidxlist\n" +
+                               "5101,10.0,2.0,6001_6002";
             MonsterDataTable table = new MonsterDataTable();
             table.LoadData(csvContent);
             Assert.AreEqual(1, table.GetDataCount(), "MonsterDataTable 파싱 검증");
@@ -47,8 +47,8 @@ namespace QA.Tests
         [Test]
         public void Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,patternname,cooldown,casttime,range,damagemultiplier,hitcount,hittimings,animationclip\n" +
-                               "5001,Smash,3.0,0.2,2.0,1.5,1,0.1,Anim_Smash";
+            string csvContent = "idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx\n" +
+                               "6001,2010,Smash,1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001";
             MonsterPatternDataTable table = new MonsterPatternDataTable();
             table.LoadData(csvContent);
             Assert.AreEqual(1, table.GetDataCount(), "MonsterPatternDataTable 파싱 검증");
@@ -111,6 +111,46 @@ namespace QA.Tests
             Assert.AreEqual(1, fallback.ThemeType, "오염 입력 실패 후 마지막 정상 테이블을 fallback으로 유지해야 합니다.");
             QATestRunner.AppendExceptionResult(nameof(StageDataTable),
                 "HeaderValidationException/InvalidKeyException handled; previous valid table retained");
+        }
+
+        [Test]
+        public void Test_StageRunCsvTypes_RouteWithoutIdxCollisions()
+        {
+            var layout = new StageLayoutDataTable();
+            var chunks = new ChunkResourceDataTable();
+            var encounters = new MonsterEncounterDataTable();
+            var resources = new ResourceDataTable();
+
+            layout.LoadData("idx,stagedataidx,minrows,maxrows,mincolumns,maxcolumns,minactivechunks,maxactivechunks,bossroomresourceidx,nextstageidx\n12001,9001,3,4,3,4,9,11,1042,9002");
+            chunks.LoadData("idx,resourceidx,chunktype,supportedconnectionmask,minstageidx,maxuseperrun,weight\n11050,1050,1,15,9001,2,100");
+            encounters.LoadData("idx,stageidx,variant,unitidxlist,threatcost,weight\n13001,9001,1,3101_3104,4,100");
+            resources.LoadData("idx,path\n1050,Tilemap_Room_Stage1_1050");
+
+            Assert.AreEqual(DataTableType.StageLayout, Util.GetDataTableType(12001));
+            Assert.AreEqual(DataTableType.ChunkResource, Util.GetDataTableType(11050));
+            Assert.AreEqual(DataTableType.MonsterEncounter, Util.GetDataTableType(13001));
+            Assert.IsTrue(resources.TryGetResource(1050, out ResourceData room));
+            Assert.AreEqual("Tilemap_Room_Stage1_1050", room.Path);
+            Assert.IsTrue(layout.TryGetByStage(9001, out StageLayoutData layoutData));
+
+            StageRunData run = Stage1RunGenerator.Generate(2, layoutData,
+                chunks.GetForStage(9001), encounters.GetForStage(9001));
+            Assert.IsTrue(Stage1RunGenerator.Validate(run));
+            Assert.IsTrue(System.Array.Exists(run.Slots, slot => slot.ChunkResourceIdx == 1050));
+            Assert.IsTrue(System.Array.Exists(run.Slots, slot => slot.MonsterUnitIdxList.Length == 2));
+        }
+
+        [Test]
+        public void Test_StageRunCsvWrongLegacyRanges_AreRejectedPerFile()
+        {
+            var layout = new StageLayoutDataTable();
+            Assert.Throws<InvalidKeyException>(() => layout.LoadData(
+                "idx,stagedataidx,minrows,maxrows,mincolumns,maxcolumns,minactivechunks,maxactivechunks,bossroomresourceidx,nextstageidx\n9101,9001,3,4,3,4,9,11,1042,9002"));
+            Assert.AreEqual(0, layout.GetDataCount());
+
+            var resources = new ResourceDataTable();
+            Assert.DoesNotThrow(() => resources.LoadData("idx,path\n1050,Tilemap_Room_Stage1_1050"));
+            Assert.AreEqual(1, resources.GetDataCount());
         }
     }
 }
