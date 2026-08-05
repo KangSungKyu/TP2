@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace QA.Tests
@@ -47,19 +48,24 @@ namespace QA.Tests
         [Test]
         public void Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx\n" +
-                               "6001,2010,Smash,1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001";
+            var csv = new StringBuilder("idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx\n");
+            for (uint idx = 6001; idx <= 6008; idx++)
+                csv.AppendLine($"{idx},2010,Monster_{idx},1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001");
+            for (uint idx = 6100; idx <= 6103; idx++)
+                csv.AppendLine($"{idx},2010,Garon_{idx},1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001");
             MonsterPatternDataTable table = new MonsterPatternDataTable();
-            table.LoadData(csvContent);
-            Assert.AreEqual(1, table.GetDataCount(), "MonsterPatternDataTable 파싱 검증");
+            table.LoadData(csv.ToString());
+            Assert.AreEqual(12, table.GetDataCount(), "일반/가론 패턴 통합 파싱 검증");
+            for (uint idx = 6001; idx <= 6008; idx++) Assert.IsTrue(table.TryGetPatternData(idx, out _));
+            for (uint idx = 6100; idx <= 6103; idx++) Assert.IsTrue(table.TryGetPatternData(idx, out _));
         }
 
         [Test]
         public void Test06_SkillDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,name,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate\n" +
-                               "7001,BasicAttack,Skill_01,1.5,0.0,0.5,5,1.0,true,1,0.15,0.3,8001,7\n" +
-                               "7002,Fireball,Skill_Fireball,5.0,0.2,3.0,20,2.5,false,1,0.12,0.8,8002,7";
+            string csvContent = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate\n" +
+                               "7001,2101,Skill_01,1.5,0.0,0.5,5,1.0,true,1,0.15,0.3,8001,7\n" +
+                               "7002,2102,Skill_Fireball,5.0,0.2,3.0,20,2.5,false,1,0.12,0.8,8002,7";
 
             SkillDataTable table = new SkillDataTable();
             table.LoadData(csvContent);
@@ -70,6 +76,18 @@ namespace QA.Tests
             Assert.AreEqual(7001u, skill7001.SkillId, "SkillData SkillId => Idx 호환 프로퍼티 검증");
             Assert.IsTrue(table.TryGetSkill(7001, out var skillInfo), "int skillId (7001) 하위 호환성 조회가 가능해야 합니다.");
             Assert.AreEqual(7001, skillInfo.Id, "SkillInfo Id = 7001 검증");
+            Assert.AreEqual(string.Empty, skillInfo.Name, "누락 TextData idx는 빈 문자열로 격리해야 합니다.");
+        }
+
+        [Test]
+        public void Test_EffectData_TextIdxHeaderAndMissingTextFallback()
+        {
+            var table = new EffectDataTable();
+            Assert.DoesNotThrow(() => table.LoadData(
+                "idx,effectnametextidx,prefabidx,duration,scale,loopcount\n8001,2201,1020,0.3,1.0,1"));
+            Assert.IsTrue(table.TryGetEffectData(8001, out EffectData effect));
+            Assert.AreEqual(2201u, effect.EffectNameTextIdx);
+            Assert.AreEqual(string.Empty, table.GetDisplayName(8001));
         }
 
         [Test]
