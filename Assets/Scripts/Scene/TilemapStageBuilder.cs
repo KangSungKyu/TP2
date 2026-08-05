@@ -224,8 +224,8 @@ public class TilemapStageBuilder : MonoBehaviour
         // ---------------------------------------------------------------------
         // Zone C: Combat & Monster Test Arena (X: +10 ~ +28)
         // ---------------------------------------------------------------------
-        createSpawnMarker(parent, "Marker_MonsterGaron", new Vector3(15f, 1.5f, 0f), SpawnType.Monster, "1001");
-        createSpawnMarker(parent, "Marker_BossGaron", new Vector3(23f, 1.5f, 0f), SpawnType.Boss, "3201");
+        createSpawnMarker(parent, "Marker_MonsterGaron", new Vector3(15f, 1.5f, 0f), SpawnType.Monster, 3101);
+        createSpawnMarker(parent, "Marker_BossGaron", new Vector3(23f, 1.5f, 0f), SpawnType.Boss, 3201);
 
         // 전투용 높낮이 보조 발판
         createOneWayPlatform(parent, "Platform_Combat_1", new Vector3(15f, 4.0f, 0f), new Vector2(4f, 0.4f));
@@ -285,7 +285,7 @@ public class TilemapStageBuilder : MonoBehaviour
         sprite.color = new Color(0.1f, 0.7f, 0.85f, 0.9f);
     }
 
-    private void createSpawnMarker(Transform parent, string name, Vector3 pos, SpawnType type, string monsterId = "")
+    private void createSpawnMarker(Transform parent, string name, Vector3 pos, SpawnType type, uint monsterId = 0)
     {
         GameObject markerObj = createPoolableObject(name, parent, pos);
         var marker = getOrAddComponent<SpawnPointMarker>(markerObj);

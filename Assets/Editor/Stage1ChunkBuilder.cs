@@ -91,9 +91,9 @@ public static class Stage1ChunkBuilder
 
             // Spawners & Exit Portal Gate
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-16, 1.5f, 0), SpawnType.Player);
-            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, "3101");
-            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, "3102");
-            CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, "3103");
+            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, 3101);
+            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, 3102);
+            CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, 3103);
             CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042);
         });
 
@@ -119,7 +119,7 @@ public static class Stage1ChunkBuilder
 
             // Player & Boss Spawners & Exit Portal
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-18, 1.5f, 0), SpawnType.Player);
-            CreateSpawnMarker(root, "SpawnPoint_Boss", new Vector3(10, 1.5f, 0), SpawnType.Boss, "3201");
+            CreateSpawnMarker(root, "SpawnPoint_Boss", new Vector3(10, 1.5f, 0), SpawnType.Boss, 3201);
             CreatePortalGate(root, new Vector3(20, 1.5f, 0), 1040);
         });
 
@@ -191,7 +191,7 @@ public static class Stage1ChunkBuilder
         Debug.Log($"<color=green>[Stage1ChunkBuilder] 실물 룸 청크 프리팹 저장 완결: {prefabPath}</color>");
     }
 
-    private static void CreateSpawnMarker(GameObject parent, string name, Vector3 pos, SpawnType type, string monsterId = "")
+    private static void CreateSpawnMarker(GameObject parent, string name, Vector3 pos, SpawnType type, uint monsterId = 0)
     {
         GameObject markerObj = new GameObject(name);
         markerObj.transform.SetParent(parent.transform);

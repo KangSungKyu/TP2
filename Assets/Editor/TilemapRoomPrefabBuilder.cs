@@ -165,7 +165,7 @@ public static class TilemapRoomPrefabBuilder
         spMonster.transform.localPosition = new Vector3(15, 1.5f, 0);
         var mMonster = spMonster.AddComponent<SpawnPointMarker>();
         mMonster.Type = SpawnType.Monster;
-        mMonster.MonsterId = "1001";
+        mMonster.MonsterId = 3101;
         mMonster.EnableSpawn = true;
 
         GameObject spBoss = new GameObject("SpawnPoint_Boss");
@@ -173,7 +173,7 @@ public static class TilemapRoomPrefabBuilder
         spBoss.transform.localPosition = new Vector3(23, 1.5f, 0);
         var mBoss = spBoss.AddComponent<SpawnPointMarker>();
         mBoss.Type = SpawnType.Boss;
-        mBoss.MonsterId = "3201";
+        mBoss.MonsterId = 3201;
         mBoss.EnableSpawn = true;
 
         // Prefab 세이브

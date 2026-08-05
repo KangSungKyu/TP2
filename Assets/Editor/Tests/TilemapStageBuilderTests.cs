@@ -209,7 +209,7 @@ namespace QA.Tests
             Assert.IsNotNull(bossPrefab);
             var bossMarkers = bossPrefab.GetComponentsInChildren<SpawnPointMarker>(true);
             Assert.IsTrue(System.Array.Exists(bossMarkers, marker =>
-                marker.EnableSpawn && marker.Type == SpawnType.Boss && marker.MonsterId == "3201"));
+                marker.EnableSpawn && marker.Type == SpawnType.Boss && marker.MonsterId == 3201));
 
             Object.DestroyImmediate(stageManagerObj);
         }
