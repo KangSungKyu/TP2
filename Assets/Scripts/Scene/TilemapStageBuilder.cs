@@ -26,14 +26,6 @@ public class TilemapStageBuilder : MonoBehaviour
         if (Instance == null) Instance = this;
     }
 
-    private void Start()
-    {
-        if (Application.isPlaying)
-        {
-            BuildTilemapStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
-        }
-    }
-
     [ContextMenu("Build Stage In Editor")]
     public void BuildStageEditorSync()
     {
