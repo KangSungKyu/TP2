@@ -26,12 +26,13 @@ public sealed class StageRunData
     public byte StartSlotIdx;
     public byte BossGateSlotIdx;
     public byte CurrentSlotIdx;
+    public byte PreviousSlotIdx = byte.MaxValue;
     public bool CompletionLocked;
     public ChunkSlotData[] Slots;
 
     public bool TryVisit(byte slotIdx)
     {
-        ChunkSlotData slot = GetSlot(slotIdx);
+        TryGetSlot(slotIdx, out ChunkSlotData slot);
         if (slot == null || slot.Visited) return false;
         slot.Visited = true;
         return true;
@@ -39,7 +40,7 @@ public sealed class StageRunData
 
     public bool TryClear(byte slotIdx)
     {
-        ChunkSlotData slot = GetSlot(slotIdx);
+        TryGetSlot(slotIdx, out ChunkSlotData slot);
         if (slot == null || slot.Cleared) return false;
         slot.Cleared = true;
         return true;
@@ -47,20 +48,21 @@ public sealed class StageRunData
 
     public bool TryClaimReward(byte slotIdx)
     {
-        ChunkSlotData slot = GetSlot(slotIdx);
+        TryGetSlot(slotIdx, out ChunkSlotData slot);
         if (slot == null || slot.RewardClaimed) return false;
         slot.RewardClaimed = true;
         return true;
     }
 
-    private ChunkSlotData GetSlot(byte slotIdx)
+    public bool TryGetSlot(byte slotIdx, out ChunkSlotData result)
     {
-        if (Slots == null) return null;
+        if (Slots == null) { result = null; return false; }
         foreach (ChunkSlotData slot in Slots)
         {
-            if (slot != null && slot.SlotIdx == slotIdx) return slot;
+            if (slot != null && slot.SlotIdx == slotIdx) { result = slot; return true; }
         }
-        return null;
+        result = null;
+        return false;
     }
 }
 
@@ -134,6 +136,7 @@ public static class Stage1RunGenerator
             layout.MinActiveChunks > run.Slots.Length || layout.MaxActiveChunks < run.Slots.Length)
             return run;
 
+        var resourceUseCounts = new Dictionary<uint, int>();
         for (int i = 0; i < run.Slots.Length; i++)
         {
             ChunkSlotData slot = run.Slots[i];
@@ -143,10 +146,19 @@ public static class Stage1RunGenerator
             {
                 var validChunks = new List<ChunkResourceData>();
                 foreach (ChunkResourceData chunk in chunks)
-                    if ((chunk.SupportedConnectionMask & slot.ConnectionMask) == slot.ConnectionMask)
+                {
+                    resourceUseCounts.TryGetValue(chunk.ResourceIdx, out int used);
+                    if (chunk.MaxUsePerRun > 0 && used < chunk.MaxUsePerRun &&
+                        (chunk.SupportedConnectionMask & slot.ConnectionMask) == slot.ConnectionMask)
                         validChunks.Add(chunk);
+                }
                 if (validChunks.Count > 0)
-                    slot.ChunkResourceIdx = validChunks[(int)((seed + slot.SlotIdx) % (uint)validChunks.Count)].ResourceIdx;
+                {
+                    ChunkResourceData selected = validChunks[(int)((seed + slot.SlotIdx) % (uint)validChunks.Count)];
+                    slot.ChunkResourceIdx = selected.ResourceIdx;
+                    resourceUseCounts.TryGetValue(selected.ResourceIdx, out int used);
+                    resourceUseCounts[selected.ResourceIdx] = used + 1;
+                }
             }
 
             if (encounters != null && encounters.Count > 0)
@@ -378,8 +390,8 @@ public class StageManager : Singleton<StageManager>
 
         if (CurrentRun != null && roomResourceIdx == 1042 && CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx)
         {
-            AdvanceTowardBoss();
-            roomResourceIdx = 1041;
+            Debug.LogWarning("[StageManager] Boss room transition rejected before reaching the BossGate slot.");
+            return;
         }
 
         if (roomResourceIdx > 0)
@@ -421,6 +433,52 @@ public class StageManager : Singleton<StageManager>
         }
     }
 
+    public async UniTask<bool> LoadConnectedRoomAsync(byte targetSlotIdx = byte.MaxValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (!TryMoveToConnectedSlot(targetSlotIdx, out uint roomResourceIdx)) return false;
+        await LoadNextRoomAsync(roomResourceIdx, cancellationToken);
+        return true;
+    }
+
+    public bool TryMoveToConnectedSlot(byte targetSlotIdx, out uint roomResourceIdx)
+    {
+        roomResourceIdx = 0;
+        if (CurrentRun == null || !CurrentRun.TryGetSlot(CurrentRun.CurrentSlotIdx, out ChunkSlotData current))
+            return false;
+
+        List<byte> connected = GetConnectedSlotIndices(CurrentRun, current);
+        if (connected.Count == 0) return false;
+
+        byte destination = targetSlotIdx;
+        if (destination == byte.MaxValue)
+        {
+            destination = connected[0];
+            foreach (byte slotIdx in connected)
+            {
+                if (CurrentRun.TryGetSlot(slotIdx, out ChunkSlotData slot) && !slot.Visited)
+                {
+                    destination = slotIdx;
+                    break;
+                }
+                if (destination == CurrentRun.PreviousSlotIdx && slotIdx != CurrentRun.PreviousSlotIdx)
+                    destination = slotIdx;
+            }
+        }
+        else if (!connected.Contains(destination))
+        {
+            return false;
+        }
+
+        if (!CurrentRun.TryGetSlot(destination, out ChunkSlotData target)) return false;
+        byte previous = CurrentRun.CurrentSlotIdx;
+        CurrentRun.PreviousSlotIdx = previous;
+        CurrentRun.CurrentSlotIdx = destination;
+        CurrentRun.TryVisit(destination);
+        roomResourceIdx = target.ChunkResourceIdx != 0 ? target.ChunkResourceIdx : 1041u;
+        return true;
+    }
+
     public async UniTask CompleteStage1Async(CancellationToken cancellationToken = default)
     {
         if (CurrentRun == null || CurrentRun.CompletionLocked || completionTransitionInProgress) return;
@@ -435,12 +493,26 @@ public class StageManager : Singleton<StageManager>
         }
     }
 
-    private void AdvanceTowardBoss()
+    private static List<byte> GetConnectedSlotIndices(StageRunData run, ChunkSlotData current)
     {
-        List<byte> path = Stage1RunGenerator.FindPath(CurrentRun, CurrentRun.CurrentSlotIdx, CurrentRun.BossGateSlotIdx);
-        if (path == null || path.Count < 2) return;
-        CurrentRun.CurrentSlotIdx = path[1];
-        CurrentRun.TryVisit(CurrentRun.CurrentSlotIdx);
+        var result = new List<byte>(4);
+        int row = current.SlotIdx / run.Columns;
+        int column = current.SlotIdx % run.Columns;
+        int[] rowOffsets = { -1, 0, 1, 0 };
+        int[] columnOffsets = { 0, 1, 0, -1 };
+        byte[] flags = { 1, 2, 4, 8 };
+        byte[] opposite = { 4, 8, 1, 2 };
+        for (int i = 0; i < flags.Length; i++)
+        {
+            if ((current.ConnectionMask & flags[i]) == 0) continue;
+            int nextRow = row + rowOffsets[i];
+            int nextColumn = column + columnOffsets[i];
+            if (nextRow < 0 || nextRow >= run.Rows || nextColumn < 0 || nextColumn >= run.Columns) continue;
+            byte nextIdx = (byte)(nextRow * run.Columns + nextColumn);
+            if (run.TryGetSlot(nextIdx, out ChunkSlotData next) && (next.ConnectionMask & opposite[i]) != 0)
+                result.Add(nextIdx);
+        }
+        return result;
     }
 
     private static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken)

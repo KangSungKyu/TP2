@@ -9,6 +9,7 @@ public class RoomDoorPortal : MonoBehaviour
 {
     [Header("Portal Settings")]
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
+    public byte TargetSlotIdx = byte.MaxValue;
     public bool AutoTriggerOnTouch = true;
 
     private bool isTransitioning = false;
@@ -31,13 +32,33 @@ public class RoomDoorPortal : MonoBehaviour
 
         try
         {
-            if (TargetRoomResourceIdx == 0 || StageManager.Instance == null)
+            if (StageManager.Instance == null)
             {
-                Debug.LogError($"[RoomDoorPortal] Invalid transition target idx: {TargetRoomResourceIdx}");
+                Debug.LogError("[RoomDoorPortal] StageManager is unavailable.");
                 return;
             }
 
-            await StageManager.Instance.LoadNextRoomAsync(TargetRoomResourceIdx);
+            StageManager stageManager = StageManager.Instance;
+            if (stageManager.CurrentRun != null)
+            {
+                if (stageManager.CurrentRun.CurrentSlotIdx == stageManager.CurrentRun.BossGateSlotIdx &&
+                    TargetRoomResourceIdx == 1042)
+                {
+                    await stageManager.LoadNextRoomAsync(1042);
+                }
+                else if (!await stageManager.LoadConnectedRoomAsync(TargetSlotIdx))
+                {
+                    Debug.LogWarning($"[RoomDoorPortal] Slot transition rejected: {TargetSlotIdx}.");
+                }
+                return;
+            }
+
+            if (TargetRoomResourceIdx == 0)
+            {
+                Debug.LogError("[RoomDoorPortal] Invalid fallback room idx 0.");
+                return;
+            }
+            await stageManager.LoadNextRoomAsync(TargetRoomResourceIdx);
         }
         catch (System.Exception exception)
         {

@@ -356,7 +356,7 @@ public class SkillData
     [Name("damagemultiplier")]
     public float DamageMultiplier { get; set; }
 
-    [Name("isbasicattack")]
+    [Name("isbasicattack"), TypeConverter(typeof(ZeroOneBooleanConverter))]
     public bool IsBasicAttack { get; set; }
 
     [Name("hitcount")]

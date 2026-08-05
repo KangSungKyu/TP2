@@ -111,14 +111,56 @@ namespace QA.Tests
         public void Test_BossRoom_IsBlockedBeforeGate_AndAllowedAtGate()
         {
             string source = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
-            StringAssert.Contains("roomResourceIdx == 1042 && CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx", source);
-            StringAssert.Contains("roomResourceIdx = 1041", source);
-            var gameObject = new GameObject("Stage1_Gate_QA");
+            StringAssert.Contains("Boss room transition rejected before reaching the BossGate slot", source);
+            StringAssert.DoesNotContain("roomResourceIdx = 1041", source);
+        }
+
+        [Test]
+        public void Test_ConnectedSlotNavigation_ChangesSlotAndResource_SupportsReverseAndRejectsDisconnected()
+        {
+            var gameObject = new GameObject("Stage1_Navigation_QA");
             try
             {
-                Assert.AreEqual("Tilemap_Room_Stage1_Boss", gameObject.AddComponent<StageManager>().ResolveAddressableKey(1042));
+                var manager = gameObject.AddComponent<StageManager>();
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 4,
+                    CurrentSlotIdx = 0,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 0, ChunkResourceIdx = 1040, ConnectionMask = 2, Visited = true },
+                        new ChunkSlotData { SlotIdx = 1, ChunkResourceIdx = 1050, ConnectionMask = 10 },
+                        new ChunkSlotData { SlotIdx = 2, ChunkResourceIdx = 1051, ConnectionMask = 8 },
+                        new ChunkSlotData { SlotIdx = 8, ChunkResourceIdx = 1052, ConnectionMask = 0 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(1, out uint firstResource));
+                Assert.AreEqual(1, run.CurrentSlotIdx);
+                Assert.AreEqual(1050u, firstResource);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(2, out uint secondResource));
+                Assert.AreEqual(2, run.CurrentSlotIdx);
+                Assert.AreEqual(1051u, secondResource);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(1, out uint reverseResource));
+                Assert.AreEqual(1050u, reverseResource);
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(8, out _));
+                Assert.AreEqual(1, run.CurrentSlotIdx);
             }
             finally { UnityEngine.Object.DestroyImmediate(gameObject); }
+        }
+
+        [Test]
+        public void Test_ChunkResourceMaxUse_IsRespectedAndBossGateRequiresArrival()
+        {
+            var layout = new StageLayoutData { StageDataIdx = 9001, MinActiveChunks = 9, MaxActiveChunks = 11 };
+            var chunks = new[] { new ChunkResourceData { Idx = 11050, ResourceIdx = 1050, SupportedConnectionMask = 15, MinStageIdx = 9001, MaxUsePerRun = 2 } };
+            StageRunData run = Stage1RunGenerator.Generate(4, layout, chunks, null);
+            Assert.LessOrEqual(run.Slots.Count(slot => slot.ChunkResourceIdx == 1050), 2);
+            Assert.AreNotEqual(run.BossGateSlotIdx, run.CurrentSlotIdx);
+            var path = Stage1RunGenerator.FindPath(run, run.StartSlotIdx, run.BossGateSlotIdx);
+            Assert.AreEqual(run.BossGateSlotIdx, path[path.Count - 1]);
         }
 
         [Test]
@@ -160,6 +202,12 @@ namespace QA.Tests
             int count = 0;
             while (value != 0) { count += value & 1; value >>= 1; }
             return count;
+        }
+
+        private static void SetCurrentRun(StageManager manager, StageRunData run)
+        {
+            typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))
+                .GetSetMethod(true).Invoke(manager, new object[] { run });
         }
 
     }
