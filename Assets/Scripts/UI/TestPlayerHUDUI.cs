@@ -89,7 +89,7 @@ public class TestPlayerHUDUI : Singleton<TestPlayerHUDUI>
         if (this.targetBoss != null)
         {
             float bossWidth = 420f;
-            float bossHeight = 65f;
+            float bossHeight = 90f;
             float bossX = (Screen.width - bossWidth) * 0.5f;
             float bossY = 15f;
 
@@ -103,6 +103,10 @@ public class TestPlayerHUDUI : Singleton<TestPlayerHUDUI>
             float bHp = this.bossStats != null ? this.bossStats.CurrentHp : 100f;
             float bMaxHp = this.bossStats != null ? this.bossStats.MaxHp : 100f;
             this.drawStatBar("BOSS HP", bHp, bMaxHp, new Color(0.9f, 0.15f, 0.15f));
+            float bPosture = this.bossStats != null ? this.bossStats.CurrentPosture : 0f;
+            float bMaxPosture = this.bossStats != null ? this.bossStats.MaxPosture : 100f;
+            this.drawStatBar("BOSS POSTURE", bPosture, bMaxPosture,
+                this.bossStats != null && this.bossStats.IsGroggy ? Color.red : Color.yellow);
             GUILayout.EndArea();
         }
 #endif

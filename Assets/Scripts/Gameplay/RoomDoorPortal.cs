@@ -9,7 +9,6 @@ public class RoomDoorPortal : MonoBehaviour
 {
     [Header("Portal Settings")]
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
-    public string TargetRoomKey = "Tilemap_Room_Stage1_Battle";
     public bool AutoTriggerOnTouch = true;
 
     private bool isTransitioning = false;
@@ -18,7 +17,8 @@ public class RoomDoorPortal : MonoBehaviour
     {
         if (!AutoTriggerOnTouch || isTransitioning) return;
 
-        if (collision.CompareTag("Player") || collision.GetComponent<Player>() != null || collision.GetComponentInParent<Player>() != null || collision.name.Contains("Player"))
+        if (Player.Instance != null &&
+            (collision.transform == Player.Instance.transform || collision.transform.IsChildOf(Player.Instance.transform)))
         {
             TriggerRoomTransitionAsync().Forget();
         }
@@ -29,34 +29,23 @@ public class RoomDoorPortal : MonoBehaviour
         if (isTransitioning) return;
         isTransitioning = true;
 
-        Debug.Log($"<color=cyan>[RoomDoorPortal] 포탈 관문 작동! 다음 룸 (ResourceIdx: {TargetRoomResourceIdx}, Key: '{TargetRoomKey}') 비동기 전환 개시...</color>");
-
-        if (StageManager.Instance != null)
+        try
         {
-            if (TargetRoomResourceIdx > 0)
+            if (TargetRoomResourceIdx == 0 || StageManager.Instance == null)
             {
-                await StageManager.Instance.LoadNextRoomAsync(TargetRoomResourceIdx);
+                Debug.LogError($"[RoomDoorPortal] Invalid transition target idx: {TargetRoomResourceIdx}");
+                return;
             }
-            else
-            {
-                await StageManager.Instance.LoadNextRoomAsync(TargetRoomKey);
-            }
-        }
-        else
-        {
-            var builder = TilemapStageBuilder.Instance;
-            if (builder != null)
-            {
-                string addressKey = TargetRoomKey;
-                if (TargetRoomResourceIdx > 0 && StageManager.Instance != null)
-                {
-                    addressKey = StageManager.Instance.ResolveAddressableKey(TargetRoomResourceIdx);
-                }
-                builder.TilemapAddressableKey = addressKey;
-                await builder.BuildTilemapStageAsync();
-            }
-        }
 
-        isTransitioning = false;
+            await StageManager.Instance.LoadNextRoomAsync(TargetRoomResourceIdx);
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+        finally
+        {
+            isTransitioning = false;
+        }
     }
 }

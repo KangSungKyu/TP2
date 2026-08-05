@@ -42,7 +42,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
             return;
         }
 
-        bool isBossRoom = roomInstance != null && (roomInstance.name.Contains("Boss") || roomInstance.name.Contains("1042"));
+        bool isBossRoom = marker.Type == SpawnType.Boss;
 
         switch (marker.Type)
         {
@@ -78,10 +78,10 @@ public class UnitSpawner : Singleton<UnitSpawner>
     private void SpawnMonsterUnit(SpawnPointMarker marker, bool isBoss)
     {
         Vector3 spawnPos = marker.transform.position;
-        string monsterIdStr = string.IsNullOrEmpty(marker.MonsterId) ? (isBoss ? "5001" : "3101") : marker.MonsterId;
+        string monsterIdStr = string.IsNullOrEmpty(marker.MonsterId) ? (isBoss ? "3201" : "3101") : marker.MonsterId;
         if (!uint.TryParse(monsterIdStr, out uint unitId))
         {
-            unitId = isBoss ? 5001u : 3101u;
+            unitId = isBoss ? 3201u : 3101u;
         }
 
         if (UnitPoolManager.Instance != null)

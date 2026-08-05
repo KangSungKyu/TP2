@@ -93,6 +93,13 @@ public class Player : UnitBase
 
     protected override void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            if (Application.isPlaying) Destroy(gameObject);
+            else DestroyImmediate(gameObject);
+            return;
+        }
+
         base.Awake();
         Instance = this;
         motor = GetComponent<KinematicMotor2D>();
@@ -101,6 +108,11 @@ public class Player : UnitBase
             motor = gameObject.AddComponent<KinematicMotor2D>();
         }
         InitUnitAsync(3001).Forget();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     private void Start()

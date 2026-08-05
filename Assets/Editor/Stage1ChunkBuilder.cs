@@ -66,7 +66,7 @@ public static class Stage1ChunkBuilder
 
             // Player Spawn Point & Exit Portal Gate
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-15, 1.5f, 0), SpawnType.Player);
-            CreatePortalGate(root, new Vector3(15, 1.5f, 0), 1041, "Tilemap_Room_Stage1_Battle");
+            CreatePortalGate(root, new Vector3(15, 1.5f, 0), 1041);
         });
 
         // ---------------------------------------------------------------------
@@ -94,7 +94,7 @@ public static class Stage1ChunkBuilder
             CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, "3101");
             CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, "3102");
             CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, "3103");
-            CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042, "Tilemap_Room_Stage1_Boss");
+            CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042);
         });
 
         // ---------------------------------------------------------------------
@@ -120,7 +120,7 @@ public static class Stage1ChunkBuilder
             // Player & Boss Spawners & Exit Portal
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-18, 1.5f, 0), SpawnType.Player);
             CreateSpawnMarker(root, "SpawnPoint_Boss", new Vector3(10, 1.5f, 0), SpawnType.Boss, "3201");
-            CreatePortalGate(root, new Vector3(20, 1.5f, 0), 1040, "Tilemap_Room_Stage1_Entry");
+            CreatePortalGate(root, new Vector3(20, 1.5f, 0), 1040);
         });
 
         AssetDatabase.SaveAssets();
@@ -202,7 +202,7 @@ public static class Stage1ChunkBuilder
         marker.EnableSpawn = true;
     }
 
-    private static void CreatePortalGate(GameObject parent, Vector3 pos, uint targetResourceIdx, string targetRoomKey)
+    private static void CreatePortalGate(GameObject parent, Vector3 pos, uint targetResourceIdx)
     {
         GameObject portalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Structures/Portal_Gate.prefab");
         GameObject portalObj = null;
@@ -224,7 +224,6 @@ public static class Stage1ChunkBuilder
         var portalComp = portalObj.GetComponent<RoomDoorPortal>();
         if (portalComp == null) portalComp = portalObj.AddComponent<RoomDoorPortal>();
         portalComp.TargetRoomResourceIdx = targetResourceIdx;
-        portalComp.TargetRoomKey = targetRoomKey;
         portalComp.AutoTriggerOnTouch = true;
     }
 }

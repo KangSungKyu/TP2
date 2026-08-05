@@ -46,6 +46,7 @@ public class KinematicMotor2D : MonoBehaviour
     private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
 
     private Vector2 groundNormal = Vector2.up;
+    private bool hasGroundNormalOverride;
     private float targetVelocityX;
     private bool isPassThroughActive;
     private bool isJumpHeld;
@@ -154,6 +155,8 @@ public class KinematicMotor2D : MonoBehaviour
         if (normal.sqrMagnitude > 0.001f)
         {
             groundNormal = normal.normalized;
+            IsGrounded = true;
+            hasGroundNormalOverride = true;
         }
     }
 
@@ -164,7 +167,8 @@ public class KinematicMotor2D : MonoBehaviour
             InitMotor();
         }
 
-        IsGrounded = false;
+        IsGrounded = hasGroundNormalOverride;
+        hasGroundNormalOverride = false;
         IsWalledLeft = false;
         IsWalledRight = false;
         WallCollider = null;

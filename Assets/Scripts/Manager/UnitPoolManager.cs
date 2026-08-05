@@ -187,7 +187,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             case 3101: case 1003: case 5101: return "SpearSentry";
             case 3102: case 1004: case 5102: return "ShadowStalker";
             case 3103: case 1005: case 5103: return "WaveHeavy";
-            case 5001: case 6001: return "Garon";
+            case 3201: case 5001: case 6001: return "Garon";
             default: return "SpearSentry";
         }
     }

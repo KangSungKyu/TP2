@@ -11,6 +11,7 @@ public class StageManager : Singleton<StageManager>
     [Header("Current Stage Configuration")]
     public uint CurrentStageIdx = 9001; // 1Stage (TaoShrine)
     public int CurrentRoomSequenceIndex { get; private set; } = 0;
+    private bool isLoadingRoom;
 
     public StageBaseData CurrentStageData
     {
@@ -62,6 +63,11 @@ public class StageManager : Singleton<StageManager>
 
     public async UniTask LoadNextRoomAsync(uint roomResourceIdx = 0, CancellationToken cancellationToken = default)
     {
+        if (isLoadingRoom) return;
+        isLoadingRoom = true;
+
+        try
+        {
         string targetAddressKey = string.Empty;
 
         if (roomResourceIdx > 0)
@@ -96,17 +102,14 @@ public class StageManager : Singleton<StageManager>
 
         builder.TilemapAddressableKey = targetAddressKey;
         await builder.BuildTilemapStageAsync(cancellationToken);
+        }
+        finally
+        {
+            isLoadingRoom = false;
+        }
     }
 
     // 하위 호환성 메서드 (string 기반)
-    public async UniTask LoadNextRoomAsync(string roomKey, CancellationToken cancellationToken = default)
-    {
-        uint resIdx = 1040;
-        if (roomKey == "Tilemap_Room_Stage1_Battle") resIdx = 1041;
-        else if (roomKey == "Tilemap_Room_Stage1_Boss") resIdx = 1042;
-        await LoadNextRoomAsync(resIdx, cancellationToken);
-    }
-
     public GameObject CurrentRoomInstance { get; set; }
     public List<GameObject> ActiveChunkInstances { get; } = new List<GameObject>();
 
