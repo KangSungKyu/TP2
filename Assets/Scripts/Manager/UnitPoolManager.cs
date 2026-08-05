@@ -72,7 +72,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
 
     public async UniTask<Monster> SpawnMonsterAsync(uint unitId, Vector3 position)
     {
-        string prefabKey = ResolveMonsterPrefabKey(unitId);
+        if (!TryResolveMonsterPrefabKey(unitId, out string prefabKey)) return null;
         GameObject monsterObj = GetFromPool(prefabKey);
 
         if (monsterObj == null && ResourceManager.Instance != null)
@@ -128,8 +128,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         if (unit is Monster monster)
         {
             activeMonsterList.Remove(monster);
-            string poolKey = ResolveMonsterPrefabKey(unit.UnitIdx);
-            ReturnToPool(poolKey, unit.gameObject);
+            if (TryResolveMonsterPrefabKey(unit.UnitIdx, out string poolKey)) ReturnToPool(poolKey, unit.gameObject);
+            else unit.gameObject.SetActive(false);
         }
         else if (unit is Player)
         {
@@ -148,9 +148,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             var monster = activeMonsterList[i];
             if (monster != null && monster.gameObject != null)
             {
-                string poolKey = ResolveMonsterPrefabKey(monster.UnitIdx);
                 monster.gameObject.SetActive(false);
-                ReturnToPool(poolKey, monster.gameObject);
+                if (TryResolveMonsterPrefabKey(monster.UnitIdx, out string poolKey)) ReturnToPool(poolKey, monster.gameObject);
             }
         }
         activeMonsterList.Clear();
@@ -180,15 +179,23 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         poolDictionary[key].Enqueue(obj);
     }
 
-    private string ResolveMonsterPrefabKey(uint unitId)
+    private bool TryResolveMonsterPrefabKey(uint unitId, out string prefabKey)
     {
-        switch (unitId)
+        prefabKey = string.Empty;
+        var dataManager = DataTableManager.Instance;
+        var unitTable = dataManager != null ? dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase) : null;
+        var resourceTable = dataManager != null ? dataManager.GetDB<ResourceDataTable>(DataTableType.Resource) : null;
+
+        if (unitTable == null || resourceTable == null ||
+            !unitTable.TryGetUnitData(unitId, out var unitData) ||
+            !resourceTable.TryGetResource(unitData.PrefabId, out var resourceData) ||
+            string.IsNullOrWhiteSpace(resourceData.Path))
         {
-            case 3101: case 1003: case 5101: return "SpearSentry";
-            case 3102: case 1004: case 5102: return "ShadowStalker";
-            case 3103: case 1005: case 5103: return "WaveHeavy";
-            case 3201: case 5001: case 6001: return "Garon";
-            default: return "SpearSentry";
+            Debug.LogError($"[UnitPoolManager] Unit idx {unitId} has no valid UnitBaseData/ResourceData mapping.");
+            return false;
         }
+
+        prefabKey = resourceData.Path;
+        return true;
     }
 }

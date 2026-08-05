@@ -21,7 +21,7 @@ public class SpawnPointMarker : MonoBehaviour
     public SpawnType Type = SpawnType.Monster;
 
     [Tooltip("지정할 몬스터 ID (비어있거나 0이면 스테이지 데이터 테이블에서 무작위 추첨)")]
-    public string MonsterId = "";
+    public uint MonsterId;
 
     private void OnDrawGizmos()
     {
