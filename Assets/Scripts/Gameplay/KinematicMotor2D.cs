@@ -38,6 +38,7 @@ public class KinematicMotor2D : MonoBehaviour
     public int WallDir => IsWalledLeft ? -1 : (IsWalledRight ? 1 : 0);
     public Collider2D WallCollider { get; private set; }
     public WallJumpSurface WallSurface { get; private set; }
+    public bool IsPassingThrough => isPassThroughActive;
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
@@ -128,6 +129,7 @@ public class KinematicMotor2D : MonoBehaviour
 
     public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.35f, CancellationToken cancellationToken = default)
     {
+        if (isPassThroughActive) return;
         isPassThroughActive = true;
         IsGrounded = false;
         Velocity = new Vector2(Velocity.x, -6.5f);

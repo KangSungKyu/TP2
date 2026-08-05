@@ -28,6 +28,17 @@ public class MetroidvaniaCamera2D : MonoBehaviour
 
     private void LateUpdate()
     {
+        UpdatePosition(false);
+    }
+
+    public void SnapToTarget()
+    {
+        currentVelocity = Vector3.zero;
+        UpdatePosition(true);
+    }
+
+    private void UpdatePosition(bool snap)
+    {
         if (Target == null)
         {
             if (Player.Instance != null)
@@ -46,7 +57,9 @@ public class MetroidvaniaCamera2D : MonoBehaviour
 
         Vector3 targetPos = Target.position + Offset + new Vector3(lookAheadX, 0f, 0f);
 
-        Vector3 newPos = Vector3.SmoothDamp(transform.position, targetPos, ref currentVelocity, SmoothTime);
+        Vector3 newPos = snap
+            ? targetPos
+            : Vector3.SmoothDamp(transform.position, targetPos, ref currentVelocity, SmoothTime);
 
         if (UseBounds && cam != null && cam.orthographic)
         {
