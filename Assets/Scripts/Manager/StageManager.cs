@@ -479,6 +479,34 @@ public class StageManager : Singleton<StageManager>
         return true;
     }
 
+    public bool TryGetConnectedSlot(ChunkSocketDirection direction, out byte slotIdx)
+    {
+        slotIdx = byte.MaxValue;
+        if (CurrentRun == null || !CurrentRun.TryGetSlot(CurrentRun.CurrentSlotIdx, out ChunkSlotData current))
+            return false;
+
+        int row = current.SlotIdx / CurrentRun.Columns;
+        int column = current.SlotIdx % CurrentRun.Columns;
+        int[] rowOffsets = { -1, 0, 1, 0 };
+        int[] columnOffsets = { 0, 1, 0, -1 };
+        byte[] flags = { 1, 2, 4, 8 };
+        byte[] opposite = { 4, 8, 1, 2 };
+        int index = (int)direction;
+        if (index < 0 || index >= flags.Length || (current.ConnectionMask & flags[index]) == 0) return false;
+
+        int nextRow = row + rowOffsets[index];
+        int nextColumn = column + columnOffsets[index];
+        if (nextRow < 0 || nextRow >= CurrentRun.Rows || nextColumn < 0 || nextColumn >= CurrentRun.Columns)
+            return false;
+
+        byte candidate = (byte)(nextRow * CurrentRun.Columns + nextColumn);
+        if (!CurrentRun.TryGetSlot(candidate, out ChunkSlotData next) ||
+            (next.ConnectionMask & opposite[index]) == 0) return false;
+
+        slotIdx = candidate;
+        return true;
+    }
+
     public async UniTask CompleteStage1Async(CancellationToken cancellationToken = default)
     {
         if (CurrentRun == null || CurrentRun.CompletionLocked || completionTransitionInProgress) return;
