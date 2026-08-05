@@ -48,7 +48,7 @@ public class SkillDataTable : IDataLoad
             info = new SkillInfo
             {
                 Id = (int)data.SkillId,
-                Name = data.Name,
+                Name = ResolveDisplayName(data.NameTextIdx, data.Idx),
                 AnimationClip = data.AnimationClip,
                 Range = data.Range,
                 CastTime = data.CastTime,
@@ -65,5 +65,16 @@ public class SkillDataTable : IDataLoad
     public void Release()
     {
         this.skillDict.Clear();
+    }
+
+    private static string ResolveDisplayName(uint textIdx, uint skillIdx)
+    {
+        var textTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<TextDataTable>(DataTableType.Text)
+            : null;
+        string displayName = textTable != null ? textTable.GetText(textIdx) : string.Empty;
+        if (string.IsNullOrEmpty(displayName))
+            Debug.LogWarning($"[SkillDataTable] Skill idx {skillIdx} has no TextData mapping for idx {textIdx}.");
+        return displayName;
     }
 }

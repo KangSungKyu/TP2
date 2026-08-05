@@ -308,8 +308,8 @@ public class EffectData
     [Name("idx")]
     public uint Idx { get; set; }
 
-    [Name("effectname")]
-    public string EffectName { get; set; } // 디버그용 이름
+    [Name("effectnametextidx")]
+    public uint EffectNameTextIdx { get; set; }
 
     [Name("prefabidx")]
     public uint PrefabIdx { get; set; } // ResourceData.csv Idx 참조 (Type 1: 1001~)
@@ -335,8 +335,8 @@ public class SkillData
 
     public uint SkillId => Idx; // 하위 호환성 프로퍼티
 
-    [Name("name")]
-    public string Name { get; set; }
+    [Name("nametextidx")]
+    public uint NameTextIdx { get; set; }
 
     [Name("animationclip")]
     public string AnimationClip { get; set; }
