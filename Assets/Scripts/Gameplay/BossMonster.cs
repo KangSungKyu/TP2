@@ -25,15 +25,15 @@ public class BossMonster : Monster
         if (completionRequested) return;
         completionRequested = true;
         base.OnDeath();
-        CompleteStageAfterDeathAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        CompleteStageAfterDeathAsync().Forget();
     }
 
-    private static async UniTaskVoid CompleteStageAfterDeathAsync(System.Threading.CancellationToken cancellationToken)
+    private static async UniTaskVoid CompleteStageAfterDeathAsync()
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: cancellationToken);
+        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f));
         if (StageManager.Instance != null)
         {
-            await StageManager.Instance.CompleteStage1Async(cancellationToken);
+            await StageManager.Instance.CompleteStage1Async();
         }
     }
 }
