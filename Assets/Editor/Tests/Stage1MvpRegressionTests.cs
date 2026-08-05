@@ -113,7 +113,12 @@ namespace QA.Tests
             string source = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
             StringAssert.Contains("roomResourceIdx == 1042 && CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx", source);
             StringAssert.Contains("roomResourceIdx = 1041", source);
-            Assert.AreEqual("Tilemap_Room_Stage1_Boss", CreateStageManager().ResolveAddressableKey(1042));
+            var gameObject = new GameObject("Stage1_Gate_QA");
+            try
+            {
+                Assert.AreEqual("Tilemap_Room_Stage1_Boss", gameObject.AddComponent<StageManager>().ResolveAddressableKey(1042));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(gameObject); }
         }
 
         [Test]
@@ -157,10 +162,5 @@ namespace QA.Tests
             return count;
         }
 
-        private static StageManager CreateStageManager()
-        {
-            var gameObject = new GameObject("Stage1_Gate_QA");
-            return gameObject.AddComponent<StageManager>();
-        }
     }
 }
