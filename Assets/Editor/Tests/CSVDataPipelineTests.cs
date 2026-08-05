@@ -97,41 +97,20 @@ namespace QA.Tests
         [Test]
         public void Test_CSVDataPipeline_ExceptionHandling_Pass()
         {
-            // 1. 대문자 규칙 위반 및 정의되지 않은 themetype(999) 모크 데이터 파싱 검증
-            string corruptHeaderCsv = "IDX,NAMETEXTIDX,CHAPTER,THEMETYPE,STARTROOMIDX,BOSSROOMIDX,ROOMSEQUENCEIDXLIST\n" +
-                                      "9001,2001,1,999,1040,1042,1040_1041_1042";
-
             StageDataTable table = new StageDataTable();
-            Assert.DoesNotThrow(() => table.LoadData(corruptHeaderCsv), "대문자 헤더 및 themetype=999 주입 시 파이프라인 다운 없이 정상 로딩되어야 합니다.");
+            table.LoadData("idx,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n9001,2001,1,1,1040,1042,1040_1041_1042");
 
-            bool found9001 = table.TryGetStageData(9001, out StageBaseData data9001);
-            Assert.IsTrue(found9001, "9001 스테이지 데이터 조회가 가능해야 합니다.");
-            Assert.AreEqual(999, data9001.ThemeType, "정의되지 않은 themetype 999가 전달되어도 파이프라인이 붕괴되지 않고 로드됩니다.");
+            Assert.Throws<HeaderValidationException>(() => table.LoadData(
+                "IDX,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n9001,2001,1,1,1040,1042,1040_1041_1042"));
+            Assert.Throws<InvalidKeyException>(() => table.LoadData(
+                "idx,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n,2001,1,1,1040,1042,1040_1041_1042"));
+            Assert.Throws<InvalidKeyException>(() => table.LoadData(
+                "idx,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n9001,2001,1,999,1040,1042,1040_1041_1042"));
 
-            // 2. 잘못된 정수 레코드 키 주입 예외 및 Fallback(디폴트 테이블) 방어 검증
-            string invalidKeyCsv = "idx,nametextidx,chapter,themetype,startroomidx,bossroomidx,roomsequenceidxlist\n" +
-                                   "INVALID_KEY,2001,1,1,1040,1042,1040_1041_1042";
-
-            Assert.Throws<CsvHelper.TypeConversion.TypeConverterException>(() => table.LoadData(invalidKeyCsv), 
-                "손상된 레코드 키 주입 시 CsvHelper TypeConverterException 예외가 명시적으로 발생하고 앱 다운을 방지해야 합니다.");
-
-            // 3. Fallback 데이터 테이블 반환 및 safe return 검증
-            bool foundFallback = table.TryGetStageData(9999, out StageBaseData fallbackData);
-            Assert.IsFalse(foundFallback, "존재하지 않는 9999 키 조회가 false를 반환하여 Fallback 데이터 구성을 보장합니다.");
-            Assert.IsNull(fallbackData, "Fallback 상태에서 out 객체는 null이어야 합니다.");
-
-            // 4. 예외 및 복구 내역 File IO 자동 파일 기록 (Logs/qa_exception_results.txt)
-            string reportPath = "Logs/qa_exception_results.txt";
-            Directory.CreateDirectory("Logs");
-            string logContent = $"[CSV DATA PIPELINE EXCEPTION FAULT-TOLERANCE REPORT]\n" +
-                               $"Timestamp: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}\n" +
-                               $"Status: PASS\n" +
-                               $"Corrupt Header/Value Injected: themetype=999, UpperCase, INVALID_KEY\n" +
-                               $"Caught Exception: CsvHelper.TypeConversion.TypeConverterException\n" +
-                               $"Handled Gracefully: True (Crash = False)\n" +
-                               $"Fallback System Active: True\n" +
-                               $"--------------------------------------------------------------------------------\n";
-            File.AppendAllText(reportPath, logContent);
+            Assert.IsTrue(table.TryGetStageData(9001, out var fallback));
+            Assert.AreEqual(1, fallback.ThemeType, "오염 입력 실패 후 마지막 정상 테이블을 fallback으로 유지해야 합니다.");
+            QATestRunner.AppendExceptionResult(nameof(StageDataTable),
+                "HeaderValidationException/InvalidKeyException handled; previous valid table retained");
         }
     }
 }

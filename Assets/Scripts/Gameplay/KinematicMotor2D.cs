@@ -186,7 +186,7 @@ public class KinematicMotor2D : MonoBehaviour
         var horizontalMove = moveAlongGround * deltaPosition.x;
         PerformMovement(horizontalMove, false);
 
-        var verticalMove = Vector2.up * deltaPosition.y;
+        var verticalMove = Vector2.up * (IsGrounded && deltaPosition.y < 0f ? 0f : deltaPosition.y);
         PerformMovement(verticalMove, true);
 
         if (!IsGrounded && Velocity.y <= 0f)

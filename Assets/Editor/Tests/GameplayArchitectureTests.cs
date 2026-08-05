@@ -75,49 +75,39 @@ namespace QA.Tests
             motorObj.AddComponent<Rigidbody2D>();
             motorObj.AddComponent<BoxCollider2D>();
             var motor = motorObj.AddComponent<KinematicMotor2D>();
+            motor.InitMotor();
 
             float[] stressDeltaTimes = new float[] { 1f / 15f, 1f / 30f }; // 15 FPS (0.0667s), 30 FPS (0.0333s) 가혹 가변 프레임
             float[] slopeAngles = new float[] { 15f, 30f, 45f }; // 15도, 30도, 45도 경사면 접선
 
             float moveSpeed = 5.0f;
-            motor.SetTargetVelocityX(moveSpeed);
-
-            StringBuilder logSb = new StringBuilder();
-            logSb.AppendLine($"[KINEMATIC MOTOR 2D SLOPE STRESS TEST REPORT]");
-            logSb.AppendLine($"Timestamp: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-
-            foreach (float dt in stressDeltaTimes)
+            try
             {
-                float fps = 1f / dt;
-                foreach (float angle in slopeAngles)
+                foreach (float dt in stressDeltaTimes)
                 {
-                    float rad = angle * Mathf.Deg2Rad;
-                    Vector2 groundNormal = new Vector2(-Mathf.Sin(rad), Mathf.Cos(rad));
+                    foreach (float angle in slopeAngles)
+                    {
+                        Vector2 normal = new Vector2(-Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad));
+                        motor.Teleport(Vector3.zero);
+                        motor.SetTargetVelocityX(moveSpeed);
+                        motor.SetGroundNormal(normal);
 
-                    motor.SetGroundNormal(groundNormal);
-                    motor.SimulateStep(dt);
+                        Vector2 before = motorObj.GetComponent<Rigidbody2D>().position;
+                        motor.SimulateStep(dt);
+                        Vector2 displacement = motorObj.GetComponent<Rigidbody2D>().position - before;
+                        float penetration = Mathf.Max(0f, -Vector2.Dot(displacement, normal));
+                        float speedDeviation = Mathf.Abs(displacement.magnitude / dt - moveSpeed) / moveSpeed;
 
-                    // 1. 가혹 저프레임 경사면 환경에서 Grounded 상실 / 파묻힘 미발생 검증
-                    Assert.IsTrue(motor.IsGrounded, $"경사각 {angle}° 및 {fps:F0} FPS 가혹 환경에서 IsGrounded 상태가 유지되어야 합니다.");
-
-                    // 2. 경사 투영(Slope Projection) 수평 이동 속도 편차 5% 이내 유지 검증
-                    float expectedHorizontalSpeed = moveSpeed * groundNormal.y;
-                    Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
-                    float actualHorizontalSpeed = Mathf.Abs(moveAlongGround.x * moveSpeed);
-                    float speedDeviation = Mathf.Abs(actualHorizontalSpeed - expectedHorizontalSpeed) / expectedHorizontalSpeed;
-
-                    Assert.LessOrEqual(speedDeviation, 0.05f, $"경사각 {angle}° {fps:F0} FPS 환경에서 수평 이동 속도 편차가 5% 이내(실제: {speedDeviation * 100:F2}%)여야 합니다.");
-
-                    logSb.AppendLine($"[PASS] FPS: {fps:F0} | Angle: {angle}° | Grounded: {motor.IsGrounded} | SpeedDeviation: {speedDeviation * 100:F2}% <= 5%");
+                        Assert.IsTrue(motor.IsGrounded, $"{angle}° / {1f / dt:F0} FPS에서 grounded 상태를 잃었습니다.");
+                        Assert.LessOrEqual(penetration, motor.SkinWidth, "경사면 아래로 허용 skin width 이상 파묻혔습니다.");
+                        Assert.LessOrEqual(speedDeviation, 0.05f, "경사 투영 후 접선 이동 속도 편차가 5%를 초과했습니다.");
+                    }
                 }
+
+                QATestRunner.AppendExceptionResult(nameof(KinematicMotor2D),
+                    "15/30 FPS, 15/30/45 degree slopes; grounded retained, penetration <= skin, speed deviation <= 5%");
             }
-
-            logSb.AppendLine("--------------------------------------------------------------------------------");
-            string reportPath = "Logs/qa_exception_results.txt";
-            Directory.CreateDirectory("Logs");
-            File.AppendAllText(reportPath, logSb.ToString());
-
-            Object.DestroyImmediate(motorObj);
+            finally { Object.DestroyImmediate(motorObj); }
         }
     }
 }
