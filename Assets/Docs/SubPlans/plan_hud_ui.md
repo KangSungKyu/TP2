@@ -8,6 +8,16 @@
 - Unsupported glyphs or missing localized TextData may use the supplied English TextData idx and emit a warning, not an error.
 - Hub uses TextData 2040/2041; Main warning uses 2042/2043. Inventory, Equipment, LockOn, and SkillTree remain outside this implementation scope.
 
+## Production Main HUD contract (2026-08-06)
+
+- `ProductionMainHUD` is a scene-local `MainHUDRoot` component. Missing scene binding is an explicit MainScene error; runtime Canvas creation is forbidden.
+- Player HP/Posture/MP fills bind to `CombatStats.OnHpChanged`, `OnPostureChanged`, and `OnMpChanged`. Player pooled activation refreshes the same listeners without duplication.
+- Regular Monster and Boss HP/Posture bind through `Monster.ActiveMonsters` activation/deactivation events. Boss name reuses `UnitBase.UnitName`, already resolved from `TextData.idx`.
+- `StageManager.ProgressChanged` publishes stage idx and visited/total chunks once on run creation and connected-room movement.
+- Prompt and Warning both reuse the scene's `AlertMessage` uint TextData API and replace policy.
+- `OnDisable` removes Player, Monster, Boss, and Stage listeners. Editor-time static subscriptions are blocked by `Application.isPlaying`.
+- Development `CoreTestHUD`, `TestPlayerHUDUI`, and `MonsterOverheadHUD` runtime creation is removed. Inventory, Equipment, SkillTree, and LockOn remain excluded.
+
 ## Scene별 범위
 
 ### HubScene — 준비·관리 UI
@@ -17,20 +27,21 @@
 - 중앙: 항목 목록 또는 슬롯
 - 우측: 선택 항목 상세·비교
 - 하단: Stage 9001 진입·확인
-- Inventory는 `ItemData/InventoryState/획득·소비 이벤트/저장` 계약 이후 구현한다.
-- Skill은 기존 `SkillData` 조회를 재사용하되 소유·unlock·equip·slot·save 계약 이후 구현한다.
-- Equipment는 장비 슬롯·modifier·equip 상태·저장 계약 이후 구현한다.
-- 데이터 계약이 없는 메뉴는 fake 데이터로 먼저 만들지 않는다.
+- Inventory와 Equipment는 데이터 모델이 없으므로 현재 작업과 HUD 제작 대상에서 제외한다.
+- Skill은 기존 공격·MonsterPattern 목록을 직접 노출하지 않고 별도 `PlayerSkillNodeData`와 소유·unlock·equip·slot·save 계약 이후 구현한다.
+- 현재 player-visible 후보는 7002 하나뿐이므로 분기형 SkillTree UI는 전용 스킬 3개 이상 확정 전까지 제작하지 않는다.
+- 데이터 계약이 없는 메뉴와 fake 데이터는 만들지 않는다.
 
 ### MainScene — 전투 HUD
 
 - 좌상단: Player HP/Posture/MP
-- 일반 Monster: 활성 개체 머리 위 HP/Posture; 선택형 상세는 target/lock-on 이벤트 이후 추가
+- 일반 Monster: 활성 개체 머리 위 HP/Posture
 - 상단 중앙: Boss HP/Posture(조우부터 사망까지)
 - 우상단: Stage/방문 Chunk 진행
 - 하단 중앙: 상호작용 prompt
 - 중앙: 이벤트 기반 warning
 - 제외: 미니맵, 버프 목록, 피해 숫자, 퀘스트, 강제 룸 이동, 디버그 문자열
+- LockOn 시스템과 선택형 Monster 상세 패널은 현재 범위에서 제외한다.
 
 ## 갱신 계약
 
@@ -40,6 +51,7 @@
 - `OnEnable`에서 bind하고 `OnDisable`에서 대칭 unbind하며 scene generation 불일치 callback은 무시한다.
 - `OnGUI`, 매프레임 `Update`, 반복 `Find/GetComponent`, 매프레임 문자열 생성은 금지한다.
 - Text는 `TextData.idx`를 최초 이벤트에서 조회·캐시하며 테스트용 HUD 생성 경로는 제거한다.
+- 시스템 안내는 `AlertMessage.Show(uint textIdx)`를 사용하며 glyph가 없으면 대응 영문 `TextData.idx`로 fallback한다.
 
 ## 렌더링 계약
 
@@ -64,7 +76,7 @@
 1. QA가 TestHUD 제거 전/후 측정용 baseline 장면과 300-frame 절차를 고정한다.
 2. 리소스작업자가 공유 atlas·font·material 및 9-slice UI 자산을 준비한다.
 3. 메인프로그래머가 Main HUD의 이벤트 bind/unbind, MP·Boss·진행 이벤트, TestHUD 제거를 구현한다.
-4. 메인프로그래머가 Inventory → Skill loadout → Equipment 순서로 Hub Production 데이터·저장 계약을 별도 구현한다.
-5. 리소스작업자가 데이터 계약이 완료된 Hub 탭과 Main HUD 자산을 Scene별 Root에 배치한다.
+4. 기획자와 메인프로그래머가 `PlayerSkillNodeData`와 저장 계약을 별도 공정으로 확정한다.
+5. 리소스작업자가 준비된 Hub Stage/상태 UI와 Main HUD 자산만 Scene별 Root에 배치한다.
 6. 리소스작업자가 5종 chunk 템플릿에 spawn zone marker를 배치한다.
 7. QA가 Hub/Main 왕복 10회 listener·Canvas 누수 0, Boss HUD 잔류 0, 프레임별 문자열 GC 0 및 렌더 예산을 검증한다.

@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -41,6 +42,7 @@ public class Monster : UnitBase
             MonsterData = mData;
             LoadPatterns(mData);
         }
+        if (this != null && isActiveAndEnabled) Activated?.Invoke(this);
     }
 
 
@@ -49,15 +51,19 @@ public class Monster : UnitBase
     // =========================================================================
 
     public static HashSet<Monster> ActiveMonsters { get; } = new HashSet<Monster>();
+    public static event Action<Monster> Activated;
+    public static event Action<Monster> Deactivated;
 
     protected virtual void OnEnable()
     {
         ActiveMonsters.Add(this);
+        Activated?.Invoke(this);
     }
 
     protected virtual void OnDisable()
     {
         ActiveMonsters.Remove(this);
+        Deactivated?.Invoke(this);
     }
 
     protected override void Awake()

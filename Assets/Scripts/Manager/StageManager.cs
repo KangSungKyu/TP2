@@ -257,6 +257,7 @@ public static class Stage1RunGenerator
 /// </summary>
 public class StageManager : Singleton<StageManager>
 {
+    public event Action<uint, int, int> ProgressChanged;
     [Header("Current Stage Configuration")]
     public uint CurrentStageIdx = 9001; // 1Stage (TaoShrine)
     public int CurrentRoomSequenceIndex { get; private set; } = 0;
@@ -332,6 +333,8 @@ public class StageManager : Singleton<StageManager>
             await LoadNextRoomAsync(1041, cancellationToken);
             return;
         }
+
+        PublishProgress();
 
         await LoadNextRoomAsync(1040, cancellationToken);
     }
@@ -475,8 +478,18 @@ public class StageManager : Singleton<StageManager>
         CurrentRun.PreviousSlotIdx = previous;
         CurrentRun.CurrentSlotIdx = destination;
         CurrentRun.TryVisit(destination);
+        PublishProgress();
         roomResourceIdx = target.ChunkResourceIdx != 0 ? target.ChunkResourceIdx : 1041u;
         return true;
+    }
+
+    public void PublishProgress()
+    {
+        if (CurrentRun?.Slots == null) return;
+        int visited = 0;
+        foreach (ChunkSlotData slot in CurrentRun.Slots)
+            if (slot != null && slot.Visited) visited++;
+        ProgressChanged?.Invoke(CurrentStageIdx, visited, CurrentRun.Slots.Length);
     }
 
     public bool TryGetConnectedSlot(ChunkSocketDirection direction, out byte slotIdx)
