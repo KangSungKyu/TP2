@@ -184,12 +184,19 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         var unitTable = dataManager != null ? dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase) : null;
         var resourceTable = dataManager != null ? dataManager.GetDB<ResourceDataTable>(DataTableType.Resource) : null;
 
-        if (unitTable == null || resourceTable == null ||
-            !unitTable.TryGetUnitData(unitId, out var unitData) ||
-            !resourceTable.TryGetResource(unitData.PrefabId, out var resourceData) ||
-            string.IsNullOrWhiteSpace(resourceData.Path))
+        if (unitTable == null || !unitTable.TryGetUnitData(unitId, out var unitData))
         {
-            Debug.LogError($"[UnitPoolManager] Unit idx {unitId} has no valid UnitBaseData/ResourceData mapping.");
+            Debug.LogError($"[UnitPoolManager] Missing UnitBaseData for unit idx {unitId}.");
+            return false;
+        }
+        if (resourceTable == null || !resourceTable.TryGetResource(unitData.PrefabId, out var resourceData))
+        {
+            Debug.LogError($"[UnitPoolManager] Missing ResourceData idx {unitData.PrefabId} for unit idx {unitId}.");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(resourceData.Path))
+        {
+            Debug.LogError($"[UnitPoolManager] Empty ResourceData path at idx {unitData.PrefabId} for unit idx {unitId}.");
             return false;
         }
 

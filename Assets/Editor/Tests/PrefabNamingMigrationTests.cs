@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine.TestTools;
@@ -85,6 +87,120 @@ namespace QA.Tests
             StringAssert.DoesNotContain("ReturnToPool(\"Player\"", source);
             StringAssert.Contains("TryResolveUnitPrefabKey(PlayerUnitIdx, out string poolKey)", source);
             StringAssert.DoesNotContain("catch { }", source);
+
+            int reuse = source.IndexOf("if (Player.Instance != null)");
+            int resolve = source.IndexOf("TryResolveUnitPrefabKey(PlayerUnitIdx", reuse);
+            int instantiate = source.IndexOf("InstantiateAsyncTask(poolKey", resolve);
+            Assert.Greater(resolve, reuse);
+            Assert.Greater(instantiate, resolve,
+                "Existing Player.Instance must return before resource resolution and instantiate.");
+        }
+
+        [UnityTest]
+        public IEnumerator PlayerPool_DespawnAndRespawnReuseSameIdentity()
+        {
+            GameObject resourceManagerObject = null;
+            if (ResourceManager.Instance == null)
+            {
+                resourceManagerObject = new GameObject("ResourceManager_PlayerPool_QA");
+                SetSingletonInstance(resourceManagerObject.AddComponent<ResourceManager>());
+            }
+            GameObject dataManagerObject = null;
+            if (DataTableManager.Instance == null)
+            {
+                dataManagerObject = new GameObject("DataTableManager_PlayerPool_QA");
+                SetSingletonInstance(dataManagerObject.AddComponent<DataTableManager>());
+            }
+            var dataManager = DataTableManager.Instance;
+            InstallUnitResourceTables(dataManager);
+            dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase)
+                .LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+            dataManager.GetDB<ResourceDataTable>(DataTableType.Resource)
+                .LoadData(File.ReadAllText("Assets/Datas/ResourceData.csv"));
+            GameObject poolObject = null;
+            if (UnitPoolManager.Instance == null)
+            {
+                poolObject = new GameObject("UnitPoolManager_PlayerPool_QA");
+                SetSingletonInstance(poolObject.AddComponent<UnitPoolManager>());
+            }
+            var pool = UnitPoolManager.Instance;
+
+            var firstTask = pool.SpawnPlayerAsync(Vector3.zero).AsTask();
+            while (!firstTask.IsCompleted) yield return null;
+            Assert.IsFalse(firstTask.IsFaulted, firstTask.Exception?.ToString());
+            Player first = firstTask.Result;
+            Assert.NotNull(first);
+
+            pool.DespawnUnit(first);
+            var secondTask = pool.SpawnPlayerAsync(Vector3.one).AsTask();
+            while (!secondTask.IsCompleted) yield return null;
+            Assert.AreSame(first.gameObject, secondTask.Result.gameObject);
+
+            Object.DestroyImmediate(first.gameObject);
+            if (poolObject != null) Object.DestroyImmediate(poolObject);
+            if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
+            if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+        }
+
+        [Test]
+        public void PlayerPool_InvalidMappingsReturnFalseWithDistinctErrors()
+        {
+            GameObject resourceManagerObject = null;
+            if (ResourceManager.Instance == null)
+            {
+                resourceManagerObject = new GameObject("ResourceManager_PlayerErrors_QA");
+                SetSingletonInstance(resourceManagerObject.AddComponent<ResourceManager>());
+            }
+            GameObject dataManagerObject = null;
+            if (DataTableManager.Instance == null)
+            {
+                dataManagerObject = new GameObject("DataTableManager_PlayerErrors_QA");
+                SetSingletonInstance(dataManagerObject.AddComponent<DataTableManager>());
+            }
+            GameObject poolObject = null;
+            if (UnitPoolManager.Instance == null)
+            {
+                poolObject = new GameObject("UnitPoolManager_PlayerErrors_QA");
+                SetSingletonInstance(poolObject.AddComponent<UnitPoolManager>());
+            }
+            var dataManager = DataTableManager.Instance;
+            var pool = UnitPoolManager.Instance;
+            InstallUnitResourceTables(dataManager);
+            var units = dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase);
+            var resources = dataManager.GetDB<ResourceDataTable>(DataTableType.Resource);
+            MethodInfo resolve = typeof(UnitPoolManager).GetMethod(
+                "TryResolveUnitPrefabKey", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            units.Release();
+            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing UnitBaseData for unit idx 3001.");
+            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+
+            units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+            resources.Release();
+            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing ResourceData idx 1001 for unit idx 3001.");
+            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+
+            resources.LoadData("idx,path\n1001,");
+            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Empty ResourceData path at idx 1001 for unit idx 3001.");
+            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+
+            if (poolObject != null) Object.DestroyImmediate(poolObject);
+            if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
+            if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+        }
+
+        private static void InstallUnitResourceTables(DataTableManager dataManager)
+        {
+            var field = typeof(DataTableManager).GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tables = (Dictionary<DataTableType, IDataLoad>)field.GetValue(dataManager);
+            tables[DataTableType.UnitBase] = new UnitBaseDataTable();
+            tables[DataTableType.Resource] = new ResourceDataTable();
+        }
+
+        private static void SetSingletonInstance<T>(T component) where T : MonoBehaviour
+        {
+            typeof(Singleton<T>).GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic)
+                .SetValue(null, component);
         }
     }
 }
