@@ -169,5 +169,73 @@ namespace QA.Tests
                 Object.DestroyImmediate(player);
             }
         }
+
+        [Test]
+        public void Test_KinematicMotor_UnitsOverlapWithoutBlockingEnvironmentCollisionOrAttacks()
+        {
+            int playerLayer = LayerMask.NameToLayer("Player");
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            Assert.AreEqual(8, playerLayer);
+            Assert.AreEqual(9, enemyLayer);
+
+            var player = new GameObject("Player_MotorFilter_QA") { layer = playerLayer };
+            var monster = new GameObject("Monster_MotorFilter_QA") { layer = enemyLayer };
+            var boss = new GameObject("Boss_MotorFilter_QA") { layer = enemyLayer };
+            var groundObject = new GameObject("Ground_MotorFilter_QA");
+            var wallObject = new GameObject("Wall_MotorFilter_QA");
+            try
+            {
+                var playerBody = player.AddComponent<Rigidbody2D>();
+                var playerCollider = player.AddComponent<BoxCollider2D>();
+                var playerMotor = player.AddComponent<KinematicMotor2D>();
+                playerMotor.InitMotor();
+                player.transform.position = new Vector3(-3f, 0.51f);
+                playerMotor.Teleport(player.transform.position);
+                playerMotor.SetTargetVelocityX(5f);
+
+                monster.transform.position = new Vector3(0f, 0.51f);
+                var monsterCollider = monster.AddComponent<BoxCollider2D>();
+
+                boss.AddComponent<Rigidbody2D>();
+                boss.AddComponent<BoxCollider2D>();
+                var bossMotor = boss.AddComponent<KinematicMotor2D>();
+                bossMotor.InitMotor();
+
+                var ground = groundObject.AddComponent<BoxCollider2D>();
+                ground.size = new Vector2(20f, 1f);
+                groundObject.transform.position = new Vector3(0f, -0.5f);
+
+                var wall = wallObject.AddComponent<BoxCollider2D>();
+                wall.size = new Vector2(1f, 4f);
+                wallObject.transform.position = new Vector3(3.5f, 1.5f);
+
+                Physics2D.SyncTransforms();
+                for (int i = 0; i < 60; i++)
+                {
+                    playerMotor.SimulateStep(Time.fixedDeltaTime);
+                    Physics2D.SyncTransforms();
+                    Assert.AreNotSame(monsterCollider, playerMotor.WallCollider);
+                }
+
+                Assert.Greater(playerBody.position.x, monsterCollider.bounds.max.x);
+                Assert.IsTrue(playerMotor.IsGrounded);
+                Assert.AreSame(wall, playerMotor.WallCollider);
+                Assert.GreaterOrEqual(playerCollider.bounds.min.y, ground.bounds.max.y);
+
+                int attackMask = LayerMask.GetMask("Player", "Enemy");
+                Assert.AreEqual((1 << playerLayer) | (1 << enemyLayer), attackMask);
+                Assert.AreSame(monsterCollider,
+                    Physics2D.OverlapPoint(monster.transform.position, attackMask));
+                Assert.AreEqual(0, bossMotor.SolidGroundLayer.value & attackMask);
+            }
+            finally
+            {
+                Object.DestroyImmediate(wallObject);
+                Object.DestroyImmediate(groundObject);
+                Object.DestroyImmediate(boss);
+                Object.DestroyImmediate(monster);
+                Object.DestroyImmediate(player);
+            }
+        }
     }
 }
