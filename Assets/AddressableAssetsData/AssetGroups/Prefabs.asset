@@ -22,19 +22,19 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2fd025f20559e3e48b94409388d85c52
-    m_Address: Player
+    m_Address: Unit_3001
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 31a5fe61d5c29f9448bd77f409c31bf9
-    m_Address: SpearSentry
+    m_Address: Unit_3101
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 31d72f9f46be05c44bee462edb83caaa
-    m_Address: Tilemap_Room_Stage1_1051
+    m_Address: Room_11051
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -46,31 +46,31 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5b385ea7c9e07d34bb907566200d5178
-    m_Address: Tilemap_Room_Stage1_1056
+    m_Address: Room_11056
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 813ae21e14e165949861d0d53b94ddb9
-    m_Address: Tilemap_Room_Stage1_1057
+    m_Address: Room_11057
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
-    m_Address: Garon
+    m_Address: Unit_3201
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93a2f6754dd7b9644bc8e858ba6652a6
-    m_Address: OrbitalMarksman
+    m_Address: Unit_3105
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a000000000000000190b16dbfcc3cfb8
-    m_Address: Tilemap_Room_Stage1_Entry
+    m_Address: Prefab_1040
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -82,13 +82,13 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a0000000000000006e0aabf3ccce87de
-    m_Address: Tilemap_Room_Stage1_Boss
+    m_Address: Prefab_1042
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a00000000000000075d8eb397b9c79a7
-    m_Address: Tilemap_Room_Stage1_Battle
+    m_Address: Prefab_1041
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -106,25 +106,25 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a1211580465d53c4dbe68bb95b582356
-    m_Address: Tilemap_Room_Stage1_1050
+    m_Address: Room_11050
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b0b02419ac3e82b4686c37922f9d44c8
-    m_Address: Tilemap_Room_Stage1_1061
+    m_Address: Room_11061
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c7b2bb7ba60f4c74bab0ca94e7e80392
-    m_Address: Tilemap_Room_Stage1_1063
+    m_Address: Room_11063
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d00000000000000014f4cd8e24935f91
-    m_Address: Placeholder_Dodge
+    m_Address: Effect_8012
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -136,7 +136,7 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d00000000000000033c94764c1455ef8
-    m_Address: Player_Attack_Hit3_Effect
+    m_Address: Effect_8003
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -148,19 +148,19 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0000000000000003c89d8ce5ff0813f
-    m_Address: Player_Attack_Hit1_Effect
+    m_Address: Effect_8001
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0000000000000005178879b04bd4187
-    m_Address: Placeholder_Hit
+    m_Address: Effect_8013
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d00000000000000076970f202c4c09fc
-    m_Address: Placeholder_Guard
+    m_Address: Effect_8011
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -172,13 +172,13 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0000000000000008dfc6155b98ae77e
-    m_Address: Placeholder_Parry
+    m_Address: Effect_8010
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d000000000000000acec49a1a30d2eaf
-    m_Address: Player_Attack_Hit2_Effect
+    m_Address: Effect_8002
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -190,7 +190,7 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d4e2698b21b5891438fdca4aefaba5c4
-    m_Address: Tilemap_Room_Stage1_1053
+    m_Address: Room_11053
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -202,25 +202,25 @@ MonoBehaviour:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e99f7ae641d001944ba12e8604fb4f27
-    m_Address: ShadowStalker
+    m_Address: Unit_3102
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f34548d9cafca8d4dbf0f56d06a75459
-    m_Address: ShieldSentinel
+    m_Address: Unit_3104
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f80194258bf2acc49a5a3fdcae2da95e
-    m_Address: Tilemap_Room_Stage1_1052
+    m_Address: Room_11052
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fab185c62ffcc0047b5deaaf4443bfd9
-    m_Address: WaveHeavy
+    m_Address: Unit_3103
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 778203137013045251}
   - component: {fileID: 7390286773419111364}
   m_Layer: 0
-  m_Name: ShadowStalker
+  m_Name: Unit_3102
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -82,11 +82,11 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject chunkPrefab = null;
 
 #if UNITY_EDITOR
-        string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Tilemap_Room_Stage1_Entry";
+        string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Prefab_1040";
         chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/{targetKey}.prefab");
         if (chunkPrefab == null)
         {
-            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Tilemap_Room_Stage1_Entry.prefab");
+            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1040.prefab");
         }
 #endif
 

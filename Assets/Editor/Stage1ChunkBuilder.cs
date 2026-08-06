@@ -47,7 +47,7 @@ public static class Stage1ChunkBuilder
         // ---------------------------------------------------------------------
         // 룸 1: Tilemap_Room_Stage1_Entry (입장 & 기초 조작 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Entry", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1040", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Floor & Boundary Walls
             for (int x = -20; x <= 20; x++)
@@ -72,7 +72,7 @@ public static class Stage1ChunkBuilder
         // ---------------------------------------------------------------------
         // 룸 2: Tilemap_Room_Stage1_Battle (기초 전투 아레나 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Battle", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1041", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Floor & Boundary Walls
             for (int x = -22; x <= 22; x++)
@@ -100,7 +100,7 @@ public static class Stage1ChunkBuilder
         // ---------------------------------------------------------------------
         // 룸 3: Tilemap_Room_Stage1_Boss (1스테이지 보스 아레나 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Boss", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1042", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Broad Boss Arena Floor
             for (int x = -25; x <= 25; x++)

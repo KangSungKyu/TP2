@@ -37,7 +37,7 @@ AnimationClip:
     - time: 0.875
       value: {fileID: 64869426883191534, guid: 61c072c4b2f748c48672f28201246312, type: 3}
     attribute: m_Sprite
-    path: 
+    path: Visual
     classID: 212
     script: {fileID: 0}
     flags: 2

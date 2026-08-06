@@ -34,16 +34,19 @@ public static class MonsterPrefabBuilder
 
         MonsterSpec[] monsterSpecs = new MonsterSpec[]
         {
-            new MonsterSpec { name = "SpearSentry", unitId = 3101, colliderSize = new Vector2(1.2f, 1.8f), colliderOffset = new Vector2(0f, 0.9f), frameWidth = 154, frameHeight = 307, ppu = 77 },
+            new MonsterSpec { name = "SpearSentry", unitId = 3101, colliderSize = new Vector2(1.5f, 3f), colliderOffset = new Vector2(0f, 1.5f), frameWidth = 154, frameHeight = 307, ppu = 77 },
             new MonsterSpec { name = "ShadowStalker", unitId = 3102, colliderSize = new Vector2(1.0f, 1.6f), colliderOffset = new Vector2(0f, 0.8f), frameWidth = 128, frameHeight = 256, ppu = 64 },
             new MonsterSpec { name = "WaveHeavy", unitId = 3103, colliderSize = new Vector2(1.6f, 2.0f), colliderOffset = new Vector2(0f, 1.0f), frameWidth = 205, frameHeight = 410, ppu = 102 }
         };
 
         foreach (var spec in monsterSpecs)
         {
-            GameObject monsterObj = new GameObject(spec.name);
+            string unitName = $"Unit_{spec.unitId}";
+            GameObject monsterObj = new GameObject(unitName);
+            GameObject visual = new GameObject("Visual");
+            visual.transform.SetParent(monsterObj.transform, false);
 
-            var sr = monsterObj.AddComponent<SpriteRenderer>();
+            var sr = visual.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 10;
             string idleTexPath = $"Assets/Textures/Characters/Monsters/{spec.name}/{spec.name}_Idle.png";
             Sprite defaultSprite = AssetDatabase.LoadAssetAtPath<Sprite>(idleTexPath);
@@ -68,7 +71,7 @@ public static class MonsterPrefabBuilder
             monsterObj.AddComponent<CombatStats>();
             monsterObj.AddComponent<Monster>();
 
-            var animator = monsterObj.AddComponent<Animator>();
+            var animator = visual.AddComponent<Animator>();
             string controllerPath = $"{animsDir}/{spec.name}AnimatorController.controller";
             RuntimeAnimatorController controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
             if (controller != null)
@@ -76,7 +79,7 @@ public static class MonsterPrefabBuilder
                 animator.runtimeAnimatorController = controller;
             }
 
-            string prefabPath = $"{prefabsDir}/{spec.name}.prefab";
+            string prefabPath = $"{prefabsDir}/{unitName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(monsterObj, prefabPath);
             Object.DestroyImmediate(monsterObj);
 

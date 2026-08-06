@@ -338,7 +338,7 @@ GameObject:
   - component: {fileID: 4712881347886030717}
   - component: {fileID: 1394603293553933836}
   m_Layer: 0
-  m_Name: Tilemap_Room_Stage1_Boss
+  m_Name: Prefab_1042
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

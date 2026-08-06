@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 21200000}
   - component: {fileID: 9500000}
   m_Layer: 0
-  m_Name: Placeholder_Parry
+  m_Name: Effect_8003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,7 +94,7 @@ Animator:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f000000000000000fa9c726012db6ca6, type: 2}
+  m_Controller: {fileID: 9100000, guid: f00000000000000051b3be3aba49c375, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

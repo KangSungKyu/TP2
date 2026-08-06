@@ -10,13 +10,13 @@ public static class Stage1NewMonsterBuilder
     [MenuItem("TP2/Build Stage 1 New Monsters")]
     public static void Build()
     {
-        BuildMonster("ShieldSentinel", "Attack6003", "Attack6004");
-        BuildMonster("OrbitalMarksman", "Attack6005", "Attack6006");
+        BuildMonster(3104, "ShieldSentinel", "Attack6003", "Attack6004");
+        BuildMonster(3105, "OrbitalMarksman", "Attack6005", "Attack6006");
         AssetDatabase.SaveAssets();
         AddressablePipeline.RegisterAllAddressables();
     }
 
-    private static void BuildMonster(string name, string attackA, string attackB)
+    private static void BuildMonster(uint unitIdx, string name, string attackA, string attackB)
     {
         string textureRoot = $"Assets/Textures/Characters/Monsters/{name}/{name}_";
         var clips = new Dictionary<string, AnimationClip>();
@@ -39,19 +39,21 @@ public static class Stage1NewMonsterBuilder
         machine.AddState($"{name}_{attackB}").motion = clips[attackB];
         EditorUtility.SetDirty(controller);
 
-        var root = new GameObject(name);
-        var renderer = root.AddComponent<SpriteRenderer>();
+        var root = new GameObject($"Unit_{unitIdx}");
+        var visual = new GameObject("Visual");
+        visual.transform.SetParent(root.transform, false);
+        var renderer = visual.AddComponent<SpriteRenderer>();
         renderer.sortingOrder = 10;
         renderer.sprite = AssetDatabase.LoadAllAssetsAtPath(textureRoot + "Idle.png").OfType<Sprite>().OrderBy(sprite => sprite.name).First();
         var collider = root.AddComponent<BoxCollider2D>();
-        collider.size = new Vector2(1.2f, 2f);
-        collider.offset = new Vector2(0f, 1f);
+        collider.size = new Vector2(1.5f, 3f);
+        collider.offset = new Vector2(0f, 1.5f);
         root.AddComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
         root.AddComponent<KinematicMotor2D>();
         root.AddComponent<CombatStats>();
         root.AddComponent<Monster>();
-        root.AddComponent<Animator>().runtimeAnimatorController = controller;
-        PrefabUtility.SaveAsPrefabAsset(root, $"Assets/Prefabs/{name}.prefab");
+        visual.AddComponent<Animator>().runtimeAnimatorController = controller;
+        PrefabUtility.SaveAsPrefabAsset(root, $"Assets/Prefabs/Unit_{unitIdx}.prefab");
         Object.DestroyImmediate(root);
     }
 
@@ -81,7 +83,7 @@ public static class Stage1NewMonsterBuilder
         AnimationUtility.SetAnimationClipSettings(clip, settings);
         AnimationUtility.SetObjectReferenceCurve(clip, new EditorCurveBinding
         {
-            type = typeof(SpriteRenderer), path = "", propertyName = "m_Sprite"
+            type = typeof(SpriteRenderer), path = "Visual", propertyName = "m_Sprite"
         }, sprites.Select((sprite, frame) => new ObjectReferenceKeyframe { time = frame / 8f, value = sprite }).ToArray());
         EditorUtility.SetDirty(clip);
         return clip;

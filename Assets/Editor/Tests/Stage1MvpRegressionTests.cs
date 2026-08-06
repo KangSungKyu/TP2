@@ -28,7 +28,7 @@ namespace QA.Tests
             {
                 var manager = gameObject.AddComponent<StageManager>();
                 Assert.DoesNotThrow(() => manager.ResolveAddressableKey(uint.MaxValue));
-                Assert.AreEqual("Tilemap_Room_Stage1_Entry", manager.ResolveAddressableKey(uint.MaxValue));
+                Assert.AreEqual("Prefab_1040", manager.ResolveAddressableKey(uint.MaxValue));
             }
             finally { UnityEngine.Object.DestroyImmediate(gameObject); }
         }
@@ -114,7 +114,7 @@ namespace QA.Tests
             StringAssert.Contains("Boss room transition rejected before reaching the BossGate slot", source);
             StringAssert.DoesNotContain("roomResourceIdx = 1041", source);
             StringAssert.Contains("CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx", source);
-            Assert.AreEqual("Tilemap_Room_Stage1_Boss", CreateManager().ResolveAddressableKey(1042));
+            Assert.AreEqual("Prefab_1042", CreateManager().ResolveAddressableKey(1042));
         }
 
         [Test]

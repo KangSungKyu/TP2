@@ -69,10 +69,29 @@
 | Stage1 / EditMode / QA | PASS | 20/20, 64/64, 51/51 |
 | PlayMode 전체 | FAIL(기존 결함) | 0/1, 공격 테스트 체력 Expected 90 / Actual 100 |
 
-실제 프리팹 경로: `Assets/Prefabs/Rooms/Tilemap_Room_Stage1_1050.prefab`, `Assets/Prefabs/Rooms/Tilemap_Room_Stage1_1057.prefab`.
+실제 프리팹 경로: `Assets/Prefabs/Rooms/Room_11050.prefab`, `Assets/Prefabs/Rooms/Room_11057.prefab`.
 
 PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.PlayMode.AttackHandlerTests.MeleeAttackAppliesDamage`. 책임 파일과 최소 수선 명세는 위 FAIL 절과 동일하다. 이번 범위의 제품·에셋·CSV는 수정하지 않았다.
 
 |상태|검증|변경 파일|커밋|후속 위험|
 |---|---|---|---|---|
 |부분 PASS|실제 1050/1057 4방향 좌표, South 비침투, 첫 step 속도·grounded, 기준 테스트 수|`Assets/Docs/QA/stage1_mvp_qa_report.md`|본 문서 동기화 커밋|실제 포털 연속 왕복/즉시 재트리거는 PlayMode 자동화 부재로 미검증; 기존 공격 PlayMode 1건 FAIL|
+
+## Player Unit_3001 uint 라우팅 후행 QA — 2026-08-06
+
+| 검증 | 판정 | 근거 |
+|---|---|---|
+| Player.Instance null → Unit_3001 Addressables 생성 | PASS | 전용 `UnitPrefabFk_InstantiatesThroughResourceManager`에서 실제 생성 성공 |
+| Despawn 후 동일 pool 객체 재사용 | 미검증 | 코드는 `Unit_3001` key로 반납·조회하지만 전용 테스트가 객체 identity를 Assert하지 않음 |
+| 기존 Player.Instance → 신규 instantiate 0 | 미검증 | 조기 반환 코드는 확인했으나 instantiate 호출 횟수 계측 테스트 없음 |
+| missing UnitBase/ResourceData/Path | FAIL(검증 누락) | 전용 테스트는 잘못된 idx 조회만 수행하며 `SpawnPlayerAsync` null·로그를 주입 검증하지 않음. 구현 로그도 세 원인을 하나의 `no valid ... mapping` 문구로 합침 |
+| missing Addressable | PASS(공통 계층 계약) | `ResourceManager.InstantiateAsyncTask`가 key와 원인을 Error로 기록하고 null 반환. Player 전용 주입 테스트는 없음 |
+| Resource 1001/GUID 연결 | PASS | `1001,Unit_3001`; prefab GUID `2fd025f20559e3e48b94409388d85c52`가 Addressables entry와 일치 |
+| 빈 catch 제거·표시명 Player | PASS | `catch { }` 없음, 생성 후 `playerObj.name = "Player"` |
+| 전용 / EditMode / QA / 컴파일 | PASS | 3/3, 68/68, 51/51, 컴파일 오류 0 |
+
+누락 검증 재현: `PrefabNamingMigrationTests.PlayerPoolRouting_UsesUnitAndResourceForeignKeys`에는 실제 `SpawnPlayerAsync` 호출, 동일 객체 Assert, instantiate 횟수 Assert, 누락별 `LogAssert.Expect`가 없다. 최소 수선은 해당 QA 파일의 기존 3개 테스트 안에서 런타임 Assert를 추가하는 것이며 제품 확장은 하지 않는다.
+
+|상태|검증|변경 파일|커밋|후속 위험|
+|---|---|---|---|---|
+|부분 FAIL|Unit_3001 생성·FK/GUID·로그 코드·전체 회귀|`Assets/Docs/QA/stage1_mvp_qa_report.md`|미커밋|pool identity, 기존 Instance 무생성, 누락별 null/로그가 자동화되지 않아 회귀 탐지 불가|

@@ -372,10 +372,10 @@ public class StageManager : Singleton<StageManager>
         // Fallback for direct string key resolution
         switch (resourceIdx)
         {
-            case 1040: return "Tilemap_Room_Stage1_Entry";
-            case 1041: return "Tilemap_Room_Stage1_Battle";
-            case 1042: return "Tilemap_Room_Stage1_Boss";
-            default: return "Tilemap_Room_Stage1_Entry";
+            case 1040: return "Prefab_1040";
+            case 1041: return "Prefab_1041";
+            case 1042: return "Prefab_1042";
+            default: return "Prefab_1040";
         }
     }
 

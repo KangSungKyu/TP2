@@ -63,8 +63,9 @@ namespace QA.Tests
             string resources = File.ReadAllText("Assets/Datas/ResourceData.csv");
             foreach (uint idx in ids)
             {
-                StringAssert.Contains($"{idx},Tilemap_Room_Stage1_{idx}", resources);
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/Tilemap_Room_Stage1_{idx}.prefab");
+                uint chunkIdx = 10000u + idx;
+                StringAssert.Contains($"{idx},Room_{chunkIdx}", resources);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/Room_{chunkIdx}.prefab");
                 Assert.NotNull(prefab, $"Missing chunk prefab {idx}");
                 ChunkSocketMarker[] sockets = prefab.GetComponentsInChildren<ChunkSocketMarker>(true);
                 Assert.AreEqual(4, sockets.Length);
@@ -92,17 +93,37 @@ namespace QA.Tests
         [Test]
         public void NewMonsters_HaveCompleteUniqueImportedAssets()
         {
-            AssertMonster("ShieldSentinel", "Attack6003", "Attack6004");
-            AssertMonster("OrbitalMarksman", "Attack6005", "Attack6006");
+            AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
+            AssertLegacyMonster(3105, "OrbitalMarksman", "Attack6005", "Attack6006");
 
             Assert.AreNotEqual(
-                AssetDatabase.AssetPathToGUID("Assets/Prefabs/ShieldSentinel.prefab"),
-                AssetDatabase.AssetPathToGUID("Assets/Prefabs/OrbitalMarksman.prefab"));
+                AssetDatabase.AssetPathToGUID("Assets/Prefabs/Unit_3104.prefab"),
+                AssetDatabase.AssetPathToGUID("Assets/Prefabs/Unit_3105.prefab"));
         }
 
-        private static void AssertMonster(string name, string attackA, string attackB)
+        [Test]
+        public void NormalizedUnitPrefabs_HaveSingleVisualRendererAndIdxPaths()
         {
-            string prefabPath = $"Assets/Prefabs/{name}.prefab";
+            StringAssert.Contains("1003,Unit_3101", File.ReadAllText("Assets/Datas/ResourceData.csv"));
+            StringAssert.Contains("1006,Unit_3104", File.ReadAllText("Assets/Datas/ResourceData.csv"));
+            AssertMonster(3101, "SpearSentry", "Idle", "Move", "Attack", "Death");
+            AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
+        }
+
+        private static void AssertMonster(uint unitIdx, string name, params string[] actions)
+        {
+            string prefabPath = $"Assets/Prefabs/Unit_{unitIdx}.prefab";
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            Assert.NotNull(prefab);
+            Assert.AreEqual($"Unit_{unitIdx}", prefab.name);
+            Assert.IsNull(prefab.GetComponent<SpriteRenderer>());
+            Assert.IsNull(prefab.GetComponent<Animator>());
+            AssertMonsterVisual(prefab, name, actions);
+        }
+
+        private static void AssertLegacyMonster(uint unitIdx, string name, string attackA, string attackB)
+        {
+            string prefabPath = $"Assets/Prefabs/Unit_{unitIdx}.prefab";
             string texturePath = $"Assets/Textures/Characters/Monsters/{name}/{name}_Idle.png";
             string controllerPath = $"Assets/Anims/Monster/{name}AnimatorController.controller";
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -110,6 +131,7 @@ namespace QA.Tests
             var animator = prefab != null ? prefab.GetComponent<Animator>() : null;
             var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
 
+            Assert.AreEqual($"Unit_{unitIdx}", prefab.name);
             Assert.NotNull(renderer);
             Assert.NotNull(renderer.sprite);
             Assert.AreEqual(texturePath, AssetDatabase.GetAssetPath(renderer.sprite));
@@ -123,12 +145,38 @@ namespace QA.Tests
             Assert.IsNotEmpty(AssetDatabase.AssetPathToGUID(texturePath));
             Assert.IsNotEmpty(AssetDatabase.AssetPathToGUID(controllerPath));
 
-            foreach (string action in new[] { "Idle", "Move", "Hit", "Death", attackA, attackB })
+            AssertMonsterClips(name, "", "Idle", "Move", "Hit", "Death", attackA, attackB);
+        }
+
+        private static void AssertMonsterVisual(GameObject prefab, string name, params string[] actions)
+        {
+            string texturePath = $"Assets/Textures/Characters/Monsters/{name}/{name}_Idle.png";
+            string controllerPath = $"Assets/Anims/Monster/{name}AnimatorController.controller";
+            var renderers = prefab.GetComponentsInChildren<SpriteRenderer>(true);
+            var animators = prefab.GetComponentsInChildren<Animator>(true);
+            Assert.AreEqual(1, renderers.Length);
+            Assert.AreEqual("Visual", renderers[0].transform.name);
+            Assert.NotNull(renderers[0].sprite);
+            Assert.AreEqual(texturePath, AssetDatabase.GetAssetPath(renderers[0].sprite));
+            Assert.AreEqual(1, animators.Length);
+            Assert.AreEqual(renderers[0].transform, animators[0].transform);
+            Assert.AreEqual(controllerPath, AssetDatabase.GetAssetPath(animators[0].runtimeAnimatorController));
+            var collider = prefab.GetComponent<BoxCollider2D>();
+            Assert.NotNull(collider);
+            Assert.That(collider.size.x / renderers[0].sprite.bounds.size.x, Is.InRange(0.5f, 1f));
+            Assert.That(collider.size.y / renderers[0].sprite.bounds.size.y, Is.InRange(0.5f, 1f));
+            AssertMonsterClips(name, "Visual", actions);
+        }
+
+        private static void AssertMonsterClips(string name, string expectedPath, params string[] actions)
+        {
+            foreach (string action in actions)
             {
                 var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"Assets/Anims/Monster/{name}_{action}.anim");
                 Assert.NotNull(clip);
                 var bindings = AnimationUtility.GetObjectReferenceCurveBindings(clip);
                 Assert.AreEqual(1, bindings.Length);
+                Assert.AreEqual(expectedPath, bindings[0].path);
                 var frames = AnimationUtility.GetObjectReferenceCurve(clip, bindings[0]);
                 Assert.AreEqual(8, frames.Length);
                 Assert.IsFalse(System.Array.Exists(frames, frame => frame.value == null));

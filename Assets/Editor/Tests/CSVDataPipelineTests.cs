@@ -156,13 +156,13 @@ namespace QA.Tests
             layout.LoadData("idx,stagedataidx,minrows,maxrows,mincolumns,maxcolumns,minactivechunks,maxactivechunks,bossroomresourceidx,nextstageidx\n12001,9001,3,4,3,4,9,11,1042,9002");
             chunks.LoadData("idx,resourceidx,chunktype,supportedconnectionmask,minstageidx,maxuseperrun,weight\n11050,1050,1,15,9001,2,100");
             encounters.LoadData("idx,stageidx,variant,unitidxlist,threatcost,weight\n13001,9001,1,3101_3104,4,100");
-            resources.LoadData("idx,path\n1050,Tilemap_Room_Stage1_1050");
+            resources.LoadData("idx,path\n1050,Room_11050");
 
             Assert.AreEqual(DataTableType.StageLayout, Util.GetDataTableType(12001));
             Assert.AreEqual(DataTableType.ChunkResource, Util.GetDataTableType(11050));
             Assert.AreEqual(DataTableType.MonsterEncounter, Util.GetDataTableType(13001));
             Assert.IsTrue(resources.TryGetResource(1050, out ResourceData room));
-            Assert.AreEqual("Tilemap_Room_Stage1_1050", room.Path);
+            Assert.AreEqual("Room_11050", room.Path);
             Assert.IsTrue(layout.TryGetByStage(9001, out StageLayoutData layoutData));
 
             StageRunData run = Stage1RunGenerator.Generate(2, layoutData,
@@ -181,7 +181,7 @@ namespace QA.Tests
             Assert.AreEqual(0, layout.GetDataCount());
 
             var resources = new ResourceDataTable();
-            Assert.DoesNotThrow(() => resources.LoadData("idx,path\n1050,Tilemap_Room_Stage1_1050"));
+            Assert.DoesNotThrow(() => resources.LoadData("idx,path\n1050,Room_11050"));
             Assert.AreEqual(1, resources.GetDataCount());
         }
     }

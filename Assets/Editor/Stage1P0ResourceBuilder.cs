@@ -5,7 +5,11 @@ using UnityEngine.Tilemaps;
 
 public static class Stage1P0ResourceBuilder
 {
-    private static readonly uint[] Ids = { 1050, 1051, 1052, 1053, 1056, 1057, 1061, 1063 };
+    private static readonly (uint resourceIdx, uint chunkIdx)[] Ids =
+    {
+        (1050, 11050), (1051, 11051), (1052, 11052), (1053, 11053),
+        (1056, 11056), (1057, 11057), (1061, 11061), (1063, 11063)
+    };
 
     [MenuItem("TP2/Build Stage 1 P0 Resources")]
     public static void Build()
@@ -13,14 +17,14 @@ public static class Stage1P0ResourceBuilder
         var tile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
         if (tile == null) throw new System.InvalidOperationException("Tile_Ground.asset is required.");
 
-        foreach (uint idx in Ids) BuildChunk(idx, tile);
+        foreach (var id in Ids) BuildChunk(id.resourceIdx, id.chunkIdx, tile);
         AssetDatabase.SaveAssets();
         AddressablePipeline.RegisterAllAddressables();
     }
 
-    private static void BuildChunk(uint idx, Tile tile)
+    private static void BuildChunk(uint resourceIdx, uint chunkIdx, Tile tile)
     {
-        string name = $"Tilemap_Room_Stage1_{idx}";
+        string name = $"Room_{chunkIdx}";
         var root = new GameObject(name, typeof(Grid));
         var ground = new GameObject("Tilemap_Ground", typeof(Tilemap), typeof(TilemapRenderer), typeof(TilemapCollider2D), typeof(Rigidbody2D), typeof(CompositeCollider2D));
         ground.transform.SetParent(root.transform);
@@ -47,10 +51,10 @@ public static class Stage1P0ResourceBuilder
         cameraBounds.GetComponent<BoxCollider2D>().isTrigger = true;
 
         AddSpawn(root.transform, "EntrySpawn", new Vector3(-22, 1.5f), SpawnType.Player, 0);
-        if (idx <= 1053)
+        if (resourceIdx <= 1053)
         {
-            AddSpawn(root.transform, "MonsterSpawn_1", new Vector3(-8, 1.5f), SpawnType.Monster, idx % 2 == 0 ? 3104u : 3105u);
-            AddSpawn(root.transform, "MonsterSpawn_2", new Vector3(7, 1.5f), SpawnType.Monster, idx % 2 == 0 ? 3101u : 3102u);
+            AddSpawn(root.transform, "MonsterSpawn_1", new Vector3(-8, 1.5f), SpawnType.Monster, resourceIdx % 2 == 0 ? 3104u : 3105u);
+            AddSpawn(root.transform, "MonsterSpawn_2", new Vector3(7, 1.5f), SpawnType.Monster, resourceIdx % 2 == 0 ? 3101u : 3102u);
         }
 
         PrefabUtility.SaveAsPrefabAsset(root, $"Assets/Prefabs/Rooms/{name}.prefab");

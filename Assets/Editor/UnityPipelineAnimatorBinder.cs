@@ -198,7 +198,7 @@ public static class UnityPipelineAnimatorBinder
                 string texPath = $"{monsterTexDir}/{mName}/{animName}.png";
                 string saveClipPath = $"{animsDir}/{animName}.anim";
 
-                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, spec.frameW, spec.frameH, spec.ppu, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f));
+                AnimationClip clip = CreateAndSaveAnimationClip(texPath, saveClipPath, animName, 8f, loop, spec.frameW, spec.frameH, spec.ppu, SpriteAlignment.BottomCenter, new Vector2(0.5f, 0.0f), "Visual");
 
                 var state = stateMachine.AddState(animName);
                 if (clip != null)
@@ -253,7 +253,7 @@ public static class UnityPipelineAnimatorBinder
         }
     }
 
-    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight, int ppu, SpriteAlignment alignment, Vector2 pivot)
+    private static AnimationClip CreateAndSaveAnimationClip(string texturePath, string saveClipPath, string clipName, float fps, bool isLooping, int frameWidth, int frameHeight, int ppu, SpriteAlignment alignment, Vector2 pivot, string bindingPath = "")
     {
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer != null)
@@ -324,7 +324,7 @@ public static class UnityPipelineAnimatorBinder
 
         EditorCurveBinding curveBinding = new EditorCurveBinding();
         curveBinding.type = typeof(SpriteRenderer);
-        curveBinding.path = "";
+        curveBinding.path = bindingPath;
         curveBinding.propertyName = "m_Sprite";
 
         ObjectReferenceKeyframe[] keyframes = new ObjectReferenceKeyframe[sprites.Count];

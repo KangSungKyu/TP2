@@ -208,11 +208,11 @@ namespace QA.Tests
 
             Assert.IsNotNull(stageMgr, "StageManager 생성 실패");
             Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "기본 CurrentStageIdx는 9001이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "ResourceIdx 1040은 Entry 룸 키로 해석되어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Battle", stageMgr.ResolveAddressableKey(1041), "ResourceIdx 1041은 Battle 룸 키로 해석되어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Boss", stageMgr.ResolveAddressableKey(1042), "ResourceIdx 1042는 Boss 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1040", stageMgr.ResolveAddressableKey(1040), "ResourceIdx 1040은 Entry 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1041", stageMgr.ResolveAddressableKey(1041), "ResourceIdx 1041은 Battle 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1042", stageMgr.ResolveAddressableKey(1042), "ResourceIdx 1042는 Boss 룸 키로 해석되어야 합니다.");
 
-            var bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Tilemap_Room_Stage1_Boss.prefab");
+            var bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1042.prefab");
             Assert.IsNotNull(bossPrefab);
             var bossMarkers = bossPrefab.GetComponentsInChildren<SpawnPointMarker>(true);
             Assert.IsTrue(System.Array.Exists(bossMarkers, marker =>
@@ -291,7 +291,7 @@ namespace QA.Tests
             stageMgr.CurrentStageIdx = 9001;
 
             Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "1스테이지(9001) 식별자 설정 확인");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "HubScene -> MainScene 진입 후 1스테이지 Entry 룸 청크(1040) 자동 렌더링 키 해석 검증");
+            Assert.AreEqual("Prefab_1040", stageMgr.ResolveAddressableKey(1040), "HubScene -> MainScene 진입 후 1스테이지 Entry 룸 청크(1040) 자동 렌더링 키 해석 검증");
 
             Object.DestroyImmediate(hubSceneObj);
             Object.DestroyImmediate(mainSceneObj);
