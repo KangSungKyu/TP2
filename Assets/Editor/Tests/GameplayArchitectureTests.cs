@@ -237,5 +237,192 @@ namespace QA.Tests
                 Object.DestroyImmediate(player);
             }
         }
+
+        [Test]
+        public void Test_PlayerDeathAndGuardHit_KeepGroundPositionAndResetForReuse()
+        {
+            var playerObject = new GameObject("Player_DeathGround_QA");
+            var groundObject = new GameObject("Ground_DeathGround_QA");
+            var attackerObject = new GameObject("Attacker_GuardGround_QA");
+            SimulationMode2D previousSimulationMode = Physics2D.simulationMode;
+            try
+            {
+                Physics2D.simulationMode = SimulationMode2D.Script;
+                var body = playerObject.AddComponent<Rigidbody2D>();
+                var playerCollider = playerObject.AddComponent<BoxCollider2D>();
+                var motor = playerObject.AddComponent<KinematicMotor2D>();
+                var stats = playerObject.AddComponent<CombatStats>();
+                var player = playerObject.AddComponent<Player>();
+                typeof(Player).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(player, null);
+                motor.InitMotor();
+                stats.InitStats();
+
+                var ground = groundObject.AddComponent<BoxCollider2D>();
+                ground.size = new Vector2(20f, 1f);
+                groundObject.transform.position = new Vector3(0f, -0.5f);
+                playerObject.transform.position = new Vector3(0f, 0.51f);
+                motor.Teleport(playerObject.transform.position);
+                motor.SetGroundNormal(Vector2.up);
+                Physics2D.SyncTransforms();
+
+                var attackerStats = attackerObject.AddComponent<CombatStats>();
+                attackerStats.InitStats();
+                stats.SetGuarding(true);
+                motor.SetTargetVelocityX(5f);
+                stats.TakeDamage(10f, attacker: attackerStats);
+                for (int i = 0; i < 10; i++)
+                {
+                    motor.SimulateStep(Time.fixedDeltaTime);
+                    Physics2D.SyncTransforms();
+                    Assert.GreaterOrEqual(playerCollider.bounds.min.y, ground.bounds.max.y);
+                }
+
+                Vector2 deathPosition = body.position;
+                player.Die();
+                Assert.IsFalse(motor.enabled);
+                Assert.AreEqual(Vector2.zero, motor.Velocity);
+                Assert.IsFalse(playerCollider.enabled);
+                for (int i = 0; i < 10; i++) Physics2D.Simulate(Time.fixedDeltaTime);
+                Assert.AreEqual(deathPosition, body.position);
+
+                Vector3 respawnPosition = new Vector3(2f, 1f);
+                player.ResetAfterDeath(respawnPosition);
+                Assert.IsTrue(motor.enabled);
+                Assert.IsTrue(playerCollider.enabled);
+                Assert.AreEqual((Vector2)respawnPosition, body.position);
+                var renderer = (SpriteRenderer)typeof(UnitBase)
+                    .GetField("spriteRenderer", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(player);
+                Assert.AreEqual(1f, renderer.color.a);
+            }
+            finally
+            {
+                Physics2D.simulationMode = previousSimulationMode;
+                Object.DestroyImmediate(attackerObject);
+                Object.DestroyImmediate(groundObject);
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [Test]
+        public void Test_MonsterDeathContract_IsIdempotentFadesAndResetsPoolState()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            int lockGuard = source.IndexOf("if (deathSequenceActive) return;");
+            int lockSet = source.IndexOf("deathSequenceActive = true;", lockGuard);
+            int fade = source.IndexOf("Mathf.Lerp(startColor.a, 0f", lockSet);
+            int despawn = source.IndexOf("DespawnUnit(this)", fade);
+
+            Assert.GreaterOrEqual(lockGuard, 0);
+            Assert.Greater(lockSet, lockGuard);
+            Assert.Greater(fade, lockSet);
+            Assert.Greater(despawn, fade);
+            StringAssert.Contains("motor.SetVelocityY(0f);", source);
+            StringAssert.Contains("deathSequenceActive = false;", source);
+            StringAssert.Contains("color.a = 1f;", source);
+        }
+
+        [Test]
+        public void Test_PlayerDeathReturnsToHubOnceAfterExistingDelay()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+            int deathLock = source.IndexOf("if (deathSequenceActive) return;");
+            int delay = source.IndexOf("FromSeconds(2.0f)", deathLock);
+            int hub = source.IndexOf("StageManager.ReturnToHubAsync", delay);
+
+            Assert.GreaterOrEqual(deathLock, 0);
+            Assert.Greater(delay, deathLock);
+            Assert.Greater(hub, delay);
+            StringAssert.DoesNotContain("ReloadStageAsync", source);
+            StringAssert.DoesNotContain("LoadNextRoomAsync(0", source);
+        }
+
+        [Test]
+        public void Test_ChunkOwnerDisableReturnsRangedEffectAndRejectsDuplicateReturn()
+        {
+            var poolObject = new GameObject("EffectPool_QA");
+            var effectPool = poolObject.AddComponent<EffectPoolManager>();
+            var instanceField = typeof(Singleton<EffectPoolManager>)
+                .GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+            var previousEffectPool = EffectPoolManager.Instance;
+            instanceField.SetValue(null, effectPool);
+            var owner = new GameObject("RangedMonster_ChunkA");
+            owner.SetActive(false);
+            var executor = owner.AddComponent<SkillExecutor>();
+            SkillEffect effect = null;
+            SkillEffect reused = null;
+            try
+            {
+                Assert.IsNotNull(EffectPoolManager.Instance);
+                effect = executor.SpawnSkillEffect("Ranged_QA", Vector3.zero, Vector2.one, 1f, 30f,
+                    FactionType.Enemy, Color.white);
+                Assert.IsTrue(effect.gameObject.activeSelf);
+
+                typeof(SkillExecutor).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(executor, null);
+                Assert.IsFalse(effect.gameObject.activeSelf, "Chunk owner despawn must return its active attack effect.");
+
+                effect.ReturnToPool();
+                Assert.IsFalse(effect.gameObject.activeSelf, "Duplicate return must remain a no-op.");
+
+                var pools = (System.Collections.IDictionary)typeof(EffectPoolManager)
+                    .GetField("poolDict", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(EffectPoolManager.Instance);
+                Assert.IsTrue(pools.Contains("Ranged_QA"));
+
+                reused = executor.SpawnSkillEffect("Ranged_QA", Vector3.one, Vector2.one, 1f, 30f,
+                    FactionType.Enemy, Color.white);
+                Assert.AreSame(effect, reused, "The same chunk-safe pool entry must be reused.");
+            }
+            finally
+            {
+                if (reused != null) reused.ReturnToPool();
+                if (effect != null && effect.gameObject != null) Object.DestroyImmediate(effect.gameObject);
+                Object.DestroyImmediate(owner);
+                if (EffectPoolManager.Instance == effectPool) instanceField.SetValue(null, previousEffectPool);
+                Object.DestroyImmediate(poolObject);
+            }
+        }
+
+        [Test]
+        public void Test_ProjectileReturnCancelsGenerationAndNotifiesOwnerOnce()
+        {
+            var projectileObject = new GameObject("Projectile_ChunkA_QA");
+            try
+            {
+                var projectile = projectileObject.AddComponent<Gameplay.Combat.Projectile>();
+                var attack = new Gameplay.Combat.AttackData { ProjectilePrefab = null, HitRadius = 0.1f };
+                int returned = 0;
+                projectile.Initialize(attack, Vector3.zero, Vector3.forward, _ => returned++);
+                projectile.ReturnToPool();
+                projectile.ReturnToPool();
+
+                Assert.AreEqual(1, returned);
+                Assert.IsFalse(projectileObject.activeSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(projectileObject);
+            }
+        }
+
+        [Test]
+        public void Test_ProjectileAndEffectPoolsRejectStaleChunkCallbacks()
+        {
+            string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/Projectile.cs");
+            string handler = File.ReadAllText("Assets/Scripts/Gameplay/Combat/AttackHandler.cs");
+            string effectPool = File.ReadAllText("Assets/Scripts/Manager/EffectPoolManager.cs");
+            string hub = File.ReadAllText("Assets/Scripts/Scene/HubScene.cs");
+
+            StringAssert.Contains("currentGeneration == generation", projectile);
+            StringAssert.Contains("if (returned || currentGeneration != generation) return;", projectile);
+            StringAssert.Contains("projectile.ReturnToPool()", handler);
+            StringAssert.Contains("current == generation", effectPool);
+            StringAssert.Contains("!activeEffects.Remove(effectObj)", effectPool);
+            StringAssert.Contains("ResetRunForHub()", hub);
+            StringAssert.Contains("if (transitionInProgress) return;", hub);
+            StringAssert.DoesNotContain("OnGUI", hub);
+        }
     }
 }

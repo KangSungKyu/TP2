@@ -53,6 +53,9 @@ public class Player : UnitBase
 
     private float wallJumpLockoutTimer = 0f;
     private int lastWallDir = 0;
+    private bool deathSequenceActive;
+    private Collider2D[] deathColliders;
+    private uint deathGeneration;
 
 
     // =========================================================================
@@ -128,21 +131,60 @@ public class Player : UnitBase
 
     public void Die()
     {
+        if (deathSequenceActive) return;
+        deathSequenceActive = true;
         SetState(PlayerState.Hit, true);
-        if (motor != null) motor.SetTargetVelocityX(0f);
-        var cols = GetComponentsInChildren<Collider2D>();
-        foreach (var c in cols) c.enabled = false;
+        if (motor != null)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            motor.enabled = false;
+        }
+        deathColliders = GetComponentsInChildren<Collider2D>();
+        foreach (var col in deathColliders) col.enabled = false;
 
         Debug.Log("<color=red><b>[Player] 플레이어 사망! 2.0초 후 1스테이지 리로드...</b></color>");
-        ReloadStageAsync().Forget();
+        ReturnToHubAfterDeathAsync(++deathGeneration).Forget();
     }
 
-    private async UniTaskVoid ReloadStageAsync()
+    public void ResetAfterDeath(Vector3 position)
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(2.0f), cancellationToken: this.GetCancellationTokenOnDestroy());
-        if (StageManager.Instance != null)
+        deathGeneration++;
+        deathSequenceActive = false;
+        if (spriteRenderer != null)
         {
-            await StageManager.Instance.LoadNextRoomAsync(0, this.GetCancellationTokenOnDestroy());
+            Color color = spriteRenderer.color;
+            color.a = 1f;
+            spriteRenderer.color = color;
+        }
+        if (deathColliders != null)
+        {
+            foreach (var col in deathColliders) if (col != null) col.enabled = true;
+        }
+        if (motor != null)
+        {
+            motor.enabled = true;
+            motor.Teleport(position);
+            motor.SetTargetVelocityX(0f);
+            motor.SetVelocityY(0f);
+        }
+        else
+        {
+            transform.position = position;
+        }
+        SetState(PlayerState.Idle, true);
+    }
+
+    private async UniTaskVoid ReturnToHubAfterDeathAsync(uint generation)
+    {
+        try
+        {
+            var cancellationToken = this.GetCancellationTokenOnDestroy();
+            await UniTask.Delay(System.TimeSpan.FromSeconds(2.0f), cancellationToken: cancellationToken);
+            if (generation != deathGeneration) return;
+            await StageManager.ReturnToHubAsync(cancellationToken);
+        }
+        catch (System.OperationCanceledException)
+        {
         }
     }
 
