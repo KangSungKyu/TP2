@@ -27,26 +27,27 @@ public static class EffectPrefabBuilder
 
         AssetDatabase.Refresh();
 
-        string[] effectKeys = new string[]
+        (string key, string prefabName)[] effects =
         {
-            "Placeholder_Parry",
-            "Placeholder_Guard",
-            "Placeholder_Dodge",
-            "Placeholder_Hit",
-            "Player_Attack_Hit1_Effect",
-            "Player_Attack_Hit2_Effect",
-            "Player_Attack_Hit3_Effect",
-            "Garon_ComboSlash_Effect",
-            "Garon_OverheadSmash_Effect",
-            "Garon_Shockwave_Effect",
-            "Garon_Charge_Effect"
+            ("Placeholder_Parry", "Effect_8010"),
+            ("Placeholder_Guard", "Effect_8011"),
+            ("Placeholder_Dodge", "Effect_8012"),
+            ("Placeholder_Hit", "Effect_8013"),
+            ("Player_Attack_Hit1_Effect", "Effect_8001"),
+            ("Player_Attack_Hit2_Effect", "Effect_8002"),
+            ("Player_Attack_Hit3_Effect", "Effect_8003"),
+            ("Garon_ComboSlash_Effect", "Garon_ComboSlash_Effect"),
+            ("Garon_OverheadSmash_Effect", "Garon_OverheadSmash_Effect"),
+            ("Garon_Shockwave_Effect", "Garon_Shockwave_Effect"),
+            ("Garon_Charge_Effect", "Garon_Charge_Effect")
         };
 
-        foreach (string key in effectKeys)
+        foreach (var effect in effects)
         {
+            string key = effect.key;
             string animClipPath = $"{animsEffectsDir}/{key}.anim";
 
-            GameObject go = new GameObject(key);
+            GameObject go = new GameObject(effect.prefabName);
             var sr = go.AddComponent<SpriteRenderer>();
             var animator = go.AddComponent<Animator>();
 
@@ -55,10 +56,8 @@ public static class EffectPrefabBuilder
 
             animator.runtimeAnimatorController = controller;
 
-            string rootPrefabPath = $"{rootPrefabsDir}/{key}.prefab";
-            string subPrefabPath = $"{subEffectsDir}/{key}.prefab";
+            string subPrefabPath = $"{subEffectsDir}/{effect.prefabName}.prefab";
 
-            PrefabUtility.SaveAsPrefabAsset(go, rootPrefabPath);
             PrefabUtility.SaveAsPrefabAsset(go, subPrefabPath);
 
             Object.DestroyImmediate(go);

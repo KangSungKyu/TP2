@@ -123,9 +123,16 @@ namespace QA.Tests
             metroCam.MinBounds = new Vector2(-29f, -1f);
             metroCam.MaxBounds = new Vector2(29f, 17f);
 
+            GameObject targetObj = new GameObject("Test_CameraTarget");
+            targetObj.transform.position = new Vector3(10f, 3f, 0f);
+            metroCam.Target = targetObj.transform;
+            metroCam.SnapToTarget();
+
             Assert.IsNotNull(metroCam, "MetroidvaniaCamera2D 생성 실패");
             Assert.IsTrue(metroCam.UseBounds, "카메라 바운더리 활성화 여부 확인");
 
+            Assert.AreEqual(targetObj.transform.position.x, camObj.transform.position.x, 0.01f);
+            Object.DestroyImmediate(targetObj);
             Object.DestroyImmediate(camObj);
         }
 
@@ -171,9 +178,11 @@ namespace QA.Tests
                 }
 
                 var collider = testPortal.GetComponent<Collider2D>();
+                var renderer = testPortal.GetComponent<SpriteRenderer>();
                 Assert.IsNotNull(collider, $"'{path}' 포탈 오브젝트에 Collider2D가 부착되어 있어야 합니다.");
                 Assert.IsTrue(collider.isTrigger, $"'{path}' 포탈 콜라이더는 isTrigger = true 이어야 합니다.");
 
+                Assert.IsNotNull(renderer != null ? renderer.sprite : null, $"'{path}' portal/door texture binding missing");
                 Object.DestroyImmediate(testPortal);
             }
         }
@@ -199,23 +208,29 @@ namespace QA.Tests
 
             Assert.IsNotNull(stageMgr, "StageManager 생성 실패");
             Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "기본 CurrentStageIdx는 9001이어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "ResourceIdx 1040은 Entry 룸 키로 해석되어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Battle", stageMgr.ResolveAddressableKey(1041), "ResourceIdx 1041은 Battle 룸 키로 해석되어야 합니다.");
-            Assert.AreEqual("Tilemap_Room_Stage1_Boss", stageMgr.ResolveAddressableKey(1042), "ResourceIdx 1042는 Boss 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1040", stageMgr.ResolveAddressableKey(1040), "ResourceIdx 1040은 Entry 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1041", stageMgr.ResolveAddressableKey(1041), "ResourceIdx 1041은 Battle 룸 키로 해석되어야 합니다.");
+            Assert.AreEqual("Prefab_1042", stageMgr.ResolveAddressableKey(1042), "ResourceIdx 1042는 Boss 룸 키로 해석되어야 합니다.");
+
+            var bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1042.prefab");
+            Assert.IsNotNull(bossPrefab);
+            var bossMarkers = bossPrefab.GetComponentsInChildren<SpawnPointMarker>(true);
+            Assert.IsTrue(System.Array.Exists(bossMarkers, marker =>
+                marker.EnableSpawn && marker.Type == SpawnType.Boss && marker.MonsterId == 3201));
 
             Object.DestroyImmediate(stageManagerObj);
         }
 
         [Test]
-        public void Test11_RoomDoorPortal_AutoTrigger_AndTargetRoomKey()
+        public void Test11_RoomDoorPortal_AutoTrigger_AndTargetRoomIdx()
         {
             GameObject portalObj = new GameObject("Test_RoomDoorPortal");
             var portal = portalObj.AddComponent<RoomDoorPortal>();
-            portal.TargetRoomKey = "Tilemap_Room_Stage1_Battle";
+            portal.TargetRoomResourceIdx = 1041;
             portal.AutoTriggerOnTouch = true;
 
             Assert.IsNotNull(portal, "RoomDoorPortal 생성 실패");
-            Assert.AreEqual("Tilemap_Room_Stage1_Battle", portal.TargetRoomKey, "목표 룸 타겟 키 바인딩 검증");
+            Assert.AreEqual(1041u, portal.TargetRoomResourceIdx, "Portal target must use ResourceData idx");
             Assert.IsTrue(portal.AutoTriggerOnTouch, "AutoTriggerOnTouch 활성화 상태 확인");
 
             Object.DestroyImmediate(portalObj);
@@ -276,11 +291,12 @@ namespace QA.Tests
             stageMgr.CurrentStageIdx = 9001;
 
             Assert.AreEqual(9001u, stageMgr.CurrentStageIdx, "1스테이지(9001) 식별자 설정 확인");
-            Assert.AreEqual("Tilemap_Room_Stage1_Entry", stageMgr.ResolveAddressableKey(1040), "HubScene -> MainScene 진입 후 1스테이지 Entry 룸 청크(1040) 자동 렌더링 키 해석 검증");
+            Assert.AreEqual("Prefab_1040", stageMgr.ResolveAddressableKey(1040), "HubScene -> MainScene 진입 후 1스테이지 Entry 룸 청크(1040) 자동 렌더링 키 해석 검증");
 
             Object.DestroyImmediate(hubSceneObj);
             Object.DestroyImmediate(mainSceneObj);
             Object.DestroyImmediate(stageMgrObj);
         }
+
     }
 }

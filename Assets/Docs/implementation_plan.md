@@ -1,190 +1,74 @@
 # Implementation Plan (마스터 명세서)
 
-## 프로젝트 마일스톤 현황 및 가용성 검증 요약
-- 전체 점검 결과: 32/32 PASS (핵심 런타임 경로 및 데이터 파이프라인, 리소스 로딩, 물리 모터, CSV 파서, 룸 시퀀서, 전투 메카닉 관련 파일들 대상 전수 조사 완료)
+## 프로젝트 상태
 
-## 코어 데이터 참조 및 리소스 로딩 위임 규칙
-- 모든 데이터테이블 식별은 절대 문자열 파일명이 아닌 uint idx 기반으로 결정한다. (참고: DataTableManager.Parse: extractFirstRowIdx -> Util.GetDataTableType)
-- 공용 ResourceData는 Addressable Key(path)만을 보관하며, 런타임 참조는 ResourceDataTable.TryGetResource(idx, out ResourceData) 후 반환된 Path를 ResourceManager에 위임하여 로드한다.
-- ResourceManager는 Addressables 초기화, 카탈로그 동기화, 라벨 기반 로드 책임을 진다. 실패 시 명시적 에러를 던지며(Strict), DataTableManager는 Addressables 실패 시 Resources 폴더로의 Fallback을 수행한다.
+- 최신 점검(2026-08-06): Stage1 20/20 PASS, EditMode 64/64 PASS, QATestRunner 51/51 PASS, PlayMode 0/1 FAIL
+- Stage 1 종단 PlayMode 흐름은 미검증이며 최종 게이트는 FAIL이다.
+- 문서의 단일 기준 루트는 `Assets/Docs/`다.
 
-## 데이터 파이프라인 안전 규칙
-- CsvReader/TypeConverter 계열: 모든 ConvertFromString 구현은 입력 검증이 필요하다. 현재 FloatArrayConverter/IntArrayConverter/UIntArrayConverter는 파싱 예외에 대해 예외 안전하지 않음(즉시 예외 발생 가능). 반드시 TryParse 기반 방어 로직으로 변경 필요.
-- CSV 파싱 정책:
-  - 비어있는 셀 => 빈 배열 반환(현행 준수)
-  - 숫자 파싱 실패 => 해당 레코드는 로깅 후 스킵하고, 최소한의 기본값(Fallback)으로 대체하여 전체 파싱을 중단시키지 않는다.
-  - 첫 번째 데이터 로우의 idx 추출 실패 시 해당 파일은 로드 실패 처리하되, 프로세스 전체는 계속 진행(데이터 손실 허용 범위 내)
+## 코어 데이터 및 리소스 규칙
 
-## 물리/애니메이션 제약 요약
-- KinematicMotor2D는 FixedUpdate에서 SimulateStep(Time.deltaTime)를 호출한다. FixedUpdate 사용 시 Time.fixedDeltaTime 사용 권장이나 현재 구현은 Time.deltaTime를 사용하여 FixedUpdate-동기성 이슈 존재. 반드시 FixedUpdate 내부는 FixedDeltaTime으로 재계산 일치시키기 권장.
-- groundNormal 기반 경사면 속도 보정: 경사면 투영 시 속도 편차는 5% 이내 유지. 즉, horizontal speed projection 오차 허용치는 ±5%.
-- One-Way Platform 패스스루는 OneWayPlatformPassThrough.PassThroughAsync를 통해 Physics2D.IgnoreCollision으로 처리.
+- 데이터테이블 식별은 파일명이 아닌 `uint idx / 1000` 기반 `DataTableType`으로 결정한다.
+- 모든 런타임 리소스 참조는 `ResourceData.idx → Path → ResourceManager`를 거친다.
+- 신규 Stage 1 테이블은 `ChunkResource=11`, `StageLayout=12`, `MonsterEncounter=13`을 사용한다.
+- CSV bool은 `0/1`만 허용하며 문자열 `true/false`를 금지한다.
+- Skill/Effect 표시 이름은 `TextData.idx`로 참조하고 Animator 기술 식별자는 문자열을 유지한다.
+- CSV 파일 하나의 실패가 전체 데이터 로딩을 중단시키지 않도록 파일 단위로 예외를 격리한다.
 
-## 전술적 규칙(요약)
-- 모든 Addressable Key 접근은 ResourceManager 인터페이스를 통해서만 수행
-- 모든 데이터테이블 조회는 DataTableType / idx 기반 API를 사용할 것
-- CSV 컨버터는 비검증 입력에 대해 예외를 throw 하지 않아야 하며, 실패시 로깅 + 안전한 대체값을 반환해야 함
+## 씬·물리·전투 규칙
 
-## [🔄 PM 동기화 변경 이력 테이블]
-| 날짜 | 작성자 | 변경 요약 | 관련 파일/위치 |
-|---:|---|---|---|
-| 2026-08-04 | 자동생성(스캔) | 전수 검사 및 마스터 명세서 생성 (32/32) | Assets/Docs/implementation_plan.md 및 SubPlans/폴더 생성 |
-| 2026-08-04 | PM (거버넌스) | 유닛 사망 처리 파이프라인 수립, 공격 이펙트 100% 풀링 전환 및 Unity Find* 탐색 함수 전면 철폐 동기화 (`9483a67`) | Assets/Docs/SubPlans/plan_unit_combat.md, StageManager.cs, Monster.cs, EffectPoolManager.cs |
-| 2026-08-04 | PM (거버넌스) | `TilemapStageBuilder.cs` CS0103 및 `Player.cs` CS0117 컴파일 에러 수선 동기화 (`49068a3`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, TilemapStageBuilder.cs, Player.cs |
-| 2026-08-04 | PM (거버넌스) | 중복 플레이어 생성 차단, 매니저 씬 사전 배치 및 Battle 청크 몬스터 스폰 필터링 수선 동기화 (`a1a9025`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, UnitSpawner.cs, InitScene.cs, MainScene.cs |
-| 2026-08-04 | PM (거버넌스) | 플레이어 및 몬스터 전 유닛 대상 `UnitPoolManager` 풀링 관리 전환 및 생애주기 회수 아키텍처 동기화 (`487f309`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, UnitSpawner.cs |
-| 2026-08-04 | PM (거버넌스) | `EffectPoolManager.cs` string Key 오버로딩 및 `UnitBase.cs` UnitIdx 프로퍼티 에러 3건 수선 동기화 (`b470e2a`) | Assets/Docs/SubPlans/plan_unit_combat.md, EffectPoolManager.cs, UnitBase.cs |
-| 2026-08-04 | PM (거버넌스) | `UnitPoolManager.cs` 플레이어 스폰 폴백 구동 및 `InitScene.unity`/`MainScene.unity` 씬 정적 배치 자동화 발주 | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, SceneSetupAutomation.cs |
-| 2026-08-04 | PM (거버넌스) | `Resources.Load` 폴백 전면 철폐 및 `ResourceManager` 실패 시 엄격 `Debug.LogError` 출력 규격 동기화 (`b4c4612`) | Assets/Docs/SubPlans/plan_unit_combat.md, UnitPoolManager.cs, ResourceManager.cs |
-| 2026-08-04 | PM (거버넌스) | `unityMCP` 기반 `InitScene.unity`/`MainScene.unity` 매니저 노드 100% 사전 배치 완결 및 코드 내 `new`/`AddComponent` 철폐 (`bc277b9`) | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity, InitScene.cs |
-| 2026-08-04 | PM (거버넌스) | DontDestroyOnLoad 씬 플로우 기반 `InitScene.unity` 매니저 7종 일원화 배치 및 `MainScene.unity` 중복 노드 삭제 완료 | Assets/Docs/SubPlans/plan_stage_sequencer.md, InitScene.unity, MainScene.unity |
+- `FixedUpdate` 물리 계산은 `Time.fixedDeltaTime`을 사용한다.
+- 경사면 수평 속도 투영 편차는 ±5% 이내로 유지한다.
+- 청크 이동은 양방향 `ConnectionMask`가 유효한 인접 슬롯만 허용한다.
+- 목적 슬롯의 `ChunkResourceIdx`를 로드하며 `1041`은 누락 데이터 Fallback으로만 사용한다.
+- Boss Room `1042`는 Boss Gate 슬롯에서만 진입한다.
+- 플레이어는 `Player.Instance`, 유닛은 `UnitPoolManager`, 이펙트는 `EffectPoolManager`를 재사용한다.
+- 런타임 `Find*`, 직접 유닛 `Instantiate`, 매니저 `new/AddComponent`를 금지한다.
 
-## [🧠 AGI 자율 회고록]
-- 자동 스캔 결과 식별된 추가 분리 서브계획서:
-  - UI 자동화 및 캔버스 아키텍처: Assets/Docs/SubPlans/plan_ui_canvas.md
-  - 비동기 마이그레이션 및 수명 주기: Assets/Docs/SubPlans/plan_async_lifecycle.md
-- **토큰/공정 회고**: 
-  - `plan_unit_combat.md` 및 `plan_enemy_behavior.md` 서브 명세서를 최우선 매핑한 후, 500줄 원본 코드 대신 정량적 제약 조건(사망 연출 시퀀스, `EffectPoolManager.SpawnEffect`, Registry 자가등록)만을 추출하여 최소 토큰으로 하위 에이전트에 발주함.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 씬 내 객체 탐색 시 `Find*` 계열 Unity API 호출을 코드 검출 시 무조건 에러로 차단하고, `OnEnable/OnDisable` 자가 등록 Registry 및 `EffectPoolManager` 관리를 강제 적용할 것.
+## 🔄 PM 동기화 변경 이력
 
----
+| 날짜 | 변경 요약 | 근거 |
+|---:|---|---|
+| 2026-08-04 | 전수 검사 및 마스터/서브플랜 생성 | 초기 32/32 점검 |
+| 2026-08-04 | 유닛 사망·이펙트 풀링·HUD Registry 적용 | `9483a67` |
+| 2026-08-04 | StageBuilder/Player 컴파일 오류 수선 | `49068a3` |
+| 2026-08-04 | 플레이어 중복 생성 및 Battle 스폰 필터 수선 | `a1a9025` |
+| 2026-08-04 | 전체 유닛 풀링 전환 | `487f309` |
+| 2026-08-04 | EffectPool/UnitIdx 컴파일 오류 수선 | `b470e2a` |
+| 2026-08-04 | `Resources.Load` 폴백 제거 | `b4c4612` |
+| 2026-08-04 | InitScene 영속 매니저 7종 일원화 | `bc277b9` |
+| 2026-08-05 | Stage 1 무작위 청크, CSV 타입·0/1 bool·TextData, P0 포탈·몬스터 placeholder 통합 | 미커밋 작업 트리 |
+| 2026-08-05 | `doc/`와 `Assets/Docs/`를 `Assets/Docs/`로 일원화 | `Assets/Docs` |
+| 2026-08-06 | Stage 1 청크 4방향 안전 진입 배치 및 South 지면 침투 수선 | `adbb6f5`, 병합 `e97adc3` |
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:02]
-- **아키텍처 반성 점**: 
-  - 유닛 사망 처리(`Monster.OnDeath`) 파이프라인 수립 및 공격 이펙트 100% `EffectPoolManager` 풀링 관리 전환 완료. `FindObjectsByType` 탐색 함수 철폐 후 `MonsterOverheadHUD` 자가 등록 Registry 패턴 안착으로 32/32 PASS 무결성 검증 완수 (`9483a67`).
-- **토큰/공정 회고**: 
-  - 하위 에이전트 간 최소 서브 명세 패키지 발주 ➔ 수선 이행 ➔ CI 커밋 ➔ 32/32 PASS 검증 파이프라인 구동으로 극상의 컨텍스트 통제 달성.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 모든 수선 완료 후 반드시 QA 32/32 PASS 무결성 검증 상태를 재확인하고 변경 이력 테이블을 마스터 명세서 상단에 최신화할 것.
+## 🧠 AGI 자율 회고록
 
----
+### 2026-08-04 15:02
+- 유닛 사망과 공격 이펙트를 풀링하고 HUD 탐색을 Registry로 전환했다.
+- 모든 수선 후 실제 QA 결과를 확인하고 변경 이력을 동기화한다.
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:09]
-- **아키텍처 반성 점**: 
-  - `TilemapStageBuilder.cs` 내 `fadeOverlayCanvasGroup` 식별자 부재(CS0103) 및 `Player.cs` 내 `PlayerState.Hit` enum 심볼 정의 불일치(CS0117) 결함 적발. ➔ `plan_stage_sequencer.md` 및 `plan_unit_combat.md` 기반 최소 서브 명세를 메인프로그래머에게 핀포인트 긴급 발주함.
-- **토큰/공정 회고**: 
-  - 에러 로그 파싱 후 5초 이내에 해당 서브계획서 매핑 및 시그니처 정정 명세 발송 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` enum 심볼 확장 및 캔버스 페이드 변수 리팩토링 시 상여 파일 간 통일성을 정적 분석으로 1차 사전 체크할 것.
+### 2026-08-04 15:09–15:10
+- `TilemapStageBuilder` 식별자와 `PlayerState` 불일치로 컴파일 오류가 발생했다.
+- enum·공용 식별자 변경은 관련 파일의 정적 일치 검사를 먼저 수행한다.
 
----
+### 2026-08-04 15:18–15:20
+- 중복 플레이어와 런타임 매니저 생성, Battle/Boss 스폰 혼선을 제거했다.
+- 영속 매니저는 InitScene에만 배치하고 후속 씬에 중복 배치하지 않는다.
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:10]
-- **아키텍처 반성 점**: 
-  - CS0103 및 CS0117 컴파일 에러 수선 및 NUnit 32/32 PASS 검증 완수. `portfolio` 브랜치 병합(`49068a3`)으로 코드베이스 무결성 회복.
-- **토큰/공정 회고**: 
-  - 하위 에이전트 브랜치 병합 ➔ 원격 Push ➔ PM 마스터 명세서 100% 동기화 이행.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 스크립트 수정 후 항상 NUnit EditMode/PlayMode 테스트 자동 구동 결과를 확인 후 병합 판정할 것.
+### 2026-08-04 15:25–15:35
+- 유닛 풀링과 EffectPool/UnitIdx 연결을 완료했다.
+- 신규 유닛은 `UnitPoolManager`, 신규 이펙트는 `EffectPoolManager`만 경유한다.
 
----
+### 2026-08-04 16:02
+- InitScene의 영속 매니저 7종을 일원화하고 MainScene 중복 노드를 제거했다.
+- DontDestroyOnLoad 객체의 씬별 중복 배치를 금지한다.
 
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:18]
-- **아키텍처 반성 점**: 
-  - 런타임 중복 플레이어 생성(`Player.Instance` 중복), 런타임 동적 매니저 스폰 대신 `InitScene/MainScene` 정적 사전 배치 요구, 및 Battle 청크 내 보스 몬스터 혼선 출몰 결함 적발. ➔ `plan_stage_sequencer.md` 및 `plan_unit_combat.md` 서브 명세서를 결합하여 3대 핵심 수선 항목 발주.
-- **토큰/공정 회고**: 
-  - 유저 피드백의 3대 핵심 원인을 파악 후 10초 이내에 하위 메인프로그래머에 핀포인트 발주 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스는 런타임 `AddComponent` / `new` 생성을 금지하고 `InitScene/MainScene` 정적 배치 구조를 상시 강제할 것.
+### 2026-08-05
+- 신규 CSV의 타입 충돌과 소비되지 않는 청크 소켓이 실제 실행을 막았다.
+- 코드·리소스·아트·QA의 선행 의존성은 유효했지만 PlayMode 종단 검증이 늦었다.
+- 이후 완료 판정은 `CSV FK → Addressables → 런타임 소비 → 실제 PlayMode` 증거를 모두 요구한다.
 
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:20]
-- **아키텍처 반성 점**: 
-  - `UnitSpawner.cs` 내 플레이어 재배치 로직으로 중복 생성 100% 차단. `InitScene` 및 `MainScene`에 `EffectPoolManager`, `StageManager`, `UnitSpawner` 정적 사전 배치 안착 및 Battle 청크 전용 몬스터 마커 조회 수선 완수 (`a1a9025`).
-- **토큰/공정 회고**: 
-  - 하위 에이전트 병합 완료 후 NUnit 32/32 PASS 무결성 검증 및 원격 Push 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 씬 빌딩 시 정적 매니저 노드 배치를 1차 원칙으로 하고 런타임 동적 생성은 폴백용으로만 한정할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:25]
-- **아키텍처 반성 점**: 
-  - `UnitPoolManager` 신설로 플레이어를 포함한 몬스터 4종 유닛의 100% 오브젝트 풀링 아키텍처 구축 완수 (`487f309`).
-- **토큰/공정 회고**: 
-  - 전 유닛 풀링 전환 ➔ NUnit 32/32 PASS 무결성 검증 ➔ `portfolio` 원격 Push까지 거버넌스 완전 이행.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 신규 유닛 스폰 시 직접 `Instantiate`를 절대 금지하고 `UnitPoolManager.Instance.SpawnUnit()`을 경유할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:35]
-- **아키텍처 반성 점**: 
-  - `EffectPoolManager.cs` 내 string Key 기반 `SpawnEffect` 오버로딩 및 `UnitBase.cs` 내 `UnitIdx` 프로퍼티 식별자 매핑 수선 완료 (`b470e2a`).
-- **토큰/공정 회고**: 
-  - 3개 컴파일 에러 핀포인트 수선 ➔ NUnit 32/32 PASS 무결성 검증 ➔ `portfolio` 원격 Push까지 거버넌스 완전 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 풀링 매니저 API 추가 시 string 기반 어드레스 키와 GameObject Prefab 기반 스폰 메서드 오버로딩을 상시 세트로 준비할 것.
-
-## [🧠 AGI 자율 회고록]
-- 자동 스캔 결과 식별된 추가 분리 서브계획서:
-  - UI 자동화 및 캔버스 아키텍처: Assets/Docs/SubPlans/plan_ui_canvas.md
-  - 비동기 마이그레이션 및 수명 주기: Assets/Docs/SubPlans/plan_async_lifecycle.md
-- **토큰/공정 회고**: 
-  - `plan_unit_combat.md` 및 `plan_enemy_behavior.md` 서브 명세서를 최우선 매핑한 후, 500줄 원본 코드 대신 정량적 제약 조건(사망 연출 시퀀스, `EffectPoolManager.SpawnEffect`, Registry 자가등록)만을 추출하여 최소 토큰으로 하위 에이전트에 발주함.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 씬 내 객체 탐색 시 `Find*` 계열 Unity API 호출을 코드 검출 시 무조건 에러로 차단하고, `OnEnable/OnDisable` 자가 등록 Registry 및 `EffectPoolManager` 관리를 강제 적용할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:02]
-- **아키텍처 반성 점**: 
-  - 유닛 사망 처리(`Monster.OnDeath`) 파이프라인 수립 및 공격 이펙트 100% `EffectPoolManager` 풀링 관리 전환 완료. `FindObjectsByType` 탐색 함수 철폐 후 `MonsterOverheadHUD` 자가 등록 Registry 패턴 안착으로 32/32 PASS 무결성 검증 완수 (`9483a67`).
-- **토큰/공정 회고**: 
-  - 하위 에이전트 간 최소 서브 명세 패키지 발주 ➔ 수선 이행 ➔ CI 커밋 ➔ 32/32 PASS 검증 파이프라인 구동으로 극상의 컨텍스트 통제 달성.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 모든 수선 완료 후 반드시 QA 32/32 PASS 무결성 검증 상태를 재확인하고 변경 이력 테이블을 마스터 명세서 상단에 최신화할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:09]
-- **아키텍처 반성 점**: 
-  - `TilemapStageBuilder.cs` 내 `fadeOverlayCanvasGroup` 식별자 부재(CS0103) 및 `Player.cs` 내 `PlayerState.Hit` enum 심볼 정의 불일치(CS0117) 결함 적발. ➔ `plan_stage_sequencer.md` 및 `plan_unit_combat.md` 기반 최소 서브 명세를 메인프로그래머에게 핀포인트 긴급 발주함.
-- **토큰/공정 회고**: 
-  - 에러 로그 파싱 후 5초 이내에 해당 서브계획서 매핑 및 시그니처 정정 명세 발송 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` enum 심볼 확장 및 캔버스 페이드 변수 리팩토링 시 상여 파일 간 통일성을 정적 분석으로 1차 사전 체크할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:10]
-- **아키텍처 반성 점**: 
-  - CS0103 및 CS0117 컴파일 에러 수선 및 NUnit 32/32 PASS 검증 완수. `portfolio` 브랜치 병합(`49068a3`)으로 코드베이스 무결성 회복.
-- **토큰/공정 회고**: 
-  - 하위 에이전트 브랜치 병합 ➔ 원격 Push ➔ PM 마스터 명세서 100% 동기화 이행.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 스크립트 수정 후 항상 NUnit EditMode/PlayMode 테스트 자동 구동 결과를 확인 후 병합 판정할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:18]
-- **아키텍처 반성 점**: 
-  - 런타임 중복 플레이어 생성(`Player.Instance` 중복), 런타임 동적 매니저 스폰 대신 `InitScene/MainScene` 정적 사전 배치 요구, 및 Battle 청크 내 보스 몬스터 혼선 출몰 결함 적발. ➔ `plan_stage_sequencer.md` 및 `plan_unit_combat.md` 서브 명세서를 결합하여 3대 핵심 수선 항목 발주.
-- **토큰/공정 회고**: 
-  - 유저 피드백의 3대 핵심 원인을 파악 후 10초 이내에 하위 메인프로그래머에 핀포인트 발주 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 싱글톤 매니저 클래스는 런타임 `AddComponent` / `new` 생성을 금지하고 `InitScene/MainScene` 정적 배치 구조를 상시 강제할 것.
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 15:20]
-- **아키텍처 반성 점**: 
-  - `UnitSpawner.cs` 내 플레이어 재배치 로직으로 중복 생성 100% 차단. `InitScene` 및 `MainScene`에 `EffectPoolManager`, `StageManager`, `UnitSpawner` 정적 사전 배치 안착 및 Battle 청크 전용 몬스터 마커 조회 수선 완수 (`a1a9025`).
-- **토큰/공정 회고**: 
-  - 하위 에이전트 병합 완료 후 NUnit 32/32 PASS 무결성 검증 및 원격 Push 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 씬 빌딩 시 정적 매니저 노드 배치를 1차 원칙으로 하고 런타임 동적 생성은 폴백용으로만 한정할 것.
-
----
-
----
-
-### 🧠 [AGI 자율 회고록 - 2026-08-04 16:02]
-- **아키텍처 반성 점**: 
-  - `InitScene` -> `HubScene` -> `MainScene` 씬 흐름에 따른 DontDestroyOnLoad 매니저 중복 적발. ➔ `InitScene.unity`에만 글로벌 영속 매니저 7종(`ResourceManager`, `DataTableManager`, `GameSceneManager`, `StageManager`, `UnitSpawner`, `UnitPoolManager`, `EffectPoolManager`)을 100% 정적 일원화 배치하고, `MainScene.unity`에 남아 있던 중복 매니저 노드 7종을 `unityMCP`로 즉시 완전 삭제 정제함.
-- **토큰/공정 회고**: 
-  - 유저의 'DontDestroyOnLoad 중복 제거 및 InitScene 일원화' 지침 수령 후 `unityMCP`로 5초 만에 `MainScene` 노드 정리 및 `InitScene` 활성화 완수.
-- **차기 방어 지침**: 
-  - `[PM 거버넌스 수칙]` 부팅 씬(`InitScene`)에 배치된 DontDestroyOnLoad 싱글톤 매니저 객체는 후속 씬(`MainScene`, `HubScene`)에 절대 중복 배치하지 말 것.
+### 2026-08-06
+- `EntryMarker` 생성 시 부모 설정의 월드 좌표 유지로 모든 방향 진입점이 원점에 모여 South 진입에서 지면 침투가 발생했다.
+- 프리팹 8개를 반복 수정하지 않고 공통 런타임 배치 경로에서 소켓 방향·플레이어 콜라이더·모터를 재사용해 변경 범위와 컨텍스트를 줄였다.
+- 좌표 단위 테스트만으로 완료 판정하지 않고 실제 포털 연속 왕복과 즉시 재트리거를 후속 PlayMode 게이트로 유지한다.

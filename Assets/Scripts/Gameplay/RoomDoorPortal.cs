@@ -9,7 +9,7 @@ public class RoomDoorPortal : MonoBehaviour
 {
     [Header("Portal Settings")]
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
-    public string TargetRoomKey = "Tilemap_Room_Stage1_Battle";
+    public byte TargetSlotIdx = byte.MaxValue;
     public bool AutoTriggerOnTouch = true;
 
     private bool isTransitioning = false;
@@ -18,7 +18,8 @@ public class RoomDoorPortal : MonoBehaviour
     {
         if (!AutoTriggerOnTouch || isTransitioning) return;
 
-        if (collision.CompareTag("Player") || collision.GetComponent<Player>() != null || collision.GetComponentInParent<Player>() != null || collision.name.Contains("Player"))
+        if (Player.Instance != null &&
+            (collision.transform == Player.Instance.transform || collision.transform.IsChildOf(Player.Instance.transform)))
         {
             TriggerRoomTransitionAsync().Forget();
         }
@@ -29,34 +30,43 @@ public class RoomDoorPortal : MonoBehaviour
         if (isTransitioning) return;
         isTransitioning = true;
 
-        Debug.Log($"<color=cyan>[RoomDoorPortal] 포탈 관문 작동! 다음 룸 (ResourceIdx: {TargetRoomResourceIdx}, Key: '{TargetRoomKey}') 비동기 전환 개시...</color>");
+        try
+        {
+            if (StageManager.Instance == null)
+            {
+                Debug.LogError("[RoomDoorPortal] StageManager is unavailable.");
+                return;
+            }
 
-        if (StageManager.Instance != null)
-        {
-            if (TargetRoomResourceIdx > 0)
+            StageManager stageManager = StageManager.Instance;
+            if (stageManager.CurrentRun != null)
             {
-                await StageManager.Instance.LoadNextRoomAsync(TargetRoomResourceIdx);
-            }
-            else
-            {
-                await StageManager.Instance.LoadNextRoomAsync(TargetRoomKey);
-            }
-        }
-        else
-        {
-            var builder = TilemapStageBuilder.Instance;
-            if (builder != null)
-            {
-                string addressKey = TargetRoomKey;
-                if (TargetRoomResourceIdx > 0 && StageManager.Instance != null)
+                if (stageManager.CurrentRun.CurrentSlotIdx == stageManager.CurrentRun.BossGateSlotIdx &&
+                    TargetRoomResourceIdx == 1042)
                 {
-                    addressKey = StageManager.Instance.ResolveAddressableKey(TargetRoomResourceIdx);
+                    await stageManager.LoadNextRoomAsync(1042);
                 }
-                builder.TilemapAddressableKey = addressKey;
-                await builder.BuildTilemapStageAsync();
+                else if (!await stageManager.LoadConnectedRoomAsync(TargetSlotIdx))
+                {
+                    Debug.LogWarning($"[RoomDoorPortal] Slot transition rejected: {TargetSlotIdx}.");
+                }
+                return;
             }
-        }
 
-        isTransitioning = false;
+            if (TargetRoomResourceIdx == 0)
+            {
+                Debug.LogError("[RoomDoorPortal] Invalid fallback room idx 0.");
+                return;
+            }
+            await stageManager.LoadNextRoomAsync(TargetRoomResourceIdx);
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+        finally
+        {
+            isTransitioning = false;
+        }
     }
 }

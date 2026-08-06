@@ -62,7 +62,7 @@ public static class SceneSetupAutomation
         var existingPlayer = Object.FindFirstObjectByType<Player>();
         if (existingPlayer == null)
         {
-            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player.prefab");
+            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
             if (playerPrefab != null)
             {
                 GameObject playerObj = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);

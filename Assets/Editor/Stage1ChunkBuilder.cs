@@ -47,7 +47,7 @@ public static class Stage1ChunkBuilder
         // ---------------------------------------------------------------------
         // 룸 1: Tilemap_Room_Stage1_Entry (입장 & 기초 조작 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Entry", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1040", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Floor & Boundary Walls
             for (int x = -20; x <= 20; x++)
@@ -66,13 +66,13 @@ public static class Stage1ChunkBuilder
 
             // Player Spawn Point & Exit Portal Gate
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-15, 1.5f, 0), SpawnType.Player);
-            CreatePortalGate(root, new Vector3(15, 1.5f, 0), 1041, "Tilemap_Room_Stage1_Battle");
+            CreatePortalGate(root, new Vector3(15, 1.5f, 0), 1041);
         });
 
         // ---------------------------------------------------------------------
         // 룸 2: Tilemap_Room_Stage1_Battle (기초 전투 아레나 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Battle", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1041", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Floor & Boundary Walls
             for (int x = -22; x <= 22; x++)
@@ -91,16 +91,16 @@ public static class Stage1ChunkBuilder
 
             // Spawners & Exit Portal Gate
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-16, 1.5f, 0), SpawnType.Player);
-            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, "3101");
-            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, "3102");
-            CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, "3103");
-            CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042, "Tilemap_Room_Stage1_Boss");
+            CreateSpawnMarker(root, "SpawnPoint_Monster_01", new Vector3(-5f, 1.5f, 0), SpawnType.Monster, 3101);
+            CreateSpawnMarker(root, "SpawnPoint_Monster_02", new Vector3(3f, 1.5f, 0), SpawnType.Monster, 3102);
+            CreateSpawnMarker(root, "SpawnPoint_Monster_03", new Vector3(10f, 1.5f, 0), SpawnType.Monster, 3103);
+            CreatePortalGate(root, new Vector3(16, 1.5f, 0), 1042);
         });
 
         // ---------------------------------------------------------------------
         // 룸 3: Tilemap_Room_Stage1_Boss (1스테이지 보스 아레나 룸)
         // ---------------------------------------------------------------------
-        BuildSingleChunk("Tilemap_Room_Stage1_Boss", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
+        BuildSingleChunk("Prefab_1042", roomsDir, groundTile, platTile, bgTile, defaultSpriteMat, (groundMap, platMap, root) =>
         {
             // Broad Boss Arena Floor
             for (int x = -25; x <= 25; x++)
@@ -119,8 +119,8 @@ public static class Stage1ChunkBuilder
 
             // Player & Boss Spawners & Exit Portal
             CreateSpawnMarker(root, "SpawnPoint_Player", new Vector3(-18, 1.5f, 0), SpawnType.Player);
-            CreateSpawnMarker(root, "SpawnPoint_Boss", new Vector3(10, 1.5f, 0), SpawnType.Boss, "3201");
-            CreatePortalGate(root, new Vector3(20, 1.5f, 0), 1040, "Tilemap_Room_Stage1_Entry");
+            CreateSpawnMarker(root, "SpawnPoint_Boss", new Vector3(10, 1.5f, 0), SpawnType.Boss, 3201);
+            CreatePortalGate(root, new Vector3(20, 1.5f, 0), 1040);
         });
 
         AssetDatabase.SaveAssets();
@@ -191,7 +191,7 @@ public static class Stage1ChunkBuilder
         Debug.Log($"<color=green>[Stage1ChunkBuilder] 실물 룸 청크 프리팹 저장 완결: {prefabPath}</color>");
     }
 
-    private static void CreateSpawnMarker(GameObject parent, string name, Vector3 pos, SpawnType type, string monsterId = "")
+    private static void CreateSpawnMarker(GameObject parent, string name, Vector3 pos, SpawnType type, uint monsterId = 0)
     {
         GameObject markerObj = new GameObject(name);
         markerObj.transform.SetParent(parent.transform);
@@ -202,7 +202,7 @@ public static class Stage1ChunkBuilder
         marker.EnableSpawn = true;
     }
 
-    private static void CreatePortalGate(GameObject parent, Vector3 pos, uint targetResourceIdx, string targetRoomKey)
+    private static void CreatePortalGate(GameObject parent, Vector3 pos, uint targetResourceIdx)
     {
         GameObject portalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Structures/Portal_Gate.prefab");
         GameObject portalObj = null;
@@ -224,7 +224,6 @@ public static class Stage1ChunkBuilder
         var portalComp = portalObj.GetComponent<RoomDoorPortal>();
         if (portalComp == null) portalComp = portalObj.AddComponent<RoomDoorPortal>();
         portalComp.TargetRoomResourceIdx = targetResourceIdx;
-        portalComp.TargetRoomKey = targetRoomKey;
         portalComp.AutoTriggerOnTouch = true;
     }
 }

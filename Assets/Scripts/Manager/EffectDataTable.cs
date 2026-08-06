@@ -29,6 +29,18 @@ public class EffectDataTable : IDataLoad
         return this.dataDict.TryGetValue(idx, out data);
     }
 
+    public string GetDisplayName(uint idx)
+    {
+        if (!this.dataDict.TryGetValue(idx, out EffectData effectData)) return string.Empty;
+        var textTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<TextDataTable>(DataTableType.Text)
+            : null;
+        string displayName = textTable != null ? textTable.GetText(effectData.EffectNameTextIdx) : string.Empty;
+        if (string.IsNullOrEmpty(displayName))
+            Debug.LogWarning($"[EffectDataTable] Effect idx {idx} has no TextData mapping for idx {effectData.EffectNameTextIdx}.");
+        return displayName;
+    }
+
     public EffectData GetById(uint idx)
     {
         this.dataDict.TryGetValue(idx, out var data);

@@ -1,0 +1,519 @@
+fileFormatVersion: 2
+guid: 0b8c2d32afdf4d0daf72edbc0fac61f2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5137974922747691496
+    second: OrbitalMarksman_Attack6006_0
+  - first:
+      213: 8099443008035386824
+    second: OrbitalMarksman_Attack6006_1
+  - first:
+      213: -8868657252660849513
+    second: OrbitalMarksman_Attack6006_2
+  - first:
+      213: -8440671243061300165
+    second: OrbitalMarksman_Attack6006_3
+  - first:
+      213: 6033630665124843004
+    second: OrbitalMarksman_Attack6006_4
+  - first:
+      213: -8534809907792129371
+    second: OrbitalMarksman_Attack6006_5
+  - first:
+      213: -784840561399896775
+    second: OrbitalMarksman_Attack6006_6
+  - first:
+      213: -4252288114968970221
+    second: OrbitalMarksman_Attack6006_7
+  - first:
+      213: 4608749731500780889
+    second: OrbitalMarksman_Attack6006_8
+  - first:
+      213: -8058567755236779959
+    second: OrbitalMarksman_Attack6006_9
+  - first:
+      213: -9078193139352525147
+    second: OrbitalMarksman_Attack6006_10
+  - first:
+      213: 7696249629069089776
+    second: OrbitalMarksman_Attack6006_11
+  - first:
+      213: 5327432614888780745
+    second: OrbitalMarksman_Attack6006_12
+  - first:
+      213: -8940053206822348250
+    second: OrbitalMarksman_Attack6006_13
+  - first:
+      213: 274017042224762751
+    second: OrbitalMarksman_Attack6006_14
+  - first:
+      213: 6048481936671534581
+    second: OrbitalMarksman_Attack6006_15
+  - first:
+      213: -4537905012227004440
+    second: OrbitalMarksman_Attack6006_16
+  - first:
+      213: 110758375370052318
+    second: OrbitalMarksman_Attack6006_17
+  - first:
+      213: 4072594195916186221
+    second: OrbitalMarksman_Attack6006_18
+  - first:
+      213: 7103861450884978509
+    second: OrbitalMarksman_Attack6006_19
+  - first:
+      213: -8819071077749173351
+    second: OrbitalMarksman_Attack6006_20
+  - first:
+      213: 2723701181712878330
+    second: OrbitalMarksman_Attack6006_21
+  - first:
+      213: 2177676155771280811
+    second: OrbitalMarksman_Attack6006_22
+  - first:
+      213: -5269769794667107923
+    second: OrbitalMarksman_Attack6006_23
+  - first:
+      213: 1472555105722462382
+    second: OrbitalMarksman_Attack6006_24
+  - first:
+      213: -7869391287411865619
+    second: OrbitalMarksman_Attack6006_25
+  - first:
+      213: -3581867263035117375
+    second: OrbitalMarksman_Attack6006_26
+  - first:
+      213: -20056492693909815
+    second: OrbitalMarksman_Attack6006_27
+  - first:
+      213: -4141284176068574446
+    second: OrbitalMarksman_Attack6006_28
+  - first:
+      213: 8545652353569737415
+    second: OrbitalMarksman_Attack6006_29
+  - first:
+      213: -7916065306905810964
+    second: OrbitalMarksman_Attack6006_30
+  - first:
+      213: 936692554018054922
+    second: OrbitalMarksman_Attack6006_31
+  - first:
+      213: -8172784056518113029
+    second: OrbitalMarksman_Attack6006_32
+  - first:
+      213: 8390732665873834154
+    second: OrbitalMarksman_Attack6006_33
+  - first:
+      213: -6079008508989015036
+    second: OrbitalMarksman_Attack6006_34
+  - first:
+      213: 689565855892941272
+    second: OrbitalMarksman_Attack6006_35
+  - first:
+      213: 7544920883060632792
+    second: OrbitalMarksman_Attack6006_36
+  - first:
+      213: -5885356372449958753
+    second: OrbitalMarksman_Attack6006_37
+  - first:
+      213: -4885104584814406595
+    second: OrbitalMarksman_Attack6006_38
+  - first:
+      213: 7500415286098863493
+    second: OrbitalMarksman_Attack6006_39
+  - first:
+      213: -3494909145507754356
+    second: OrbitalMarksman_Attack6006_40
+  - first:
+      213: 5417123653565865446
+    second: OrbitalMarksman_Attack6006_41
+  - first:
+      213: 6633790779123653720
+    second: OrbitalMarksman_Attack6006_42
+  - first:
+      213: 697321249224868556
+    second: OrbitalMarksman_Attack6006_43
+  - first:
+      213: 2712391403715365241
+    second: OrbitalMarksman_Attack6006_44
+  - first:
+      213: -8134249076552930368
+    second: OrbitalMarksman_Attack6006_45
+  - first:
+      213: 6724905110720726161
+    second: OrbitalMarksman_Attack6006_46
+  - first:
+      213: -4904910978889725809
+    second: OrbitalMarksman_Attack6006_47
+  - first:
+      213: -725693344998494853
+    second: OrbitalMarksman_Attack6006_48
+  - first:
+      213: -9099644473146165555
+    second: OrbitalMarksman_Attack6006_49
+  - first:
+      213: 7783864758911635560
+    second: OrbitalMarksman_Attack6006_50
+  - first:
+      213: -5323930718656135174
+    second: OrbitalMarksman_Attack6006_51
+  - first:
+      213: -4937031830030992148
+    second: OrbitalMarksman_Attack6006_52
+  - first:
+      213: 3501751395622488584
+    second: OrbitalMarksman_Attack6006_53
+  - first:
+      213: 8952991301441159973
+    second: OrbitalMarksman_Attack6006_54
+  - first:
+      213: -765531550411862830
+    second: OrbitalMarksman_Attack6006_55
+  - first:
+      213: 3731128842708583558
+    second: OrbitalMarksman_Attack6006_56
+  - first:
+      213: 3664549385210597901
+    second: OrbitalMarksman_Attack6006_57
+  - first:
+      213: -1452438636431319136
+    second: OrbitalMarksman_Attack6006_58
+  - first:
+      213: 1866503749133482860
+    second: OrbitalMarksman_Attack6006_59
+  - first:
+      213: 7618994618565380512
+    second: OrbitalMarksman_Attack6006_60
+  - first:
+      213: -8277690240848075197
+    second: OrbitalMarksman_Attack6006_61
+  - first:
+      213: 7428436616920586864
+    second: OrbitalMarksman_Attack6006_62
+  - first:
+      213: -8149470875364634492
+    second: OrbitalMarksman_Attack6006_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5b964fb318860990800000000000000
+      internalID: -7420093717651481762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92bf3c695d58797a0800000000000000
+      internalID: -6370475995488322775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c2378d07ea18c1e0800000000000000
+      internalID: -2177460840166903099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe7f200d9f9b89440800000000000000
+      internalID: 4942905073626970095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef805bab43b8b2330800000000000000
+      internalID: 3687193778519869694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c87308baf339d740800000000000000
+      internalID: 5177226398561171654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 692a331286320ef80800000000000000
+      internalID: -8079418801362066794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OrbitalMarksman_Attack6006.png_7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7daa425a2211ed560800000000000000
+      internalID: 7340323283157691095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      OrbitalMarksman_Attack6006.png_0: -7420093717651481762
+      OrbitalMarksman_Attack6006.png_1: -6370475995488322775
+      OrbitalMarksman_Attack6006.png_2: -2177460840166903099
+      OrbitalMarksman_Attack6006.png_3: 4942905073626970095
+      OrbitalMarksman_Attack6006.png_4: 3687193778519869694
+      OrbitalMarksman_Attack6006.png_5: 5177226398561171654
+      OrbitalMarksman_Attack6006.png_6: -8079418801362066794
+      OrbitalMarksman_Attack6006.png_7: 7340323283157691095
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

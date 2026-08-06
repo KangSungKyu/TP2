@@ -16,7 +16,7 @@ public class MainScene : MonoBehaviour
         if (StageManager.Instance != null)
         {
             Debug.Log("<color=cyan><b>[MainScene] StageManager를 통해 1스테이지(9001) 룸 청크 자동 로딩 시작...</b></color>");
-            await StageManager.Instance.LoadNextRoomAsync(0, this.GetCancellationTokenOnDestroy());
+            await StageManager.Instance.EnsureStageLoadedAsync(9001, this.GetCancellationTokenOnDestroy());
         }
 
         // 2. 카메라 위치 및 앵글 설정 (메트로배니아 카메라 셋업 완료 전 기본 시점 설정)

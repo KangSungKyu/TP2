@@ -5,3 +5,7 @@ idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,rando
 6101,2011,Garon_Pattern_ComboSlash,2,0,0.0,30,0.6,0.6,4.0,10,2.5,7011
 6102,2012,Garon_Pattern_OverheadSmash,3,0,0.0,70,1.0,1.0,5.0,35,2.0,7010
 6103,2013,Garon_Pattern_Shockwave,4,3,4.0,40,0.8,0.8,5.0,20,0.5,7013
+6003,2014,SpearSentry_Attack,2,2,4.0,100,0.7,0.8,3.0,18,1.0,7001
+6004,2015,SpearSentry_Attack,3,0,0.0,100,0.9,1.0,4.0,24,1.0,7001
+6005,2016,ShadowStalker_Attack,4,3,10.0,100,0.6,0.7,2.5,14,1.0,7001
+6006,2017,ShadowStalker_Attack,4,3,8.0,100,0.8,0.8,4.0,16,1.0,7001

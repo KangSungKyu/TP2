@@ -22,6 +22,8 @@ public class Player : UnitBase
     public bool IsJumping { get; private set; }
 
     public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
+    public Collider2D MovementCollider => hitCollider;
+    public KinematicMotor2D Motor => motor;
 
 
     // =========================================================================
@@ -93,6 +95,13 @@ public class Player : UnitBase
 
     protected override void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            if (Application.isPlaying) Destroy(gameObject);
+            else DestroyImmediate(gameObject);
+            return;
+        }
+
         base.Awake();
         Instance = this;
         motor = GetComponent<KinematicMotor2D>();
@@ -101,6 +110,11 @@ public class Player : UnitBase
             motor = gameObject.AddComponent<KinematicMotor2D>();
         }
         InitUnitAsync(3001).Forget();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     private void Start()
@@ -358,7 +372,8 @@ public class Player : UnitBase
 
     private void HandleDefensiveActions(Keyboard keyboard)
     {
-        if (isAttacking) return;
+        if (isAttacking || stats.IsDodging || stats.IsGuarding || stats.IsParrying ||
+            (motor != null && motor.IsPassingThrough)) return;
 
         if (keyboard.spaceKey.wasPressedThisFrame && !IsJumping)
         {
@@ -500,6 +515,7 @@ public class Player : UnitBase
 
     private async UniTaskVoid DodgeAsync(Vector3 dodgeDir, CancellationToken cancellationToken)
     {
+        if (stats.IsDodging || stats.IsGuarding || stats.IsParrying) return;
         stats.SetDodging(true);
         SetState(PlayerState.Dodge);
 

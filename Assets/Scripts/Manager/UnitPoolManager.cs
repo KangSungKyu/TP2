@@ -10,6 +10,7 @@ using UnityEngine;
 /// </summary>
 public class UnitPoolManager : Singleton<UnitPoolManager>
 {
+    private const uint PlayerUnitIdx = 3001;
     private readonly Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
     private readonly List<Monster> activeMonsterList = new List<Monster>();
 
@@ -36,21 +37,17 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             return Player.Instance;
         }
 
-        string poolKey = "Player";
+        if (!TryResolveUnitPrefabKey(PlayerUnitIdx, out string poolKey)) return null;
         GameObject playerObj = GetFromPool(poolKey);
 
         if (playerObj == null && ResourceManager.Instance != null)
         {
-            try
-            {
-                playerObj = await ResourceManager.Instance.InstantiateAsyncTask(poolKey, null, position, Quaternion.identity);
-            }
-            catch { }
+            playerObj = await ResourceManager.Instance.InstantiateAsyncTask(poolKey, null, position, Quaternion.identity);
         }
 
         if (playerObj == null)
         {
-            Debug.LogError($"[ResourceManager Error] '{poolKey}' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요.");
+            Debug.LogError($"[UnitPoolManager] Player unit idx {PlayerUnitIdx} failed to instantiate resource '{poolKey}'.");
             return null;
         }
 
@@ -72,7 +69,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
 
     public async UniTask<Monster> SpawnMonsterAsync(uint unitId, Vector3 position)
     {
-        string prefabKey = ResolveMonsterPrefabKey(unitId);
+        if (!TryResolveUnitPrefabKey(unitId, out string prefabKey)) return null;
         GameObject monsterObj = GetFromPool(prefabKey);
 
         if (monsterObj == null && ResourceManager.Instance != null)
@@ -128,12 +125,13 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         if (unit is Monster monster)
         {
             activeMonsterList.Remove(monster);
-            string poolKey = ResolveMonsterPrefabKey(unit.UnitIdx);
-            ReturnToPool(poolKey, unit.gameObject);
+            if (TryResolveUnitPrefabKey(unit.UnitIdx, out string poolKey)) ReturnToPool(poolKey, unit.gameObject);
+            else unit.gameObject.SetActive(false);
         }
         else if (unit is Player)
         {
-            ReturnToPool("Player", unit.gameObject);
+            if (TryResolveUnitPrefabKey(PlayerUnitIdx, out string poolKey)) ReturnToPool(poolKey, unit.gameObject);
+            else unit.gameObject.SetActive(false);
         }
         else
         {
@@ -148,9 +146,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             var monster = activeMonsterList[i];
             if (monster != null && monster.gameObject != null)
             {
-                string poolKey = ResolveMonsterPrefabKey(monster.UnitIdx);
                 monster.gameObject.SetActive(false);
-                ReturnToPool(poolKey, monster.gameObject);
+                if (TryResolveUnitPrefabKey(monster.UnitIdx, out string poolKey)) ReturnToPool(poolKey, monster.gameObject);
             }
         }
         activeMonsterList.Clear();
@@ -180,15 +177,30 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         poolDictionary[key].Enqueue(obj);
     }
 
-    private string ResolveMonsterPrefabKey(uint unitId)
+    private bool TryResolveUnitPrefabKey(uint unitId, out string prefabKey)
     {
-        switch (unitId)
+        prefabKey = string.Empty;
+        var dataManager = DataTableManager.Instance;
+        var unitTable = dataManager != null ? dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase) : null;
+        var resourceTable = dataManager != null ? dataManager.GetDB<ResourceDataTable>(DataTableType.Resource) : null;
+
+        if (unitTable == null || !unitTable.TryGetUnitData(unitId, out var unitData))
         {
-            case 3101: case 1003: case 5101: return "SpearSentry";
-            case 3102: case 1004: case 5102: return "ShadowStalker";
-            case 3103: case 1005: case 5103: return "WaveHeavy";
-            case 5001: case 6001: return "Garon";
-            default: return "SpearSentry";
+            Debug.LogError($"[UnitPoolManager] Missing UnitBaseData for unit idx {unitId}.");
+            return false;
         }
+        if (resourceTable == null || !resourceTable.TryGetResource(unitData.PrefabId, out var resourceData))
+        {
+            Debug.LogError($"[UnitPoolManager] Missing ResourceData idx {unitData.PrefabId} for unit idx {unitId}.");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(resourceData.Path))
+        {
+            Debug.LogError($"[UnitPoolManager] Empty ResourceData path at idx {unitData.PrefabId} for unit idx {unitId}.");
+            return false;
+        }
+
+        prefabKey = resourceData.Path;
+        return true;
     }
 }

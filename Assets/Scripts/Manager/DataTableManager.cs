@@ -75,6 +75,9 @@ public class DataTableManager : Singleton<DataTableManager>
         this.dataList[DataTableType.Skill] = new SkillDataTable();
         this.dataList[DataTableType.EffectData] = new EffectDataTable();
         this.dataList[DataTableType.StageData] = new StageDataTable();
+        this.dataList[DataTableType.StageLayout] = new StageLayoutDataTable();
+        this.dataList[DataTableType.ChunkResource] = new ChunkResourceDataTable();
+        this.dataList[DataTableType.MonsterEncounter] = new MonsterEncounterDataTable();
 
         this.preloadDataTablesAsync().Forget();
     }
@@ -102,17 +105,24 @@ public class DataTableManager : Singleton<DataTableManager>
 
             ResourceManager.Instance.LoadAssetsAsync<TextAsset>(locationsHandle.Result, asset =>
             {
-                if (asset != null && !string.IsNullOrEmpty(asset.text))
+                try
                 {
-                    this.parseAndCacheCsv(asset.name, asset.text);
+                    if (asset != null && !string.IsNullOrEmpty(asset.text))
+                        this.parseAndCacheCsv(asset.name, asset.text);
                 }
-
-                loadedCount++;
-                if (loadedCount >= totalLocations)
+                catch (Exception exception)
                 {
-                    this.isLoaded = true;
-                    this.loadCompletionSource.TrySetResult();
-                    Debug.Log("<color=cyan><b>[DataTableManager] 모든 Addressable CSV 데이터 테이블 캐싱 완료!</b></color>");
+                    Debug.LogError($"[DataTableManager] CSV '{asset?.name}' rejected: {exception.Message}");
+                }
+                finally
+                {
+                    loadedCount++;
+                    if (loadedCount >= totalLocations)
+                    {
+                        this.isLoaded = true;
+                        this.loadCompletionSource.TrySetResult();
+                        Debug.Log("<color=cyan><b>[DataTableManager] CSV preload completed with file-level isolation.</b></color>");
+                    }
                 }
             }, this.GetCancellationTokenOnDestroy());
         }
@@ -187,7 +197,8 @@ public class DataTableManager : Singleton<DataTableManager>
         {
             foreach (var asset in csvAssets)
             {
-                this.parseAndCacheCsv(asset.name, asset.text);
+                try { this.parseAndCacheCsv(asset.name, asset.text); }
+                catch (Exception exception) { Debug.LogError($"[DataTableManager] CSV '{asset.name}' rejected: {exception.Message}"); }
             }
         }
 
@@ -199,7 +210,8 @@ public class DataTableManager : Singleton<DataTableManager>
             TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(path);
             if (asset != null)
             {
-                this.parseAndCacheCsv(asset.name, asset.text);
+                try { this.parseAndCacheCsv(asset.name, asset.text); }
+                catch (Exception exception) { Debug.LogError($"[DataTableManager] CSV '{asset.name}' rejected: {exception.Message}"); }
             }
         }
 #endif

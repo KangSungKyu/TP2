@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -24,14 +25,6 @@ public class TilemapStageBuilder : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-    }
-
-    private void Start()
-    {
-        if (Application.isPlaying)
-        {
-            BuildTilemapStageAsync(this.GetCancellationTokenOnDestroy()).Forget();
-        }
     }
 
     [ContextMenu("Build Stage In Editor")]
@@ -89,11 +82,11 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject chunkPrefab = null;
 
 #if UNITY_EDITOR
-        string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Tilemap_Room_Stage1_Entry";
+        string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Prefab_1040";
         chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/{targetKey}.prefab");
         if (chunkPrefab == null)
         {
-            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Tilemap_Room_Stage1_Entry.prefab");
+            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1040.prefab");
         }
 #endif
 
@@ -124,6 +117,7 @@ public class TilemapStageBuilder : MonoBehaviour
             {
                 StageManager.Instance.RegisterRoomInstance(spawnedChunk);
                 StageManager.Instance.RegisterRoomInstance(rootObj);
+                await ConfigureChunkPortalsAsync(spawnedChunk, cancellationToken);
             }
 
             // SpawnPointMarker를 탐색하여 플레이어, 일반 몬스터, 보스 동적 스폰 파이프라인 구동
@@ -159,6 +153,95 @@ public class TilemapStageBuilder : MonoBehaviour
         Debug.Log("<color=green>[TilemapStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
     }
 
+    private async UniTask ConfigureChunkPortalsAsync(GameObject chunk, CancellationToken cancellationToken)
+    {
+        StageManager stageManager = StageManager.Instance;
+        if (chunk == null || stageManager == null || stageManager.CurrentRun == null) return;
+
+        ChunkSocketMarker[] sockets = chunk.GetComponentsInChildren<ChunkSocketMarker>(true);
+        var portals = new List<GameObject>(sockets.Length);
+        ChunkSocketMarker entrance = null;
+        foreach (ChunkSocketMarker socket in sockets)
+        {
+            socket.gameObject.SetActive(false);
+            if (!stageManager.TryGetConnectedSlot(socket.Direction, out byte targetSlotIdx) ||
+                ResourceManager.Instance == null) continue;
+
+            cancellationToken.ThrowIfCancellationRequested();
+            GameObject portalObject = await ResourceManager.Instance.InstantiateAsyncTask(
+                "Portal_Gate", socket.transform, socket.transform.position, Quaternion.identity);
+            if (portalObject == null) continue;
+
+            portalObject.SetActive(false);
+            ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
+            portals.Add(portalObject);
+            if (targetSlotIdx == stageManager.CurrentRun.PreviousSlotIdx && socket.EntryMarker != null)
+                entrance = socket;
+        }
+
+        Player player = Player.Instance;
+        if (entrance != null && player != null && player.MovementCollider != null && player.Motor != null)
+        {
+            Vector3 position = CalculateSafeEntryPosition(
+                entrance, player.MovementCollider.bounds.extents, player.Motor.SkinWidth);
+            player.Motor.Teleport(position);
+            player.Motor.SetGroundNormal(Vector2.up);
+        }
+
+        foreach (GameObject portal in portals) portal.SetActive(true);
+    }
+
+    public static Vector3 CalculateSafeEntryPosition(ChunkSocketMarker socket, Vector3 playerExtents, float skinWidth)
+    {
+        if (socket == null) return Vector3.zero;
+        float horizontalClearance = playerExtents.x + Mathf.Max(0f, skinWidth);
+        float verticalClearance = playerExtents.y + Mathf.Max(0f, skinWidth);
+        switch (socket.Direction)
+        {
+            case ChunkSocketDirection.North:
+                return socket.transform.position + Vector3.down * verticalClearance;
+            case ChunkSocketDirection.East:
+                return socket.transform.position + Vector3.left * horizontalClearance + Vector3.up * verticalClearance;
+            case ChunkSocketDirection.South:
+                return socket.transform.position + Vector3.up * verticalClearance;
+            default:
+                return socket.transform.position + Vector3.right * horizontalClearance + Vector3.up * verticalClearance;
+        }
+    }
+
+    public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx)
+    {
+        if (socket == null || portalObject == null) return null;
+        socket.gameObject.SetActive(true);
+        portalObject.transform.SetParent(socket.transform, true);
+        portalObject.transform.position = socket.transform.position;
+        RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
+        portal.TargetSlotIdx = targetSlotIdx;
+        portalObject.SetActive(false);
+        return portal;
+    }
+
+    public void BuildSceneFromChunks(IEnumerable<GameObject> roomChunks)
+    {
+        if (roomChunks == null) return;
+        int retained = 0;
+        foreach (GameObject roomChunk in roomChunks)
+        {
+            if (roomChunk == null) continue;
+            if (retained >= 4)
+            {
+                roomChunk.SetActive(false);
+                continue;
+            }
+
+            retained++;
+            if (StageManager.Instance != null)
+            {
+                StageManager.Instance.RegisterRoomInstance(roomChunk);
+            }
+        }
+    }
+
     private void SetupMetroidvaniaCamera()
     {
         Camera mainCam = Camera.main;
@@ -179,6 +262,7 @@ public class TilemapStageBuilder : MonoBehaviour
         if (Player.Instance != null)
         {
             metroCam.Target = Player.Instance.transform;
+            metroCam.SnapToTarget();
         }
     }
 
@@ -232,8 +316,8 @@ public class TilemapStageBuilder : MonoBehaviour
         // ---------------------------------------------------------------------
         // Zone C: Combat & Monster Test Arena (X: +10 ~ +28)
         // ---------------------------------------------------------------------
-        createSpawnMarker(parent, "Marker_MonsterGaron", new Vector3(15f, 1.5f, 0f), SpawnType.Monster, "1001");
-        createSpawnMarker(parent, "Marker_BossGaron", new Vector3(23f, 1.5f, 0f), SpawnType.Boss, "3201");
+        createSpawnMarker(parent, "Marker_MonsterGaron", new Vector3(15f, 1.5f, 0f), SpawnType.Monster, 3101);
+        createSpawnMarker(parent, "Marker_BossGaron", new Vector3(23f, 1.5f, 0f), SpawnType.Boss, 3201);
 
         // 전투용 높낮이 보조 발판
         createOneWayPlatform(parent, "Platform_Combat_1", new Vector3(15f, 4.0f, 0f), new Vector2(4f, 0.4f));
@@ -293,7 +377,7 @@ public class TilemapStageBuilder : MonoBehaviour
         sprite.color = new Color(0.1f, 0.7f, 0.85f, 0.9f);
     }
 
-    private void createSpawnMarker(Transform parent, string name, Vector3 pos, SpawnType type, string monsterId = "")
+    private void createSpawnMarker(Transform parent, string name, Vector3 pos, SpawnType type, uint monsterId = 0)
     {
         GameObject markerObj = createPoolableObject(name, parent, pos);
         var marker = getOrAddComponent<SpawnPointMarker>(markerObj);

@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0822bd5774273924c9de35ff63d8b67f
+    m_Address: ShieldSentinel_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0de987a99e05f2748836699c20b65dd2
     m_Address: Garon_Pattern_ComboSlash
     m_ReadOnly: 0
@@ -35,6 +41,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 10265852de0b42c4ba750cf5ca519a23
     m_Address: GaronAnimatorController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11c1060cf2526a34ea1b5616f6728672
+    m_Address: OrbitalMarksman_Idle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -53,6 +65,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e7d01fab561cf74dae834c82f75be53
     m_Address: Player_Dodge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2294e7eb10bb17f46939170266328347
+    m_Address: OrbitalMarksman_Attack6006
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -117,6 +135,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97ce6e32284bea64e879be6ffe34070c
+    m_Address: ShieldSentinel_Move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f6a5d393fc406b4589a1017302a5b4c
+    m_Address: ShieldSentinel_Attack6003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0a6a2e90e406ec44bf382b8df696b44
+    m_Address: ShieldSentinel_Attack6004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a0ffe43cca116c443992f20ccc985a0e
     m_Address: ShadowStalkerAnimatorController
     m_ReadOnly: 0
@@ -131,6 +167,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a9de2ff61f84073499aaeef607643e94
     m_Address: ShadowStalker_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6101e85752abc84dbf8924e4c8ed17d
+    m_Address: ShieldSentinelAnimatorController
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -153,6 +195,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c8d7b11b3d2787742a1f1e17e8f1f7e3
+    m_Address: OrbitalMarksman_Move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc261f6b92b0fa346a20d523b5f62728
     m_Address: Player_Attack_HIt1
     m_ReadOnly: 0
@@ -161,6 +209,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cdd1259a845dd4342bdf18898d0a54fb
     m_Address: WaveHeavy_Idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d000fc2849bff39488c4dfdb5f1019f2
+    m_Address: OrbitalMarksmanAnimatorController
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -177,8 +231,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9169f3ea12b11b4ca270af0f2634e05
+    m_Address: OrbitalMarksman_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db874d59e8a0a8d438c3aa894bdf3910
+    m_Address: OrbitalMarksman_Attack6005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc7dfa5492406d841b4cc7b614fa89a1
     m_Address: Garon_Death
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de7bdfbed29324f4ba1fbc9a211508ad
+    m_Address: ShieldSentinel_Death
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -333,8 +405,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f097e448605e7964aaca51ce8acc5d64
+    m_Address: ShieldSentinel_Hit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f4c9a236099632649899bd5ad343a0a0
     m_Address: Player_Attack_Hit2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Anims
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6263534f08d2ab4f91ad7c7c12d837f
+    m_Address: OrbitalMarksman_Hit
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims

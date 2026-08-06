@@ -98,6 +98,9 @@ public enum DataTableType : uint
     Skill = 7,            // 7순위: 스킬 데이터 (7001~)
     EffectData = 8,       // 8순위: 스킬 이펙트 연동 데이터 (8001~)
     StageData = 9,        // 9순위: 스테이지 및 룸 시퀀스 데이터 (9001~)
+    ChunkResource = 11,   // 청크 후보와 ResourceData FK (11001~)
+    StageLayout = 12,     // 스테이지 절차 생성 설정 (12001~)
+    MonsterEncounter = 13,// 스테이지 전투 조합 (13001~)
     
     DataTableType_End
 }
@@ -305,8 +308,8 @@ public class EffectData
     [Name("idx")]
     public uint Idx { get; set; }
 
-    [Name("effectname")]
-    public string EffectName { get; set; } // 디버그용 이름
+    [Name("effectnametextidx")]
+    public uint EffectNameTextIdx { get; set; }
 
     [Name("prefabidx")]
     public uint PrefabIdx { get; set; } // ResourceData.csv Idx 참조 (Type 1: 1001~)
@@ -332,8 +335,8 @@ public class SkillData
 
     public uint SkillId => Idx; // 하위 호환성 프로퍼티
 
-    [Name("name")]
-    public string Name { get; set; }
+    [Name("nametextidx")]
+    public uint NameTextIdx { get; set; }
 
     [Name("animationclip")]
     public string AnimationClip { get; set; }
@@ -353,7 +356,7 @@ public class SkillData
     [Name("damagemultiplier")]
     public float DamageMultiplier { get; set; }
 
-    [Name("isbasicattack")]
+    [Name("isbasicattack"), TypeConverter(typeof(ZeroOneBooleanConverter))]
     public bool IsBasicAttack { get; set; }
 
     [Name("hitcount")]
@@ -398,6 +401,44 @@ public class StageBaseData
 
     [Name("roomsequenceidxlist"), TypeConverter(typeof(UIntArrayConverter))]
     public uint[] RoomSequenceIdxList { get; set; }
+}
+
+[Serializable]
+public class StageLayoutData
+{
+    [Name("idx")] public uint Idx { get; set; }
+    [Name("stagedataidx")] public uint StageDataIdx { get; set; }
+    [Name("minrows")] public byte MinRows { get; set; }
+    [Name("maxrows")] public byte MaxRows { get; set; }
+    [Name("mincolumns")] public byte MinColumns { get; set; }
+    [Name("maxcolumns")] public byte MaxColumns { get; set; }
+    [Name("minactivechunks")] public byte MinActiveChunks { get; set; }
+    [Name("maxactivechunks")] public byte MaxActiveChunks { get; set; }
+    [Name("bossroomresourceidx")] public uint BossRoomResourceIdx { get; set; }
+    [Name("nextstageidx")] public uint NextStageIdx { get; set; }
+}
+
+[Serializable]
+public class ChunkResourceData
+{
+    [Name("idx")] public uint Idx { get; set; }
+    [Name("resourceidx")] public uint ResourceIdx { get; set; }
+    [Name("chunktype")] public byte ChunkType { get; set; }
+    [Name("supportedconnectionmask")] public byte SupportedConnectionMask { get; set; }
+    [Name("minstageidx")] public uint MinStageIdx { get; set; }
+    [Name("maxuseperrun")] public byte MaxUsePerRun { get; set; }
+    [Name("weight")] public ushort Weight { get; set; }
+}
+
+[Serializable]
+public class MonsterEncounterData
+{
+    [Name("idx")] public uint Idx { get; set; }
+    [Name("stageidx")] public uint StageIdx { get; set; }
+    [Name("variant")] public byte Variant { get; set; }
+    [Name("unitidxlist"), TypeConverter(typeof(UIntArrayConverter))] public uint[] UnitIdxList { get; set; }
+    [Name("threatcost")] public byte ThreatCost { get; set; }
+    [Name("weight")] public ushort Weight { get; set; }
 }
 
 

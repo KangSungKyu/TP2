@@ -38,6 +38,7 @@ public class KinematicMotor2D : MonoBehaviour
     public int WallDir => IsWalledLeft ? -1 : (IsWalledRight ? 1 : 0);
     public Collider2D WallCollider { get; private set; }
     public WallJumpSurface WallSurface { get; private set; }
+    public bool IsPassingThrough => isPassThroughActive;
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
@@ -46,6 +47,7 @@ public class KinematicMotor2D : MonoBehaviour
     private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
 
     private Vector2 groundNormal = Vector2.up;
+    private bool hasGroundNormalOverride;
     private float targetVelocityX;
     private bool isPassThroughActive;
     private bool isJumpHeld;
@@ -127,6 +129,7 @@ public class KinematicMotor2D : MonoBehaviour
 
     public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.35f, CancellationToken cancellationToken = default)
     {
+        if (isPassThroughActive) return;
         isPassThroughActive = true;
         IsGrounded = false;
         Velocity = new Vector2(Velocity.x, -6.5f);
@@ -154,6 +157,8 @@ public class KinematicMotor2D : MonoBehaviour
         if (normal.sqrMagnitude > 0.001f)
         {
             groundNormal = normal.normalized;
+            IsGrounded = true;
+            hasGroundNormalOverride = true;
         }
     }
 
@@ -164,7 +169,8 @@ public class KinematicMotor2D : MonoBehaviour
             InitMotor();
         }
 
-        IsGrounded = false;
+        IsGrounded = hasGroundNormalOverride;
+        hasGroundNormalOverride = false;
         IsWalledLeft = false;
         IsWalledRight = false;
         WallCollider = null;
@@ -180,7 +186,7 @@ public class KinematicMotor2D : MonoBehaviour
         var horizontalMove = moveAlongGround * deltaPosition.x;
         PerformMovement(horizontalMove, false);
 
-        var verticalMove = Vector2.up * deltaPosition.y;
+        var verticalMove = Vector2.up * (IsGrounded && deltaPosition.y < 0f ? 0f : deltaPosition.y);
         PerformMovement(verticalMove, true);
 
         if (!IsGrounded && Velocity.y <= 0f)

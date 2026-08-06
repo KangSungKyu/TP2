@@ -97,10 +97,10 @@ public static class TilemapChunkGenerator
         }
         // High Platform (Y = 9, X = 3 ~ 7)
         // 5-3. SpawnPointMarker 자식 마커 포함 배치 (Player, Monster, Boss)
-        createSpawnMarker("SpawnPoint_Player", gridObj.transform, new Vector3(-12f, 1f, 0f), SpawnType.Player, "");
-        createSpawnMarker("SpawnPoint_Monster_01", gridObj.transform, new Vector3(-5f, 4f, 0f), SpawnType.Monster, "1001");
-        createSpawnMarker("SpawnPoint_Monster_02", gridObj.transform, new Vector3(0f, 7f, 0f), SpawnType.Monster, "1002");
-        createSpawnMarker("SpawnPoint_Boss", gridObj.transform, new Vector3(5f, 10f, 0f), SpawnType.Boss, "1001");
+        createSpawnMarker("SpawnPoint_Player", gridObj.transform, new Vector3(-12f, 1f, 0f), SpawnType.Player, 0);
+        createSpawnMarker("SpawnPoint_Monster_01", gridObj.transform, new Vector3(-5f, 4f, 0f), SpawnType.Monster, 3101);
+        createSpawnMarker("SpawnPoint_Monster_02", gridObj.transform, new Vector3(0f, 7f, 0f), SpawnType.Monster, 3102);
+        createSpawnMarker("SpawnPoint_Boss", gridObj.transform, new Vector3(5f, 10f, 0f), SpawnType.Boss, 3201);
 
         // 6. Unity PrefabUtility C# API로 무결점 실물 프리팹 에셋 저장
         PrefabUtility.SaveAsPrefabAsset(gridObj, prefabPath);
@@ -123,7 +123,7 @@ public static class TilemapChunkGenerator
         return obj;
     }
 
-    private static void createSpawnMarker(string name, Transform parent, Vector3 pos, SpawnType type, string monsterId)
+    private static void createSpawnMarker(string name, Transform parent, Vector3 pos, SpawnType type, uint monsterId)
     {
         GameObject markerObj = createChildObject(name, parent);
         markerObj.transform.position = pos;
