@@ -264,6 +264,83 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_SouthEntry_TeleportClearsGroundAndResidualVelocity()
+        {
+            var playerObject = new GameObject("SouthEntry_Player_QA");
+            var socketObject = new GameObject("SouthEntry_Socket_QA");
+            var groundObject = new GameObject("SouthEntry_Ground_QA");
+            try
+            {
+                var playerCollider = playerObject.AddComponent<CapsuleCollider2D>();
+                playerCollider.size = new Vector2(1f, 2f);
+                playerObject.AddComponent<Rigidbody2D>();
+                var motor = playerObject.AddComponent<KinematicMotor2D>();
+                motor.InitMotor();
+                motor.SetTargetVelocityX(8f);
+                motor.SetVelocityY(-10f);
+
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                socket.Direction = ChunkSocketDirection.South;
+                socketObject.transform.position = new Vector3(0f, 1f, 0f);
+
+                var ground = groundObject.AddComponent<BoxCollider2D>();
+                ground.size = new Vector2(10f, 1f);
+                groundObject.transform.position = new Vector3(0f, 0.5f, 0f);
+                Physics2D.SyncTransforms();
+
+                Vector3 safePosition = TilemapStageBuilder.CalculateSafeEntryPosition(
+                    socket, playerCollider.bounds.extents, motor.SkinWidth);
+                motor.Teleport(safePosition);
+                motor.SetGroundNormal(Vector2.up);
+                Physics2D.SyncTransforms();
+
+                Assert.IsFalse(Physics2D.Distance(playerCollider, ground).isOverlapped,
+                    "Teleport must place the South entry above the ground.");
+                Assert.AreEqual(Vector2.zero, motor.Velocity);
+                motor.SimulateStep(Time.fixedDeltaTime);
+                Physics2D.SyncTransforms();
+                Assert.IsFalse(Physics2D.Distance(playerCollider, ground).isOverlapped,
+                    "The first motor step must preserve ground clearance.");
+                Assert.IsTrue(motor.IsGrounded);
+                Assert.GreaterOrEqual(motor.Velocity.y, -0.1f);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(groundObject);
+                UnityEngine.Object.DestroyImmediate(socketObject);
+                UnityEngine.Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [TestCase(ChunkSocketDirection.North, 0f, 29f, 0f, 27.99f)]
+        [TestCase(ChunkSocketDirection.East, 28f, 1f, 27.49f, 2.01f)]
+        [TestCase(ChunkSocketDirection.South, 0f, 1f, 0f, 2.01f)]
+        [TestCase(ChunkSocketDirection.West, -29f, 1f, -28.49f, 2.01f)]
+        public void Test_EntryPosition_UsesActualP0SocketAndMovesInside(
+            ChunkSocketDirection direction, float socketX, float socketY, float expectedX, float expectedY)
+        {
+            var socketObject = new GameObject($"Entry_{direction}_QA");
+            try
+            {
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                socket.Direction = direction;
+                socketObject.transform.position = new Vector3(socketX, socketY);
+
+                Vector3 position = TilemapStageBuilder.CalculateSafeEntryPosition(
+                    socket, new Vector3(0.5f, 1f), 0.01f);
+
+                Assert.AreEqual(expectedX, position.x, 0.001f);
+                Assert.AreEqual(expectedY, position.y, 0.001f);
+                Assert.AreNotEqual(socketObject.transform.position, position,
+                    "Entry position must not remain on the socket.");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(socketObject);
+            }
+        }
+
+        [Test]
         public void Test_BossCompletion_SurvivesBossObjectDestructionDuringDelay()
         {
             string source = File.ReadAllText("Assets/Scripts/Gameplay/BossMonster.cs");
