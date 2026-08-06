@@ -49,8 +49,10 @@ namespace QA.Tests
         {
             string[] controllers = new string[]
             {
+                "Assets/Anims/Monster/OrbitalMarksmanAnimatorController.controller",
                 "Assets/Anims/Monster/SpearSentryAnimatorController.controller",
                 "Assets/Anims/Monster/ShadowStalkerAnimatorController.controller",
+                "Assets/Anims/Monster/ShieldSentinelAnimatorController.controller",
                 "Assets/Anims/Monster/WaveHeavyAnimatorController.controller"
             };
 
@@ -62,8 +64,21 @@ namespace QA.Tests
                 if (controller == null) continue;
 
                 var stateMachine = controller.layers[0].stateMachine;
+                var deathState = System.Array.Find(stateMachine.states,
+                    child => child.state.name.EndsWith("_Death")).state;
+
+                Assert.IsNotNull(deathState, $"{path} Death state missing");
+                Assert.IsTrue(System.Array.Exists(stateMachine.anyStateTransitions, transition =>
+                    transition.destinationState == deathState &&
+                    System.Array.Exists(transition.conditions, condition =>
+                        condition.parameter == "State" && condition.threshold == 8f)),
+                    $"{path} must enter Death with State == 8");
                 Assert.GreaterOrEqual(stateMachine.states.Length, 5, $"{path}의 상태 개수 5개 이상");
             }
+
+            string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            StringAssert.Contains("SetAnimState(8);", monsterSource);
+            StringAssert.DoesNotContain("SetTrigger(\"Death\")", monsterSource);
         }
     }
 }

@@ -73,6 +73,12 @@ MonoBehaviour:
   OnGroggyEnded:
     m_PersistentCalls:
       m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHpZero:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7564202145136594324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +106,8 @@ MonoBehaviour:
   Speed: 10
   DodgeDashSpeed: 12
   jumpForce: 15
-  gravity: 28
+  WallJumpForce: {x: 9.5, y: 12.5}
+  WallJumpLockoutDuration: 0.18
 --- !u!50 &5837903626141983593
 Rigidbody2D:
   serializedVersion: 5
@@ -182,12 +189,14 @@ MonoBehaviour:
   FallGravityMultiplier: 1.7
   ApexGravityMultiplier: 0.5
   SkinWidth: 0.01
+  MinGroundNormalY: 0.65
   SolidGroundLayer:
     serializedVersion: 2
     m_Bits: 0
   OneWayPlatformLayer:
     serializedVersion: 2
     m_Bits: 0
+  MaxWallSlideSpeed: 3.5
 --- !u!1 &5561306966581775118
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,8 +224,8 @@ Transform:
   m_GameObject: {fileID: 5561306966581775118}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.78125, y: 0.78125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 400000}
@@ -270,15 +279,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2215635099657673151, guid: 8cb88b79776cd914f912a84994a49d50, type: 3}
+  m_Sprite: {fileID: -637629295, guid: d5499735748a402499dae0a0dbbd39d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.24, y: 10.24}
+  m_Size: {x: 1, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!95 &2330727772339066561
 Animator:

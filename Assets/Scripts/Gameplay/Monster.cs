@@ -97,11 +97,7 @@ public class Monster : UnitBase
 
     public virtual async void Die()
     {
-        SetAnimState(5);
-        if (animator != null && animator.runtimeAnimatorController != null)
-        {
-            try { animator.SetTrigger("Death"); } catch { }
-        }
+        SetAnimState(8);
 
         if (motor != null)
         {
