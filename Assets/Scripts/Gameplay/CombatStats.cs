@@ -50,7 +50,7 @@ public class CombatStats : MonoBehaviour
 
     private float groggyTimer = 0f;
     private const float DefaultGroggyDuration = 3.0f;
-    private Rigidbody2D rb2d;
+    private KinematicMotor2D motor;
 
 
     // =========================================================================
@@ -59,7 +59,7 @@ public class CombatStats : MonoBehaviour
 
     private void Awake()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        motor = GetComponent<KinematicMotor2D>();
         InitStats();
     }
 
@@ -125,11 +125,10 @@ public class CombatStats : MonoBehaviour
             AddPosture(guardCost);
             SpawnResponseEffect(8011);
 
-            if (attacker != null && rb2d != null)
+            if (attacker != null)
             {
-                Vector2 pushDir = (transform.position - attacker.transform.position).normalized;
                 float knockbackForce = (amount / 10f) * 3.0f;
-                rb2d.AddForce(pushDir * knockbackForce, ForceMode2D.Impulse);
+                ApplyKnockback(attacker, knockbackForce);
             }
 
             Debug.Log($"[{gameObject.name}] 가드(Guard) 성공!");
@@ -216,13 +215,20 @@ public class CombatStats : MonoBehaviour
             FlashSpriteRedAsync(rend, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        if (attacker != null && rb2d != null)
+        if (attacker != null)
         {
-            Vector2 pushDir = (transform.position - attacker.transform.position).normalized;
-            pushDir.y = Mathf.Max(pushDir.y, 0.2f);
             float knockbackForce = Mathf.Clamp(dmg * 0.15f, 1.5f, 4.0f);
-            rb2d.AddForce(pushDir * knockbackForce, ForceMode2D.Impulse);
+            ApplyKnockback(attacker, knockbackForce);
         }
+    }
+
+    private void ApplyKnockback(CombatStats attacker, float force)
+    {
+        if (motor == null) return;
+        Vector2 pushDir = transform.position - attacker.transform.position;
+        pushDir.x = Mathf.Approximately(pushDir.x, 0f) ? 1f : Mathf.Sign(pushDir.x);
+        pushDir.y = Mathf.Max(pushDir.normalized.y, 0.2f);
+        motor.ApplyKnockback(pushDir * force);
     }
 
     private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 // File: AttackHandlerTests.cs
 using System.Threading.Tasks;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using Gameplay.Combat;
@@ -13,6 +14,7 @@ namespace Tests.PlayMode
         private GameObject _target;
         private Health _targetHealth;
         private AttackHandler _handler;
+        private AttackPower _attackPower;
 
         [SetUp]
         public void SetUp()
@@ -29,15 +31,11 @@ namespace Tests.PlayMode
             _attacker = new GameObject("Attacker");
             _attacker.transform.position = Vector3.zero;
             _attacker.layer = LayerMask.NameToLayer("Default");
-            var attackPower = _attacker.AddComponent<AttackPower>();
-            attackPower.BaseDamage = 10f; // expect 10 damage
-            attackPower.DamagePercent = 0f;
-            attackPower.DamageFlat = 0f;
-            // ensure target mask includes Default layer
-            // AttackPower.GetAttackData uses hardcoded "Enemy","Player" mask, override for test by reflection
-            // Instead we directly modify the returned AttackData in AttackHandler via a subclass (not needed here)
-            // Place target within range (2 units) and within hit radius (0.5) => target at (1,0,0)
-            _target.transform.position = new Vector3(1f, 0f, 0f);
+            _attackPower = _attacker.AddComponent<AttackPower>();
+            _attackPower.BaseDamage = 10f; // expect 10 damage
+            _attackPower.DamagePercent = 0f;
+            _attackPower.DamageFlat = 0f;
+            _target.transform.position = Vector3.forward * 1.5f;
 
             _handler = _attacker.AddComponent<AttackHandler>();
         }
@@ -52,7 +50,12 @@ namespace Tests.PlayMode
         [Test]
         public async Task MeleeAttackAppliesDamage()
         {
-            await _handler.PerformAttackAsync().AsTask();
+            AttackData data = _attackPower.GetAttackData();
+            data.TargetMask = 1 << LayerMask.NameToLayer("Default");
+            Physics.SyncTransforms();
+            var method = typeof(AttackHandler).GetMethod(
+                "PerformMeleeAttackAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+            await ((UniTask)method.Invoke(_handler, new object[] { data })).AsTask();
 
             // Verify target health reduced by 10
             Assert.AreEqual(90f, _targetHealth.CurrentHealth, 0.01f);
