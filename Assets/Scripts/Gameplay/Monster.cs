@@ -26,6 +26,10 @@ public class Monster : UnitBase
     protected Transform playerTarget;
     protected int currentSequenceIndex = 0;
     protected readonly Dictionary<uint, float> patternCooldowns = new Dictionary<uint, float>();
+    private const int MaximumAttackTokens = 2;
+    private static int activeAttackTokens;
+    private bool holdsAttackToken;
+    public static int ActiveAttackTokens => activeAttackTokens;
 
 
     // =========================================================================
@@ -62,6 +66,7 @@ public class Monster : UnitBase
 
     protected virtual void OnDisable()
     {
+        ReleaseAttackToken();
         ActiveMonsters.Remove(this);
         Deactivated?.Invoke(this);
     }
@@ -308,6 +313,9 @@ public class Monster : UnitBase
             return;
         }
 
+        if (!TryAcquireAttackToken()) return;
+        try
+        {
         SetFacingRight(playerTarget.position.x >= transform.position.x);
         if (pattern.PreDelay > 0f)
         {
@@ -356,6 +364,11 @@ public class Monster : UnitBase
         }
 
         SetAnimState(1);
+        }
+        finally
+        {
+            ReleaseAttackToken();
+        }
     }
 
     protected virtual async UniTask ExecuteSimpleAiAsync(CancellationToken cancellationToken)
@@ -368,6 +381,9 @@ public class Monster : UnitBase
 
         if (dist <= attackRange)
         {
+            if (!TryAcquireAttackToken()) return;
+            try
+            {
             SetAnimState(7);
             var pStats = playerTarget.GetComponent<CombatStats>();
             if (pStats != null)
@@ -375,6 +391,11 @@ public class Monster : UnitBase
                 pStats.TakeDamage(10f, isGroundAttack: false, isJumped: false, attacker: stats);
             }
             await UniTask.Delay(1500, cancellationToken: cancellationToken);
+            }
+            finally
+            {
+                ReleaseAttackToken();
+            }
         }
         else if (dist <= detectRange)
         {
@@ -395,6 +416,22 @@ public class Monster : UnitBase
         {
             SetAnimState(1);
         }
+    }
+
+    private bool TryAcquireAttackToken()
+    {
+        if (holdsAttackToken) return true;
+        if (activeAttackTokens >= MaximumAttackTokens) return false;
+        activeAttackTokens++;
+        holdsAttackToken = true;
+        return true;
+    }
+
+    private void ReleaseAttackToken()
+    {
+        if (!holdsAttackToken) return;
+        holdsAttackToken = false;
+        activeAttackTokens = Mathf.Max(0, activeAttackTokens - 1);
     }
 
     protected void SetAnimState(int stateValue)
