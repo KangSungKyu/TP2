@@ -54,3 +54,25 @@
 
 - `Assets/Tests/PlayMode/AttackHandlerTests.cs`: Unity가 실행 가능한 NUnit `async Task` 테스트로 정정. 제품 코드는 변경하지 않음.
 - `Assets/Docs/QA/stage1_mvp_qa_report.md`: 실제 실행 결과와 재현 절차 갱신.
+
+## 4방향 진입 배치 후행 QA — 2026-08-06
+
+| 검증 | 판정 | 실제 결과 |
+|---|---|---|
+| 실제 1050/1057의 North/East/South/West | PASS | 두 프리팹 모두 4개 방향 소켓을 직접 로드해 확인 |
+| North 내부 배치 | PASS | socket `(0,29)` → safe `(0,27.99)` |
+| East/West/South clearance | PASS | East `(27.49,2.01)`, West `(-28.49,2.01)`, South `(0,2.01)` |
+| South 진입 penetration | PASS | `Physics2D.Distance(...).isOverlapped == false` |
+| 첫 FixedUpdate 속도/침투 | PASS | `Velocity == 0` 후 simulation, 비침투·grounded 유지 |
+| 첫 FixedUpdate 재트리거 | 미검증 | 실제 `RoomDoorPortal` 연속 왕복 PlayMode smoke가 없음 |
+| 컴파일/Console Error | PASS | 0건 |
+| Stage1 / EditMode / QA | PASS | 20/20, 64/64, 51/51 |
+| PlayMode 전체 | FAIL(기존 결함) | 0/1, 공격 테스트 체력 Expected 90 / Actual 100 |
+
+실제 프리팹 경로: `Assets/Prefabs/Rooms/Tilemap_Room_Stage1_1050.prefab`, `Assets/Prefabs/Rooms/Tilemap_Room_Stage1_1057.prefab`.
+
+PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.PlayMode.AttackHandlerTests.MeleeAttackAppliesDamage`. 책임 파일과 최소 수선 명세는 위 FAIL 절과 동일하다. 이번 범위의 제품·에셋·CSV는 수정하지 않았다.
+
+|상태|검증|변경 파일|커밋|후속 위험|
+|---|---|---|---|---|
+|부분 PASS|실제 1050/1057 4방향 좌표, South 비침투, 첫 step 속도·grounded, 기준 테스트 수|`Assets/Docs/QA/stage1_mvp_qa_report.md`|본 문서 동기화 커밋|실제 포털 연속 왕복/즉시 재트리거는 PlayMode 자동화 부재로 미검증; 기존 공격 PlayMode 1건 FAIL|

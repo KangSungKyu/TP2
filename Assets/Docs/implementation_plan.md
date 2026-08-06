@@ -2,7 +2,7 @@
 
 ## 프로젝트 상태
 
-- 최신 점검(2026-08-05): EditMode 59/59 PASS, QATestRunner 50/50 PASS, PlayMode 0/1 FAIL
+- 최신 점검(2026-08-06): Stage1 20/20 PASS, EditMode 64/64 PASS, QATestRunner 51/51 PASS, PlayMode 0/1 FAIL
 - Stage 1 종단 PlayMode 흐름은 미검증이며 최종 게이트는 FAIL이다.
 - 문서의 단일 기준 루트는 `Assets/Docs/`다.
 
@@ -39,6 +39,7 @@
 | 2026-08-04 | InitScene 영속 매니저 7종 일원화 | `bc277b9` |
 | 2026-08-05 | Stage 1 무작위 청크, CSV 타입·0/1 bool·TextData, P0 포탈·몬스터 placeholder 통합 | 미커밋 작업 트리 |
 | 2026-08-05 | `doc/`와 `Assets/Docs/`를 `Assets/Docs/`로 일원화 | `Assets/Docs` |
+| 2026-08-06 | Stage 1 청크 4방향 안전 진입 배치 및 South 지면 침투 수선 | `adbb6f5`, 병합 `e97adc3` |
 
 ## 🧠 AGI 자율 회고록
 
@@ -66,3 +67,8 @@
 - 신규 CSV의 타입 충돌과 소비되지 않는 청크 소켓이 실제 실행을 막았다.
 - 코드·리소스·아트·QA의 선행 의존성은 유효했지만 PlayMode 종단 검증이 늦었다.
 - 이후 완료 판정은 `CSV FK → Addressables → 런타임 소비 → 실제 PlayMode` 증거를 모두 요구한다.
+
+### 2026-08-06
+- `EntryMarker` 생성 시 부모 설정의 월드 좌표 유지로 모든 방향 진입점이 원점에 모여 South 진입에서 지면 침투가 발생했다.
+- 프리팹 8개를 반복 수정하지 않고 공통 런타임 배치 경로에서 소켓 방향·플레이어 콜라이더·모터를 재사용해 변경 범위와 컨텍스트를 줄였다.
+- 좌표 단위 테스트만으로 완료 판정하지 않고 실제 포털 연속 왕복과 즉시 재트리거를 후속 PlayMode 게이트로 유지한다.
