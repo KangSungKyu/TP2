@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -373,6 +374,65 @@ namespace QA.Tests
             Assert.IsFalse(run.TryClaimReward(slot));
             Assert.IsTrue(run.TryLockCompletion());
             Assert.IsFalse(run.TryLockCompletion());
+        }
+
+        [Test]
+        public void Test_MultiSpawnZones_DeterministicAllocationAndClearanceContracts()
+        {
+            var room = new GameObject("SpawnZoneRoom_QA");
+            var entry = new GameObject("Entry_QA");
+            entry.transform.SetParent(room.transform);
+            entry.transform.position = new Vector3(-25f, 1f);
+            var zones = new List<SpawnPointMarker>();
+            try
+            {
+                foreach (float x in new[] { -10f, 5f, 20f })
+                {
+                    var zone = new GameObject("Zone_QA");
+                    zone.transform.SetParent(room.transform);
+                    zone.transform.position = new Vector3(x, 1f);
+                    zones.Add(zone.AddComponent<SpawnPointMarker>());
+                }
+                foreach (float x in new[] { -29f, 29f })
+                {
+                    var socket = new GameObject("Socket_QA");
+                    socket.transform.SetParent(room.transform);
+                    socket.transform.position = new Vector3(x, 1f);
+                    socket.AddComponent<ChunkSocketMarker>();
+                }
+
+                Assert.IsTrue(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out string error), error);
+                uint[] encounter = { 3103, 3106, 3101, 3102, 3104 };
+                uint[] first = UnitSpawner.BuildEncounterAllocation(encounter, zones.Count, 123u, 4);
+                uint[] second = UnitSpawner.BuildEncounterAllocation(encounter, zones.Count, 123u, 4);
+                CollectionAssert.AreEqual(first, second);
+                Assert.LessOrEqual(first.Length, 3);
+                Assert.LessOrEqual(System.Array.FindAll(first, idx => idx == 3103u || idx == 3106u).Length, 1);
+
+                zones[1].transform.position = zones[0].transform.position + Vector3.right;
+                Assert.IsFalse(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out _));
+                zones[1].transform.position = new Vector3(5f, 1f);
+                zones[0].transform.position = new Vector3(-24f, 1f);
+                Assert.IsFalse(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out _));
+
+                StageRunData run = Stage1RunGenerator.Generate(1);
+                Assert.AreEqual(0, run.Slots[run.StartSlotIdx].MonsterUnitIdxList.Length);
+                Assert.IsTrue(run.TryGetSlot(run.BossGateSlotIdx, out ChunkSlotData bossGate));
+                Assert.AreEqual(0, bossGate.MonsterUnitIdxList.Length);
+
+                string spawnerSource = File.ReadAllText("Assets/Scripts/Manager/UnitSpawner.cs");
+                string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+                StringAssert.Contains("MaximumActiveMonsters = 4", spawnerSource);
+                StringAssert.Contains("SpawnFallbackOnce(zones, encounter)", spawnerSource);
+                StringAssert.Contains("MaximumAttackTokens = 2", monsterSource);
+                StringAssert.Contains("activeAttackTokens >= MaximumAttackTokens", monsterSource);
+                StringAssert.Contains("finally", monsterSource);
+                StringAssert.Contains("ReleaseAttackToken();", monsterSource);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(room);
+            }
         }
 
         private static int CountBits(byte value)

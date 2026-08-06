@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -88,6 +89,37 @@ namespace QA.Tests
 
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/ShieldSentinelAnimatorController.controller"));
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/OrbitalMarksmanAnimatorController.controller"));
+        }
+
+        [Test]
+        public void CombatPrefabs_HaveValidSpawnZones_AndSafeTemplatesHaveNone()
+        {
+            foreach (uint resourceIdx in new uint[] { 1050, 1051, 1052, 1053 })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/Room_{10000u + resourceIdx}.prefab");
+                Assert.NotNull(prefab);
+                SpawnPointMarker[] zones = prefab.GetComponentsInChildren<SpawnPointMarker>(true)
+                    .Where(marker => marker.EnableSpawn && marker.Type == SpawnType.Monster).ToArray();
+                Assert.GreaterOrEqual(zones.Length, 3, $"Combat {resourceIdx} requires at least three SpawnZones.");
+                Assert.IsTrue(UnitSpawner.ValidateSpawnZones(prefab, zones, null, out string error),
+                    $"Combat {resourceIdx}: {error}");
+                for (int i = 0; i < zones.Length; i++)
+                    for (int j = i + 1; j < zones.Length; j++)
+                        Assert.GreaterOrEqual(Vector2.Distance(zones[i].transform.position, zones[j].transform.position), 15f);
+            }
+
+            foreach (uint resourceIdx in new uint[] { 1056, 1057, 1061, 1063 })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/Room_{10000u + resourceIdx}.prefab");
+                Assert.NotNull(prefab);
+                Assert.AreEqual(0, prefab.GetComponentsInChildren<SpawnPointMarker>(true)
+                    .Count(marker => marker.EnableSpawn && marker.Type == SpawnType.Monster));
+            }
+
+            var boss = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1042.prefab");
+            Assert.NotNull(boss);
+            Assert.AreEqual(1, boss.GetComponentsInChildren<SpawnPointMarker>(true)
+                .Count(marker => marker.EnableSpawn && marker.Type == SpawnType.Boss && marker.MonsterId == 3201u));
         }
 
         [Test]
