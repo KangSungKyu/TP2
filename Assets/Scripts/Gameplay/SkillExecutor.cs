@@ -19,6 +19,7 @@ public class SkillExecutor : MonoBehaviour
     private CombatStats stats;
     private GameObject particlePrefab;
     private readonly Dictionary<int, float> nextAvailable = new Dictionary<int, float>();
+    private readonly HashSet<SkillEffect> activeSkillEffects = new HashSet<SkillEffect>();
 
     // =========================================================================
     // 2. PUBLIC METHODS (PascalCase)
@@ -55,15 +56,20 @@ public class SkillExecutor : MonoBehaviour
 
     public SkillEffect SpawnSkillEffect(string effectName, Vector3 position, Vector2 size, float damage, float lifetime, FactionType faction, Color color)
     {
-        GameObject effectObj = new GameObject($"SkillEffect_{effectName}");
-        effectObj.transform.position = position;
+        SkillEffect effectComp = EffectPoolManager.Instance?.GetPooledSkillEffect(effectName, position);
+        if (effectComp == null)
+        {
+            var effectObj = new GameObject(effectName);
+            effectObj.transform.position = position;
+            var boxCol = effectObj.AddComponent<BoxCollider2D>();
+            boxCol.isTrigger = true;
+            effectComp = effectObj.AddComponent<SkillEffect>();
+            EffectPoolManager.Instance?.TrackSkillEffect(effectComp, effectName);
+        }
 
-        var boxCol = effectObj.AddComponent<BoxCollider2D>();
-        boxCol.isTrigger = true;
-        boxCol.size = size;
-
-        var effectComp = effectObj.AddComponent<SkillEffect>();
-        effectComp.InitEffect(effectName, damage, lifetime, faction, stats, color);
+        effectComp.SetSize(size);
+        activeSkillEffects.Add(effectComp);
+        effectComp.InitEffect(effectName, damage, lifetime, faction, stats, color, effect => activeSkillEffects.Remove(effect));
 
         return effectComp;
     }
@@ -216,6 +222,14 @@ public class SkillExecutor : MonoBehaviour
         {
             Debug.LogError("[ResourceManager Error] 'Particle' 리소스 로드 실패! Addressables 어드레스 등록을 확인하세요.");
         }
+    }
+
+    private void OnDisable()
+    {
+        if (activeSkillEffects.Count == 0) return;
+        var effects = new List<SkillEffect>(activeSkillEffects);
+        foreach (var effect in effects) if (effect != null) effect.ReturnToPool();
+        activeSkillEffects.Clear();
     }
 
     private async UniTaskVoid CastAsync(SkillInfo skill, Transform caster, Transform target, CancellationToken cancellationToken)

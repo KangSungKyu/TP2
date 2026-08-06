@@ -543,7 +543,7 @@ public class StageManager : Singleton<StageManager>
         return result;
     }
 
-    private static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken)
+    public static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (GameSceneManager.Instance == null)
@@ -627,5 +627,14 @@ public class StageManager : Singleton<StageManager>
                 else DestroyImmediate(tr.gameObject);
             }
         }
+    }
+
+    public void ResetRunForHub()
+    {
+        CleanupActiveChunksAndEffects();
+        CurrentRun = null;
+        CurrentRoomSequenceIndex = 0;
+        isLoadingRoom = false;
+        completionTransitionInProgress = false;
     }
 }
