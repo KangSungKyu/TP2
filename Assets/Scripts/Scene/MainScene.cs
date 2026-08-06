@@ -7,6 +7,10 @@ using UnityEngine;
 /// </summary>
 public class MainScene : MonoBehaviour
 {
+    [SerializeField] private AlertMessage alertMessage;
+    [SerializeField] private uint warningTextIdx;
+    [SerializeField] private uint warningEnglishTextIdx;
+
     private async void Start()
     {
         // 0. 매니저 부트스트랩 안전장치 (InitScene/HubScene을 거치지 않고 직접 실행 시 대비)
@@ -34,6 +38,9 @@ public class MainScene : MonoBehaviour
         hudObj.AddComponent<CoreTestHUD>();
         hudObj.AddComponent<TestPlayerHUDUI>();
         hudObj.AddComponent<MonsterOverheadHUD>();
+
+        if (warningTextIdx != 0)
+            alertMessage?.Show(warningTextIdx, warningEnglishTextIdx, 3f);
 
         Debug.Log("<color=green><b>[MainScene] 1스테이지 도교 신전(9001) 룸 청크 빌드 및 플레이 환경 구축 완결!</b></color>");
     }

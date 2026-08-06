@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace QA.Tests
@@ -423,6 +424,60 @@ namespace QA.Tests
             StringAssert.Contains("ResetRunForHub()", hub);
             StringAssert.Contains("if (transitionInProgress) return;", hub);
             StringAssert.DoesNotContain("OnGUI", hub);
+        }
+
+        [Test]
+        public void Test_AlertMessage_TextLookupReplaceAndSceneDisableContract()
+        {
+            var dataObject = new GameObject("Alert_Data_QA");
+            var alertObject = new GameObject("Alert_QA");
+            var textObject = new GameObject("Alert_Text_QA");
+            var previousDataManager = DataTableManager.Instance;
+            var instanceField = typeof(Singleton<DataTableManager>)
+                .GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+            try
+            {
+                var dataManager = dataObject.AddComponent<DataTableManager>();
+                instanceField.SetValue(null, dataManager);
+                var tables = (System.Collections.Generic.Dictionary<DataTableType, IDataLoad>)typeof(DataTableManager)
+                    .GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dataManager);
+                var textTable = new TextDataTable();
+                textTable.LoadData("idx,text\n2001,First alert\n2002,Replacement alert");
+                tables[DataTableType.Text] = textTable;
+
+                var canvasGroup = alertObject.AddComponent<CanvasGroup>();
+                var text = textObject.AddComponent<TMPro.TextMeshProUGUI>();
+                var alert = alertObject.AddComponent<AlertMessage>();
+                typeof(AlertMessage).GetField("messageText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(alert, text);
+                typeof(AlertMessage).GetField("canvasGroup", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(alert, canvasGroup);
+
+                Assert.IsTrue(alert.Show(2001, 0, 0));
+                Assert.AreEqual("First alert", text.text);
+                Assert.AreEqual(1f, canvasGroup.alpha);
+                Assert.IsTrue(alert.Show(2001, 0, 0), "Duplicate message must not add a second listener or task.");
+                Assert.IsTrue(alert.Show(9999, 2002, 0));
+                Assert.AreEqual("Replacement alert", text.text);
+                Assert.IsTrue(alert.Show(2002, 0, 0));
+                Assert.AreEqual("Replacement alert", text.text);
+
+                typeof(AlertMessage).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(alert, null);
+                Assert.IsFalse(alert.IsVisible);
+                Assert.AreEqual(0f, canvasGroup.alpha);
+
+                string source = File.ReadAllText("Assets/Scripts/UI/AlertMessage.cs");
+                Assert.IsFalse(Regex.IsMatch(source, @"\b(Update|OnGUI)\s*\("));
+                StringAssert.Contains("currentGeneration != generation", source);
+                StringAssert.Contains("HasCharacters(message)", source);
+                StringAssert.DoesNotContain("AddListener", source);
+            }
+            finally
+            {
+                if (DataTableManager.Instance == (DataTableManager)dataObject.GetComponent(typeof(DataTableManager)))
+                    instanceField.SetValue(null, previousDataManager);
+                Object.DestroyImmediate(textObject);
+                Object.DestroyImmediate(alertObject);
+                Object.DestroyImmediate(dataObject);
+            }
         }
     }
 }
