@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5837903626141983593}
   - component: {fileID: 8390051112812904954}
   - component: {fileID: 3877398339113559974}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Unit_3001
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 6320830220210956293}
   - component: {fileID: 4138513808131609401}
   - component: {fileID: 2330727772339066561}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
