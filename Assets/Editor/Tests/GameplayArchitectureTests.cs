@@ -427,6 +427,37 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_InitToHubAndStage1Entry_EndToEndConfigurationContract()
+        {
+            string initSource = File.ReadAllText("Assets/Scripts/Scene/InitScene.cs");
+            string initScene = File.ReadAllText("Assets/Scenes/InitScene.unity");
+            string hubScene = File.ReadAllText("Assets/Scenes/HubScene.unity");
+            string hubSource = File.ReadAllText("Assets/Scripts/Scene/HubScene.cs");
+            string mainSource = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
+            string stageSource = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
+
+            StringAssert.Contains("nextScene = GameSceneManager.SceneName.Hub", initSource);
+            Assert.AreEqual(1, Regex.Matches(initSource, @"TransitionTo\(nextScene\)").Count);
+            StringAssert.Contains("  nextScene: 1", initScene);
+            Assert.AreEqual(0, Regex.Matches(hubScene, @"(?m)^  m_Name: Player\r?$").Count);
+            StringAssert.Contains("CurrentStageIdx = stageIdx", hubSource);
+            StringAssert.Contains("TransitionTo(GameSceneManager.SceneName.Main)", hubSource);
+            StringAssert.Contains("EnsureStageLoadedAsync(9001", mainSource);
+            StringAssert.Contains("LoadNextRoomAsync(1040", stageSource);
+
+            UnityEditor.EditorBuildSettingsScene[] scenes = UnityEditor.EditorBuildSettings.scenes;
+            Assert.AreEqual(4, scenes.Length);
+            CollectionAssert.AreEqual(new[]
+            {
+                "Assets/Scenes/InitScene.unity",
+                "Assets/Scenes/LoadingScene.unity",
+                "Assets/Scenes/HubScene.unity",
+                "Assets/Scenes/MainScene.unity"
+            }, new[] { scenes[0].path, scenes[1].path, scenes[2].path, scenes[3].path });
+            Assert.IsTrue(System.Array.TrueForAll(scenes, scene => scene.enabled));
+        }
+
+        [Test]
         public void Test_AlertMessage_TextLookupReplaceAndSceneDisableContract()
         {
             var dataObject = new GameObject("Alert_Data_QA");
