@@ -160,7 +160,7 @@ public class TilemapStageBuilder : MonoBehaviour
 
         ChunkSocketMarker[] sockets = chunk.GetComponentsInChildren<ChunkSocketMarker>(true);
         var portals = new List<GameObject>(sockets.Length);
-        Transform entrance = null;
+        ChunkSocketMarker entrance = null;
         foreach (ChunkSocketMarker socket in sockets)
         {
             socket.gameObject.SetActive(false);
@@ -176,13 +176,37 @@ public class TilemapStageBuilder : MonoBehaviour
             ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
             portals.Add(portalObject);
             if (targetSlotIdx == stageManager.CurrentRun.PreviousSlotIdx && socket.EntryMarker != null)
-                entrance = socket.EntryMarker;
+                entrance = socket;
         }
 
-        if (entrance != null && Player.Instance != null)
-            Player.Instance.transform.position = entrance.position;
+        Player player = Player.Instance;
+        if (entrance != null && player != null && player.MovementCollider != null && player.Motor != null)
+        {
+            Vector3 position = CalculateSafeEntryPosition(
+                entrance, player.MovementCollider.bounds.extents, player.Motor.SkinWidth);
+            player.Motor.Teleport(position);
+            player.Motor.SetGroundNormal(Vector2.up);
+        }
 
         foreach (GameObject portal in portals) portal.SetActive(true);
+    }
+
+    public static Vector3 CalculateSafeEntryPosition(ChunkSocketMarker socket, Vector3 playerExtents, float skinWidth)
+    {
+        if (socket == null) return Vector3.zero;
+        float horizontalClearance = playerExtents.x + Mathf.Max(0f, skinWidth);
+        float verticalClearance = playerExtents.y + Mathf.Max(0f, skinWidth);
+        switch (socket.Direction)
+        {
+            case ChunkSocketDirection.North:
+                return socket.transform.position + Vector3.down * verticalClearance;
+            case ChunkSocketDirection.East:
+                return socket.transform.position + Vector3.left * horizontalClearance + Vector3.up * verticalClearance;
+            case ChunkSocketDirection.South:
+                return socket.transform.position + Vector3.up * verticalClearance;
+            default:
+                return socket.transform.position + Vector3.right * horizontalClearance + Vector3.up * verticalClearance;
+        }
     }
 
     public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx)

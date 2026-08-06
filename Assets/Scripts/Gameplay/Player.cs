@@ -22,6 +22,8 @@ public class Player : UnitBase
     public bool IsJumping { get; private set; }
 
     public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
+    public Collider2D MovementCollider => hitCollider;
+    public KinematicMotor2D Motor => motor;
 
 
     // =========================================================================
