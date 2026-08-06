@@ -2,7 +2,7 @@
 
 ## 프로젝트 상태
 
-- 최신 점검(2026-08-06): Stage1 20/20 PASS, EditMode 64/64 PASS, QATestRunner 51/51 PASS, PlayMode 0/1 FAIL
+- 최신 점검(2026-08-06): EditMode 71/71 PASS, PlayMode 1/1 PASS, QATestRunner 52/52 PASS
 - Stage 1 종단 PlayMode 흐름은 미검증이며 최종 게이트는 FAIL이다.
 - 문서의 단일 기준 루트는 `Assets/Docs/`다.
 
@@ -14,6 +14,9 @@
 - CSV bool은 `0/1`만 허용하며 문자열 `true/false`를 금지한다.
 - Skill/Effect 표시 이름은 `TextData.idx`로 참조하고 Animator 기술 식별자는 문자열을 유지한다.
 - CSV 파일 하나의 실패가 전체 데이터 로딩을 중단시키지 않도록 파일 단위로 예외를 격리한다.
+- 유닛 스프라이트는 PPU 100, 프레임 Pivot BottomCenter `(0.5, 0.0)`로 통일한다.
+- 유닛의 시각 크기는 원점의 `Visual` 자식에서 균일 Scale로만 조정하고 위치 오프셋을 금지한다.
+- 아이템 스프라이트 Pivot은 별도 사유가 없으면 Center `(0.5, 0.5)`를 사용한다.
 
 ## 씬·물리·전투 규칙
 
@@ -40,6 +43,7 @@
 | 2026-08-05 | Stage 1 무작위 청크, CSV 타입·0/1 bool·TextData, P0 포탈·몬스터 placeholder 통합 | 미커밋 작업 트리 |
 | 2026-08-05 | `doc/`와 `Assets/Docs/`를 `Assets/Docs/`로 일원화 | `Assets/Docs` |
 | 2026-08-06 | Stage 1 청크 4방향 안전 진입 배치 및 South 지면 침투 수선 | `adbb6f5`, 병합 `e97adc3` |
+| 2026-08-06 | 유닛 PPU100·BottomCenter·Visual 구조 통일 및 피격 지면 관통/Death Animator 계약 수선 | EditMode 71/71, PlayMode 1/1, QA 52/52 |
 
 ## 🧠 AGI 자율 회고록
 
@@ -72,3 +76,8 @@
 - `EntryMarker` 생성 시 부모 설정의 월드 좌표 유지로 모든 방향 진입점이 원점에 모여 South 진입에서 지면 침투가 발생했다.
 - 프리팹 8개를 반복 수정하지 않고 공통 런타임 배치 경로에서 소켓 방향·플레이어 콜라이더·모터를 재사용해 변경 범위와 컨텍스트를 줄였다.
 - 좌표 단위 테스트만으로 완료 판정하지 않고 실제 포털 연속 왕복과 즉시 재트리거를 후속 PlayMode 게이트로 유지한다.
+
+### 2026-08-06 — 유닛 렌더·물리 규격
+- PPU 혼재와 GameObject 위치 보정은 렌더 크기와 hitbox 비교를 불안정하게 만들므로 PPU100·BottomCenter·Visual 원점 규칙을 단일 기준으로 고정했다.
+- 병렬 브랜치 전환 중 자산 변경이 stash에 격리되어 Unity 메모리 상태와 Git 디스크가 달라졌다. 이후 자산 QA는 강제 refresh 뒤 디스크 meta와 AssetDatabase 값을 함께 검사한다.
+- KinematicMotor2D와 Rigidbody AddForce의 이동 권한 중복을 제거했으며 Monster Death는 컨트롤러 공통 `State == 8` 계약만 사용한다.

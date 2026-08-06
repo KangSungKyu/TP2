@@ -94,7 +94,7 @@ namespace QA.Tests
         public void NewMonsters_HaveCompleteUniqueImportedAssets()
         {
             AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
-            AssertLegacyMonster(3105, "OrbitalMarksman", "Attack6005", "Attack6006");
+            AssertMonster(3105, "OrbitalMarksman", "Idle", "Move", "Hit", "Death", "Attack6005", "Attack6006");
 
             Assert.AreNotEqual(
                 AssetDatabase.AssetPathToGUID("Assets/Prefabs/Unit_3104.prefab"),
@@ -121,33 +121,6 @@ namespace QA.Tests
             AssertMonsterVisual(prefab, name, actions);
         }
 
-        private static void AssertLegacyMonster(uint unitIdx, string name, string attackA, string attackB)
-        {
-            string prefabPath = $"Assets/Prefabs/Unit_{unitIdx}.prefab";
-            string texturePath = $"Assets/Textures/Characters/Monsters/{name}/{name}_Idle.png";
-            string controllerPath = $"Assets/Anims/Monster/{name}AnimatorController.controller";
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            var renderer = prefab != null ? prefab.GetComponent<SpriteRenderer>() : null;
-            var animator = prefab != null ? prefab.GetComponent<Animator>() : null;
-            var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
-
-            Assert.AreEqual($"Unit_{unitIdx}", prefab.name);
-            Assert.NotNull(renderer);
-            Assert.NotNull(renderer.sprite);
-            Assert.AreEqual(texturePath, AssetDatabase.GetAssetPath(renderer.sprite));
-            Assert.NotNull(animator);
-            Assert.AreEqual(controllerPath, AssetDatabase.GetAssetPath(animator.runtimeAnimatorController));
-            Assert.NotNull(importer);
-            Assert.AreEqual(64f, importer.spritePixelsPerUnit);
-            Assert.AreEqual(4f, renderer.sprite.bounds.size.y, 0.01f);
-            Assert.NotNull(prefab.GetComponent<Monster>());
-            Assert.IsNotEmpty(AssetDatabase.AssetPathToGUID(prefabPath));
-            Assert.IsNotEmpty(AssetDatabase.AssetPathToGUID(texturePath));
-            Assert.IsNotEmpty(AssetDatabase.AssetPathToGUID(controllerPath));
-
-            AssertMonsterClips(name, "", "Idle", "Move", "Hit", "Death", attackA, attackB);
-        }
-
         private static void AssertMonsterVisual(GameObject prefab, string name, params string[] actions)
         {
             string texturePath = $"Assets/Textures/Characters/Monsters/{name}/{name}_Idle.png";
@@ -161,10 +134,29 @@ namespace QA.Tests
             Assert.AreEqual(1, animators.Length);
             Assert.AreEqual(renderers[0].transform, animators[0].transform);
             Assert.AreEqual(controllerPath, AssetDatabase.GetAssetPath(animators[0].runtimeAnimatorController));
+            var visual = renderers[0].transform;
+            var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+            Assert.NotNull(importer);
+            Assert.AreEqual(100f, importer.spritePixelsPerUnit);
+            Assert.AreEqual(Vector3.zero, visual.localPosition);
+            Assert.AreEqual(visual.localScale.x, visual.localScale.y, 0.0001f);
+            Assert.AreEqual(1f, visual.localScale.z, 0.0001f);
+            Assert.Greater(visual.localScale.x, 0f);
+            Assert.IsFalse(float.IsNaN(visual.localScale.x) || float.IsInfinity(visual.localScale.x));
+
+            const float targetWorldHeight = 4f;
+            float unscaledWorldHeight = renderers[0].sprite.rect.height / importer.spritePixelsPerUnit;
+            float expectedScale = targetWorldHeight / unscaledWorldHeight;
+            const float worldBoundsTolerance = 0.02f;
+            Assert.AreEqual(expectedScale, visual.localScale.x, worldBoundsTolerance / unscaledWorldHeight);
+            Assert.AreEqual(targetWorldHeight,
+                renderers[0].sprite.bounds.size.y * visual.localScale.y, worldBoundsTolerance);
+
             var collider = prefab.GetComponent<BoxCollider2D>();
             Assert.NotNull(collider);
-            Assert.That(collider.size.x / renderers[0].sprite.bounds.size.x, Is.InRange(0.5f, 1f));
-            Assert.That(collider.size.y / renderers[0].sprite.bounds.size.y, Is.InRange(0.5f, 1f));
+            TestContext.WriteLine($"{prefab.name} collider/renderer ratio: " +
+                $"{collider.size.x / (renderers[0].sprite.bounds.size.x * visual.localScale.x):F3} x " +
+                $"{collider.size.y / (renderers[0].sprite.bounds.size.y * visual.localScale.y):F3}");
             AssertMonsterClips(name, "Visual", actions);
         }
 

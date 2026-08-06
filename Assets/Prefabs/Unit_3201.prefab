@@ -27,8 +27,8 @@ Transform:
   m_GameObject: {fileID: 1889481293509463362}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.78125, y: 0.78125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8551284207668217409}
@@ -213,6 +213,12 @@ MonoBehaviour:
   OnGroggyEnded:
     m_PersistentCalls:
       m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHpZero:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5808096204481644943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,9 +285,11 @@ MonoBehaviour:
   FallGravityMultiplier: 1.7
   ApexGravityMultiplier: 0.5
   SkinWidth: 0.01
+  MinGroundNormalY: 0.65
   SolidGroundLayer:
     serializedVersion: 2
     m_Bits: 0
   OneWayPlatformLayer:
     serializedVersion: 2
     m_Bits: 0
+  MaxWallSlideSpeed: 3.5
