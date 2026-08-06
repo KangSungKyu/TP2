@@ -1,5 +1,0 @@
-idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage
-6201,2010,Garon_Pattern_Charge,4,2,8.0,50,0.8,0.8,6.0,25
-6202,2011,Garon_Pattern_ComboSlash,2,0,0.0,30,0.6,0.6,4.0,10
-6203,2012,Garon_Pattern_OverheadSmash,3,0,0.0,70,1.0,1.0,5.0,35
-6204,2013,Garon_Pattern_Shockwave,4,3,4.0,40,0.8,0.8,5.0,20

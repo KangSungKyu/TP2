@@ -9,6 +9,8 @@ idx,path
 1012,SpearSentryAnimatorController
 1013,ShadowStalkerAnimatorController
 1014,WaveHeavyAnimatorController
+1015,ShieldSentinelAnimatorController
+1016,OrbitalMarksmanAnimatorController
 1020,Player_Attack_Hit1_Effect
 1021,Player_Attack_Hit2_Effect
 1022,Player_Attack_Hit3_Effect
@@ -21,8 +23,8 @@ idx,path
 1042,Tilemap_Room_Stage1_Boss
 1043,Tilemap_Room_Stage2_Entry
 1044,Tilemap_Room_Stage2_Boss
-1006,SpearSentry
-1007,ShadowStalker
+1006,ShieldSentinel
+1007,OrbitalMarksman
 1050,Tilemap_Room_Stage1_1050
 1051,Tilemap_Room_Stage1_1051
 1052,Tilemap_Room_Stage1_1052

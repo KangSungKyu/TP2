@@ -1,9 +1,7 @@
 // File: AttackHandlerTests.cs
-using System.Collections;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Gameplay.Combat;
 using Cysharp.Threading.Tasks;
 
@@ -52,12 +50,9 @@ namespace Tests.PlayMode
         }
 
         [Test]
-        public IEnumerator MeleeAttackAppliesDamage()
+        public async Task MeleeAttackAppliesDamage()
         {
-            // Perform async attack
-            var task = _handler.PerformAttackAsync().AsTask();
-            // Wait until task completes
-            yield return new WaitUntil(() => task.IsCompleted);
+            await _handler.PerformAttackAsync().AsTask();
 
             // Verify target health reduced by 10
             Assert.AreEqual(90f, _targetHealth.CurrentHealth, 0.01f);

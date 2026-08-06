@@ -63,6 +63,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93a2f6754dd7b9644bc8e858ba6652a6
+    m_Address: OrbitalMarksman
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a000000000000000190b16dbfcc3cfb8
     m_Address: Tilemap_Room_Stage1_Entry
     m_ReadOnly: 0
@@ -197,6 +203,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e99f7ae641d001944ba12e8604fb4f27
     m_Address: ShadowStalker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f34548d9cafca8d4dbf0f56d06a75459
+    m_Address: ShieldSentinel
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

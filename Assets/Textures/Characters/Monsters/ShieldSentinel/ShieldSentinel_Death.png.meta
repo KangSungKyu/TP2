@@ -1,0 +1,519 @@
+fileFormatVersion: 2
+guid: 61c072c4b2f748c48672f28201246312
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7324690584978126631
+    second: ShieldSentinel_Death_0
+  - first:
+      213: -467270240938834643
+    second: ShieldSentinel_Death_1
+  - first:
+      213: 965624542312480146
+    second: ShieldSentinel_Death_2
+  - first:
+      213: 8474330295879444297
+    second: ShieldSentinel_Death_3
+  - first:
+      213: 3560925939945646856
+    second: ShieldSentinel_Death_4
+  - first:
+      213: -5782740382580411021
+    second: ShieldSentinel_Death_5
+  - first:
+      213: 1232510904167997362
+    second: ShieldSentinel_Death_6
+  - first:
+      213: -457984026561840070
+    second: ShieldSentinel_Death_7
+  - first:
+      213: -7266090664498739672
+    second: ShieldSentinel_Death_8
+  - first:
+      213: -4995939748598792109
+    second: ShieldSentinel_Death_9
+  - first:
+      213: -5783726111641869469
+    second: ShieldSentinel_Death_10
+  - first:
+      213: -16217821607555084
+    second: ShieldSentinel_Death_11
+  - first:
+      213: 7503052317325779953
+    second: ShieldSentinel_Death_12
+  - first:
+      213: 1358244165760253769
+    second: ShieldSentinel_Death_13
+  - first:
+      213: -5617102386718651183
+    second: ShieldSentinel_Death_14
+  - first:
+      213: 4454249007870366671
+    second: ShieldSentinel_Death_15
+  - first:
+      213: -1106786849676155969
+    second: ShieldSentinel_Death_16
+  - first:
+      213: -3175416651797426895
+    second: ShieldSentinel_Death_17
+  - first:
+      213: 61074906185111111
+    second: ShieldSentinel_Death_18
+  - first:
+      213: -6160926132752226809
+    second: ShieldSentinel_Death_19
+  - first:
+      213: 6720424563259422044
+    second: ShieldSentinel_Death_20
+  - first:
+      213: -4477492696230414417
+    second: ShieldSentinel_Death_21
+  - first:
+      213: -5675787282679927855
+    second: ShieldSentinel_Death_22
+  - first:
+      213: -1093886449854697816
+    second: ShieldSentinel_Death_23
+  - first:
+      213: -4749991156676019000
+    second: ShieldSentinel_Death_24
+  - first:
+      213: -7487823728589505946
+    second: ShieldSentinel_Death_25
+  - first:
+      213: 7622305616453172835
+    second: ShieldSentinel_Death_26
+  - first:
+      213: -2057373408207595681
+    second: ShieldSentinel_Death_27
+  - first:
+      213: 2760125839136079977
+    second: ShieldSentinel_Death_28
+  - first:
+      213: -902862636969896727
+    second: ShieldSentinel_Death_29
+  - first:
+      213: -7895965474126137584
+    second: ShieldSentinel_Death_30
+  - first:
+      213: 3976888280375072625
+    second: ShieldSentinel_Death_31
+  - first:
+      213: 4515110326051477377
+    second: ShieldSentinel_Death_32
+  - first:
+      213: 1025672304668828684
+    second: ShieldSentinel_Death_33
+  - first:
+      213: -5156936909531684018
+    second: ShieldSentinel_Death_34
+  - first:
+      213: -7290163984967911746
+    second: ShieldSentinel_Death_35
+  - first:
+      213: -3123243547755911610
+    second: ShieldSentinel_Death_36
+  - first:
+      213: -4641040440594991433
+    second: ShieldSentinel_Death_37
+  - first:
+      213: -2778371029333731691
+    second: ShieldSentinel_Death_38
+  - first:
+      213: 7882026783366973624
+    second: ShieldSentinel_Death_39
+  - first:
+      213: -1212794673962680700
+    second: ShieldSentinel_Death_40
+  - first:
+      213: -5442615344595228992
+    second: ShieldSentinel_Death_41
+  - first:
+      213: 5434407090783571830
+    second: ShieldSentinel_Death_42
+  - first:
+      213: 3007650252160621495
+    second: ShieldSentinel_Death_43
+  - first:
+      213: -9214990432705255934
+    second: ShieldSentinel_Death_44
+  - first:
+      213: -4083930124646453214
+    second: ShieldSentinel_Death_45
+  - first:
+      213: 1704953450351239443
+    second: ShieldSentinel_Death_46
+  - first:
+      213: -2978151211002433926
+    second: ShieldSentinel_Death_47
+  - first:
+      213: -3616373394924496789
+    second: ShieldSentinel_Death_48
+  - first:
+      213: 5515353033897597907
+    second: ShieldSentinel_Death_49
+  - first:
+      213: 3657208521255052121
+    second: ShieldSentinel_Death_50
+  - first:
+      213: -5595263171351233306
+    second: ShieldSentinel_Death_51
+  - first:
+      213: -5730167408696360038
+    second: ShieldSentinel_Death_52
+  - first:
+      213: -6081172987273876181
+    second: ShieldSentinel_Death_53
+  - first:
+      213: -8715612377380452729
+    second: ShieldSentinel_Death_54
+  - first:
+      213: -2541794134039111463
+    second: ShieldSentinel_Death_55
+  - first:
+      213: 171275623587398004
+    second: ShieldSentinel_Death_56
+  - first:
+      213: -2306958420596195269
+    second: ShieldSentinel_Death_57
+  - first:
+      213: -4652577658025458488
+    second: ShieldSentinel_Death_58
+  - first:
+      213: 4356766184106444555
+    second: ShieldSentinel_Death_59
+  - first:
+      213: -5406021991469104624
+    second: ShieldSentinel_Death_60
+  - first:
+      213: -2233051017493002825
+    second: ShieldSentinel_Death_61
+  - first:
+      213: -6569069577684919996
+    second: ShieldSentinel_Death_62
+  - first:
+      213: -6053286474473779169
+    second: ShieldSentinel_Death_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 687aecb017ecf4370800000000000000
+      internalID: 8309086822446573446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fa9f1cae217f7480800000000000000
+      internalID: -8899269893390624015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 614b1d0cb1e0cd540800000000000000
+      internalID: 5033913995855246358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dc32ec0a1add7d10800000000000000
+      internalID: 2125094404608900313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03c031dd097d5e620800000000000000
+      internalID: 2802883360292277296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f213899bdb4b6e0800000000000000
+      internalID: -1822623344358248566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a1aae1e8a0b7dd0800000000000000
+      internalID: -2487382763675968976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShieldSentinel_Death.png_7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 256
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee2e72a666676e000800000000000000
+      internalID: 64869426883191534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShieldSentinel_Death.png_0: 8309086822446573446
+      ShieldSentinel_Death.png_1: -8899269893390624015
+      ShieldSentinel_Death.png_2: 5033913995855246358
+      ShieldSentinel_Death.png_3: 2125094404608900313
+      ShieldSentinel_Death.png_4: 2802883360292277296
+      ShieldSentinel_Death.png_5: -1822623344358248566
+      ShieldSentinel_Death.png_6: -2487382763675968976
+      ShieldSentinel_Death.png_7: 64869426883191534
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
