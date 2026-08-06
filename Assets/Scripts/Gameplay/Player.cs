@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,8 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class Player : UnitBase
 {
+    public static event Action<Player> Activated;
+    public static event Action<Player> Deactivated;
     // =========================================================================
     // 1. PUBLIC FIELDS & PROPERTIES (PascalCase)
     // =========================================================================
@@ -70,7 +73,12 @@ public class Player : UnitBase
         {
             Speed = UnitData.MoveSpeed;
         }
+
+        if (this != null && isActiveAndEnabled) Activated?.Invoke(this);
     }
+
+    private void OnEnable() => Activated?.Invoke(this);
+    private void OnDisable() => Deactivated?.Invoke(this);
 
     public void SetState(PlayerState newState, bool forceUpdate = false)
     {

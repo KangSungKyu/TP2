@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class MainScene : MonoBehaviour
 {
-    [SerializeField] private AlertMessage alertMessage;
+    [SerializeField] private ProductionMainHUD productionHud;
     [SerializeField] private uint warningTextIdx;
     [SerializeField] private uint warningEnglishTextIdx;
 
@@ -23,6 +23,11 @@ public class MainScene : MonoBehaviour
             await StageManager.Instance.EnsureStageLoadedAsync(9001, this.GetCancellationTokenOnDestroy());
         }
 
+        if (productionHud == null)
+            Debug.LogError("[MainScene] ProductionMainHUD is not bound on MainHUDRoot.");
+        else
+            productionHud.BindSceneState();
+
         // 2. 카메라 위치 및 앵글 설정 (메트로배니아 카메라 셋업 완료 전 기본 시점 설정)
         if (Camera.main != null && Camera.main.GetComponent<MetroidvaniaCamera2D>() == null)
         {
@@ -33,31 +38,26 @@ public class MainScene : MonoBehaviour
             Camera.main.backgroundColor = new Color(0.15f, 0.15f, 0.2f);
         }
 
-        // 3. ----- OnGUI HUD, 테스트 플레이어 HUD 및 최적화 몬스터 오버레이 HUD 생성 -----
-        var hudObj = new GameObject("CoreTestHUD");
-        hudObj.AddComponent<CoreTestHUD>();
-        hudObj.AddComponent<TestPlayerHUDUI>();
-        hudObj.AddComponent<MonsterOverheadHUD>();
-
+        // 3. Scene asset에 바인딩된 Production HUD만 사용합니다.
         if (warningTextIdx != 0)
-            alertMessage?.Show(warningTextIdx, warningEnglishTextIdx, 3f);
+            productionHud?.ShowWarning(warningTextIdx, warningEnglishTextIdx, 3f);
 
         Debug.Log("<color=green><b>[MainScene] 1스테이지 도교 신전(9001) 룸 청크 빌드 및 플레이 환경 구축 완결!</b></color>");
     }
 
     private async UniTask ensureManagersReadyAsync()
     {
-        if (ResourceManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<ResourceManager>() == null)
+        if (ResourceManager.Instance == null)
         {
             Debug.LogWarning("[MainScene] 'ResourceManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
 
-        if (DataTableManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<DataTableManager>() == null)
+        if (DataTableManager.Instance == null)
         {
             Debug.LogWarning("[MainScene] 'DataTableManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }
 
-        if (StageManager.Instance == null && UnityEngine.Object.FindFirstObjectByType<StageManager>() == null)
+        if (StageManager.Instance == null)
         {
             Debug.LogWarning("[MainScene] 'StageManager' 매니저가 씬 상에 사전 배치되어 있지 않습니다.");
         }

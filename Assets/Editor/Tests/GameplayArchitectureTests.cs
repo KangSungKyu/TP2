@@ -510,5 +510,66 @@ namespace QA.Tests
                 Object.DestroyImmediate(dataObject);
             }
         }
+
+        [Test]
+        public void Test_ProductionMainHud_EventFillAndLifecycleContract()
+        {
+            var hudObject = new GameObject("ProductionHUD_QA");
+            var hpObject = new GameObject("PlayerHp_QA");
+            var postureObject = new GameObject("PlayerPosture_QA");
+            var mpObject = new GameObject("PlayerMp_QA");
+            var statsObject = new GameObject("PlayerStats_QA");
+            try
+            {
+                var hp = hpObject.AddComponent<UnityEngine.UI.Image>();
+                var posture = postureObject.AddComponent<UnityEngine.UI.Image>();
+                var mp = mpObject.AddComponent<UnityEngine.UI.Image>();
+                var hud = hudObject.AddComponent<ProductionMainHUD>();
+                var stats = statsObject.AddComponent<CombatStats>();
+                stats.OnHpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnMpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+
+                typeof(ProductionMainHUD).GetField("playerHpFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, hp);
+                typeof(ProductionMainHUD).GetField("playerPostureFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, posture);
+                typeof(ProductionMainHUD).GetField("playerMpFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, mp);
+                hud.BindPlayer(stats);
+
+                stats.OnHpChanged.Invoke(0.25f);
+                stats.OnPostureChanged.Invoke(0.5f);
+                stats.OnMpChanged.Invoke(0.75f);
+                Assert.AreEqual(0.25f, hp.fillAmount);
+                Assert.AreEqual(0.5f, posture.fillAmount);
+                Assert.AreEqual(0.75f, mp.fillAmount);
+
+                typeof(ProductionMainHUD).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(hud, null);
+                hp.fillAmount = 0.9f;
+                stats.OnHpChanged.Invoke(0.1f);
+                Assert.AreEqual(0.9f, hp.fillAmount, "Scene unload must remove runtime listeners.");
+
+                string hudSource = File.ReadAllText("Assets/Scripts/UI/ProductionMainHUD.cs");
+                string mainSource = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
+                StringAssert.Contains("Monster.Activated += OnMonsterActivated", hudSource);
+                StringAssert.Contains("Monster.Deactivated -= OnMonsterDeactivated", hudSource);
+                StringAssert.Contains("bossStats.OnHpChanged.RemoveListener", hudSource);
+                StringAssert.Contains("stageManager.ProgressChanged += SetStageProgress", hudSource);
+                StringAssert.Contains("alertMessage.Show(textIdx", hudSource);
+                Assert.IsFalse(Regex.IsMatch(hudSource, @"\b(Update|OnGUI)\s*\("));
+                StringAssert.DoesNotContain("new GameObject", hudSource);
+                StringAssert.DoesNotContain("Find", hudSource);
+                StringAssert.DoesNotContain("CoreTestHUD", mainSource);
+                StringAssert.DoesNotContain("TestPlayerHUDUI", mainSource);
+                StringAssert.DoesNotContain("MonsterOverheadHUD", mainSource);
+                StringAssert.Contains("ProductionMainHUD is not bound on MainHUDRoot", mainSource);
+            }
+            finally
+            {
+                Object.DestroyImmediate(statsObject);
+                Object.DestroyImmediate(mpObject);
+                Object.DestroyImmediate(postureObject);
+                Object.DestroyImmediate(hpObject);
+                Object.DestroyImmediate(hudObject);
+            }
+        }
     }
 }
