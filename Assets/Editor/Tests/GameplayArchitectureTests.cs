@@ -71,6 +71,73 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_ExecutionHpZero_UsesCommonDeathEventExactlyOnce()
+        {
+            var target = new GameObject("ExecutionDeath_QA");
+            try
+            {
+                var stats = target.AddComponent<CombatStats>();
+                stats.OnHpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnGroggyEnded = new UnityEngine.Events.UnityEvent();
+                stats.OnHpZero = new UnityEngine.Events.UnityEvent();
+                stats.OnDeath = new UnityEngine.Events.UnityEvent();
+                stats.InitStats();
+                int deathCount = 0;
+                stats.OnDeath.AddListener(() => deathCount++);
+
+                stats.TakeExecutionDamage(stats.MaxHp);
+                stats.TakeExecutionDamage(stats.MaxHp);
+
+                Assert.IsTrue(stats.IsDead);
+                Assert.AreEqual(0f, stats.CurrentHp);
+                Assert.AreEqual(1, deathCount);
+                StringAssert.DoesNotContain("OnHpZero.AddListener(OnDeath)", File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs"));
+            }
+            finally { Object.DestroyImmediate(target); }
+        }
+
+        [Test]
+        public void Test_MonsterGroggyAndDeath_InvalidateMovementAndAttackGeneration()
+        {
+            var monsterObject = new GameObject("MonsterStateGate_QA");
+            try
+            {
+                monsterObject.SetActive(false);
+                monsterObject.AddComponent<BoxCollider2D>();
+                var stats = monsterObject.AddComponent<CombatStats>();
+                stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnGroggyState = new UnityEngine.Events.UnityEvent();
+                stats.OnGroggyEnded = new UnityEngine.Events.UnityEvent();
+                stats.InitStats();
+                var motor = monsterObject.AddComponent<KinematicMotor2D>();
+                var monster = monsterObject.AddComponent<Monster>();
+                typeof(UnitBase).GetField("stats", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(monster, stats);
+                typeof(UnitBase).GetField("motor", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(monster, motor);
+                motor.SetGroundNormal(Vector2.up);
+                motor.SetTargetVelocityX(5f);
+                motor.SimulateStep(Time.fixedDeltaTime);
+                Assert.AreEqual(5f, motor.Velocity.x, 0.001f);
+
+                stats.AddPosture(stats.MaxPosture);
+                typeof(Monster).GetMethod("OnGroggyStarted", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(monster, null);
+                motor.SimulateStep(Time.fixedDeltaTime);
+                Assert.AreEqual(0f, motor.Velocity.x, 0.001f);
+                Assert.IsFalse((bool)typeof(Monster).GetMethod("CanAct", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(monster, new object[] { 0u }));
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+                int death = source.IndexOf("deathSequenceActive = true;", System.StringComparison.Ordinal);
+                Assert.Greater(source.IndexOf("actionGeneration++;", death, System.StringComparison.Ordinal), death);
+                StringAssert.Contains("skillExecutor != null && CanAct(generation)", source);
+                StringAssert.Contains("playerTarget != null && CanAct(generation)", source);
+                StringAssert.Contains("actionGeneration++;\n        ReleaseAttackToken();", source.Replace("\r\n", "\n"));
+                StringAssert.Contains("skillExecutor.CancelActiveEffects();", source);
+            }
+            finally { Object.DestroyImmediate(monsterObject); }
+        }
+
+        [Test]
         public void Test_KinematicMotor2D_SlopeStability_UnderStress()
         {
             GameObject motorObj = new GameObject("Test_KinematicMotor_SlopeStress");
@@ -286,7 +353,11 @@ namespace QA.Tests
                 typeof(ProductionMainHUD).GetField("bossHpFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, hp);
                 typeof(ProductionMainHUD).GetField("bossPostureFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, posture);
                 var bindBoss = typeof(ProductionMainHUD).GetMethod("BindBoss", BindingFlags.Instance | BindingFlags.NonPublic);
+                var onMonsterActivated = typeof(ProductionMainHUD).GetMethod("OnMonsterActivated", BindingFlags.Instance | BindingFlags.NonPublic);
 
+                group.alpha = 0f;
+                onMonsterActivated.Invoke(hud, new object[] { boss });
+                Assert.AreEqual(0f, group.alpha, "An uninitialized/unencountered Boss must not show the panel.");
                 bindBoss.Invoke(hud, new object[] { boss });
                 Assert.AreEqual(1f, group.alpha);
                 Assert.AreEqual(1f, hp.fillAmount);
@@ -301,7 +372,7 @@ namespace QA.Tests
                 Assert.AreEqual(0.9f, hp.fillAmount, "Boss death/chunk unload must detach its listeners.");
 
                 string source = File.ReadAllText("Assets/Scripts/UI/ProductionMainHUD.cs");
-                StringAssert.Contains("if (monster is BossMonster boss) BindBoss(boss);", source);
+                StringAssert.Contains("boss.UnitData != null && boss.isActiveAndEnabled", source);
                 StringAssert.DoesNotContain("else if (activeMonster", source);
             }
             finally
@@ -756,9 +827,11 @@ namespace QA.Tests
 
                 string hudSource = File.ReadAllText("Assets/Scripts/UI/ProductionMainHUD.cs");
                 string mainSource = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
+                string sceneSource = File.ReadAllText("Assets/Scenes/MainScene.unity");
                 StringAssert.Contains("Monster.Activated += OnMonsterActivated", hudSource);
                 StringAssert.Contains("Monster.Deactivated -= OnMonsterDeactivated", hudSource);
                 StringAssert.Contains("BindSceneState();", hudSource);
+                StringAssert.Contains("transform.localScale == Vector3.zero", hudSource);
                 StringAssert.Contains("Player.Activated += OnPlayerActivated", hudSource);
                 StringAssert.Contains("Player.Deactivated -= OnPlayerDeactivated", hudSource);
                 StringAssert.Contains("bossStats.OnHpChanged.RemoveListener", hudSource);
@@ -771,6 +844,8 @@ namespace QA.Tests
                 StringAssert.DoesNotContain("TestPlayerHUDUI", mainSource);
                 StringAssert.DoesNotContain("MonsterOverheadHUD", mainSource);
                 StringAssert.Contains("ProductionMainHUD is not bound on MainHUDRoot", mainSource);
+                StringAssert.Contains("m_Name: MainHUDRoot", sceneSource);
+                StringAssert.IsMatch("m_Name: BossGroup[\\s\\S]{0,5000}m_Alpha: 0", sceneSource);
             }
             finally
             {

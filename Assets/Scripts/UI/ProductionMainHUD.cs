@@ -31,6 +31,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
     private void OnEnable()
     {
         if (!Application.isPlaying) return;
+        if (transform.localScale == Vector3.zero) transform.localScale = Vector3.one;
         Player.Activated += OnPlayerActivated;
         Player.Deactivated += OnPlayerDeactivated;
         Monster.Activated += OnMonsterActivated;
@@ -102,7 +103,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     private void OnMonsterActivated(Monster monster)
     {
-        if (monster is BossMonster boss) BindBoss(boss);
+        if (monster is BossMonster boss && boss.UnitData != null && boss.isActiveAndEnabled) BindBoss(boss);
     }
 
     private void OnMonsterDeactivated(Monster monster)

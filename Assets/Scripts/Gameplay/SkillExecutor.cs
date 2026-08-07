@@ -226,6 +226,11 @@ public class SkillExecutor : MonoBehaviour
 
     private void OnDisable()
     {
+        CancelActiveEffects();
+    }
+
+    public void CancelActiveEffects()
+    {
         if (activeSkillEffects.Count == 0) return;
         var effects = new List<SkillEffect>(activeSkillEffects);
         foreach (var effect in effects) if (effect != null) effect.ReturnToPool();
