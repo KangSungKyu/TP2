@@ -80,3 +80,8 @@
 5. 리소스작업자가 준비된 Hub Stage/상태 UI와 Main HUD 자산만 Scene별 Root에 배치한다.
 6. 리소스작업자가 5종 chunk 템플릿에 spawn zone marker를 배치한다.
 7. QA가 Hub/Main 왕복 10회 listener·Canvas 누수 0, Boss HUD 잔류 0, 프레임별 문자열 GC 0 및 렌더 예산을 검증한다.
+# Localized AlertMessage Contract (2026-08-07)
+
+- AlertMessage.Show(uint textIdx, float durationSeconds) resolves one TextData idx through the current language.
+- Separate English fallback idx fields and the former 2040/2041, 2042/2043 pair routing are removed.
+- Hub prompt uses idx 2040; Main warning uses idx 2042. Each row owns both en and kr.

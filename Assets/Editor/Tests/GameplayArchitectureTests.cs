@@ -464,6 +464,7 @@ namespace QA.Tests
             var alertObject = new GameObject("Alert_QA");
             var textObject = new GameObject("Alert_Text_QA");
             var previousDataManager = DataTableManager.Instance;
+            var previousLanguage = GameLanguageSettings.Current;
             var instanceField = typeof(Singleton<DataTableManager>)
                 .GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
             try
@@ -473,8 +474,9 @@ namespace QA.Tests
                 var tables = (System.Collections.Generic.Dictionary<DataTableType, IDataLoad>)typeof(DataTableManager)
                     .GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dataManager);
                 var textTable = new TextDataTable();
-                textTable.LoadData("idx,text\n2001,First alert\n2002,Replacement alert");
+                textTable.LoadData("idx,en,kr\n2001,First alert,첫 알림\n2002,Replacement alert,교체 알림");
                 tables[DataTableType.Text] = textTable;
+                GameLanguageSettings.Current = GameLanguage.En;
 
                 var canvasGroup = alertObject.AddComponent<CanvasGroup>();
                 var text = textObject.AddComponent<TMPro.TextMeshProUGUI>();
@@ -482,13 +484,12 @@ namespace QA.Tests
                 typeof(AlertMessage).GetField("messageText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(alert, text);
                 typeof(AlertMessage).GetField("canvasGroup", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(alert, canvasGroup);
 
-                Assert.IsTrue(alert.Show(2001, 0, 0));
+                Assert.IsTrue(alert.Show(2001, 0));
                 Assert.AreEqual("First alert", text.text);
                 Assert.AreEqual(1f, canvasGroup.alpha);
-                Assert.IsTrue(alert.Show(2001, 0, 0), "Duplicate message must not add a second listener or task.");
-                Assert.IsTrue(alert.Show(9999, 2002, 0));
-                Assert.AreEqual("Replacement alert", text.text);
-                Assert.IsTrue(alert.Show(2002, 0, 0));
+                Assert.IsTrue(alert.Show(2001, 0), "Duplicate message must not add a second listener or task.");
+                Assert.IsFalse(alert.Show(9999, 0));
+                Assert.IsTrue(alert.Show(2002, 0));
                 Assert.AreEqual("Replacement alert", text.text);
 
                 typeof(AlertMessage).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(alert, null);
@@ -503,6 +504,7 @@ namespace QA.Tests
             }
             finally
             {
+                GameLanguageSettings.Current = previousLanguage;
                 if (DataTableManager.Instance == (DataTableManager)dataObject.GetComponent(typeof(DataTableManager)))
                     instanceField.SetValue(null, previousDataManager);
                 Object.DestroyImmediate(textObject);

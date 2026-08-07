@@ -25,7 +25,7 @@ public sealed class AlertMessage : MonoBehaviour
         HideImmediate();
     }
 
-    public bool Show(uint textIdx, uint englishFallbackTextIdx = 0, float durationSeconds = 2f)
+    public bool Show(uint textIdx, float durationSeconds = 2f)
     {
         if (textIdx == 0 || messageText == null || canvasGroup == null) return false;
         if (IsVisible && CurrentTextIdx == textIdx) return true;
@@ -34,13 +34,10 @@ public sealed class AlertMessage : MonoBehaviour
         if (string.IsNullOrEmpty(message))
         {
             Debug.LogWarning($"[AlertMessage] Missing TextData idx {textIdx}.");
-            message = ResolveText(englishFallbackTextIdx);
         }
         else if (messageText.font != null && !messageText.font.HasCharacters(message))
         {
-            string fallback = ResolveText(englishFallbackTextIdx);
-            Debug.LogWarning($"[AlertMessage] TextData idx {textIdx} contains unsupported glyphs; using English fallback idx {englishFallbackTextIdx}.");
-            if (!string.IsNullOrEmpty(fallback)) message = fallback;
+            Debug.LogWarning($"[AlertMessage] TextData idx {textIdx} contains unsupported glyphs.");
         }
 
         if (string.IsNullOrEmpty(message)) return false;

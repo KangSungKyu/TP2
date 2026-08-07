@@ -19,10 +19,47 @@ namespace QA.Tests
         [Test]
         public void Test02_TextDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,text\n2001,플레이어";
+            string csvContent = "idx,en,kr\n2001,Player,플레이어";
             TextDataTable table = new TextDataTable();
             table.LoadData(csvContent);
             Assert.AreEqual(1, table.GetDataCount(), "TextDataTable 파싱 검증");
+        }
+
+        [Test]
+        public void Test_TextData_LocalizationDefaultsFallbackAndStrictHeader()
+        {
+            var previous = GameLanguageSettings.Current;
+            try
+            {
+                Assert.AreEqual(GameLanguage.En, GameLanguageSettings.RuntimeDefault);
+                Assert.AreEqual(GameLanguage.Kr, GameLanguageSettings.PrototypeDefault);
+                var table = new TextDataTable();
+                table.LoadData("idx,en,kr\n2001,Player,플레이어\n2002,Fallback,\n2003,,누락");
+                GameLanguageSettings.Current = GameLanguage.En;
+                Assert.AreEqual("Player", table.GetText(2001));
+                GameLanguageSettings.Current = GameLanguage.Kr;
+                Assert.AreEqual("플레이어", table.GetText(2001));
+                Assert.AreEqual("Fallback", table.GetText(2002));
+                bool warned = false;
+                Application.LogCallback handler = (message, _, type) =>
+                    warned |= type == LogType.Warning && message.Contains("TextData idx 2003");
+                Application.logMessageReceived += handler;
+                try
+                {
+                    Assert.AreEqual(string.Empty, table.GetText(2003));
+                }
+                finally
+                {
+                    Application.logMessageReceived -= handler;
+                }
+                Assert.IsTrue(warned);
+                Assert.Throws<CsvHelper.HeaderValidationException>(() =>
+                    new TextDataTable().LoadData("idx,text\n2001,Legacy"));
+            }
+            finally
+            {
+                GameLanguageSettings.Current = previous;
+            }
         }
 
         [Test]

@@ -93,11 +93,11 @@ public sealed class ProductionMainHUD : MonoBehaviour
         SetPlayerMp(Ratio(playerStats.CurrentMp, playerStats.MaxMp));
     }
 
-    public bool ShowPrompt(uint textIdx, uint englishFallbackTextIdx = 0, float durationSeconds = 2f) =>
-        alertMessage != null && alertMessage.Show(textIdx, englishFallbackTextIdx, durationSeconds);
+    public bool ShowPrompt(uint textIdx, float durationSeconds = 2f) =>
+        alertMessage != null && alertMessage.Show(textIdx, durationSeconds);
 
-    public bool ShowWarning(uint textIdx, uint englishFallbackTextIdx = 0, float durationSeconds = 2f) =>
-        ShowPrompt(textIdx, englishFallbackTextIdx, durationSeconds);
+    public bool ShowWarning(uint textIdx, float durationSeconds = 2f) =>
+        ShowPrompt(textIdx, durationSeconds);
 
     private void OnMonsterActivated(Monster monster)
     {

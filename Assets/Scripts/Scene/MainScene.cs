@@ -9,7 +9,6 @@ public class MainScene : MonoBehaviour
 {
     [SerializeField] private ProductionMainHUD productionHud;
     [SerializeField] private uint warningTextIdx;
-    [SerializeField] private uint warningEnglishTextIdx;
 
     private async void Start()
     {
@@ -40,7 +39,7 @@ public class MainScene : MonoBehaviour
 
         // 3. Scene asset에 바인딩된 Production HUD만 사용합니다.
         if (warningTextIdx != 0)
-            productionHud?.ShowWarning(warningTextIdx, warningEnglishTextIdx, 3f);
+            productionHud?.ShowWarning(warningTextIdx, 3f);
 
         Debug.Log("<color=green><b>[MainScene] 1스테이지 도교 신전(9001) 룸 청크 빌드 및 플레이 환경 구축 완결!</b></color>");
     }
