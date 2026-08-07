@@ -7,7 +7,6 @@ public class HubScene : MonoBehaviour
     private const uint Stage1Idx = 9001;
     [SerializeField] private AlertMessage alertMessage;
     [SerializeField] private uint hubMessageTextIdx;
-    [SerializeField] private uint hubMessageEnglishTextIdx;
     private bool transitionInProgress;
 
     private void Awake()
@@ -16,7 +15,7 @@ public class HubScene : MonoBehaviour
         if (Player.Instance != null && UnitPoolManager.Instance != null)
             UnitPoolManager.Instance.DespawnUnit(Player.Instance);
         if (hubMessageTextIdx != 0)
-            alertMessage?.Show(hubMessageTextIdx, hubMessageEnglishTextIdx, 3f);
+            alertMessage?.Show(hubMessageTextIdx, 3f);
     }
 
     public async void EnterStage(int stageIndex)

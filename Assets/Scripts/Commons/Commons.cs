@@ -179,8 +179,10 @@ public class TextData
     [Name("idx")]
     public uint Idx { get; set; }
 
-    [Name("text")]
-    public string Text { get; set; } // 다국어 / UI 표기 텍스트
+    [Name("en")]
+    public string En { get; set; } // 다국어 / UI 표기 텍스트
+    [Name("kr")]
+    public string Kr { get; set; }
 }
 
 /// <summary>

@@ -43,3 +43,6 @@
 - 과거 PASS 숫자를 고정 기록하지 않는다. 최신 결과는 `Logs/qa_test_results.txt`를 기준으로 한다.
 
 최종 소급 점검: 2026-08-05
+# TextData localized schema (2026-08-07)
+
+TextData.csv: idx:uint,en:string,kr:string. Header validation is strict. kr may be empty and falls back to en; en may be empty only as corrupted input and resolves to an empty string with a warning.

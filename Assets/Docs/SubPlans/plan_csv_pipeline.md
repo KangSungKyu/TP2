@@ -33,3 +33,9 @@
   - 숫자 필드에 비숫자 혼입
   - 빈 셀
   - 첫 데이터 idx 누락
+# TextData Localization Contract (2026-08-07)
+
+- TextData.csv uses the strict idx,en,kr schema. idx remains the only primary/runtime lookup key.
+- TextDataTable.GetText(uint) selects GameLanguageSettings.Current; runtime defaults to En and prototype/development builds default to Kr.
+- Missing kr falls back to the same row's en. Missing en returns an empty string and emits one warning per idx.
+- Language is selected at startup only. No language-change event or localization manager is introduced.

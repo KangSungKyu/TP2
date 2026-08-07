@@ -85,3 +85,9 @@
 - 병렬 브랜치 전환 중 자산 변경이 stash에 격리되어 Unity 메모리 상태와 Git 디스크가 달라졌다. 이후 자산 QA는 강제 refresh 뒤 디스크 meta와 AssetDatabase 값을 함께 검사한다.
 - KinematicMotor2D와 Rigidbody AddForce의 이동 권한 중복을 제거했으며 Monster Death는 컨트롤러 공통 `State == 8` 계약만 사용한다.
 - 모든 유닛이 Default 레이어에 있으면 모터가 다른 유닛을 지면으로 오인한다. Player/Enemy를 환경 Cast mask에서 분리하고 공격 mask만 유지한다.
+
+# 2026-08-07 Localization baseline
+
+- TextData normalized to idx,en,kr; all display callers keep the single uint GetText(idx) route.
+- Runtime default is English, prototype/development default is Korean, and missing Korean falls back to English.
+- AlertMessage uses one localized idx without paired fallback ids.
