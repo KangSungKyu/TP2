@@ -141,6 +141,7 @@ public static class Stage1RunGenerator
         {
             ChunkSlotData slot = run.Slots[i];
             if (slot.SlotIdx == run.StartSlotIdx || slot.SlotIdx == run.BossGateSlotIdx) continue;
+            bool acceptsEncounter = slot.ChunkResourceIdx == 1041u;
 
             if (chunks != null && chunks.Count > 0)
             {
@@ -156,15 +157,20 @@ public static class Stage1RunGenerator
                 {
                     ChunkResourceData selected = validChunks[(int)((seed + slot.SlotIdx) % (uint)validChunks.Count)];
                     slot.ChunkResourceIdx = selected.ResourceIdx;
+                    acceptsEncounter = selected.ChunkType == 1 || selected.ChunkType == 2;
                     resourceUseCounts.TryGetValue(selected.ResourceIdx, out int used);
                     resourceUseCounts[selected.ResourceIdx] = used + 1;
                 }
             }
 
-            if (encounters != null && encounters.Count > 0)
+            if (acceptsEncounter && encounters != null && encounters.Count > 0)
             {
                 MonsterEncounterData encounter = encounters[(int)((seed + slot.SlotIdx) % (uint)encounters.Count)];
                 slot.MonsterUnitIdxList = encounter.UnitIdxList ?? Array.Empty<uint>();
+            }
+            else
+            {
+                slot.MonsterUnitIdxList = Array.Empty<uint>();
             }
         }
         return run;

@@ -615,6 +615,9 @@ namespace QA.Tests
                 string mainSource = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
                 StringAssert.Contains("Monster.Activated += OnMonsterActivated", hudSource);
                 StringAssert.Contains("Monster.Deactivated -= OnMonsterDeactivated", hudSource);
+                StringAssert.Contains("BindSceneState();", hudSource);
+                StringAssert.Contains("Player.Activated += OnPlayerActivated", hudSource);
+                StringAssert.Contains("Player.Deactivated -= OnPlayerDeactivated", hudSource);
                 StringAssert.Contains("bossStats.OnHpChanged.RemoveListener", hudSource);
                 StringAssert.Contains("stageManager.ProgressChanged += SetStageProgress", hudSource);
                 StringAssert.Contains("alertMessage.Show(textIdx", hudSource);

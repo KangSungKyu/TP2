@@ -85,3 +85,8 @@
 - AlertMessage.Show(uint textIdx, float durationSeconds) resolves one TextData idx through the current language.
 - Separate English fallback idx fields and the former 2040/2041, 2042/2043 pair routing are removed.
 - Hub prompt uses idx 2040; Main warning uses idx 2042. Each row owns both en and kr.
+# Production HUD Runtime Binding Fix (2026-08-07)
+
+- MainHUDRoot keeps all 12 serialized references and an active Canvas; its root scale is authored as one.
+- ProductionMainHUD subscribes before binding scene state. Existing Player.Instance binds immediately and a later pooled Player.Activated binds once through the same idempotent BindPlayer path.
+- BindPlayer refreshes HP, Posture, and MP from Current/Max immediately; OnDisable removes every matching listener.

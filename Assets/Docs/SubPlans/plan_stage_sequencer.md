@@ -36,3 +36,8 @@
 - Encounter allocation is deterministic from the run seed and current slot, uses each selected zone once, caps active monsters at four, caps simultaneous attack tokens at two, and permits at most one threat-cost-3 unit (`3103` or `3106`).
 - Entry/Rest chunks produce no monsters. Resource `1042` preserves its authored Boss marker flow.
 - Invalid or insufficient authored zones emit an explicit error and may spawn one monster at one existing marker as the only fallback; silent same-point stacking is forbidden.
+# Runtime Encounter/SpawnZone Fix (2026-08-07)
+
+- Stage1RunGenerator assigns MonsterEncounterData only to authored Combat/Elite chunk types. Entry, Reward, Rest, Treasure, and BossGate slots always carry an empty encounter.
+- UnitSpawner searches the loaded chunk root with inactive children included. A non-combat chunk with no Monster marker exits silently; a combat encounter with no marker logs ChunkResourceIdx, ResourceData path, root name, and active state.
+- Combat 1050-1053 consume their three authored SpawnPointMarker components. Runtime marker creation and silent fallback for a zero-marker combat chunk remain forbidden.
