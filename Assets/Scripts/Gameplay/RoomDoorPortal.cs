@@ -11,6 +11,8 @@ public class RoomDoorPortal : MonoBehaviour
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public byte TargetSlotIdx = byte.MaxValue;
     public bool AutoTriggerOnTouch = true;
+    public byte OwnerSlotIdx { get; private set; } = byte.MaxValue;
+    public uint RoomGeneration { get; private set; }
 
     private bool isTransitioning = false;
 
@@ -41,6 +43,7 @@ public class RoomDoorPortal : MonoBehaviour
             StageManager stageManager = StageManager.Instance;
             if (stageManager.CurrentRun != null)
             {
+                if (!TryAcquireTransition(stageManager)) return;
                 if (stageManager.CurrentRun.CurrentSlotIdx == stageManager.CurrentRun.BossGateSlotIdx &&
                     TargetRoomResourceIdx == 1042)
                 {
@@ -48,7 +51,7 @@ public class RoomDoorPortal : MonoBehaviour
                 }
                 else if (!await stageManager.LoadConnectedRoomAsync(TargetSlotIdx))
                 {
-                    Debug.LogWarning($"[RoomDoorPortal] Slot transition rejected: {TargetSlotIdx}.");
+                    stageManager.CancelPortalTransition(OwnerSlotIdx, RoomGeneration);
                 }
                 return;
             }
@@ -62,11 +65,30 @@ public class RoomDoorPortal : MonoBehaviour
         }
         catch (System.Exception exception)
         {
+            if (StageManager.Instance != null)
+                StageManager.Instance.CancelPortalTransition(OwnerSlotIdx, RoomGeneration);
             Debug.LogException(exception, this);
         }
         finally
         {
             isTransitioning = false;
         }
+    }
+
+    public void Configure(byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration)
+    {
+        TargetSlotIdx = targetSlotIdx;
+        OwnerSlotIdx = ownerSlotIdx;
+        RoomGeneration = roomGeneration;
+    }
+
+    public bool TryAcquireTransition(StageManager stageManager)
+    {
+        if (stageManager == null || !stageManager.IsCurrentPortal(OwnerSlotIdx, RoomGeneration))
+        {
+            gameObject.SetActive(false);
+            return false;
+        }
+        return stageManager.TryBeginPortalTransition(OwnerSlotIdx, RoomGeneration);
     }
 }

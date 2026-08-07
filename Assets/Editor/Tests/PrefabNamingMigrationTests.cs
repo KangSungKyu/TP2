@@ -238,28 +238,41 @@ namespace QA.Tests
             }
             var dataManager = DataTableManager.Instance;
             var pool = UnitPoolManager.Instance;
-            InstallUnitResourceTables(dataManager);
-            var units = dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase);
-            var resources = dataManager.GetDB<ResourceDataTable>(DataTableType.Resource);
-            MethodInfo resolve = typeof(UnitPoolManager).GetMethod(
-                "TryResolveUnitPrefabKey", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tableField = typeof(DataTableManager).GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tables = (Dictionary<DataTableType, IDataLoad>)tableField.GetValue(dataManager);
+            bool hadUnits = tables.TryGetValue(DataTableType.UnitBase, out IDataLoad previousUnits);
+            bool hadResources = tables.TryGetValue(DataTableType.Resource, out IDataLoad previousResources);
+            try
+            {
+                InstallUnitResourceTables(dataManager);
+                var units = dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase);
+                var resources = dataManager.GetDB<ResourceDataTable>(DataTableType.Resource);
+                MethodInfo resolve = typeof(UnitPoolManager).GetMethod(
+                    "TryResolveUnitPrefabKey", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            units.Release();
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing UnitBaseData for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+                units.Release();
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing UnitBaseData for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
 
-            units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
-            resources.Release();
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing ResourceData idx 1001 for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+                units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+                resources.Release();
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing ResourceData idx 1001 for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
 
-            resources.LoadData("idx,path\n1001,");
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Empty ResourceData path at idx 1001 for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
-
-            if (poolObject != null) Object.DestroyImmediate(poolObject);
-            if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
-            if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+                resources.LoadData("idx,path\n1001,");
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Empty ResourceData path at idx 1001 for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+            }
+            finally
+            {
+                if (hadUnits) tables[DataTableType.UnitBase] = previousUnits;
+                else tables.Remove(DataTableType.UnitBase);
+                if (hadResources) tables[DataTableType.Resource] = previousResources;
+                else tables.Remove(DataTableType.Resource);
+                if (poolObject != null) Object.DestroyImmediate(poolObject);
+                if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
+                if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+            }
         }
 
         private static void InstallUnitResourceTables(DataTableManager dataManager)

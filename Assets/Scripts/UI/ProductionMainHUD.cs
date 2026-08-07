@@ -8,6 +8,9 @@ public sealed class ProductionMainHUD : MonoBehaviour
     [SerializeField] private Image playerHpFill;
     [SerializeField] private Image playerPostureFill;
     [SerializeField] private Image playerMpFill;
+    [SerializeField] private TMP_Text playerHpText;
+    [SerializeField] private TMP_Text playerPostureText;
+    [SerializeField] private TMP_Text playerMpText;
     [Header("Monster")]
     [SerializeField] private CanvasGroup monsterGroup;
     [SerializeField] private Image monsterHpFill;
@@ -30,6 +33,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     private void OnEnable()
     {
+        if (stageProgressText != null) stageProgressText.gameObject.SetActive(false);
         if (!Application.isPlaying) return;
         if (transform.localScale == Vector3.zero) transform.localScale = Vector3.one;
         Player.Activated += OnPlayerActivated;
@@ -177,9 +181,23 @@ public sealed class ProductionMainHUD : MonoBehaviour
         if (stageManager != null) stageManager.ProgressChanged += SetStageProgress;
     }
 
-    private void SetPlayerHp(float value) => SetFill(playerHpFill, value);
-    private void SetPlayerPosture(float value) => SetFill(playerPostureFill, value);
-    private void SetPlayerMp(float value) => SetFill(playerMpFill, value);
+    private void SetPlayerHp(float value)
+    {
+        SetFill(playerHpFill, value);
+        SetStatText(playerHpText, playerStats != null ? playerStats.CurrentHp : 0f, playerStats != null ? playerStats.MaxHp : 0f);
+    }
+
+    private void SetPlayerPosture(float value)
+    {
+        SetFill(playerPostureFill, value);
+        SetStatText(playerPostureText, playerStats != null ? playerStats.CurrentPosture : 0f, playerStats != null ? playerStats.MaxPosture : 0f);
+    }
+
+    private void SetPlayerMp(float value)
+    {
+        SetFill(playerMpFill, value);
+        SetStatText(playerMpText, playerStats != null ? playerStats.CurrentMp : 0f, playerStats != null ? playerStats.MaxMp : 0f);
+    }
     private void SetMonsterHp(float value) => SetFill(monsterHpFill, value);
     private void SetMonsterPosture(float value) => SetFill(monsterPostureFill, value);
     private void SetBossHp(float value) => SetFill(bossHpFill, value);
@@ -193,6 +211,11 @@ public sealed class ProductionMainHUD : MonoBehaviour
     private static void SetFill(Image image, float value)
     {
         if (image != null) image.fillAmount = Mathf.Clamp01(value);
+    }
+
+    private static void SetStatText(TMP_Text text, float current, float maximum)
+    {
+        if (text != null) text.SetText("{0:0}/{1:0}", current, maximum);
     }
 
     private static void SetVisible(CanvasGroup group, bool visible)

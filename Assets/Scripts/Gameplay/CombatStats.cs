@@ -238,6 +238,11 @@ public class CombatStats : MonoBehaviour
     private void ApplyKnockback(CombatStats attacker, float force)
     {
         if (motor == null) return;
+        if (IsSuperArmorActive)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            return;
+        }
         Vector2 pushDir = transform.position - attacker.transform.position;
         pushDir.x = Mathf.Approximately(pushDir.x, 0f) ? 1f : Mathf.Sign(pushDir.x);
         pushDir.y = Mathf.Max(pushDir.normalized.y, 0.2f);

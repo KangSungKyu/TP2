@@ -34,6 +34,12 @@
 
 | 날짜 | 변경 요약 | 근거 |
 |---:|---|---|
+| 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
+| 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
+| 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
+| 2026-08-07 16:25 KST | Chunk UI 비표시, Entry portal 복원 계약, MainHUD 수치, Sorting 역할, ProductionMinimap 사후 동기화 | StageProgress hidden; Entry 4 sockets/static gate off; MainHUD 3 current/max; Sorting Unit 7·WorldUI 5·Tilemap 20·Effect 14; Minimap M/12 rooms/5 states; 관련 5/5, EditMode 107/107, PlayMode 1/1, QA 78/78, Console 0 |
+| 2026-08-07 13:13 KST | SuperArmor knockback gate, Stage Progress 배치, production 공용 fill 자산 계약 사후 동기화 | `CombatStats.ApplyKnockback`; Stage idx visited/total, anchor `(1,1)`, pos `(-32,-24)`; `Sprite_UI_SolidFill` GUID `5a5e36b7f1680864fb8ce7fb900245c4`, production fill 15/15; EditMode 102/102, PlayMode 1/1, QA 74/74, Console 0 |
+| 2026-08-07 12:35 KST | Execution HP 0 공통 사망, Groggy/사망 중 행동 차단, Player/Boss HUD 바인딩 계약 사후 동기화 | 신규 전용 EditMode 4/4, 전체 EditMode 98/98, PlayMode 1/1, QATestRunner 74/74, Compile/Console 제품 Error 0; 16:9 실제 HUD smoke 미검증 |
 | 2026-08-04 | 전수 검사 및 마스터/서브플랜 생성 | 초기 32/32 점검 |
 | 2026-08-04 | 유닛 사망·이펙트 풀링·HUD Registry 적용 | `9483a67` |
 | 2026-08-04 | StageBuilder/Player 컴파일 오류 수선 | `49068a3` |
@@ -55,6 +61,8 @@
 | 2026-08-06 | Init→Main 자동진입 원인 확정 및 Production HUD·Chunk 탐험/Spawn 제작 명세 동결 | `InitScene.nextScene=Main(2)`; `plan_hud_ui.md` |
 
 | 2026-08-06 | Init→Hub 부팅, AlertMessage, BMJUA 공유 폰트, Production Main HUD, Combat 4종 다중 SpawnZone 소비를 통합 | 자산 3/3, EditMode 90/90, PlayMode 1/1, QA 68/68, Console 오류 0 |
+
+| 2026-08-07 | TP1의 검증된 BMJUA TTF/SDF 원본 세트를 GUID·SHA-256 보존 이관하고 Hub/Loading/Main TMP 8개를 단일 내장 material로 재바인딩 | Glyph PASS, EditMode 91/91, PlayMode 1/1, QA 69/69, Console 오류 0 |
 
 ## 🧠 AGI 자율 회고록
 
@@ -128,7 +136,51 @@
 - Runtime default is English, prototype/development default is Korean, and missing Korean falls back to English.
 - AlertMessage uses one localized idx without paired fallback ids.
 
+### 2026-08-07 — 한글 폰트 원본 이관
+- 부분 문자로 재생성한 FontAsset은 실제 TextData 한글 glyph가 누락될 수 있다. 이미 검증된 원본 TTF/SDF 세트가 있으면 GUID와 파일 해시를 함께 보존해 재사용한다.
+- Hub·Loading·Main의 TMP 8개는 동일 SDF와 내장 material 하나만 참조한다. Scene별 material instance 생성을 금지해 SetPass 증가와 참조 이탈을 차단한다.
+- 폰트 적용 완료 판정은 asset 존재가 아니라 실제 kr 문자열과 핵심 UI 문자의 `HasCharacters` 및 Game View 렌더 증거를 요구한다.
+- TP1 폰트 폴더에 라이선스 파일이 없으므로 외부 배포 전 사용 조건 확인을 유지한다.
 # 2026-08-07 HUD and SpawnZone runtime closure
 
 - Production HUD now covers both existing and asynchronously activated Player instances through one listener path.
 - Encounter assignment is gated by ChunkResourceData chunk type, keeping non-combat slots empty while Combat 1050-1053 consume three authored zones.
+
+### 2026-08-07 12:35 KST — 전투 상태·HUD QA 인계 회고
+
+- 구현·자산 완료 후 QA 단일 소유권으로 인계한 방식은 Unity 재연결 횟수 감소에 유효했다.
+- 16:9 실제 Player/Boss HUD smoke 자동화 부재는 차기 방어 항목으로 유지한다.
+- 정상 PASS 상세 로그는 생략하고 신규 Assert와 최종 count만 보존한다.
+
+### 2026-08-07 13:13 KST — SuperArmor·HUD fill 최종 QA 회고
+
+- 구현·자산 완료 후 QA 단일 소유권 인계를 유지해 Unity 재연결을 억제한다.
+- QA에서 누락 Assert를 발견하면 제품 수정 없이 최소 테스트를 보완한 뒤 최종 회귀 게이트를 다시 수행한다.
+- `fillAmount` 렌더 계약은 PPU 100, center pivot의 2×2 opaque white 공용 `Sprite_UI_SolidFill`로 고정한다.
+
+### 2026-08-07 16:25 KST — 단계 1~5 순차 구현·QA 회고
+
+- 작은 작업부터 순차 처리해 각 계약의 영향 범위와 실패 원인을 좁힌다.
+- 자산 작업 완료 후 Unity 단일 소유권을 QA에 인계해 최종 게이트를 한 번에 수행한다.
+- TMP 총개수 고정 대신 ProductionMainHUD stat text와 ProductionMinimap room label의 역할·참조 기반 계약을 사용한다.
+- 실제 M 입력, 16:9 UI, portal 물리 전환 smoke를 재현할 입력·화면 하네스가 필요하다.
+
+### 2026-08-07 16:53 KST — 공용 Portal 위치 단순화 회고
+
+- 사용자 의도에 따라 520타일 규모의 신규 접근 발판 대신 floor portal 위치를 단순화해 전투 동선 변경을 최소화한다.
+- North/South/East/West 방향값은 graph target 계산과 safe entry 배치용 데이터 메타데이터로만 유지한다.
+- 이동 장치의 사용자-facing 종류와 동작은 공용 `Portal_Gate`와 명시 `TargetSlotIdx` 계약 하나로 고정한다.
+
+### 2026-08-07 17:31 KST — Portal 생명주기·level geometry 분리 회고
+
+- portal 위치 자유도는 floor socket 접근률, 최대 step/gap, spawn clearance 같은 정량 한계로 통제한다.
+- stale portal owner/generation 생명주기와 level geometry 접근성은 서로 다른 결함 축으로 분리해 수선한다.
+- Tilemap 총개수 고정 대신 Stage1 대상 room의 모든 renderer가 올바른 역할 layer를 사용하는지 검증한다.
+
+### 2026-08-07 18:57 KST — Portal 착지·비동기/fixture 최종 회고
+
+- 정적 셀 총개수보다 collider surface, trigger bottom, EntryMarker clearance와 접근 가능한 지지면 역할 계약을 우선한다.
+- Portal trigger geometry와 landing collider를 분리 검증해야 지형은 정상인데 trigger만 매몰되는 결함을 직접 검출할 수 있다.
+- 비동기 리소스는 요청 직후 null을 실패로 판정하지 않고 완료 시점과 owner generation을 함께 확인한다.
+- 공유 DataTable을 오염시키는 실패 경로 테스트는 원래 테이블 참조를 `finally`에서 복원한다.
+- 포커스 의존 테스트 2건은 제품 게이트와 분리하고, 제품 PASS 수치에 환경 실패를 혼합하지 않는다.

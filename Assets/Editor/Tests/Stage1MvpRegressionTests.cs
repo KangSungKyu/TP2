@@ -133,7 +133,8 @@ namespace QA.Tests
                     for (int move = 0; move < 6; move++)
                     {
                         byte previous = run.CurrentSlotIdx;
-                        Assert.IsTrue(manager.TryMoveToConnectedSlot(byte.MaxValue, out uint resourceIdx));
+                        byte targetSlotIdx = run.Slots.First(slot => IsMutualAdjacent(run, previous, slot.SlotIdx)).SlotIdx;
+                        Assert.IsTrue(manager.TryMoveToConnectedSlot(targetSlotIdx, out uint resourceIdx));
                         Assert.AreNotEqual(previous, run.CurrentSlotIdx);
                         Assert.IsTrue(run.TryGetSlot(run.CurrentSlotIdx, out var destination));
                         Assert.AreEqual(destination.ChunkResourceIdx, resourceIdx);
@@ -141,6 +142,122 @@ namespace QA.Tests
                     }
                 }
                 finally { UnityEngine.Object.DestroyImmediate(manager.gameObject); }
+            }
+        }
+
+        [TestCase(ChunkSocketDirection.North, 1)]
+        [TestCase(ChunkSocketDirection.East, 5)]
+        [TestCase(ChunkSocketDirection.South, 7)]
+        [TestCase(ChunkSocketDirection.West, 3)]
+        public void Test_CommonPortalGate_UsesFixedTargetIndependentOfSocketDirection(
+            ChunkSocketDirection socketDirection, byte expectedTarget)
+        {
+            var manager = CreateManager();
+            var socketObject = new GameObject("Socket_QA");
+            var portalObject = new GameObject("Portal_Gate");
+            var returnPortalObject = new GameObject("Portal_Gate_Return");
+            try
+            {
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 3,
+                    CurrentSlotIdx = 4,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 1, ConnectionMask = 4, ChunkResourceIdx = 1051 },
+                        new ChunkSlotData { SlotIdx = 3, ConnectionMask = 2, ChunkResourceIdx = 1053 },
+                        new ChunkSlotData { SlotIdx = 4, ConnectionMask = 15, ChunkResourceIdx = 1054 },
+                        new ChunkSlotData { SlotIdx = 5, ConnectionMask = 8, ChunkResourceIdx = 1055 },
+                        new ChunkSlotData { SlotIdx = 7, ConnectionMask = 1, ChunkResourceIdx = 1057 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                socket.Direction = socketDirection;
+                Assert.IsTrue(manager.TryGetConnectedSlot(socket.Direction, out byte targetSlotIdx));
+                Assert.AreEqual(expectedTarget, targetSlotIdx);
+
+                RoomDoorPortal portal = TilemapStageBuilder.ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
+                socket.Direction = (ChunkSocketDirection)(((int)socketDirection + 1) % 4);
+                Assert.AreEqual(1, portalObject.GetComponents<RoomDoorPortal>().Length);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(portal.TargetSlotIdx, out uint resourceIdx));
+                Assert.AreEqual(expectedTarget, run.CurrentSlotIdx);
+                Assert.AreEqual(1050u + expectedTarget, resourceIdx);
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(byte.MaxValue, out _));
+
+                RoomDoorPortal returnPortal = TilemapStageBuilder.ConfigureSocketPortal(socket, returnPortalObject, 4);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(returnPortal.TargetSlotIdx, out _));
+                Assert.AreEqual(4, run.CurrentSlotIdx);
+                Assert.AreNotEqual(socket.transform.position,
+                    TilemapStageBuilder.CalculateSafeEntryPosition(socket, new Vector3(0.5f, 1f), 0.01f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(returnPortalObject);
+                UnityEngine.Object.DestroyImmediate(portalObject);
+                UnityEngine.Object.DestroyImmediate(socketObject);
+                UnityEngine.Object.DestroyImmediate(manager.gameObject);
+            }
+        }
+
+        [Test]
+        public void Test_PortalOwnerAndGeneration_IsolateStaleTarget7AndDuplicateTriggers()
+        {
+            var manager = CreateManager();
+            var staleObject = new GameObject("Portal_Stale_QA");
+            var currentObject = new GameObject("Portal_Current_QA");
+            var invalidObject = new GameObject("Portal_Invalid_QA");
+            try
+            {
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 3,
+                    CurrentSlotIdx = 4,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 4, ConnectionMask = 4, ChunkResourceIdx = 1054 },
+                        new ChunkSlotData { SlotIdx = 7, ConnectionMask = 1, ChunkResourceIdx = 1057 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+                SetRoomGeneration(manager, 10);
+                var stalePortal = staleObject.AddComponent<RoomDoorPortal>();
+                stalePortal.Configure(7, 4, 10);
+
+                Assert.IsTrue(stalePortal.TryAcquireTransition(manager));
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager), "A duplicate trigger must not start a second transition.");
+                manager.CancelPortalTransition(4, 10);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(7, out uint resourceIdx));
+                Assert.AreEqual(1057u, resourceIdx);
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager));
+                Assert.IsFalse(staleObject.activeSelf, "A stale owner portal must disable itself without warning.");
+
+                run.CurrentSlotIdx = 4;
+                SetRoomGeneration(manager, 11);
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager), "A previous room generation must stay stale after return.");
+                var currentPortal = currentObject.AddComponent<RoomDoorPortal>();
+                currentPortal.Configure(7, 4, 11);
+                Assert.IsTrue(currentPortal.TryAcquireTransition(manager));
+                manager.CancelPortalTransition(4, 11);
+
+                var invalidPortal = invalidObject.AddComponent<RoomDoorPortal>();
+                invalidPortal.Configure(8, 4, 11);
+                Assert.IsTrue(invalidPortal.TryAcquireTransition(manager));
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(invalidPortal.TargetSlotIdx, out _));
+                manager.CancelPortalTransition(4, 11);
+                string stageSource = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
+                string portalSource = File.ReadAllText("Assets/Scripts/Gameplay/RoomDoorPortal.cs");
+                Assert.AreEqual(1, stageSource.Split(new[] { "Invalid portal graph target" }, StringSplitOptions.None).Length - 1);
+                StringAssert.DoesNotContain("Slot transition rejected", portalSource);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(invalidObject);
+                UnityEngine.Object.DestroyImmediate(currentObject);
+                UnityEngine.Object.DestroyImmediate(staleObject);
+                UnityEngine.Object.DestroyImmediate(manager.gameObject);
             }
         }
 
@@ -471,6 +588,12 @@ namespace QA.Tests
         {
             typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))
                 .GetSetMethod(true).Invoke(manager, new object[] { run });
+        }
+
+        private static void SetRoomGeneration(StageManager manager, uint generation)
+        {
+            typeof(StageManager).GetProperty(nameof(StageManager.RoomGeneration))
+                .GetSetMethod(true).Invoke(manager, new object[] { generation });
         }
 
         private static StageManager CreateManager()

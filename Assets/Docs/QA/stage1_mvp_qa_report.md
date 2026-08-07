@@ -138,3 +138,16 @@ PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.Play
 | Spawn runtime | 결정론 배치, 활성 4 이하, 공격 token 2 이하, 고위협 1 이하 |
 
 최종 게이트: 자산 Assert 3/3, 일반 EditMode 90/90, PlayMode 1/1, QATestRunner 68/68, Console Error 0. 성능 하네스는 동일 Editor harness에서 임계값 PASS했으며 일반 게이트와 분리 실행한다.
+
+## TP1 BMJUA 한글 폰트 이관 QA — 2026-08-07
+
+| 검증 | 통과 기준 |
+|---|---|
+| 원본 무결성 | TP1 TTF/SDF 4파일 SHA-256 일치, GUID 충돌 0 |
+| 한글 glyph | TextData 2040·2042와 `체력 자세 마력 스킬 입장 경고` 모두 `HasCharacters=true` |
+| Scene binding | Hub 4/4, Loading 1/1, Main 3/3이 SDF GUID `6c71dcc91862372499bc2332a17f2ee4` 사용 |
+| Material | SDF 내장 material 단일 참조, duplicate instance 0 |
+| Localization | Prototype/Development Kr, Runtime En 실제 표시 유지 |
+| 자산 건전성 | Missing reference/script 0, Console 제품 오류 0 |
+
+최종 게이트: 일반 EditMode 91/91, PlayMode 1/1, QATestRunner 69/69. 성능 하네스는 제외했다.

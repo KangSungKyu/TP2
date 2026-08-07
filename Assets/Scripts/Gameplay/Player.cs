@@ -12,6 +12,7 @@ public class Player : UnitBase
 {
     public static event Action<Player> Activated;
     public static event Action<Player> Deactivated;
+    public static event Action MinimapToggleRequested;
     // =========================================================================
     // 1. PUBLIC FIELDS & PROPERTIES (PascalCase)
     // =========================================================================
@@ -207,6 +208,7 @@ public class Player : UnitBase
         }
 
         bool isJumpingInput = keyboard.cKey.isPressed;
+        if (keyboard.mKey.wasPressedThisFrame) MinimapToggleRequested?.Invoke();
         HandleMovement(keyboard);
         HandleJump(keyboard);
 

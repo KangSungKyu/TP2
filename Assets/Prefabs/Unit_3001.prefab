@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5837903626141983593}
   - component: {fileID: 8390051112812904954}
   - component: {fileID: 3877398339113559974}
+  - component: {fileID: 920175452522960574}
   m_Layer: 8
   m_Name: Unit_3001
   m_TagString: Player
@@ -197,6 +198,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   MaxWallSlideSpeed: 3.5
+--- !u!210 &920175452522960574
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_SortingLayerID: 120004
+  m_SortingLayer: 4
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &5561306966581775118
 GameObject:
   m_ObjectHideFlags: 0

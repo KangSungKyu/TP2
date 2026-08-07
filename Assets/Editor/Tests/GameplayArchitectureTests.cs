@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using TMPro;
 using UnityEngine;
 
 namespace QA.Tests
@@ -271,6 +272,213 @@ namespace QA.Tests
                 Assert.AreEqual(2f, motor.Velocity.x, 0.001f);
             }
             finally { Object.DestroyImmediate(motorObject); }
+        }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void Test_SuperArmor_GatesKnockbackWithoutChangingDamage(bool isBoss, bool armorActive)
+        {
+            var target = new GameObject(isBoss ? "Boss_SuperArmor_QA" : "Monster_SuperArmor_QA");
+            var attacker = new GameObject("Attacker_SuperArmor_QA");
+            try
+            {
+                target.SetActive(false);
+                target.AddComponent<Rigidbody2D>();
+                target.AddComponent<BoxCollider2D>();
+                var motor = target.AddComponent<KinematicMotor2D>();
+                motor.InitMotor();
+                motor.SetGroundNormal(Vector2.up);
+                var targetStats = target.AddComponent<CombatStats>();
+                var unit = isBoss
+                    ? (Monster)target.AddComponent<BossMonster>()
+                    : target.AddComponent<Monster>();
+                var attackerStats = attacker.AddComponent<CombatStats>();
+                typeof(CombatStats).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(targetStats, null);
+                typeof(CombatStats).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(attackerStats, null);
+                attacker.transform.position = Vector3.left;
+
+                Assert.AreEqual(isBoss, unit is BossMonster);
+                float hpBefore = targetStats.CurrentHp;
+                if (armorActive) motor.ApplyKnockback(Vector2.right * 6f, 0.15f);
+                targetStats.IsSuperArmorActive = armorActive;
+                targetStats.TakeDamage(10f, attacker: attackerStats);
+
+                Assert.AreEqual(hpBefore - 10f, targetStats.CurrentHp, 0.001f);
+                if (armorActive)
+                {
+                    Assert.AreEqual(0f, motor.Velocity.x, 0.001f);
+                    motor.SimulateStep(Time.fixedDeltaTime);
+                    Assert.AreEqual(0f, motor.Velocity.x, 0.001f, "SuperArmor must clear the previous knockback override.");
+                }
+                else
+                {
+                    Assert.Greater(motor.Velocity.x, 0f);
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(attacker);
+                Object.DestroyImmediate(target);
+            }
+        }
+
+        [Test]
+        public void Test_ProductionChunkProgress_DefaultsHidden()
+        {
+            var root = new GameObject("ChunkProgressHidden_QA");
+            var textObject = new GameObject("StageProgress_QA");
+            try
+            {
+                var hud = root.AddComponent<ProductionMainHUD>();
+                var text = textObject.AddComponent<TextMeshProUGUI>();
+                typeof(ProductionMainHUD).GetField("stageProgressText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, text);
+                typeof(ProductionMainHUD).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(hud, null);
+                Assert.IsFalse(textObject.activeSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(textObject);
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void Test_Stage1EntryPortal_AcceptsConnectedTargetAndRejectsInvalidTarget()
+        {
+            var managerObject = new GameObject("Stage1EntryManager_QA");
+            var validObject = new GameObject("ValidEntryPortal_QA");
+            var invalidObject = new GameObject("InvalidEntryPortal_QA");
+            try
+            {
+                var manager = managerObject.AddComponent<StageManager>();
+                var run = new StageRunData
+                {
+                    Rows = 1,
+                    Columns = 2,
+                    CurrentSlotIdx = 0,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 0, ConnectionMask = 2, ChunkResourceIdx = 1040, Visited = true },
+                        new ChunkSlotData { SlotIdx = 1, ConnectionMask = 8, ChunkResourceIdx = 1050 }
+                    }
+                };
+                typeof(StageManager).GetProperty("CurrentRun").SetValue(manager, run);
+                var valid = validObject.AddComponent<RoomDoorPortal>();
+                valid.TargetSlotIdx = 1;
+                var invalid = invalidObject.AddComponent<RoomDoorPortal>();
+                invalid.TargetSlotIdx = 2;
+
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(valid.TargetSlotIdx, out uint resourceIdx));
+                Assert.AreEqual(1050u, resourceIdx);
+                run.CurrentSlotIdx = 0;
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(invalid.TargetSlotIdx, out _));
+            }
+            finally
+            {
+                Object.DestroyImmediate(invalidObject);
+                Object.DestroyImmediate(validObject);
+                Object.DestroyImmediate(managerObject);
+            }
+        }
+
+        [Test]
+        public void Test_ProductionPlayerStats_InitialUpdateAndReuse()
+        {
+            var hudObject = new GameObject("PlayerStatsHud_QA");
+            var statsObject = new GameObject("PlayerStats_QA");
+            var hpObject = new GameObject("HpText_QA");
+            var postureObject = new GameObject("PostureText_QA");
+            var mpObject = new GameObject("MpText_QA");
+            try
+            {
+                var hud = hudObject.AddComponent<ProductionMainHUD>();
+                var hp = hpObject.AddComponent<TextMeshProUGUI>();
+                var posture = postureObject.AddComponent<TextMeshProUGUI>();
+                var mp = mpObject.AddComponent<TextMeshProUGUI>();
+                typeof(ProductionMainHUD).GetField("playerHpText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, hp);
+                typeof(ProductionMainHUD).GetField("playerPostureText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, posture);
+                typeof(ProductionMainHUD).GetField("playerMpText", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, mp);
+                var stats = statsObject.AddComponent<CombatStats>();
+                stats.OnHpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnMpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.InitStats();
+
+                hud.BindPlayer(stats);
+                Assert.AreEqual("100/100", hp.text);
+                Assert.AreEqual("0/100", posture.text);
+                Assert.AreEqual("50/50", mp.text);
+                stats.TakeDamage(10f);
+                stats.AddPosture(25f);
+                stats.ConsumeMp(10f);
+                Assert.AreEqual("90/100", hp.text);
+                Assert.AreEqual("25/100", posture.text);
+                Assert.AreEqual("40/50", mp.text);
+                hud.BindPlayer(stats);
+                stats.OnHpChanged.Invoke(0.9f);
+                Assert.AreEqual("90/100", hp.text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(mpObject);
+                Object.DestroyImmediate(postureObject);
+                Object.DestroyImmediate(hpObject);
+                Object.DestroyImmediate(statsObject);
+                Object.DestroyImmediate(hudObject);
+            }
+        }
+
+        [Test]
+        public void Test_ProductionMinimap_ToggleAndFiveStates()
+        {
+            var managerObject = new GameObject("MinimapManager_QA");
+            var minimapObject = new GameObject("Minimap_QA");
+            var rootObject = new GameObject("MinimapRoot_QA");
+            try
+            {
+                var manager = managerObject.AddComponent<StageManager>();
+                var run = new StageRunData
+                {
+                    Rows = 2,
+                    Columns = 3,
+                    CurrentSlotIdx = 0,
+                    BossGateSlotIdx = 1,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 0, Visited = true },
+                        new ChunkSlotData { SlotIdx = 1 },
+                        new ChunkSlotData { SlotIdx = 2, Visited = true, Cleared = true },
+                        new ChunkSlotData { SlotIdx = 3, Visited = true }
+                    }
+                };
+                typeof(StageManager).GetProperty("CurrentRun").SetValue(manager, run);
+                var root = rootObject.AddComponent<CanvasGroup>();
+                var minimap = minimapObject.AddComponent<ProductionMinimap>();
+                var views = new ProductionMinimap.RoomView[5];
+                for (int i = 0; i < views.Length; i++) views[i] = new ProductionMinimap.RoomView();
+                typeof(ProductionMinimap).GetField("minimapRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(minimap, root);
+                typeof(ProductionMinimap).GetField("roomViews", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(minimap, views);
+                minimap.BindStage(manager);
+                minimap.Hide();
+
+                minimap.Toggle();
+                Assert.AreEqual(1f, root.alpha);
+                Assert.AreEqual(ProductionMinimap.RoomViewState.Current, views[0].CurrentState);
+                Assert.AreEqual(ProductionMinimap.RoomViewState.Boss, views[1].CurrentState);
+                Assert.AreEqual(ProductionMinimap.RoomViewState.Cleared, views[2].CurrentState);
+                Assert.AreEqual(ProductionMinimap.RoomViewState.Visited, views[3].CurrentState);
+                Assert.AreEqual(ProductionMinimap.RoomViewState.Unknown, views[4].CurrentState);
+                minimap.Toggle();
+                Assert.AreEqual(0f, root.alpha);
+            }
+            finally
+            {
+                Object.DestroyImmediate(rootObject);
+                Object.DestroyImmediate(minimapObject);
+                Object.DestroyImmediate(managerObject);
+            }
         }
 
         [Test]
@@ -601,6 +809,57 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_SkillExecutorParticleLoad_CompletesOnceAndRejectsStaleOwner()
+        {
+            var owner = new GameObject("SkillExecutorParticle_QA");
+            var prefab = new GameObject("Particle_QA");
+            var executor = owner.AddComponent<SkillExecutor>();
+            var type = typeof(SkillExecutor);
+            var generation = type.GetField("particleLoadGeneration", BindingFlags.Instance | BindingFlags.NonPublic);
+            var pending = type.GetField("particleLoadPending", BindingFlags.Instance | BindingFlags.NonPublic);
+            var failed = type.GetField("particleLoadFailureLogged", BindingFlags.Instance | BindingFlags.NonPublic);
+            var loaded = type.GetField("particlePrefab", BindingFlags.Instance | BindingFlags.NonPublic);
+            var complete = type.GetMethod("CompleteParticleLoad", BindingFlags.Instance | BindingFlags.NonPublic);
+            try
+            {
+                Assert.NotNull(generation);
+                Assert.NotNull(complete);
+                pending.SetValue(executor, true);
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+                int startLoad = source.IndexOf("private void StartParticleLoad()", System.StringComparison.Ordinal);
+                int completeLoad = source.IndexOf("private void CompleteParticleLoad", startLoad, System.StringComparison.Ordinal);
+                StringAssert.DoesNotContain("Debug.LogError", source.Substring(startLoad, completeLoad - startLoad));
+
+                generation.SetValue(executor, 10u);
+                complete.Invoke(executor, new object[] { 10u, prefab });
+                Assert.AreSame(prefab, loaded.GetValue(executor));
+                Assert.IsFalse((bool)pending.GetValue(executor));
+
+                loaded.SetValue(executor, null);
+                failed.SetValue(executor, false);
+                int failureGuard = source.IndexOf("if (particleLoadFailureLogged) return;", completeLoad, System.StringComparison.Ordinal);
+                int failureSet = source.IndexOf("particleLoadFailureLogged = true;", failureGuard, System.StringComparison.Ordinal);
+                const string completedNullError = "[ResourceManager Error] 'Particle' resource completed with null.";
+                int error = source.IndexOf(completedNullError, failureSet, System.StringComparison.Ordinal);
+                Assert.Greater(failureGuard, completeLoad);
+                Assert.Greater(failureSet, failureGuard);
+                Assert.Greater(error, failureSet);
+                Assert.AreEqual(1, source.Split(new[] { completedNullError }, System.StringSplitOptions.None).Length - 1);
+
+                failed.SetValue(executor, false);
+                generation.SetValue(executor, 20u);
+                owner.SetActive(false);
+                complete.Invoke(executor, new object[] { 20u, prefab });
+                Assert.IsNull(loaded.GetValue(executor), "A disabled owner's stale completion must be ignored.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(prefab);
+                Object.DestroyImmediate(owner);
+            }
+        }
+
+        [Test]
         public void Test_ProjectileReturnCancelsGenerationAndNotifiesOwnerOnce()
         {
             var projectileObject = new GameObject("Projectile_ChunkA_QA");
@@ -767,6 +1026,10 @@ namespace QA.Tests
                 Assert.IsFalse(alert.Show(9999, 0));
                 Assert.IsTrue(alert.Show(2002, 0));
                 Assert.AreEqual("Replacement alert", text.text);
+
+                GameLanguageSettings.Current = GameLanguage.Kr;
+                Assert.IsTrue(alert.Show(2001, 0));
+                Assert.AreEqual("첫 알림", text.text);
 
                 typeof(AlertMessage).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(alert, null);
                 Assert.IsFalse(alert.IsVisible);
