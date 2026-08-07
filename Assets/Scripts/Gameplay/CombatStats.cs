@@ -70,6 +70,7 @@ public class CombatStats : MonoBehaviour
         CurrentMp = MaxMp;
         CurrentPosture = 0f;
         IsGroggy = false;
+        IsDead = false;
         groggyTimer = 0f;
     }
 
@@ -88,6 +89,7 @@ public class CombatStats : MonoBehaviour
 
     public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
     {
+        if (IsDead) return false;
         if (IsGroggy)
         {
             amount *= 1.5f;
@@ -139,11 +141,9 @@ public class CombatStats : MonoBehaviour
         if (amount <= 0f) return false;
 
         SpawnResponseEffect(8013);
-        CurrentHp = Mathf.Max(CurrentHp - amount, 0f);
-        OnHpChanged?.Invoke(CurrentHp / MaxHp);
+        ApplyHpDamage(amount, attacker);
 
         // 몬스터 / 유닛 피격 반응 연출 (스프라이트 적색 플래시 & 넉백)
-        TriggerHitVisualFeedback(attacker, amount);
 
         if (CurrentHp <= 0f && !IsDead)
         {
@@ -158,18 +158,30 @@ public class CombatStats : MonoBehaviour
 
     public void TakeExecutionDamage(float damage, CombatStats attacker = null)
     {
+        if (IsDead || damage <= 0f) return;
         IsGroggy = false;
         groggyTimer = 0f;
         CurrentPosture = 0f;
         OnPostureChanged?.Invoke(0f);
         OnGroggyEnded?.Invoke();
 
-        CurrentHp = Mathf.Max(CurrentHp - damage, 0f);
-        OnHpChanged?.Invoke(CurrentHp / MaxHp);
-
-        TriggerHitVisualFeedback(attacker, damage);
+        ApplyHpDamage(damage, attacker);
 
         Debug.Log($"<color=red>[Execution Impact] {gameObject.name} (이)가 {damage} 의 처형 피해를 입었습니다!</color>");
+    }
+
+    private void ApplyHpDamage(float damage, CombatStats attacker)
+    {
+        if (IsDead || damage <= 0f) return;
+        CurrentHp = Mathf.Max(CurrentHp - damage, 0f);
+        OnHpChanged?.Invoke(MaxHp > 0f ? CurrentHp / MaxHp : 0f);
+        TriggerHitVisualFeedback(attacker, damage);
+        if (CurrentHp > 0f) return;
+
+        IsDead = true;
+        Debug.Log($"[{gameObject.name}] died.");
+        OnHpZero?.Invoke();
+        OnDeath?.Invoke();
     }
 
     public void AddPosture(float amount)
