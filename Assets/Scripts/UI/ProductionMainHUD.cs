@@ -35,7 +35,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
         Player.Deactivated += OnPlayerDeactivated;
         Monster.Activated += OnMonsterActivated;
         Monster.Deactivated += OnMonsterDeactivated;
-        BindStageManager(StageManager.Instance);
+        BindSceneState();
     }
 
     private void OnDisable()

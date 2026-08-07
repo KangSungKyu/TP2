@@ -17,7 +17,21 @@ public class UnitSpawner : Singleton<UnitSpawner>
         SpawnPointMarker[] markers = roomInstance.GetComponentsInChildren<SpawnPointMarker>(true);
         if (markers == null || markers.Length == 0)
         {
-            Debug.LogError("[UnitSpawner] Loaded chunk has no SpawnPointMarker.");
+            uint[] missingMarkerEncounter = GetCurrentEncounter(Array.Empty<SpawnPointMarker>());
+            if (missingMarkerEncounter.Length == 0) return;
+
+            uint resourceIdx = 0;
+            string resourcePath = string.Empty;
+            StageRunData currentRun = StageManager.Instance?.CurrentRun;
+            if (currentRun != null && currentRun.TryGetSlot(currentRun.CurrentSlotIdx, out ChunkSlotData slot) && slot != null)
+                resourceIdx = slot.ChunkResourceIdx;
+            ResourceDataTable resources = DataTableManager.Instance != null
+                ? DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource)
+                : null;
+            if (resources != null) resourcePath = resources.GetResourcePath(resourceIdx);
+            Debug.LogError($"[UnitSpawner] Combat chunk has no SpawnPointMarker. " +
+                $"ChunkResourceIdx={resourceIdx}, Path='{resourcePath}', Root='{roomInstance.name}', " +
+                $"Active={roomInstance.activeInHierarchy}.");
             return;
         }
 

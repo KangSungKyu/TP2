@@ -127,3 +127,8 @@
 - TextData normalized to idx,en,kr; all display callers keep the single uint GetText(idx) route.
 - Runtime default is English, prototype/development default is Korean, and missing Korean falls back to English.
 - AlertMessage uses one localized idx without paired fallback ids.
+
+# 2026-08-07 HUD and SpawnZone runtime closure
+
+- Production HUD now covers both existing and asynchronously activated Player instances through one listener path.
+- Encounter assignment is gated by ChunkResourceData chunk type, keeping non-combat slots empty while Combat 1050-1053 consume three authored zones.

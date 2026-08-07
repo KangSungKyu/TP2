@@ -420,10 +420,35 @@ namespace QA.Tests
                 Assert.IsTrue(run.TryGetSlot(run.BossGateSlotIdx, out ChunkSlotData bossGate));
                 Assert.AreEqual(0, bossGate.MonsterUnitIdxList.Length);
 
+                var layout = new StageLayoutData
+                {
+                    StageDataIdx = 9001,
+                    MinActiveChunks = 9,
+                    MaxActiveChunks = 11
+                };
+                var chunks = new[]
+                {
+                    new ChunkResourceData { ResourceIdx = 1050, ChunkType = 1, SupportedConnectionMask = 15, MaxUsePerRun = 20 },
+                    new ChunkResourceData { ResourceIdx = 1057, ChunkType = 4, SupportedConnectionMask = 15, MaxUsePerRun = 20 }
+                };
+                var encounters = new[]
+                {
+                    new MonsterEncounterData { UnitIdxList = new uint[] { 3101, 3102 } }
+                };
+                StageRunData typedRun = Stage1RunGenerator.Generate(2, layout, chunks, encounters);
+                foreach (ChunkSlotData slot in typedRun.Slots)
+                {
+                    if (slot.ChunkResourceIdx == 1050) Assert.AreEqual(2, slot.MonsterUnitIdxList.Length);
+                    if (slot.ChunkResourceIdx == 1057) Assert.AreEqual(0, slot.MonsterUnitIdxList.Length);
+                }
+
                 string spawnerSource = File.ReadAllText("Assets/Scripts/Manager/UnitSpawner.cs");
                 string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
                 StringAssert.Contains("MaximumActiveMonsters = 4", spawnerSource);
                 StringAssert.Contains("SpawnFallbackOnce(zones, encounter)", spawnerSource);
+                StringAssert.Contains("if (encounter.Length == 0) return;", spawnerSource);
+                StringAssert.Contains("Combat chunk has no SpawnPointMarker", spawnerSource);
+                StringAssert.Contains("GetComponentsInChildren<SpawnPointMarker>(true)", spawnerSource);
                 StringAssert.Contains("MaximumAttackTokens = 2", monsterSource);
                 StringAssert.Contains("activeAttackTokens >= MaximumAttackTokens", monsterSource);
                 StringAssert.Contains("finally", monsterSource);
