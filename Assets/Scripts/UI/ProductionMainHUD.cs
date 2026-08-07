@@ -52,6 +52,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     public void BindSceneState()
     {
+        SetVisible(monsterGroup, false);
         BindPlayer(Player.Instance != null ? Player.Instance.Stats : null);
         BindStageManager(StageManager.Instance);
         if (stageManager != null) stageManager.PublishProgress();
@@ -101,24 +102,12 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     private void OnMonsterActivated(Monster monster)
     {
-        if (monster == null) return;
         if (monster is BossMonster boss) BindBoss(boss);
-        else if (activeMonster == null) BindMonster(monster);
     }
 
     private void OnMonsterDeactivated(Monster monster)
     {
         if (monster == activeBoss) BindBoss(null);
-        if (monster != activeMonster) return;
-        BindMonster(null);
-        foreach (Monster candidate in Monster.ActiveMonsters)
-        {
-            if (candidate != null && !(candidate is BossMonster))
-            {
-                BindMonster(candidate);
-                break;
-            }
-        }
     }
 
     private void BindMonster(Monster monster)

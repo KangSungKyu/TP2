@@ -172,6 +172,149 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_KinematicMotor_KnockbackEndsAndLatestHitOwnsReactionWindow()
+        {
+            var motorObject = new GameObject("KnockbackWindow_QA");
+            try
+            {
+                motorObject.AddComponent<Rigidbody2D>();
+                motorObject.AddComponent<BoxCollider2D>();
+                var motor = motorObject.AddComponent<KinematicMotor2D>();
+                motor.InitMotor();
+                motor.SetGroundNormal(Vector2.up);
+                motor.SetTargetVelocityX(-2f);
+                motor.ApplyKnockback(Vector2.right * 6f, 0.15f);
+
+                int reactionSteps = Mathf.CeilToInt(0.15f / Time.fixedDeltaTime);
+                for (int i = 0; i < reactionSteps; i++) motor.SimulateStep(Time.fixedDeltaTime);
+                motor.SimulateStep(Time.fixedDeltaTime);
+                Assert.AreEqual(-2f, motor.Velocity.x, 0.001f, "Input/AI target velocity must resume after hit reaction.");
+
+                motor.ApplyKnockback(Vector2.right * 6f, 0.15f);
+                for (int i = 0; i < reactionSteps / 2; i++) motor.SimulateStep(Time.fixedDeltaTime);
+                motor.SetTargetVelocityX(2f);
+                motor.ApplyKnockback(Vector2.left * 5f, 0.15f);
+                for (int i = 0; i < reactionSteps - 1; i++)
+                {
+                    motor.SimulateStep(Time.fixedDeltaTime);
+                    Assert.AreEqual(-5f, motor.Velocity.x, 0.001f, "A stale hit window must not clear the latest knockback.");
+                }
+                motor.SimulateStep(Time.fixedDeltaTime);
+                motor.SimulateStep(Time.fixedDeltaTime);
+                Assert.AreEqual(2f, motor.Velocity.x, 0.001f);
+            }
+            finally { Object.DestroyImmediate(motorObject); }
+        }
+
+        [Test]
+        public void Test_MonsterOverheadHud_EventBindingAndPoolReuseContract()
+        {
+            var monsterObject = new GameObject("MonsterOverheadOwner_QA");
+            var hudObject = new GameObject("MonsterOverheadHUD_QA");
+            var hpObject = new GameObject("MonsterHp_QA");
+            var postureObject = new GameObject("MonsterPosture_QA");
+            var groupObject = new GameObject("MonsterGroup_QA");
+            try
+            {
+                monsterObject.AddComponent<BoxCollider2D>();
+                var monster = monsterObject.AddComponent<Monster>();
+                var hp = hpObject.AddComponent<UnityEngine.UI.Image>();
+                var posture = postureObject.AddComponent<UnityEngine.UI.Image>();
+                var group = groupObject.AddComponent<CanvasGroup>();
+                var hud = hudObject.AddComponent<MonsterOverheadHUD>();
+                typeof(Monster).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(monster, null);
+                monster.Stats.OnHpChanged = new UnityEngine.Events.UnityEvent<float>();
+                monster.Stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+                typeof(MonsterOverheadHUD).GetField("owner", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, monster);
+                typeof(MonsterOverheadHUD).GetField("group", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, group);
+                typeof(MonsterOverheadHUD).GetField("hpFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, hp);
+                typeof(MonsterOverheadHUD).GetField("postureFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, posture);
+
+                hud.Bind(monster.Stats);
+                monster.Stats.OnHpChanged.Invoke(0.25f);
+                monster.Stats.OnPostureChanged.Invoke(0.5f);
+                Assert.AreEqual(0.25f, hp.fillAmount);
+                Assert.AreEqual(0.5f, posture.fillAmount);
+                Assert.AreEqual(1f, group.alpha);
+
+                hud.Bind(monster.Stats);
+                typeof(MonsterOverheadHUD).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(hud, null);
+                hp.fillAmount = 0.9f;
+                monster.Stats.OnHpChanged.Invoke(0.1f);
+                Assert.AreEqual(0.9f, hp.fillAmount, "Pooled disable must remove every listener.");
+
+                string source = File.ReadAllText("Assets/Scripts/UI/MonsterOverheadHUD.cs");
+                Assert.IsFalse(Regex.IsMatch(source, @"\b(Update|OnGUI)\s*\("));
+                StringAssert.Contains("owner is BossMonster", source);
+                StringAssert.DoesNotContain("GetComponent", source);
+                StringAssert.DoesNotContain("Find", source);
+            }
+            finally
+            {
+                Object.DestroyImmediate(groupObject);
+                Object.DestroyImmediate(postureObject);
+                Object.DestroyImmediate(hpObject);
+                Object.DestroyImmediate(hudObject);
+                Object.DestroyImmediate(monsterObject);
+            }
+        }
+
+        [Test]
+        public void Test_ProductionMainHud_BossOnlyPanelBindsAndUnbinds()
+        {
+            var bossObject = new GameObject("BossHudOwner_QA");
+            var hudObject = new GameObject("BossProductionHUD_QA");
+            var groupObject = new GameObject("BossGroup_QA");
+            var hpObject = new GameObject("BossHp_QA");
+            var postureObject = new GameObject("BossPosture_QA");
+            try
+            {
+                bossObject.SetActive(false);
+                bossObject.AddComponent<BoxCollider2D>();
+                var boss = bossObject.AddComponent<BossMonster>();
+                var stats = bossObject.GetComponent<CombatStats>();
+                stats.OnHpChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.OnPostureChanged = new UnityEngine.Events.UnityEvent<float>();
+                stats.InitStats();
+                typeof(UnitBase).GetField("stats", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, stats);
+
+                var group = groupObject.AddComponent<CanvasGroup>();
+                var hp = hpObject.AddComponent<UnityEngine.UI.Image>();
+                var posture = postureObject.AddComponent<UnityEngine.UI.Image>();
+                var hud = hudObject.AddComponent<ProductionMainHUD>();
+                typeof(ProductionMainHUD).GetField("bossGroup", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, group);
+                typeof(ProductionMainHUD).GetField("bossHpFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, hp);
+                typeof(ProductionMainHUD).GetField("bossPostureFill", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(hud, posture);
+                var bindBoss = typeof(ProductionMainHUD).GetMethod("BindBoss", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                bindBoss.Invoke(hud, new object[] { boss });
+                Assert.AreEqual(1f, group.alpha);
+                Assert.AreEqual(1f, hp.fillAmount);
+                Assert.AreEqual(0f, posture.fillAmount);
+                stats.OnHpChanged.Invoke(0.4f);
+                Assert.AreEqual(0.4f, hp.fillAmount);
+
+                bindBoss.Invoke(hud, new object[] { null });
+                Assert.AreEqual(0f, group.alpha);
+                hp.fillAmount = 0.9f;
+                stats.OnHpChanged.Invoke(0.2f);
+                Assert.AreEqual(0.9f, hp.fillAmount, "Boss death/chunk unload must detach its listeners.");
+
+                string source = File.ReadAllText("Assets/Scripts/UI/ProductionMainHUD.cs");
+                StringAssert.Contains("if (monster is BossMonster boss) BindBoss(boss);", source);
+                StringAssert.DoesNotContain("else if (activeMonster", source);
+            }
+            finally
+            {
+                Object.DestroyImmediate(postureObject);
+                Object.DestroyImmediate(hpObject);
+                Object.DestroyImmediate(groupObject);
+                Object.DestroyImmediate(hudObject);
+                Object.DestroyImmediate(bossObject);
+            }
+        }
+
+        [Test]
         public void Test_KinematicMotor_UnitsOverlapWithoutBlockingEnvironmentCollisionOrAttacks()
         {
             int playerLayer = LayerMask.NameToLayer("Player");

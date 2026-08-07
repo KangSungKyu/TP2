@@ -50,6 +50,7 @@ public class CombatStats : MonoBehaviour
 
     private float groggyTimer = 0f;
     private const float DefaultGroggyDuration = 3.0f;
+    private const float HitReactionDuration = 0.15f;
     private KinematicMotor2D motor;
 
 
@@ -228,7 +229,7 @@ public class CombatStats : MonoBehaviour
         Vector2 pushDir = transform.position - attacker.transform.position;
         pushDir.x = Mathf.Approximately(pushDir.x, 0f) ? 1f : Mathf.Sign(pushDir.x);
         pushDir.y = Mathf.Max(pushDir.normalized.y, 0.2f);
-        motor.ApplyKnockback(pushDir * force);
+        motor.ApplyKnockback(pushDir * force, HitReactionDuration);
     }
 
     private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, CancellationToken cancellationToken)
@@ -236,7 +237,7 @@ public class CombatStats : MonoBehaviour
         if (rend == null) return;
         Color original = rend.color;
         rend.color = Color.red;
-        await UniTask.Delay(System.TimeSpan.FromSeconds(0.15f), cancellationToken: cancellationToken);
+        await UniTask.Delay(System.TimeSpan.FromSeconds(HitReactionDuration), cancellationToken: cancellationToken);
         if (rend != null) rend.color = original;
     }
 
