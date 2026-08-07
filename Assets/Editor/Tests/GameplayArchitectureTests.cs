@@ -427,6 +427,38 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_PlayerDeathHubTransition_IsSingleAndGenerationGuarded()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+            int die = source.IndexOf("public void Die()", System.StringComparison.Ordinal);
+            int duplicateGuard = source.IndexOf("if (deathSequenceActive) return;", die, System.StringComparison.Ordinal);
+            int delay = source.IndexOf("FromSeconds(2.0f)", duplicateGuard, System.StringComparison.Ordinal);
+            int staleGuard = source.IndexOf("if (generation != deathGeneration) return;", delay, System.StringComparison.Ordinal);
+            int hub = source.IndexOf("StageManager.ReturnToHubAsync", staleGuard, System.StringComparison.Ordinal);
+            int reset = source.IndexOf("public void ResetAfterDeath", die, System.StringComparison.Ordinal);
+            int generationReset = source.IndexOf("deathGeneration++;", reset, System.StringComparison.Ordinal);
+
+            Assert.GreaterOrEqual(die, 0);
+            Assert.Greater(duplicateGuard, die);
+            Assert.Greater(delay, duplicateGuard);
+            Assert.Greater(staleGuard, delay);
+            Assert.Greater(hub, staleGuard);
+            Assert.Greater(generationReset, reset);
+            Assert.AreEqual(1, Regex.Matches(source, "StageManager\\.ReturnToHubAsync").Count);
+        }
+
+        [Test]
+        public void Test_HubSceneAsset_HasNoPlayerAndOneStage9001EntryButton()
+        {
+            string scene = File.ReadAllText("Assets/Scenes/HubScene.unity");
+            Assert.AreEqual(0, Regex.Matches(scene, @"(?m)^  m_Name: Player\r?$").Count);
+            Assert.AreEqual(1, Regex.Matches(scene, @"(?m)^  m_Name: Stage1EntryButton\r?$").Count);
+            Assert.AreEqual(1, Regex.Matches(scene, @"(?m)^        m_MethodName: EnterStage\r?$").Count);
+            Assert.AreEqual(1, Regex.Matches(scene, @"(?m)^          m_IntArgument: 9001\r?$").Count,
+                "Stage1EntryButton must invoke EnterStage(9001).");
+        }
+
+        [Test]
         public void Test_InitToHubAndStage1Entry_EndToEndConfigurationContract()
         {
             string initSource = File.ReadAllText("Assets/Scripts/Scene/InitScene.cs");
@@ -455,6 +487,36 @@ namespace QA.Tests
                 "Assets/Scenes/MainScene.unity"
             }, new[] { scenes[0].path, scenes[1].path, scenes[2].path, scenes[3].path });
             Assert.IsTrue(System.Array.TrueForAll(scenes, scene => scene.enabled));
+        }
+
+        [Test]
+        public void Test_HubTransitionFailure_UnlocksButtonAndLogsError()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Scene/HubScene.cs");
+            int failure = source.IndexOf("catch (Exception exception)", System.StringComparison.Ordinal);
+            int unlock = source.IndexOf("transitionInProgress = false;", failure, System.StringComparison.Ordinal);
+            int error = source.IndexOf("Debug.LogError", unlock, System.StringComparison.Ordinal);
+
+            Assert.GreaterOrEqual(failure, 0);
+            Assert.Greater(unlock, failure);
+            Assert.Greater(error, unlock);
+            StringAssert.Contains("Stage {stageIdx} transition failed: {exception.Message}", source);
+        }
+
+        [Test]
+        public void Test_HubCleanupAndGaronVictory_KeepExistingLifecycleContract()
+        {
+            string stage = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
+            string hub = File.ReadAllText("Assets/Scripts/Scene/HubScene.cs");
+            string boss = File.ReadAllText("Assets/Scripts/Gameplay/BossMonster.cs");
+
+            StringAssert.Contains("ResetRunForHub();", hub);
+            StringAssert.Contains("CleanupActiveChunksAndEffects();", stage);
+            StringAssert.Contains("UnitPoolManager.Instance.DespawnAllMonsters();", stage);
+            StringAssert.Contains("EffectPoolManager.Instance.ClearAllActiveEffects();", stage);
+            StringAssert.Contains("CurrentRun = null;", stage);
+            StringAssert.Contains("CompleteStage1Async", boss);
+            StringAssert.Contains("ReturnToHubAsync", stage);
         }
 
         [Test]

@@ -2,7 +2,9 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using TMPro;
 
 namespace QA.Tests
 {
@@ -123,6 +125,107 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Phase4_FontTextScenesAndPrefabs_HaveNoMissingOrDuplicatedReferences()
+        {
+            var texts = new TextDataTable();
+            texts.LoadData(File.ReadAllText("Assets/Datas/TextData.csv"));
+            GameLanguageSettings.Current = GameLanguage.En;
+            Assert.AreEqual("Enter Stage 1 through the portal.", texts.GetText(2040));
+            Assert.AreEqual("Warning: You entered a combat zone.", texts.GetText(2042));
+            GameLanguageSettings.Current = GameLanguage.Kr;
+            Assert.AreEqual("Stage 1 포탈을 통해 입장하세요.", texts.GetText(2040));
+            Assert.AreEqual("경고: 전투 구역에 진입했습니다.", texts.GetText(2042));
+
+            var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BMJUA_UI.asset");
+            var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Fonts/BMJUA_UI_Shared.mat");
+            Assert.NotNull(font);
+            Assert.NotNull(material);
+            bool supports2040 = font.HasCharacters(texts.GetText(2040));
+            bool supports2042 = font.HasCharacters(texts.GetText(2042));
+            GameLanguageSettings.Current = GameLanguage.En;
+            if (!supports2040) Assert.IsTrue(font.HasCharacters(texts.GetText(2040)), "BMJUA_UI also misses English 2040.");
+            if (!supports2042) Assert.IsTrue(font.HasCharacters(texts.GetText(2042)), "BMJUA_UI also misses English 2042.");
+            TestContext.WriteLine($"BMJUA glyph readback: 2040={supports2040}, 2042={supports2042}");
+
+            string[] scenePaths =
+            {
+                "Assets/Scenes/InitScene.unity", "Assets/Scenes/LoadingScene.unity",
+                "Assets/Scenes/HubScene.unity", "Assets/Scenes/MainScene.unity"
+            };
+            foreach (string scenePath in scenePaths)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                try
+                {
+                    foreach (GameObject root in scene.GetRootGameObjects()) AssertNoMissingReferences(root, scenePath);
+                    foreach (TMP_Text text in scene.GetRootGameObjects()
+                        .SelectMany(root => root.GetComponentsInChildren<TMP_Text>(true)))
+                    {
+                        Assert.AreSame(font, text.font, $"{scenePath}/{text.name} uses a duplicated font asset.");
+                        Assert.AreSame(material, text.fontSharedMaterial,
+                            $"{scenePath}/{text.name} uses a duplicated font material.");
+                    }
+                }
+                finally
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+            }
+
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Assert.NotNull(prefab, path);
+                if (prefab != null) AssertNoMissingReferences(prefab, path);
+            }
+        }
+
+        private static void AssertNoMissingReferences(GameObject root, string path)
+        {
+            foreach (Component component in root.GetComponentsInChildren<Component>(true))
+            {
+                Assert.NotNull(component, $"Missing script in {path}/{root.name}");
+                var iterator = new SerializedObject(component).GetIterator();
+                while (iterator.NextVisible(true))
+                {
+                    if (iterator.propertyType == SerializedPropertyType.ObjectReference &&
+                        iterator.objectReferenceValue == null && iterator.objectReferenceInstanceIDValue != 0)
+                        Assert.Fail($"Missing reference in {path}/{component.name}: {iterator.propertyPath}");
+                }
+            }
+        }
+
+        [Test]
+        public void Phase4_ScenesAndPrefabs_HaveNoMissingReferences()
+        {
+            foreach (string scenePath in new[]
+            {
+                "Assets/Scenes/InitScene.unity", "Assets/Scenes/LoadingScene.unity",
+                "Assets/Scenes/HubScene.unity", "Assets/Scenes/MainScene.unity"
+            })
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                try
+                {
+                    foreach (GameObject root in scene.GetRootGameObjects()) AssertNoMissingReferences(root, scenePath);
+                }
+                finally
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+            }
+
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Assert.NotNull(prefab, path);
+                if (prefab != null) AssertNoMissingReferences(prefab, path);
+            }
+        }
+
+        [Test]
         public void NewMonsters_HaveCompleteUniqueImportedAssets()
         {
             AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
@@ -138,8 +241,55 @@ namespace QA.Tests
         {
             StringAssert.Contains("1003,Unit_3101", File.ReadAllText("Assets/Datas/ResourceData.csv"));
             StringAssert.Contains("1006,Unit_3104", File.ReadAllText("Assets/Datas/ResourceData.csv"));
+
+            var units = new UnitBaseDataTable();
+            units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+            foreach (uint unitIdx in new uint[] { 3001, 3101, 3102, 3103, 3104, 3105, 3201 })
+            {
+                Assert.IsTrue(units.TryGetUnitData(unitIdx, out var unitData));
+                AssertUnitVisualFit(unitIdx, unitData.HitboxRadius);
+            }
+
             AssertMonster(3101, "SpearSentry", "Idle", "Move", "Attack", "Death");
             AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
+        }
+
+        private static void AssertUnitVisualFit(uint unitIdx, float hitboxRadius)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Unit_{unitIdx}.prefab");
+            Assert.NotNull(prefab);
+            Assert.AreEqual(Vector3.one, prefab.transform.localScale);
+
+            var renderers = prefab.GetComponentsInChildren<SpriteRenderer>(true);
+            Assert.AreEqual(1, renderers.Length);
+            var renderer = renderers[0];
+            var visual = renderer.transform;
+            Assert.AreEqual("Visual", visual.name);
+            Assert.AreEqual(Vector3.zero, visual.localPosition);
+            Assert.AreEqual(visual.localScale.x, visual.localScale.y, 0.0001f);
+            Assert.AreEqual(1f, visual.localScale.z, 0.0001f);
+            Assert.Greater(visual.localScale.x, 0f);
+            Assert.IsFalse(float.IsNaN(visual.localScale.x) || float.IsInfinity(visual.localScale.x));
+            Assert.NotNull(renderer.sprite);
+
+            string texturePath = AssetDatabase.GetAssetPath(renderer.sprite);
+            var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+            Assert.NotNull(importer);
+            Assert.AreEqual(100f, importer.spritePixelsPerUnit);
+            Assert.AreEqual(renderer.sprite.rect.width * 0.5f, renderer.sprite.pivot.x, 0.001f);
+            Assert.AreEqual(0f, renderer.sprite.pivot.y, 0.001f);
+
+            float hitboxWidth = 2f * hitboxRadius;
+            float hitboxHeight = 4f * hitboxRadius;
+            Vector2 visualBounds = renderer.bounds.size;
+            const float tolerance = 0.001f;
+            Assert.LessOrEqual(visualBounds.x, hitboxWidth + tolerance);
+            Assert.LessOrEqual(visualBounds.y, hitboxHeight + tolerance);
+            Assert.IsTrue(
+                Mathf.Abs(visualBounds.x - hitboxWidth) <= tolerance ||
+                Mathf.Abs(visualBounds.y - hitboxHeight) <= tolerance,
+                $"Unit_{unitIdx} Visual must touch at least one hitbox axis. " +
+                $"Visual={visualBounds}, Hitbox=({hitboxWidth}, {hitboxHeight})");
         }
 
         private static void AssertMonster(uint unitIdx, string name, params string[] actions)
@@ -175,14 +325,6 @@ namespace QA.Tests
             Assert.AreEqual(1f, visual.localScale.z, 0.0001f);
             Assert.Greater(visual.localScale.x, 0f);
             Assert.IsFalse(float.IsNaN(visual.localScale.x) || float.IsInfinity(visual.localScale.x));
-
-            const float targetWorldHeight = 4f;
-            float unscaledWorldHeight = renderers[0].sprite.rect.height / importer.spritePixelsPerUnit;
-            float expectedScale = targetWorldHeight / unscaledWorldHeight;
-            const float worldBoundsTolerance = 0.02f;
-            Assert.AreEqual(expectedScale, visual.localScale.x, worldBoundsTolerance / unscaledWorldHeight);
-            Assert.AreEqual(targetWorldHeight,
-                renderers[0].sprite.bounds.size.y * visual.localScale.y, worldBoundsTolerance);
 
             var collider = prefab.GetComponent<BoxCollider2D>();
             Assert.NotNull(collider);

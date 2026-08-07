@@ -48,6 +48,14 @@
 | 2026-08-06 | 유닛 PPU100·BottomCenter·Visual 구조 통일 및 피격 지면 관통/Death Animator 계약 수선 | EditMode 71/71, PlayMode 1/1, QA 52/52 |
 | 2026-08-06 | Player/Enemy 레이어 분리로 유닛 간 물리 고착 제거 | `ae77a83`, 병합 `49e56ac`; EditMode 72/72, QA 53/53 |
 
+| 2026-08-06 | Unit 7종 Visual을 HitboxRadius 기반 AABB에 정규화하고 Player 사망 고정, Monster/Boss realtime fade 후 단일 despawn, blackout 프레임 이후 camera snap 계약을 적용 | EditMode 76/76, PlayMode 1/1, QATestRunner 56/56, Console 제품 오류 0 |
+
+| 2026-08-06 | Player 사망 후 Hub 단일 복귀, UI 전용 HubScene MVP, 원거리 SkillEffect/Projectile의 owner·generation 기반 chunk 생명주기 정리를 적용 | EditMode 84/84, PlayMode 1/1, QATestRunner 64/64, Console 오류 0 |
+
+| 2026-08-06 | Init→Main 자동진입 원인 확정 및 Production HUD·Chunk 탐험/Spawn 제작 명세 동결 | `InitScene.nextScene=Main(2)`; `plan_hud_ui.md` |
+
+| 2026-08-06 | Init→Hub 부팅, AlertMessage, BMJUA 공유 폰트, Production Main HUD, Combat 4종 다중 SpawnZone 소비를 통합 | 자산 3/3, EditMode 90/90, PlayMode 1/1, QA 68/68, Console 오류 0 |
+
 ## 🧠 AGI 자율 회고록
 
 ### 2026-08-04 15:02
@@ -86,6 +94,34 @@
 - KinematicMotor2D와 Rigidbody AddForce의 이동 권한 중복을 제거했으며 Monster Death는 컨트롤러 공통 `State == 8` 계약만 사용한다.
 - 모든 유닛이 Default 레이어에 있으면 모터가 다른 유닛을 지면으로 오인한다. Player/Enemy를 환경 Cast mask에서 분리하고 공격 mask만 유지한다.
 
+### 2026-08-06 — 사망·전환·Visual 통합
+- collider만 끄고 motor를 유지하면 사망 연출 중 중력이 계속 적용된다. 사망 진입은 속도 0, motor 비활성, 위치 고정을 하나의 원자적 계약으로 유지한다.
+- 풀링 사망 연출은 중복 이벤트 잠금과 재사용 시 alpha·motor·collider 원복을 함께 검증해야 한다. 정상 로그는 누적하지 않고 중복 despawn 및 reset Assert만 보존한다.
+- 카메라 정렬은 blackout alpha 설정과 같은 프레임에 수행하면 노출될 수 있다. 최소 한 렌더 프레임을 보장한 뒤 teleport·snap을 끝내고 fade-in한다.
+- Visual 크기는 고정 월드 높이가 아니라 CSV HitboxRadius에서 유도한다. PPU100·BottomCenter·uniform scale 계약으로 7종을 한 테스트에서 검증해 중복 수치를 제거한다.
+
+### 2026-08-06 — Hub MVP·원거리 생명주기
+- Stage 1 종단 검증 전에는 지형형 Hub와 NPC 시스템보다 기존 Canvas·전환 경로를 재사용한 UI Hub가 비용과 회귀 위험이 낮다. 지형·NPC·상점은 종단 PlayMode 통과 이후로 제한한다.
+- 씬 버튼의 표시명만 확인하면 데이터 FK 오류를 놓친다. `Stage1EntryButton`은 직렬화 인자 `9001`까지 AssetDatabase에서 검증한다.
+- 원거리 이펙트와 발사체는 화면이나 target 생명주기가 아니라 owner와 chunk 생명주기에 귀속한다. owner 비활성 시 즉시 기존 pool로 반납하고 generation으로 늦게 재개되는 async를 차단한다.
+- 풀 반납 경로가 실제 manager queue와 다른 키를 사용하면 비활성 객체가 누적된다. 생성·반납·재사용이 동일 uint key와 동일 manager를 쓰는지 단일 회귀로 고정한다.
+
+### 2026-08-06 — Production HUD·Chunk 제작 준비
+- Init의 Main 자동진입은 중복 callback이 아니라 코드 기본값과 씬 직렬화 값이 모두 Main(2)인 단일 설정 결함이다. Build Settings의 모든 씬 비활성도 별도 배포 게이트로 관리한다.
+- Test HUD의 `OnGUI/Update` 경로는 제품 UI로 확장하지 않는다. 기존 CombatStats 이벤트만 재사용하고 Canvas rebuild 빈도별로 경계를 분리한다.
+- 탐험 공간은 bounds를 무작정 키우지 않고 기존 60×30 안에서 안전·이동·전투 구역과 spawn zone 3개를 분리해 아트·카메라 비용을 제한한다.
+- DrawCall 예산은 절대 추정치가 아니라 동일 해상도·동일 장면 300-frame baseline 대비 증분으로 판정한다.
+- Production UI는 HubScene의 준비·관리 UI와 MainScene의 전투 HUD를 별도 생명주기로 관리한다. 공통 자산만 공유하고 타 Scene panel을 비활성 상주시켜 메모리와 Canvas rebuild 비용을 늘리지 않는다.
+- Inventory·Skill loadout·Equipment는 화면보다 데이터·저장·이벤트 계약이 선행되어야 한다. 현재 없는 데이터를 fake UI로 숨기지 않고 의존 작업으로 명시한다.
+- Inventory·Equipment·LockOn은 현재 작업에서 제외한다. 기존 SkillData는 공격·패턴 데이터이므로 Player 전용 SkillTree 권한 테이블 없이 Hub UI에 노출하지 않는다.
+- 시스템 메시지는 Scene별 `AlertMessage`와 uint `TextData.idx`를 사용한다. BMJUA TTF는 원본만 반입했으며 TMP FontAsset 완료 전에는 영문 TextData fallback을 유지한다.
+
+### 2026-08-06 — Production HUD·SpawnZone 구현
+- Init의 목적지는 Hub로 고정하고 Build Settings 활성 순서는 Init→Loading→Hub→Main으로 검증한다. 씬 코드 기본값과 직렬화 값 중 하나만 고치면 동일 결함이 재발한다.
+- Production HUD는 TestHUD의 `OnGUI/Update`를 재사용하지 않고 CombatStats·Monster·StageManager 이벤트에만 결합한다. EditMode에서는 runtime listener를 구독하지 않아 static 테스트 오염을 막는다.
+- 폰트는 Scene별 개별 material을 만들지 않고 BMJUA 정적 FontAsset과 shared material 하나를 사용한다. 미확정 한글 glyph는 영어 TextData fallback으로 차단한다.
+- Chunk 타입은 prefab 번호로 추정하지 않고 ChunkResourceData를 먼저 조회한다. Combat 1050–1053만 SpawnZone 3개를 보유하고 Reward/Rest/Treasure/BossGate는 일반 Monster 0을 유지한다.
+- 성능 900-frame 하네스는 일반 기능 게이트와 분리한다. 포커스 의존 성능 측정이 전체 EditMode 러너를 점유하지 않도록 별도 실행 결과로 관리한다.
 # 2026-08-07 Localization baseline
 
 - TextData normalized to idx,en,kr; all display callers keep the single uint GetText(idx) route.

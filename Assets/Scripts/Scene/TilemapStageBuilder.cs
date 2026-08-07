@@ -74,6 +74,7 @@ public class TilemapStageBuilder : MonoBehaviour
         if (fadeOverlayCanvasGroup != null)
         {
             fadeOverlayCanvasGroup.alpha = 1f;
+            await UniTask.NextFrame(cancellationToken);
         }
 
         CleanupPreviousStageAndEffects();

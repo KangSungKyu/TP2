@@ -95,3 +95,46 @@ PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.Play
 |상태|검증|변경 파일|커밋|후속 위험|
 |---|---|---|---|---|
 |부분 FAIL|Unit_3001 생성·FK/GUID·로그 코드·전체 회귀|`Assets/Docs/QA/stage1_mvp_qa_report.md`|미커밋|pool identity, 기존 Instance 무생성, 누락별 null/로그가 자동화되지 않아 회귀 탐지 불가|
+
+## 사망·카메라·Visual Hitbox 통합 QA — 2026-08-06
+
+신규 예외 및 회귀 통과 기준만 유지한다.
+
+| 검증 | 통과 기준 |
+|---|---|
+| Player 사망 지면 유지 | 사망 중 motor 속도 0·비활성, reload 전 위치 불변, 중복 사망 무시 |
+| Monster/Boss 사망 풀링 | 1.5초 realtime fade 동안 위치 불변, 중복 `Die` 후 pool enqueue 1회, 동일 객체 재사용 시 alpha·motor·collider·lock 원복 |
+| Stage/Chunk 카메라 전환 | blackout alpha=1 이후 렌더 프레임을 보장하고 teleport·camera snap 완료 뒤 fade-in |
+| Unit Visual bounds | 7종 모두 `width=2r`, `height=4r` 이내, uniform scale, 최소 한 축 tolerance 0.001 이내 접촉 |
+| 렌더 자산 규격 | PPU100, BottomCenter, Visual 원점, root scale 1, SpriteRenderer 정확히 1개 |
+
+최종 게이트: EditMode 76/76, PlayMode 1/1, QATestRunner 56/56, 제품 Console Error 0.
+
+## Hub 복귀·원거리 Chunk 생명주기 QA — 2026-08-06
+
+신규 예외 및 통과 기준만 유지한다.
+
+| 검증 | 통과 기준 |
+|---|---|
+| Player 사망 복귀 | 중복 사망 후 Hub 전환 1회, pool reset 이후 stale generation 전환 0 |
+| Hub UI FK | Player 객체 0, Stage1 버튼 1, `EnterStage(9001)` persistent call 1 |
+| Hub 전환 실패 | 입력 잠금 해제, Error 기록, 중복 전환 0 |
+| Chunk 정리 | run·encounter·활성 SkillEffect·Projectile 잔존 0 |
+| 원거리 pool | owner 비활성 시 즉시 반납, async 재개 0, 중복 enqueue 0, 동일 uint key 재사용 |
+| Boss 완료 | Garon 완료 후 기존 Hub 복귀 경로 유지 |
+
+최종 게이트: EditMode 84/84, PlayMode 1/1, QATestRunner 64/64, 제품 Console Error 0.
+
+## Production HUD·SpawnZone 통합 QA — 2026-08-06
+
+| 검증 | 통과 기준 |
+|---|---|
+| 부팅 | Init→Hub, Build Settings `Init/Loading/Hub/Main`, Hub→9001→1040 |
+| Main HUD | HP/Posture/MP·Monster·Boss·Progress 이벤트 갱신, listener 누수 0, TestHUD 생성 0 |
+| AlertMessage | uint TextData 2040–2043, scene unload 취소, glyph 누락 시 영어 fallback |
+| UI 자산 | BMJUA FontAsset/shared material, missing reference 0, material instance 중복 0 |
+| Combat Chunk | 1050–1053 marker 3개, zone 간 15m 이상, 최초 Entry 14m 이상, portal 7m 이상 |
+| 비전투 Chunk | 1056/1057/1061/1063 일반 Monster marker 0, Boss 1042/3201 유지 |
+| Spawn runtime | 결정론 배치, 활성 4 이하, 공격 token 2 이하, 고위협 1 이하 |
+
+최종 게이트: 자산 Assert 3/3, 일반 EditMode 90/90, PlayMode 1/1, QATestRunner 68/68, Console Error 0. 성능 하네스는 동일 Editor harness에서 임계값 PASS했으며 일반 게이트와 분리 실행한다.

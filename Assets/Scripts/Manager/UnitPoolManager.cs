@@ -18,17 +18,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     {
         if (Player.Instance != null)
         {
-            var motor = Player.Instance.GetComponent<KinematicMotor2D>();
-            if (motor != null)
-            {
-                motor.Teleport(position);
-                motor.SetTargetVelocityX(0f);
-                motor.SetVelocityY(0f);
-            }
-            else
-            {
-                Player.Instance.transform.position = position;
-            }
+            Player.Instance.ResetAfterDeath(position);
 
             var stats = Player.Instance.GetComponent<CombatStats>();
             if (stats != null) stats.InitStats();
@@ -58,6 +48,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             playerObj.SetActive(true);
 
             var pComp = playerObj.GetComponent<Player>();
+            if (pComp != null) pComp.ResetAfterDeath(position);
             var pStats = playerObj.GetComponent<CombatStats>();
             if (pStats != null) pStats.InitStats();
 
@@ -84,21 +75,10 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             monsterObj.transform.rotation = Quaternion.identity;
 
             // 물리 및 충돌체 복원
-            var motor = monsterObj.GetComponent<KinematicMotor2D>();
-            if (motor != null)
-            {
-                motor.enabled = true;
-                motor.Teleport(position);
-                motor.SetTargetVelocityX(0f);
-                motor.SetVelocityY(0f);
-            }
-
-            var cols = monsterObj.GetComponentsInChildren<Collider2D>(true);
-            foreach (var c in cols) c.enabled = true;
-
             var monsterComp = monsterObj.GetComponent<Monster>();
             if (monsterComp != null)
             {
+                monsterComp.ResetAfterDeath(position);
                 await monsterComp.InitUnitAsync(unitId);
             }
 

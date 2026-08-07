@@ -26,6 +26,8 @@ public class Monster : UnitBase
     protected Transform playerTarget;
     protected int currentSequenceIndex = 0;
     protected readonly Dictionary<uint, float> patternCooldowns = new Dictionary<uint, float>();
+    private bool deathSequenceActive;
+    private Collider2D[] deathColliders;
     private const int MaximumAttackTokens = 2;
     private static int activeAttackTokens;
     private bool holdsAttackToken;
@@ -108,20 +110,36 @@ public class Monster : UnitBase
 
     public virtual async void Die()
     {
+        if (deathSequenceActive) return;
+        deathSequenceActive = true;
         SetAnimState(8);
 
         if (motor != null)
         {
-            motor.SetTargetVelocityX(0f);
+            motor.ApplyKnockback(Vector2.zero);
             motor.enabled = false;
         }
 
-        var cols = GetComponentsInChildren<Collider2D>();
-        foreach (var c in cols) c.enabled = false;
+        deathColliders = GetComponentsInChildren<Collider2D>();
+        foreach (var col in deathColliders) col.enabled = false;
 
         ActiveMonsters.Remove(this);
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+        const float fadeDuration = 1.5f;
+        float fadeStartedAt = Time.realtimeSinceStartup;
+        float elapsed = 0f;
+        Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        while (elapsed < fadeDuration)
+        {
+            elapsed = Time.realtimeSinceStartup - fadeStartedAt;
+            if (spriteRenderer != null)
+            {
+                Color color = startColor;
+                color.a = Mathf.Lerp(startColor.a, 0f, elapsed / fadeDuration);
+                spriteRenderer.color = color;
+            }
+            await UniTask.Yield(PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+        }
 
         if (UnitPoolManager.Instance != null)
         {
@@ -131,6 +149,32 @@ public class Monster : UnitBase
         {
             if (Application.isPlaying) Destroy(gameObject);
             else DestroyImmediate(gameObject);
+        }
+    }
+
+    public void ResetAfterDeath(Vector3 position)
+    {
+        deathSequenceActive = false;
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = 1f;
+            spriteRenderer.color = color;
+        }
+        if (deathColliders != null)
+        {
+            foreach (var col in deathColliders) if (col != null) col.enabled = true;
+        }
+        if (motor != null)
+        {
+            motor.enabled = true;
+            motor.Teleport(position);
+            motor.SetTargetVelocityX(0f);
+            motor.SetVelocityY(0f);
+        }
+        else
+        {
+            transform.position = position;
         }
     }
 

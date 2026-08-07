@@ -11,6 +11,23 @@ namespace QA.Tests
     public class TilemapStageBuilderTests
     {
         [Test]
+        public void Test00_FadeCoversCleanupTeleportAndCameraSnapBeforeFadeIn()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Scene/TilemapStageBuilder.cs");
+            int opaque = source.IndexOf("fadeOverlayCanvasGroup.alpha = 1f;");
+            int renderedFrame = source.IndexOf("await UniTask.NextFrame(cancellationToken);", opaque);
+            int cleanup = source.IndexOf("CleanupPreviousStageAndEffects();", renderedFrame);
+            int camera = source.IndexOf("SetupMetroidvaniaCamera();", cleanup);
+            int fadeIn = source.IndexOf("await fadeInScreenAsync(cancellationToken);", camera);
+
+            Assert.GreaterOrEqual(opaque, 0);
+            Assert.Greater(renderedFrame, opaque);
+            Assert.Greater(cleanup, renderedFrame);
+            Assert.Greater(camera, cleanup);
+            Assert.Greater(fadeIn, camera);
+        }
+
+        [Test]
         public void Test01_TilemapRoomTestDummyPrefab_ExistenceAndMarkers()
         {
             string path = "Assets/Prefabs/Rooms/Tilemap_Room_TestDummy.prefab";
