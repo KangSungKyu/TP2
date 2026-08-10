@@ -3,14 +3,15 @@
 ## 1. 개요 및 유저 확정 요구사항
 
 본 문서는 플레이어의 정밀 물리 이동 스펙을 반영한 6x6 모듈 템플릿 및 모듈(Prefab) ➔ 청크(Prefab) 생성 주입 메커니즘을 정의합니다.
-청크($60\text{m} \times 30\text{m}$)는 모듈($6\text{m} \times 6\text{m}$)의 $10 \times 5$ 배열로 구성되므로, **지면 모듈**, **공중 부유 모듈 (Mid-Air Floating Modules)**, **고지대 높은 지형 모듈 (High Terrain / Elevation Modules)**을 모두 통합 반영합니다.
+청크($60\text{m} \times 30\text{m}$)는 모듈($6\text{m} \times 6\text{m}$)의 $10 \times 5$ 배열로 구성되며, **모든 진입/진출 Entry Point(West, East, North, South Sockets) 간 최소 1개 이상의 위상적 통과 경로(Continuous Passable Pathway)**를 100% 보장합니다.
 
-### 1.1 유저 확정 5대 기본 지칙 (Confirmed Rules)
-1. **진입/진출 Socket 위치**: 모듈/청크 간 진입·진출 위치 제한 없음 (플레이어 점프/대시 도달 가능성 검증 필수).
-2. **발판 하향 통과 조작**: `OneWayPlatform` 하향 통과 조작은 **`아래 방향(Down/S Key) + 점프(Jump)`** 확정.
-3. **함정 피해 & 안전 지형 이동**: 함정 피격 시 **노크백 없음 (`knockbackForce = 0`)**, 피격 직후 **가장 가까운 안전 지형(`LastSafeGroundedPosition`)으로 복귀**.
-4. **그리드 셀 크기**: `Grid Cell Size = (1.0, 1.0, 1.0)` 기본값 고정.
-5. **모듈 ➔ 청크 주입 구조**: 실제 게임 런타임에서는 모듈(Prefab) 정보를 기반으로 청크(Prefab)에 타일 및 객체 데이터를 주입하여 최종 룸 청크를 전개.
+### 1.1 유저 확정 기본 지칙 (Confirmed Rules)
+1. **Entry Point 간 경로 보장**: 청크 내 모든 진입/진출 Socket (West, East, North, South) 상호 간 최소 1개 이상의 도달 가능 통로(Continuous Path) 100% 보장 (BFS 그래프 검증 적용).
+2. **진입/진출 Socket 위치**: 모듈/청크 간 진입·진출 위치 제한 없음 (플레이어 점프/대시 도달 가능성 검증 필수).
+3. **발판 하향 통과 조작**: `OneWayPlatform` 하향 통과 조작은 **`아래 방향(Down/S Key) + 점프(Jump)`** 확정.
+4. **함정 피해 & 안전 지형 이동**: 함정 피격 시 **노크백 없음 (`knockbackForce = 0`)**, 피격 직후 **가장 가까운 안전 지형(`LastSafeGroundedPosition`)으로 복귀**.
+5. **그리드 셀 크기 & PPU 일치**: `Grid Cell Size = (1.0, 1.0, 1.0)`, 함정 Sprite PPU=32 (1:1 텍스처-콜라이더 정밀 결착).
+6. **Entry 주변 안전 구역**: Player SpawnPoint 주변 4m 반경 내 함정/적 배치 절대 금지.
 
 ---
 
@@ -28,119 +29,33 @@
 
 ---
 
-## 3. 6x6 청크 모듈 템플릿 (지상/공중/고지대 24가지 템플릿)
+## 3. Entry Point 위상 연결 및 BFS 경로 검증 메커니즘
+
+```mermaid
+graph TD
+    W[West Entry Socket] <-->|Row 0~1 Passable Modules| S[South Entry Socket]
+    W <-->|Row 2 Main Corridor| E[East Entry Socket]
+    E <-->|Col 8 Vertical Shaft| N[North Entry Socket]
+    N <-->|Top Layer Modules| W
+```
+
+### 3.1 10x5 모듈 배열 통로 구성 규칙
+- **West Socket (X=-30, Y=1~4)**: `ModX=0, ModY=0` 지점 전개.
+- **East Socket (X=+30, Y=1~4)**: `ModX=9, ModY=0` 지점 전개.
+- **South Socket (X=0, Y=0)**: `ModX=4~5, ModY=0` 지점 전개.
+- **North Socket (X=0, Y=30)**: `ModX=4~5, ModY=4` 지점 전개.
+- **수평 통로**: Row 0, Row 2 상에 수평 이동 가능 모듈(`Module_A1`, `Module_B1`, `Module_D1`, `Module_F1`, `Module_H1`)을 주입하여 West ↔ East 100% 직결.
+- **수직 통로**: Column 4, Column 8 상에 수직 상승/하강 모듈(`Module_B1`, `Module_C1`, `Module_F3`, `Module_I1`)을 주입하여 South ↔ Middle ↔ North 100% 직결.
+
+---
+
+## 4. 6x6 청크 모듈 템플릿 (24종 위상 밸런스 모듈)
 
 - **규격**: $6\text{m} \times 6\text{m}$ ($6 \times 6\text{ cells}$)
 - **타일 범례**:
-  - `■` : Solid Ground / Wall / High Cliff Tile
+  - `■` : Solid Ground / Wall Tile
   - `═` : One-Way Platform (Down+Jump 하향 통과)
   - `▲` / `▼` / `◄` / `►` : Spike Trap (피격 시 가장 가까운 지형 복귀)
   - `◎` : Circular Saw Blade Trap (피격 시 가장 가까운 지형 복귀)
   - `·` : Open Air / Passable Space
   - `S` / `E` : Module Entry / Exit Socket (위치 자유)
-
----
-
-### [Category A~E: 지상 & 장애물 통과 모듈]
-```text
-[Module A1: 표준 3타일 가시 건너뛰기]
-· · · · · · (Y=5)
-S · · · · E (Y=2)
-■ ■ ▲ ▲ ▲ ■ (Y=1)
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
----
-
-### [Category F~G: 공중 붕 떠있는 부유 모듈 (Mid-Air Floating)]
-```text
-[Module F1: 공중 징검다리 1-Way 발판]
-· · ═ ═ · · (Y=4)
-═ ═ · · ═ ═ (Y=2)
-· · · · · · (Y=0) - Y=0 오픈 에어
-```
-
----
-
-### [Category H: 높은 지형 & 절벽 대지 모듈 (High Terrain / Elevation)]
-
-#### Module H1: 우측 고지대 절벽 & 가시 벽 (Right High Cliff & Wall Spike)
-```text
-■ ■ ■ ■ ■ ■ (Y=5) - Y=3~5 고지대 암반
-■ ■ ■ ■ ■ ■ (Y=4)
-■ ■ ■ ■ ■ ■ (Y=3)
-S · · ◄ ■ ■ (Y=2) - 좌측 저지대 ➔ 우측 3m 절벽 등반
-· · · · ■ ■ (Y=1)
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
-#### Module H2: 중앙 고지대 요새 대지 (Central Elevated Fortress Plateau)
-```text
-· · · · · · (Y=5)
-· ■ ■ ■ ■ · (Y=4) - 중앙 고지대 요새 플랫폼 (Y=2~4)
-· ■ ■ ■ ■ · (Y=3)
-S ■ ■ ■ ■ E (Y=2) - 양측 절벽 갭
-· · ▲ ▲ · · (Y=1) - 저지대 가시 골짜기
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
-#### Module H3: 쌍둥이 절벽 & 고지대 공용 다리 (Dual High Cliffs & One-Way Bridge)
-```text
-■ ■ · · ■ ■ (Y=5)
-■ ■ ═ ═ ■ ■ (Y=4) - 고지대 1-Way 공중 다리 연결
-■ ■ · · ■ ■ (Y=3)
-■ ■ · · ■ ■ (Y=2) - 좌/우 3m 절벽 암벽
-· · · · · · (Y=1)
-■ ■ ▲ ▲ ■ ■ (Y=0) - 중앙 깊은 가시 계곡
-```
-
----
-
-### [Category I: 고지대 경사면 & 톱날 순찰 모듈 (High Slope & Edge Patrol)]
-
-#### Module I1: 계단식 고지대 등반 (Elevated Stepped Ledges)
-```text
-· · · · ■ ■ (Y=5) - 최상단 고지대
-· · · ■ ■ ■ (Y=4)
-· · ■ ■ ■ ■ (Y=3)
-· ■ ■ ■ ■ ■ (Y=2) - 1m 피치 계단식 상승
-S ■ ■ ■ ■ ■ (Y=1)
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
-#### Module I2: 고지대 톱날 절벽 순찰 (High Cliff Edge Saw Patrol)
-```text
-· · ◎ ◄ ═ ► (Y=5) - 고지대 톱날 순찰 트랙
-■ ■ ■ ■ ■ ■ (Y=4) - 고지대 암반 지형
-■ ■ ■ ■ ■ ■ (Y=3)
-S · · · · E (Y=2) - 하부 우회 통로
-■ ▲ ▲ ▲ ▲ ■ (Y=1)
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
-#### Module I3: 고지대 대시 낙하 모듈 (High Altitude Dash Drop)
-```text
-■ ■ ■ ■ ■ ■ (Y=5) - 고지대 지붕
-S · · · · · (Y=4) - 고지대 진입
-■ ■ ■ ■ · · (Y=3) - 절벽 낙하 (Drop-off 4m)
-· · · · · · (Y=2)
-· · · · · E (Y=1) - 저지대 출구
-■ ■ ■ ■ ■ ■ (Y=0)
-```
-
----
-
-## 4. 모듈(Prefab) ➔ 청크(Prefab) 주입 파이프라인
-
-```mermaid
-graph TD
-    A[Ground Module Prefab] -->|Layout Extract| D[Chunk Generator / Builder]
-    B[Mid-Air Floating Module Prefab] -->|Layout Extract| D
-    C[High Terrain Module Prefab] -->|Layout Extract| D
-    D -->|Inject Tiles & Markers| E[Final 60x30 Room Chunk Prefab]
-    E -->|Instantiate / Pool| F[Runtime Game Scene]
-```
-
-1. **3대 레이어 모듈 결합**: $10 \times 5$ 그리드 상에 지상 모듈(하단), 공중 부유 모듈(중단), 고지대 절벽 모듈(상단/측면)을 무제한 조합.
-2. **청크 데이터 주입**: 각 6x6 모듈 Prefab의 타일맵 및 마커 데이터를 60x30 청크 Prefab에 데이터 주입.
-3. **런타임 플레이 및 도달성 검증**: 플레이어의 수직/수평 점프 동선상 도달 가능성이 100% 보장되는 완성형 청크를 런타임에 인스턴스화.
