@@ -43,7 +43,7 @@
 | 2026-08-10 | 유저 확정 5대 계약(노크백 제거&안전지형 이송, Down+Jump 발판 통과, 모듈->청크 주입 생명주기) 구현 및 C# 동기화 완결 (`8fa945c`) | `plan_hazards_traps.md`, `plan_chunk_6x6_modules.md`, `HazardBase.cs` |
 | 2026-08-10 | 청크($10 \times 5$ 모듈 배열) 수직/중단 전개용 공용 부유 모듈(Floating Air Modules) 템플릿 6종 추가 명세 수립 | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
 | 2026-08-10 | 높은 지형/절벽/언덕 표현용 고지대 모듈(High Terrain / Elevation Modules) 템플릿 6종 신규 명세 수립 (총 24종 템플릿 완성) | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
-| 2026-08-10 | 24종 6x6 모듈 Prefab 수성 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더 구축 발주 | `Assets/Editor/Stage1ChunkBuilder.cs`, `Assets/Editor/ModuleChunkBuilder.cs` |
+| 2026-08-10 | 24종 6x6 모듈 Prefab 수성 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더 구축 완결 (`202f805`) | `Assets/Editor/Stage1ChunkBuilder.cs`, `Assets/Editor/ModuleChunkBuilder.cs` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -254,4 +254,4 @@
 ### 2026-08-10 KST — 6x6 모듈 Prefab 수성 및 Stage 1 청크 11종 전면 재생성 회고
 
 - 총 24종 6x6 모듈 Prefab(`Assets/Prefabs/Modules/`) 자동 빌드 및 10x5 모듈 그리드 레이아웃 주입 파이프라인 수립.
-- Stage 1 룸 청크 11종(`Prefab_1040`, `Prefab_1041`, `Prefab_1042`, `Room_11050`~`Room_11063`)의 타일맵(Ground, Platform, Background), 1-Way 발판, 함정(`SpikeTrap`, `SawBladeTrap`), 스폰 마커 및 관문 포탈의 전면 재빌드 및 무결성 검증을 발주함.
+- Stage 1 룸 청크 11종(`Prefab_1040`, `Prefab_1041`, `Prefab_1042`, `Room_11050`~`Room_11063`)의 타일맵(Ground, Platform, Background), 1-Way 발판, 함정(`SpikeTrap`, `SawBladeTrap`), 스폰 마커 및 관문 포탈의 전면 재빌드 및 무결성 검증을 완료하고 NUnit 자동화 테스트 100% PASS / `portfolio` 원격 Push(`202f805`) 완수.
