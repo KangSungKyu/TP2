@@ -27,6 +27,7 @@
 - Boss Room `1042`는 Boss Gate 슬롯에서만 진입한다.
 - 플레이어는 `Player.Instance`, 유닛은 `UnitPoolManager`, 이펙트는 `EffectPoolManager`를 재사용한다.
 - 런타임 `Find*`, 직접 유닛 `Instantiate`, 매니저 `new/AddComponent`를 금지한다.
+- 유니티 엔진 버전, 패키지, 플러그인의 구형/Obsolete API 사용을 전면 금지하며, 최신 Modern Unity API (`FindFirstObjectByType`, `FindObjectsByType`, `bodyType`) 규격을 100% 준수한다.
 - Player는 layer 8, Enemy/Boss는 layer 9를 사용하며 유닛 레이어를 지면·벽 Cast 후보에서 제외한다.
 - 유닛끼리 물리 이동을 차단하지 않되 공격 판정은 `Player|Enemy` mask `768`로 유지한다.
 
@@ -35,7 +36,8 @@
 | 날짜 | 변경 요약 | 근거 |
 |---:|---|---|
 | 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 구현 완료 (`46d0906`) | `Assets/Docs/SubPlans/plan_hazards_traps.md` 신설, `HazardBase.cs`, `SpikeTrap.cs`, `SawBladeTrap.cs` |
-| 2026-08-10 | `HazardBase.cs` `TakeDamage(damage)` 인자 수선 및 Obsolete `rb.isKinematic` -> `bodyType` 현대화 발주 | `HazardBase.cs` |
+| 2026-08-10 | `HazardBase.cs` `TakeDamage(damage)` 인자 수선 및 Obsolete `rb.isKinematic` -> `bodyType` 현대화 수선 동기화 (`fb75cee`) | `HazardBase.cs` |
+| 2026-08-10 | 전 스크립트 대상 Modern Unity API 규격(`FindFirstObjectByType`, `FindObjectsByType`, `bodyType`) 적용 및 거버넌스 전면 확립 | `TilemapStageBuilderTests.cs`, `HazardBase.cs`, `implementation_plan.md` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -201,3 +203,13 @@
 
 - `HazardBase.cs` 내 `CombatStats.TakeDamage` 호출 시 2번째 인자 타입 미스매치(`knockbackImpulse` Vector2 전달) 결함 적발. ➔ `stats.TakeDamage(damage)` 단일 인자로 수선하고 노크백 전달을 분리함.
 - Unity 구형/Obsolete 프로퍼티 `rb.isKinematic`을 `rb.bodyType != RigidbodyType2D.Kinematic` 현대화 API로 100% 교체 정제함.
+
+---
+
+### 2026-08-10 KST — Modern Unity API 마이그레이션 및 프로그래머 개발 거버넌스 회고
+
+- 프로젝트 전체 코드베이스 대상 구형 Deprecated/Obsolete Unity API 마이그레이션 완결:
+  - `Object.FindObjectsOfType<T>()` ➔ `Object.FindObjectsByType<T>(FindObjectsSortMode.None)` (`TilemapStageBuilderTests.cs:120`)
+  - `Object.FindObjectOfType<T>()` ➔ `Object.FindFirstObjectByType<T>()` (`InitScene.cs:44`)
+  - `rb.isKinematic` ➔ `rb.bodyType != RigidbodyType2D.Kinematic` (`HazardBase.cs:78`)
+- **[PM 거버넌스 방어 지침 수립]**: 향후 모든 개발 서브에이전트(메인프로그래머, CI프로그래머, QA프로그래머)는 유니티 엔진 버전, 패키지 및 플러그인의 Deprecated/Obsolete API 사용을 전면 배제하고 최신 Modern Unity API 규격으로만 개발하도록 마스터 명세서 `Assets/Docs/implementation_plan.md` 코어 규칙에 강제 등록 완수.

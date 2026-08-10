@@ -117,7 +117,7 @@ namespace QA.Tests
 
             spawner.SpawnUnitsFromMarkers(roomChunk);
 
-            var activePlayers = Object.FindObjectsOfType<Player>();
+            var activePlayers = Object.FindObjectsByType<Player>(FindObjectsSortMode.None);
             Assert.GreaterOrEqual(activePlayers.Length, 1, "UnitSpawner 스폰 후 유효한 플레이어가 존재해야 합니다.");
 
             Object.DestroyImmediate(player1);
