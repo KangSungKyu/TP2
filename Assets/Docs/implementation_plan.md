@@ -47,6 +47,7 @@
 | 2026-08-10 | 24종 6x6 모듈 템플릿의 정밀 6x6 ASCII 파서 연동으로 단층(1x6) 생성 버그 수선 및 10x5 청크 주입 완전재구성 (`1248364`) | `ModuleChunkBuilder.cs` |
 | 2026-08-10 | `ModuleChunkBuilder.cs` 내 인덱싱 구문 `line[cellX]` 보정 수선 (`4d80fb3`) | `ModuleChunkBuilder.cs` |
 | 2026-08-10 | 더미 함정 리소스(가시/톱날 스프라이트) 자동 생성 및 unityMCP 직접 구동으로 24종 모듈 및 Stage 1 청크 11종 정밀 재생성 완결 (`0e1034a`) | `Sprite_SpikeTrap.png`, `Sprite_SawBladeTrap.png`, `ModuleChunkBuilder.cs` |
+| 2026-08-10 | 유저 청크 4대 지칙(100% 도달성, PPU=32 1:1 콜라이더 일치, sortingOrder=15 함정 시각화, Entry 4m 안전 구역) 적용 재빌드 완결 (`bfaf12d`) | `ModuleChunkBuilder.cs`, `Prefab_1040.prefab`~`Room_11063.prefab` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -272,3 +273,11 @@
 
 - 함정 더미 리소스 규격에 맞춰 `Sprite_SpikeTrap.png` (가시 함정) 및 `Sprite_SawBladeTrap.png` (톱날 함정) PNG 스프라이트를 자동 작성 및 `Assets/Textures/Environment/` 저장.
 - Unity 에디터 컴파일 후 `unityMCP` `execute_menu_item` 도구를 직접 실행하여 24종 모듈 Prefab과 10x5 주입 Stage 1 룸 청크 11종(`Prefab_1040`, `Prefab_1041`, `Prefab_1042`, `Room_11050`~`Room_11063`)을 실시간 재빌드 및 Addressables 자동 바인딩·원격 Push (`0e1034a`) 완수.
+
+---
+
+### 2026-08-10 KST — 유저 청크 4대 지칙(도달성, PPU 일치, 시각화, Entry 안전구역) 반영 회고
+
+- **플레이어 100% 도달 가능성**: `Prefab_1040` 좌측 상단 등 고립된 폐쇄 구역 지형 타일을 전면 개방/제거하여 플레이어가 2.5m 점프 및 3.6m 대시로 모든 구역에 진입 가능하도록 보장.
+- **PPU=32 1:1 콜라이더 일치 & 시각화**: 더미 함정 스프라이트 PPU를 32f로 고정(32px=1.0m world size)하여 Cell Size(1.0, 1.0) 및 Collider와 1:1 정밀 일치시키고, SpriteRenderer `sortingOrder = 15` 설정으로 타일맵 상단에 100% 선명하게 렌더링되도록 수선.
+- **Entry 지점 4m 안전 구역**: Player SpawnPoint 주변 4m 반경 내 함정/적 배치를 전면 차단하여 청크 진입 시 100% 안전 보장 (`bfaf12d`).
