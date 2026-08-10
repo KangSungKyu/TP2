@@ -7,20 +7,20 @@ using UnityEngine.Tilemaps;
 
 /// <summary>
 /// 40종 다양화 6x6 청크 모듈 Prefab 제작 및 가변 규격(NxM, 3<=N,M<=20) Stage 1 룸 청크 재생성 빌더.
-/// 1. Module_L1 포함 함정-발판 인접 밀집 구조 전면 수선 (2.5m 이상 착지/회피 여유 공간 확보).
-/// 2. 좁은 공간(4x5, 5x3) ~ 넓은 공간(8x4, 10x5) 가변 NxM 모듈 그리드 균일 공간 배치.
-/// 3. Stage 1 초반 난이도 곡선 반영: 함정 및 복잡 플랫포머 수 대폭 감축 (청크당 0~2개 미만).
+/// 1. 발판(=)과 지형(#) 직접 접촉 전면 금지 (독립 부유 발판 구조).
+/// 2. 모듈 경계(Col 0, Col 5) 및 층간 통로 최소 3~4m (3~4칸) 광폭 공간 보장 (플레이어 끼임 100% 철폐).
+/// 3. Stage 1 함정/플랫포밍 난이도 적정화 & 가변 NxM 청크 균일 공간 배치.
 /// </summary>
 public static class ModuleChunkBuilder
 {
     private static readonly Dictionary<string, string[]> ModuleTemplates = new Dictionary<string, string[]>()
     {
-        // === Category A: 평지 & 기초 통로 (1.5m~2m 통로) ===
+        // === Category A: 평지 & 광폭 평탄 통로 (3~4m 넉넉한 공간) ===
         ["Module_A1"] = new string[] {
             "......",
             "......",
-            "......",
             "S....E",
+            "......",
             "######",
             "######"
         },
@@ -29,15 +29,15 @@ public static class ModuleChunkBuilder
             "......",
             "..==..",
             "S....E",
-            "#....#",
+            "......",
             "######"
         },
         ["Module_A3"] = new string[] {
             "......",
             "......",
-            "......",
             "S...=E",
-            "##...#",
+            "......",
+            "######",
             "######"
         },
         ["Module_A4"] = new string[] {
@@ -45,31 +45,31 @@ public static class ModuleChunkBuilder
             "......",
             "..==..",
             "S....E",
-            "######",
+            "......",
             "######"
         },
 
-        // === Category B: 2층 발판 & 도약 통로 ===
+        // === Category B: 2층 부유 발판 & 도약 통로 (지형 접촉 없음, 3m 천장 고도) ===
         ["Module_B1"] = new string[] {
-            "...E..",
-            "..===.",
             "......",
-            ".===..",
-            "S.....",
+            "...==.",
+            "......",
+            ".==...",
+            "S....E",
             "######"
         },
         ["Module_B2"] = new string[] {
             "S.....",
-            "##==..",
             "......",
-            "....==",
-            ".....E",
+            "..==..",
+            "......",
+            "....=E",
             "######"
         },
         ["Module_B3"] = new string[] {
             ".....E",
             "...==.",
-            "..==..",
+            "......",
             ".==...",
             "S.....",
             "######"
@@ -77,20 +77,20 @@ public static class ModuleChunkBuilder
         ["Module_B4"] = new string[] {
             "S.....",
             ".==...",
-            "..==..",
+            "......",
             "...==.",
             ".....E",
             "######"
         },
 
-        // === Category C: 수직 상승/하강 개방 샤프트 (2m 폭 수직 통로) ===
+        // === Category C: 수직 개방 샤프트 (3~4m 광폭 수직 통로) ===
         ["Module_C1"] = new string[] {
             "......",
             "#....#",
-            "#.==.#",
             "#....#",
             "#....#",
-            "S....E"
+            "S....E",
+            "......"
         },
         ["Module_C2"] = new string[] {
             ".....E",
@@ -103,34 +103,34 @@ public static class ModuleChunkBuilder
         ["Module_C3"] = new string[] {
             "S.....",
             "#....#",
-            "#.==.#",
+            "#....#",
             "#....#",
             ".....E",
             "######"
         },
         ["Module_C4"] = new string[] {
             "......",
+            "#....#",
             "#..==#",
             "#....#",
-            "#==..#",
-            "......",
+            "S....E",
             "######"
         },
 
-        // === Category D: 대시 우회 & 쾌적 지형 ===
+        // === Category D: 대시 우회 & 3~4m 광폭 통로 ===
         ["Module_D1"] = new string[] {
             "......",
             "......",
             "S....E",
             "......",
-            "##..##",
+            "#....#",
             "######"
         },
         ["Module_D2"] = new string[] {
             "......",
             "......",
             "S....E",
-            "##..##",
+            "......",
             "######",
             "######"
         },
@@ -139,39 +139,39 @@ public static class ModuleChunkBuilder
             "......",
             "S....E",
             "......",
-            "###.##",
+            "##..##",
             "######"
         },
         ["Module_D4"] = new string[] {
             "......",
             "......",
             "S....E",
-            "#....#",
+            "......",
             "######",
             "######"
         },
 
-        // === Category E: 라이트 타이밍 코스 (Stage 1 저밀도 함정) ===
+        // === Category E: 라이트 부유 코스 (발판-지형 분리) ===
         ["Module_E1"] = new string[] {
             "......",
             "......",
             "..==..",
             "S....E",
-            "#....#",
+            "......",
             "######"
         },
         ["Module_E2"] = new string[] {
             "....=E",
-            "...=..",
+            "......",
             "..=...",
-            "S=....",
-            "#....#",
+            "S.....",
+            "......",
             "######"
         },
         ["Module_E3"] = new string[] {
             ".....E",
             "......",
-            "======",
+            ".====.",
             "......",
             "S.....",
             "######"
@@ -179,13 +179,13 @@ public static class ModuleChunkBuilder
         ["Module_E4"] = new string[] {
             "......",
             "......",
-            "===...",
+            "==....",
             "S....E",
-            "#....#",
+            "......",
             "######"
         },
 
-        // === Category F: 공중 부유 모듈 (Y=0 Open Air) ===
+        // === Category F: 공중 부유 모듈 (Y=0 Open Air, 3~4m 여유) ===
         ["Module_F1"] = new string[] {
             "......",
             "..==..",
@@ -212,10 +212,10 @@ public static class ModuleChunkBuilder
         },
         ["Module_F4"] = new string[] {
             "......",
-            "======",
+            ".====.",
             "......",
             "......",
-            "======",
+            ".====.",
             "......"
         },
 
@@ -231,8 +231,8 @@ public static class ModuleChunkBuilder
         ["Module_G2"] = new string[] {
             "......",
             "......",
-            ".###..",
-            ".###..",
+            "..##..",
+            "..##..",
             "......",
             "......"
         },
@@ -246,43 +246,43 @@ public static class ModuleChunkBuilder
         },
         ["Module_G4"] = new string[] {
             "......",
-            ".====",
+            ".==...",
             "......",
-            "====..",
+            "...==.",
             "......",
             "......"
         },
 
-        // === Category H: 높은 지형 & 언덕 절벽 ===
+        // === Category H: 높은 지형 & 언덕 절벽 (3~4m 통행 폭) ===
         ["Module_H1"] = new string[] {
             "......",
             "......",
-            "..####",
+            "...###",
             "S...##",
             "....##",
             "######"
         },
         ["Module_H2"] = new string[] {
             "......",
-            ".####.",
-            ".####.",
-            "S####E",
+            "..##..",
+            "..##..",
+            "S....E",
             "......",
             "######"
         },
         ["Module_H3"] = new string[] {
             "......",
-            "##==##",
             "......",
+            "..==..",
             "......",
             "......",
             "##..##"
         },
         ["Module_H4"] = new string[] {
             "......",
-            "####..",
-            "####..",
-            "S..##E",
+            "###...",
+            "###...",
+            "S....E",
             "....##",
             "######"
         },
@@ -298,16 +298,16 @@ public static class ModuleChunkBuilder
         },
         ["Module_I2"] = new string[] {
             "......",
-            "######",
+            "......",
             "######",
             "S....E",
-            "#....#",
+            "......",
             "######"
         },
         ["Module_I3"] = new string[] {
             "......",
             "S.....",
-            "####..",
+            "##....",
             "......",
             ".....E",
             "######"
@@ -321,15 +321,15 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // === Category J & L: 수선된 납득형 결합 모듈 (Module_L1 수선) ===
-        ["Module_J1"] = new string[] { "......", "..==..", "S....E", "##..##", "......", "######" },
-        ["Module_J2"] = new string[] { "......", "......", "S....E", "##..##", "......", "######" },
-        ["Module_J3"] = new string[] { "......", "..==..", "S....E", "######", "######", "######" },
-        ["Module_J4"] = new string[] { "......", ".====", "S....E", "##..##", "......", "######" },
+        // === Category J & L: 수선된 납득형 결합 모듈 ===
+        ["Module_J1"] = new string[] { "......", "..==..", "S....E", "......", "......", "######" },
+        ["Module_J2"] = new string[] { "......", "......", "S....E", "......", "......", "######" },
+        ["Module_J3"] = new string[] { "......", "..==..", "S....E", "......", "######", "######" },
+        ["Module_J4"] = new string[] { "......", ".==...", "S....E", "......", "......", "######" },
 
-        // Module_L1 수선: 함정-발판-지형 밀집 배제. 톱날(O)은 상단 중앙에만 단 1개 이격 배치, 3m 중앙 착지대 보장.
+        // Module_L1 수선: 발판(=)과 지형(#) 직접 접촉 전면 차단. 부유 발판(=)은 허공 2.0m 고도에 독립 배치.
         ["Module_L1"] = new string[] {
-            "..O...",
+            "......",
             "......",
             "S....E",
             "..==..",
@@ -356,7 +356,7 @@ public static class ModuleChunkBuilder
     [MenuItem("TP2/Build 6x6 Modules & Stage 1 Chunks (6x6 모듈 & 룸 청크 전면 재생성)")]
     public static void BuildAllModulesAndChunks()
     {
-        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 가변 NxM 청크 규격 & 수선 모듈 빌드 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 광폭 통로 모듈/청크 빌드 시작...</b></color>");
 
         string modulesDir = "Assets/Prefabs/Modules";
         if (!Directory.Exists(modulesDir)) Directory.CreateDirectory(modulesDir);
@@ -393,7 +393,7 @@ public static class ModuleChunkBuilder
 
         Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat");
 
-        // 1. 40종 6x6 모듈 Prefab 제작
+        // 1. 40종 6x6 모듈 Prefab 제작 (발판-지형 분리 & 3~4m 통로)
         Build40ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         // 2. 가변 NxM 그리드 11종 Stage 1 룸 청크 빌드
@@ -402,7 +402,7 @@ public static class ModuleChunkBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("<color=green><b>[ModuleChunkBuilder] 가변 NxM 모듈 & 청크 전면 재생성 완결!</b></color>");
+        Debug.Log("<color=green><b>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 광폭 통로 모듈/청크 전면 재생성 완결!</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
     }
@@ -577,7 +577,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 납득형 40종 모듈 Prefab 제작 완결!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 통로 40종 모듈 Prefab 제작 완결!</color>");
     }
 
     private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
@@ -619,7 +619,6 @@ public static class ModuleChunkBuilder
 
     private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
-        // 11종 룸 청크별 가변 NxM 모듈 규격 (3 <= N, M <= 20) 사전
         Dictionary<string, ChunkGridConfig> chunkConfigs = new Dictionary<string, ChunkGridConfig>()
         {
             ["Prefab_1040"] = new ChunkGridConfig { // Entry Safe Room (6x3 Modules = 36m x 18m)
@@ -727,8 +726,8 @@ public static class ModuleChunkBuilder
         {
             string chunkName = kvp.Key;
             ChunkGridConfig config = kvp.Value;
-            int nX = config.GridWidth;  // ModX count
-            int nY = config.GridHeight; // ModY count
+            int nX = config.GridWidth;
+            int nY = config.GridHeight;
             string[,] moduleGridNames = config.Matrix;
 
             int worldWidth = nX * 6;  // e.g. 6x6 = 36m
@@ -790,8 +789,8 @@ public static class ModuleChunkBuilder
                         layout = ModuleTemplates["Module_A1"];
                     }
 
-                    int offsetX = (modX * 6) - halfW; // Centered X range
-                    int offsetY = modY * 6;          // Y range 0 to worldHeight
+                    int offsetX = (modX * 6) - halfW;
+                    int offsetY = modY * 6;
 
                     for (int r = 0; r < 6; r++)
                     {
@@ -838,28 +837,24 @@ public static class ModuleChunkBuilder
                 }
             }
 
-            // Dynamic Boundary Walls & Entry/Exit Passages (West, East, South, North Sockets)
+            // Dynamic Boundary Walls & 3~4m Entry Passages (West, East, South, North Sockets)
             if (groundTile != null)
             {
-                // Top/Bottom Boundary Walls
+                // Top/Bottom Boundary Walls (South/North Passages: X: -3 to +3 -> 6m wide opening)
                 for (int x = -halfW; x <= halfW; x++)
                 {
-                    // South Socket Passage (X: -2 to +2)
-                    if (x < -2 || x > 2) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
-                    // North Socket Passage (X: -2 to +2)
-                    if (x < -2 || x > 2) gMap.SetTile(new Vector3Int(x, worldHeight, 0), groundTile);
+                    if (x < -3 || x > 3) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+                    if (x < -3 || x > 3) gMap.SetTile(new Vector3Int(x, worldHeight, 0), groundTile);
                 }
-                // Left/Right Boundary Walls
+                // Left/Right Boundary Walls (West/East Passages: Y: 1 to 4 -> 4m high opening)
                 for (int y = 0; y <= worldHeight; y++)
                 {
-                    // West Socket Passage (Y: 1 to 4)
                     if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-halfW, y, 0), groundTile);
-                    // East Socket Passage (Y: 1 to 4)
                     if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(halfW - 1, y, 0), groundTile);
                 }
             }
 
-            // Camera Bounds (Dynamic Size based on NxM World Dimensions)
+            // Camera Bounds
             GameObject cameraBounds = new GameObject("CameraBounds");
             cameraBounds.transform.SetParent(gridRoot.transform);
             cameraBounds.transform.localPosition = new Vector3(-0.5f, worldHeight / 2f, 0f);
@@ -884,7 +879,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 가변 NxM 룸 청크 11종 정밀 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 가변 NxM 룸 청크 11종 3~4m 통로 재빌드 완료!</color>");
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
