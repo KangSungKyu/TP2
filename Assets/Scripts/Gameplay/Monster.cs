@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -25,6 +26,13 @@ public class Monster : UnitBase
     protected Transform playerTarget;
     protected int currentSequenceIndex = 0;
     protected readonly Dictionary<uint, float> patternCooldowns = new Dictionary<uint, float>();
+    private bool deathSequenceActive;
+    private Collider2D[] deathColliders;
+    private const int MaximumAttackTokens = 2;
+    private static int activeAttackTokens;
+    private bool holdsAttackToken;
+    private uint actionGeneration;
+    public static int ActiveAttackTokens => activeAttackTokens;
 
 
     // =========================================================================
@@ -41,6 +49,7 @@ public class Monster : UnitBase
             MonsterData = mData;
             LoadPatterns(mData);
         }
+        if (this != null && isActiveAndEnabled) Activated?.Invoke(this);
     }
 
 
@@ -49,15 +58,21 @@ public class Monster : UnitBase
     // =========================================================================
 
     public static HashSet<Monster> ActiveMonsters { get; } = new HashSet<Monster>();
+    public static event Action<Monster> Activated;
+    public static event Action<Monster> Deactivated;
 
     protected virtual void OnEnable()
     {
         ActiveMonsters.Add(this);
+        Activated?.Invoke(this);
     }
 
     protected virtual void OnDisable()
     {
+        actionGeneration++;
+        ReleaseAttackToken();
         ActiveMonsters.Remove(this);
+        Deactivated?.Invoke(this);
     }
 
     protected override void Awake()
@@ -75,8 +90,9 @@ public class Monster : UnitBase
         var stats = GetComponent<CombatStats>();
         if (stats != null)
         {
-            stats.OnHpZero.AddListener(OnDeath);
             stats.OnDeath.AddListener(OnDeath);
+            stats.OnGroggyState.AddListener(OnGroggyStarted);
+            stats.OnGroggyEnded.AddListener(OnGroggyEnded);
         }
 
         AiLoopAsync(this.GetCancellationTokenOnDestroy()).Forget();
@@ -97,24 +113,39 @@ public class Monster : UnitBase
 
     public virtual async void Die()
     {
-        SetAnimState(5);
-        if (animator != null && animator.runtimeAnimatorController != null)
-        {
-            try { animator.SetTrigger("Death"); } catch { }
-        }
+        if (deathSequenceActive) return;
+        deathSequenceActive = true;
+        actionGeneration++;
+        ReleaseAttackToken();
+        if (skillExecutor != null) skillExecutor.CancelActiveEffects();
+        SetAnimState(8);
 
         if (motor != null)
         {
-            motor.SetTargetVelocityX(0f);
+            motor.ApplyKnockback(Vector2.zero);
             motor.enabled = false;
         }
 
-        var cols = GetComponentsInChildren<Collider2D>();
-        foreach (var c in cols) c.enabled = false;
+        deathColliders = GetComponentsInChildren<Collider2D>();
+        foreach (var col in deathColliders) col.enabled = false;
 
         ActiveMonsters.Remove(this);
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+        const float fadeDuration = 1.5f;
+        float fadeStartedAt = Time.realtimeSinceStartup;
+        float elapsed = 0f;
+        Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        while (elapsed < fadeDuration)
+        {
+            elapsed = Time.realtimeSinceStartup - fadeStartedAt;
+            if (spriteRenderer != null)
+            {
+                Color color = startColor;
+                color.a = Mathf.Lerp(startColor.a, 0f, elapsed / fadeDuration);
+                spriteRenderer.color = color;
+            }
+            await UniTask.Yield(PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+        }
 
         if (UnitPoolManager.Instance != null)
         {
@@ -124,6 +155,33 @@ public class Monster : UnitBase
         {
             if (Application.isPlaying) Destroy(gameObject);
             else DestroyImmediate(gameObject);
+        }
+    }
+
+    public void ResetAfterDeath(Vector3 position)
+    {
+        actionGeneration++;
+        deathSequenceActive = false;
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = 1f;
+            spriteRenderer.color = color;
+        }
+        if (deathColliders != null)
+        {
+            foreach (var col in deathColliders) if (col != null) col.enabled = true;
+        }
+        if (motor != null)
+        {
+            motor.enabled = true;
+            motor.Teleport(position);
+            motor.SetTargetVelocityX(0f);
+            motor.SetVelocityY(0f);
+        }
+        else
+        {
+            transform.position = position;
         }
     }
 
@@ -150,7 +208,7 @@ public class Monster : UnitBase
         {
             await UniTask.Delay(500, cancellationToken: cancellationToken);
 
-            if (stats != null && stats.IsGroggy)
+            if (!CanAct(actionGeneration))
             {
                 await UniTask.Delay(1000, cancellationToken: cancellationToken);
                 continue;
@@ -244,7 +302,8 @@ public class Monster : UnitBase
 
     private async UniTask ExecutePatternAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
     {
-        if (playerTarget == null) return;
+        uint generation = actionGeneration;
+        if (playerTarget == null || !CanAct(generation)) return;
 
         bool isDistanceOverPattern = (PatternTriggerType)pattern.TriggerType == PatternTriggerType.DistanceOver;
         float attackRange = pattern.TriggerValue > 0f ? pattern.TriggerValue : 1.8f;
@@ -264,7 +323,7 @@ public class Monster : UnitBase
 
             float moveSpeed = (UnitData != null && UnitData.MoveSpeed > 0f) ? UnitData.MoveSpeed : 3.5f;
 
-            while (currentDist > attackRange && !cancellationToken.IsCancellationRequested)
+            while (currentDist > attackRange && !cancellationToken.IsCancellationRequested && CanAct(generation))
             {
                 chaseElapsed += Time.deltaTime;
                 if (chaseElapsed >= chaseTimeout)
@@ -300,22 +359,27 @@ public class Monster : UnitBase
             }
         }
 
+        if (!CanAct(generation)) return;
         if (chaseTimedOut)
         {
             SetAnimState(1);
             return;
         }
 
+        if (!TryAcquireAttackToken()) return;
+        try
+        {
         SetFacingRight(playerTarget.position.x >= transform.position.x);
         if (pattern.PreDelay > 0f)
         {
             int preMs = Mathf.RoundToInt(pattern.PreDelay * 1000f);
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
+            if (!CanAct(generation)) return;
         }
 
         uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
 
-        if (skillExecutor != null)
+        if (skillExecutor != null && CanAct(generation))
         {
             bool played = skillExecutor.TryPlaySkillAnimation(animator, patternSkillId);
             if (!played)
@@ -333,7 +397,7 @@ public class Monster : UnitBase
             skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
         }
 
-        if (playerTarget != null)
+        if (playerTarget != null && CanAct(generation))
         {
             var pStats = playerTarget.GetComponent<CombatStats>();
             if (pStats != null && Vector3.Distance(transform.position, playerTarget.position) <= (attackRange + 0.5f))
@@ -351,14 +415,21 @@ public class Monster : UnitBase
         {
             int postMs = Mathf.RoundToInt(pattern.PostDelay * 1000f);
             await UniTask.Delay(postMs, cancellationToken: cancellationToken);
+            if (!CanAct(generation)) return;
         }
 
         SetAnimState(1);
+        }
+        finally
+        {
+            ReleaseAttackToken();
+        }
     }
 
     protected virtual async UniTask ExecuteSimpleAiAsync(CancellationToken cancellationToken)
     {
-        if (playerTarget == null) return;
+        uint generation = actionGeneration;
+        if (playerTarget == null || !CanAct(generation)) return;
 
         float dist = Vector3.Distance(transform.position, playerTarget.position);
         float attackRange = (MonsterData != null && MonsterData.AttackRange > 0f) ? MonsterData.AttackRange : 2.0f;
@@ -366,13 +437,21 @@ public class Monster : UnitBase
 
         if (dist <= attackRange)
         {
+            if (!TryAcquireAttackToken()) return;
+            try
+            {
             SetAnimState(7);
             var pStats = playerTarget.GetComponent<CombatStats>();
-            if (pStats != null)
+            if (pStats != null && CanAct(generation))
             {
                 pStats.TakeDamage(10f, isGroundAttack: false, isJumped: false, attacker: stats);
             }
             await UniTask.Delay(1500, cancellationToken: cancellationToken);
+            }
+            finally
+            {
+                ReleaseAttackToken();
+            }
         }
         else if (dist <= detectRange)
         {
@@ -393,6 +472,44 @@ public class Monster : UnitBase
         {
             SetAnimState(1);
         }
+    }
+
+    private bool TryAcquireAttackToken()
+    {
+        if (!CanAct(actionGeneration)) return false;
+        if (holdsAttackToken) return true;
+        if (activeAttackTokens >= MaximumAttackTokens) return false;
+        activeAttackTokens++;
+        holdsAttackToken = true;
+        return true;
+    }
+
+    private void ReleaseAttackToken()
+    {
+        if (!holdsAttackToken) return;
+        holdsAttackToken = false;
+        activeAttackTokens = Mathf.Max(0, activeAttackTokens - 1);
+    }
+
+    private bool CanAct(uint generation) => generation == actionGeneration && !deathSequenceActive &&
+        stats != null && !stats.IsDead && !stats.IsGroggy && isActiveAndEnabled;
+
+    private void OnGroggyStarted()
+    {
+        actionGeneration++;
+        ReleaseAttackToken();
+        if (skillExecutor != null) skillExecutor.CancelActiveEffects();
+        if (motor != null)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            motor.SetTargetVelocityX(0f);
+        }
+        SetAnimState(1);
+    }
+
+    private void OnGroggyEnded()
+    {
+        if (!deathSequenceActive) SetAnimState(1);
     }
 
     protected void SetAnimState(int stateValue)

@@ -49,6 +49,9 @@ public class KinematicMotor2D : MonoBehaviour
     private Vector2 groundNormal = Vector2.up;
     private bool hasGroundNormalOverride;
     private float targetVelocityX;
+    private float knockbackVelocityX;
+    private int knockbackStepsRemaining;
+    private int knockbackGeneration;
     private bool isPassThroughActive;
     private bool isJumpHeld;
 
@@ -70,8 +73,7 @@ public class KinematicMotor2D : MonoBehaviour
         }
         if (physicsCollider == null)
         {
-            physicsCollider = GetComponent<Collider2D>();
-            if (physicsCollider == null) physicsCollider = gameObject.AddComponent<BoxCollider2D>();
+            physicsCollider = gameObject.AddComponent<BoxCollider2D>();
         }
 
         body.bodyType = RigidbodyType2D.Kinematic;
@@ -122,6 +124,17 @@ public class KinematicMotor2D : MonoBehaviour
         }
     }
 
+    public void ApplyKnockback(Vector2 velocity, float duration = 0f)
+    {
+        knockbackGeneration++;
+        knockbackVelocityX = velocity.x;
+        knockbackStepsRemaining = duration > 0f
+            ? Mathf.Max(1, Mathf.CeilToInt(duration / Time.fixedDeltaTime))
+            : 0;
+        Velocity = new Vector2(velocity.x, IsGrounded ? 0f : Mathf.Max(0f, velocity.y));
+        if (Velocity.y > 0f) IsGrounded = false;
+    }
+
     public void SetJumpHeld(bool held)
     {
         isJumpHeld = held;
@@ -150,6 +163,9 @@ public class KinematicMotor2D : MonoBehaviour
         body.position = position;
         Velocity = Vector2.zero;
         targetVelocityX = 0f;
+        knockbackVelocityX = 0f;
+        knockbackStepsRemaining = 0;
+        knockbackGeneration++;
     }
 
     public void SetGroundNormal(Vector2 normal)
@@ -169,7 +185,8 @@ public class KinematicMotor2D : MonoBehaviour
             InitMotor();
         }
 
-        IsGrounded = hasGroundNormalOverride;
+        bool hadGroundNormalOverride = hasGroundNormalOverride;
+        IsGrounded = hadGroundNormalOverride;
         hasGroundNormalOverride = false;
         IsWalledLeft = false;
         IsWalledRight = false;
@@ -178,7 +195,8 @@ public class KinematicMotor2D : MonoBehaviour
 
         ApplyGravity(dt);
 
-        Velocity = new Vector2(targetVelocityX, Velocity.y);
+        int activeKnockbackGeneration = knockbackGeneration;
+        Velocity = new Vector2(knockbackStepsRemaining > 0 ? knockbackVelocityX : targetVelocityX, Velocity.y);
 
         var deltaPosition = Velocity * dt;
 
@@ -186,13 +204,44 @@ public class KinematicMotor2D : MonoBehaviour
         var horizontalMove = moveAlongGround * deltaPosition.x;
         PerformMovement(horizontalMove, false);
 
-        var verticalMove = Vector2.up * (IsGrounded && deltaPosition.y < 0f ? 0f : deltaPosition.y);
-        PerformMovement(verticalMove, true);
+        if (IsGrounded && deltaPosition.y < 0f)
+        {
+            if (!hadGroundNormalOverride)
+            {
+                IsGrounded = ProbeGround();
+                hasGroundNormalOverride = IsGrounded;
+            }
+        }
+        else
+        {
+            PerformMovement(Vector2.up * deltaPosition.y, true);
+        }
 
         if (!IsGrounded && Velocity.y <= 0f)
         {
             groundNormal = Vector2.up;
         }
+
+        if (knockbackStepsRemaining > 0 && activeKnockbackGeneration == knockbackGeneration)
+        {
+            knockbackStepsRemaining--;
+            if (knockbackStepsRemaining == 0) knockbackVelocityX = 0f;
+        }
+    }
+
+    private bool ProbeGround()
+    {
+        int count = physicsCollider.Cast(Vector2.down, groundWithPlatformFilter, hitBuffer, SkinWidth * 2f);
+        for (int i = 0; i < count; i++)
+        {
+            if (hitBuffer[i].normal.y > MinGroundNormalY)
+            {
+                groundNormal = hitBuffer[i].normal;
+                Velocity = new Vector2(Velocity.x, 0f);
+                return true;
+            }
+        }
+        return false;
     }
 
     // =========================================================================
@@ -201,7 +250,7 @@ public class KinematicMotor2D : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SimulateStep(Time.deltaTime);
+        SimulateStep(Time.fixedDeltaTime);
     }
 
     private void ApplyGravity(float dt)

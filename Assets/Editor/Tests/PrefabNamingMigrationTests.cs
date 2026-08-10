@@ -142,6 +142,79 @@ namespace QA.Tests
             if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
         }
 
+        [UnityTest]
+        public IEnumerator MonsterDeath_FadesInPlaceDespawnsOnceAndResetsOnReuse()
+        {
+            GameObject dataManagerObject = null;
+            if (DataTableManager.Instance == null)
+            {
+                dataManagerObject = new GameObject("DataTableManager_MonsterDeath_QA");
+                SetSingletonInstance(dataManagerObject.AddComponent<DataTableManager>());
+            }
+            InstallUnitResourceTables(DataTableManager.Instance);
+            DataTableManager.Instance.GetDB<UnitBaseDataTable>(DataTableType.UnitBase)
+                .LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+            DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource)
+                .LoadData(File.ReadAllText("Assets/Datas/ResourceData.csv"));
+
+            GameObject poolObject = null;
+            if (UnitPoolManager.Instance == null)
+            {
+                poolObject = new GameObject("UnitPoolManager_MonsterDeath_QA");
+                SetSingletonInstance(poolObject.AddComponent<UnitPoolManager>());
+            }
+
+            var monsterObject = new GameObject("Monster_DeathPool_QA");
+            monsterObject.AddComponent<Rigidbody2D>();
+            var collider = monsterObject.AddComponent<BoxCollider2D>();
+            var motor = monsterObject.AddComponent<KinematicMotor2D>();
+            monsterObject.AddComponent<CombatStats>();
+            var monster = monsterObject.AddComponent<Monster>();
+            typeof(Monster).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(monster, null);
+            motor.InitMotor();
+            typeof(UnitBase).GetField("<UnitIdx>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(monster, 3101u);
+            var renderer = (SpriteRenderer)typeof(UnitBase)
+                .GetField("spriteRenderer", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(monster);
+
+            Vector3 deathPosition = new Vector3(3f, 2f);
+            monsterObject.transform.position = deathPosition;
+            motor.Teleport(deathPosition);
+            monster.Die();
+            monster.Die();
+
+            float timeout = Time.realtimeSinceStartup + 3f;
+            while (monsterObject.activeSelf && Time.realtimeSinceStartup < timeout)
+            {
+                Assert.AreEqual(deathPosition, monsterObject.transform.position);
+                yield return null;
+            }
+
+            Assert.IsFalse(monsterObject.activeSelf);
+            var pools = (Dictionary<string, Queue<GameObject>>)typeof(UnitPoolManager)
+                .GetField("poolDictionary", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(UnitPoolManager.Instance);
+            Assert.AreEqual(1, pools["Unit_3101"].Count);
+
+            var getFromPool = typeof(UnitPoolManager)
+                .GetMethod("GetFromPool", BindingFlags.Instance | BindingFlags.NonPublic);
+            var reused = (GameObject)getFromPool.Invoke(UnitPoolManager.Instance, new object[] { "Unit_3101" });
+            Assert.AreSame(monsterObject, reused);
+            monster.ResetAfterDeath(Vector3.one);
+            reused.SetActive(true);
+            Assert.AreEqual(1f, renderer.color.a);
+            Assert.IsTrue(motor.enabled);
+            Assert.IsTrue(collider.enabled);
+            StringAssert.Contains("monsterComp.ResetAfterDeath(position);",
+                File.ReadAllText("Assets/Scripts/Manager/UnitPoolManager.cs"));
+
+            Object.DestroyImmediate(monsterObject);
+            if (poolObject != null) Object.DestroyImmediate(poolObject);
+            if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
+        }
+
         [Test]
         public void PlayerPool_InvalidMappingsReturnFalseWithDistinctErrors()
         {
@@ -165,28 +238,41 @@ namespace QA.Tests
             }
             var dataManager = DataTableManager.Instance;
             var pool = UnitPoolManager.Instance;
-            InstallUnitResourceTables(dataManager);
-            var units = dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase);
-            var resources = dataManager.GetDB<ResourceDataTable>(DataTableType.Resource);
-            MethodInfo resolve = typeof(UnitPoolManager).GetMethod(
-                "TryResolveUnitPrefabKey", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tableField = typeof(DataTableManager).GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tables = (Dictionary<DataTableType, IDataLoad>)tableField.GetValue(dataManager);
+            bool hadUnits = tables.TryGetValue(DataTableType.UnitBase, out IDataLoad previousUnits);
+            bool hadResources = tables.TryGetValue(DataTableType.Resource, out IDataLoad previousResources);
+            try
+            {
+                InstallUnitResourceTables(dataManager);
+                var units = dataManager.GetDB<UnitBaseDataTable>(DataTableType.UnitBase);
+                var resources = dataManager.GetDB<ResourceDataTable>(DataTableType.Resource);
+                MethodInfo resolve = typeof(UnitPoolManager).GetMethod(
+                    "TryResolveUnitPrefabKey", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            units.Release();
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing UnitBaseData for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+                units.Release();
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing UnitBaseData for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
 
-            units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
-            resources.Release();
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing ResourceData idx 1001 for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+                units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+                resources.Release();
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Missing ResourceData idx 1001 for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
 
-            resources.LoadData("idx,path\n1001,");
-            LogAssert.Expect(LogType.Error, "[UnitPoolManager] Empty ResourceData path at idx 1001 for unit idx 3001.");
-            Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
-
-            if (poolObject != null) Object.DestroyImmediate(poolObject);
-            if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
-            if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+                resources.LoadData("idx,path\n1001,");
+                LogAssert.Expect(LogType.Error, "[UnitPoolManager] Empty ResourceData path at idx 1001 for unit idx 3001.");
+                Assert.IsFalse((bool)resolve.Invoke(pool, new object[] { 3001u, null }));
+            }
+            finally
+            {
+                if (hadUnits) tables[DataTableType.UnitBase] = previousUnits;
+                else tables.Remove(DataTableType.UnitBase);
+                if (hadResources) tables[DataTableType.Resource] = previousResources;
+                else tables.Remove(DataTableType.Resource);
+                if (poolObject != null) Object.DestroyImmediate(poolObject);
+                if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
+                if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
+            }
         }
 
         private static void InstallUnitResourceTables(DataTableManager dataManager)

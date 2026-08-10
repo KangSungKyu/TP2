@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -132,7 +133,8 @@ namespace QA.Tests
                     for (int move = 0; move < 6; move++)
                     {
                         byte previous = run.CurrentSlotIdx;
-                        Assert.IsTrue(manager.TryMoveToConnectedSlot(byte.MaxValue, out uint resourceIdx));
+                        byte targetSlotIdx = run.Slots.First(slot => IsMutualAdjacent(run, previous, slot.SlotIdx)).SlotIdx;
+                        Assert.IsTrue(manager.TryMoveToConnectedSlot(targetSlotIdx, out uint resourceIdx));
                         Assert.AreNotEqual(previous, run.CurrentSlotIdx);
                         Assert.IsTrue(run.TryGetSlot(run.CurrentSlotIdx, out var destination));
                         Assert.AreEqual(destination.ChunkResourceIdx, resourceIdx);
@@ -140,6 +142,122 @@ namespace QA.Tests
                     }
                 }
                 finally { UnityEngine.Object.DestroyImmediate(manager.gameObject); }
+            }
+        }
+
+        [TestCase(ChunkSocketDirection.North, 1)]
+        [TestCase(ChunkSocketDirection.East, 5)]
+        [TestCase(ChunkSocketDirection.South, 7)]
+        [TestCase(ChunkSocketDirection.West, 3)]
+        public void Test_CommonPortalGate_UsesFixedTargetIndependentOfSocketDirection(
+            ChunkSocketDirection socketDirection, byte expectedTarget)
+        {
+            var manager = CreateManager();
+            var socketObject = new GameObject("Socket_QA");
+            var portalObject = new GameObject("Portal_Gate");
+            var returnPortalObject = new GameObject("Portal_Gate_Return");
+            try
+            {
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 3,
+                    CurrentSlotIdx = 4,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 1, ConnectionMask = 4, ChunkResourceIdx = 1051 },
+                        new ChunkSlotData { SlotIdx = 3, ConnectionMask = 2, ChunkResourceIdx = 1053 },
+                        new ChunkSlotData { SlotIdx = 4, ConnectionMask = 15, ChunkResourceIdx = 1054 },
+                        new ChunkSlotData { SlotIdx = 5, ConnectionMask = 8, ChunkResourceIdx = 1055 },
+                        new ChunkSlotData { SlotIdx = 7, ConnectionMask = 1, ChunkResourceIdx = 1057 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                socket.Direction = socketDirection;
+                Assert.IsTrue(manager.TryGetConnectedSlot(socket.Direction, out byte targetSlotIdx));
+                Assert.AreEqual(expectedTarget, targetSlotIdx);
+
+                RoomDoorPortal portal = TilemapStageBuilder.ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
+                socket.Direction = (ChunkSocketDirection)(((int)socketDirection + 1) % 4);
+                Assert.AreEqual(1, portalObject.GetComponents<RoomDoorPortal>().Length);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(portal.TargetSlotIdx, out uint resourceIdx));
+                Assert.AreEqual(expectedTarget, run.CurrentSlotIdx);
+                Assert.AreEqual(1050u + expectedTarget, resourceIdx);
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(byte.MaxValue, out _));
+
+                RoomDoorPortal returnPortal = TilemapStageBuilder.ConfigureSocketPortal(socket, returnPortalObject, 4);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(returnPortal.TargetSlotIdx, out _));
+                Assert.AreEqual(4, run.CurrentSlotIdx);
+                Assert.AreNotEqual(socket.transform.position,
+                    TilemapStageBuilder.CalculateSafeEntryPosition(socket, new Vector3(0.5f, 1f), 0.01f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(returnPortalObject);
+                UnityEngine.Object.DestroyImmediate(portalObject);
+                UnityEngine.Object.DestroyImmediate(socketObject);
+                UnityEngine.Object.DestroyImmediate(manager.gameObject);
+            }
+        }
+
+        [Test]
+        public void Test_PortalOwnerAndGeneration_IsolateStaleTarget7AndDuplicateTriggers()
+        {
+            var manager = CreateManager();
+            var staleObject = new GameObject("Portal_Stale_QA");
+            var currentObject = new GameObject("Portal_Current_QA");
+            var invalidObject = new GameObject("Portal_Invalid_QA");
+            try
+            {
+                var run = new StageRunData
+                {
+                    Rows = 3,
+                    Columns = 3,
+                    CurrentSlotIdx = 4,
+                    Slots = new[]
+                    {
+                        new ChunkSlotData { SlotIdx = 4, ConnectionMask = 4, ChunkResourceIdx = 1054 },
+                        new ChunkSlotData { SlotIdx = 7, ConnectionMask = 1, ChunkResourceIdx = 1057 }
+                    }
+                };
+                SetCurrentRun(manager, run);
+                SetRoomGeneration(manager, 10);
+                var stalePortal = staleObject.AddComponent<RoomDoorPortal>();
+                stalePortal.Configure(7, 4, 10);
+
+                Assert.IsTrue(stalePortal.TryAcquireTransition(manager));
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager), "A duplicate trigger must not start a second transition.");
+                manager.CancelPortalTransition(4, 10);
+                Assert.IsTrue(manager.TryMoveToConnectedSlot(7, out uint resourceIdx));
+                Assert.AreEqual(1057u, resourceIdx);
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager));
+                Assert.IsFalse(staleObject.activeSelf, "A stale owner portal must disable itself without warning.");
+
+                run.CurrentSlotIdx = 4;
+                SetRoomGeneration(manager, 11);
+                Assert.IsFalse(stalePortal.TryAcquireTransition(manager), "A previous room generation must stay stale after return.");
+                var currentPortal = currentObject.AddComponent<RoomDoorPortal>();
+                currentPortal.Configure(7, 4, 11);
+                Assert.IsTrue(currentPortal.TryAcquireTransition(manager));
+                manager.CancelPortalTransition(4, 11);
+
+                var invalidPortal = invalidObject.AddComponent<RoomDoorPortal>();
+                invalidPortal.Configure(8, 4, 11);
+                Assert.IsTrue(invalidPortal.TryAcquireTransition(manager));
+                Assert.IsFalse(manager.TryMoveToConnectedSlot(invalidPortal.TargetSlotIdx, out _));
+                manager.CancelPortalTransition(4, 11);
+                string stageSource = File.ReadAllText("Assets/Scripts/Manager/StageManager.cs");
+                string portalSource = File.ReadAllText("Assets/Scripts/Gameplay/RoomDoorPortal.cs");
+                Assert.AreEqual(1, stageSource.Split(new[] { "Invalid portal graph target" }, StringSplitOptions.None).Length - 1);
+                StringAssert.DoesNotContain("Slot transition rejected", portalSource);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(invalidObject);
+                UnityEngine.Object.DestroyImmediate(currentObject);
+                UnityEngine.Object.DestroyImmediate(staleObject);
+                UnityEngine.Object.DestroyImmediate(manager.gameObject);
             }
         }
 
@@ -375,6 +493,90 @@ namespace QA.Tests
             Assert.IsFalse(run.TryLockCompletion());
         }
 
+        [Test]
+        public void Test_MultiSpawnZones_DeterministicAllocationAndClearanceContracts()
+        {
+            var room = new GameObject("SpawnZoneRoom_QA");
+            var entry = new GameObject("Entry_QA");
+            entry.transform.SetParent(room.transform);
+            entry.transform.position = new Vector3(-25f, 1f);
+            var zones = new List<SpawnPointMarker>();
+            try
+            {
+                foreach (float x in new[] { -10f, 5f, 20f })
+                {
+                    var zone = new GameObject("Zone_QA");
+                    zone.transform.SetParent(room.transform);
+                    zone.transform.position = new Vector3(x, 1f);
+                    zones.Add(zone.AddComponent<SpawnPointMarker>());
+                }
+                foreach (float x in new[] { -29f, 29f })
+                {
+                    var socket = new GameObject("Socket_QA");
+                    socket.transform.SetParent(room.transform);
+                    socket.transform.position = new Vector3(x, 1f);
+                    socket.AddComponent<ChunkSocketMarker>();
+                }
+
+                Assert.IsTrue(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out string error), error);
+                uint[] encounter = { 3103, 3106, 3101, 3102, 3104 };
+                uint[] first = UnitSpawner.BuildEncounterAllocation(encounter, zones.Count, 123u, 4);
+                uint[] second = UnitSpawner.BuildEncounterAllocation(encounter, zones.Count, 123u, 4);
+                CollectionAssert.AreEqual(first, second);
+                Assert.LessOrEqual(first.Length, 3);
+                Assert.LessOrEqual(System.Array.FindAll(first, idx => idx == 3103u || idx == 3106u).Length, 1);
+
+                zones[1].transform.position = zones[0].transform.position + Vector3.right;
+                Assert.IsFalse(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out _));
+                zones[1].transform.position = new Vector3(5f, 1f);
+                zones[0].transform.position = new Vector3(-24f, 1f);
+                Assert.IsFalse(UnitSpawner.ValidateSpawnZones(room, zones, entry.transform, out _));
+
+                StageRunData run = Stage1RunGenerator.Generate(1);
+                Assert.AreEqual(0, run.Slots[run.StartSlotIdx].MonsterUnitIdxList.Length);
+                Assert.IsTrue(run.TryGetSlot(run.BossGateSlotIdx, out ChunkSlotData bossGate));
+                Assert.AreEqual(0, bossGate.MonsterUnitIdxList.Length);
+
+                var layout = new StageLayoutData
+                {
+                    StageDataIdx = 9001,
+                    MinActiveChunks = 9,
+                    MaxActiveChunks = 11
+                };
+                var chunks = new[]
+                {
+                    new ChunkResourceData { ResourceIdx = 1050, ChunkType = 1, SupportedConnectionMask = 15, MaxUsePerRun = 20 },
+                    new ChunkResourceData { ResourceIdx = 1057, ChunkType = 4, SupportedConnectionMask = 15, MaxUsePerRun = 20 }
+                };
+                var encounters = new[]
+                {
+                    new MonsterEncounterData { UnitIdxList = new uint[] { 3101, 3102 } }
+                };
+                StageRunData typedRun = Stage1RunGenerator.Generate(2, layout, chunks, encounters);
+                foreach (ChunkSlotData slot in typedRun.Slots)
+                {
+                    if (slot.ChunkResourceIdx == 1050) Assert.AreEqual(2, slot.MonsterUnitIdxList.Length);
+                    if (slot.ChunkResourceIdx == 1057) Assert.AreEqual(0, slot.MonsterUnitIdxList.Length);
+                }
+
+                string spawnerSource = File.ReadAllText("Assets/Scripts/Manager/UnitSpawner.cs");
+                string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+                StringAssert.Contains("MaximumActiveMonsters = 4", spawnerSource);
+                StringAssert.Contains("SpawnFallbackOnce(zones, encounter)", spawnerSource);
+                StringAssert.Contains("if (encounter.Length == 0) return;", spawnerSource);
+                StringAssert.Contains("Combat chunk has no SpawnPointMarker", spawnerSource);
+                StringAssert.Contains("GetComponentsInChildren<SpawnPointMarker>(true)", spawnerSource);
+                StringAssert.Contains("MaximumAttackTokens = 2", monsterSource);
+                StringAssert.Contains("activeAttackTokens >= MaximumAttackTokens", monsterSource);
+                StringAssert.Contains("finally", monsterSource);
+                StringAssert.Contains("ReleaseAttackToken();", monsterSource);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(room);
+            }
+        }
+
         private static int CountBits(byte value)
         {
             int count = 0;
@@ -386,6 +588,12 @@ namespace QA.Tests
         {
             typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))
                 .GetSetMethod(true).Invoke(manager, new object[] { run });
+        }
+
+        private static void SetRoomGeneration(StageManager manager, uint generation)
+        {
+            typeof(StageManager).GetProperty(nameof(StageManager.RoomGeneration))
+                .GetSetMethod(true).Invoke(manager, new object[] { generation });
         }
 
         private static StageManager CreateManager()

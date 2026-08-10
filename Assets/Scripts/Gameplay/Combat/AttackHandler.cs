@@ -2,6 +2,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Gameplay.Combat;
+using System.Collections.Generic;
 
 namespace Gameplay.Combat
 {
@@ -13,6 +14,7 @@ namespace Gameplay.Combat
     public class AttackHandler : MonoBehaviour
     {
         private AttackPower _attackPower;
+        private readonly HashSet<Projectile> _activeProjectiles = new HashSet<Projectile>();
         private const string DefaultProjectileKey = "ProjectilePrefab"; // Addressable key 이름 (예시)
 
         private void Awake()
@@ -40,7 +42,8 @@ namespace Gameplay.Combat
                 var projectile = SimplePoolManager.Instance.Get<Projectile>(key);
                 if (projectile != null)
                 {
-                    projectile.Initialize(data, this.transform.position, this.transform.forward);
+                    _activeProjectiles.Add(projectile);
+                    projectile.Initialize(data, transform.position, transform.forward, projectileToRemove => _activeProjectiles.Remove(projectileToRemove));
                 }
             }
             else
@@ -48,6 +51,14 @@ namespace Gameplay.Combat
                 // 비투사체 – 히트박스 검사 후 데미지 적용
                 await PerformMeleeAttackAsync(data);
             }
+        }
+
+        private void OnDisable()
+        {
+            if (_activeProjectiles.Count == 0) return;
+            var projectiles = new List<Projectile>(_activeProjectiles);
+            foreach (var projectile in projectiles) if (projectile != null) projectile.ReturnToPool();
+            _activeProjectiles.Clear();
         }
 
         private async UniTask PerformMeleeAttackAsync(AttackData data)

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,8 @@ public class SkillEffect : MonoBehaviour
 
     private Collider2D triggerCollider;
     private SpriteRenderer visualRenderer;
+    private Action<SkillEffect> onReturned;
+    private bool returned;
 
     private void Awake()
     {
@@ -34,7 +37,7 @@ public class SkillEffect : MonoBehaviour
         }
     }
 
-    public void InitEffect(string poolKey, float damage, float lifetime, FactionType faction, CombatStats attacker, Color effectColor)
+    public void InitEffect(string poolKey, float damage, float lifetime, FactionType faction, CombatStats attacker, Color effectColor, Action<SkillEffect> onReturned = null)
     {
         this.poolKey = poolKey;
         this.damage = damage;
@@ -42,6 +45,8 @@ public class SkillEffect : MonoBehaviour
         timer = 0f;
         ownerFaction = faction;
         attackerStats = attacker;
+        this.onReturned = onReturned;
+        returned = false;
 
         if (visualRenderer != null)
         {
@@ -49,6 +54,11 @@ public class SkillEffect : MonoBehaviour
         }
 
         gameObject.SetActive(true);
+    }
+
+    public void SetSize(Vector2 size)
+    {
+        if (triggerCollider is BoxCollider2D box) box.size = size;
     }
 
     private void Update()
@@ -98,10 +108,12 @@ public class SkillEffect : MonoBehaviour
 
     public void ReturnToPool()
     {
+        if (returned) return;
+        returned = true;
+        onReturned?.Invoke(this);
+        onReturned = null;
         gameObject.SetActive(false);
-        if (!string.IsNullOrEmpty(poolKey) && SimplePoolManager.Instance != null)
-        {
-            SimplePoolManager.Instance.Release<SkillEffect>(poolKey, this);
-        }
+        if (!string.IsNullOrEmpty(poolKey) && EffectPoolManager.Instance != null)
+            EffectPoolManager.Instance.DespawnEffect(gameObject);
     }
 }

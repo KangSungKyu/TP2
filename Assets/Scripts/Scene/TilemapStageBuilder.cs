@@ -74,6 +74,7 @@ public class TilemapStageBuilder : MonoBehaviour
         if (fadeOverlayCanvasGroup != null)
         {
             fadeOverlayCanvasGroup.alpha = 1f;
+            await UniTask.NextFrame(cancellationToken);
         }
 
         CleanupPreviousStageAndEffects();
@@ -173,7 +174,8 @@ public class TilemapStageBuilder : MonoBehaviour
             if (portalObject == null) continue;
 
             portalObject.SetActive(false);
-            ConfigureSocketPortal(socket, portalObject, targetSlotIdx);
+            ConfigureSocketPortal(socket, portalObject, targetSlotIdx,
+                stageManager.CurrentRun.CurrentSlotIdx, stageManager.RoomGeneration);
             portals.Add(portalObject);
             if (targetSlotIdx == stageManager.CurrentRun.PreviousSlotIdx && socket.EntryMarker != null)
                 entrance = socket;
@@ -209,14 +211,15 @@ public class TilemapStageBuilder : MonoBehaviour
         }
     }
 
-    public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx)
+    public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx,
+        byte ownerSlotIdx = byte.MaxValue, uint roomGeneration = 0)
     {
         if (socket == null || portalObject == null) return null;
         socket.gameObject.SetActive(true);
         portalObject.transform.SetParent(socket.transform, true);
         portalObject.transform.position = socket.transform.position;
         RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
-        portal.TargetSlotIdx = targetSlotIdx;
+        portal.Configure(targetSlotIdx, ownerSlotIdx, roomGeneration);
         portalObject.SetActive(false);
         return portal;
     }

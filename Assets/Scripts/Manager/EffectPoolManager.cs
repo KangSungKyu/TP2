@@ -10,6 +10,42 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
 {
     private readonly Dictionary<string, Queue<GameObject>> poolDict = new Dictionary<string, Queue<GameObject>>();
     private readonly HashSet<GameObject> activeEffects = new HashSet<GameObject>();
+    private readonly Dictionary<GameObject, uint> effectGenerations = new Dictionary<GameObject, uint>();
+    private readonly Dictionary<GameObject, SkillEffect> skillEffects = new Dictionary<GameObject, SkillEffect>();
+
+    public SkillEffect GetPooledSkillEffect(string key, Vector3 position)
+    {
+        var effectObj = GetPooledEffect(key, position);
+        return effectObj != null && skillEffects.TryGetValue(effectObj, out var effect) ? effect : null;
+    }
+
+    public void TrackSkillEffect(SkillEffect effect, string key)
+    {
+        if (effect == null) return;
+        skillEffects[effect.gameObject] = effect;
+        TrackEffect(effect.gameObject, key);
+    }
+
+    public GameObject GetPooledEffect(string key, Vector3 position, Quaternion rotation = default)
+    {
+        if (string.IsNullOrEmpty(key) || !poolDict.TryGetValue(key, out var queue) || queue.Count == 0) return null;
+        var effectObj = queue.Dequeue();
+        if (effectObj == null) return null;
+        effectObj.transform.SetPositionAndRotation(position, rotation);
+        effectObj.SetActive(true);
+        TrackEffect(effectObj, key);
+        return effectObj;
+    }
+
+    public uint TrackEffect(GameObject effectObj, string key)
+    {
+        if (effectObj == null || string.IsNullOrEmpty(key)) return 0;
+        effectObj.name = key;
+        activeEffects.Add(effectObj);
+        effectGenerations.TryGetValue(effectObj, out uint generation);
+        effectGenerations[effectObj] = ++generation;
+        return generation;
+    }
 
     public async Cysharp.Threading.Tasks.UniTask<GameObject> SpawnEffect(string prefabKey, Vector3 position, Quaternion rotation = default, float duration = 1.0f, Transform parent = null)
     {
@@ -37,20 +73,21 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
 
         if (effectObj != null)
         {
-            activeEffects.Add(effectObj);
+            uint generation = TrackEffect(effectObj, prefabKey);
             if (duration > 0f)
             {
-                AutoDespawnEffectAsync(effectObj, duration, this.GetCancellationTokenOnDestroy()).Forget();
+                AutoDespawnEffectAsync(effectObj, generation, duration, this.GetCancellationTokenOnDestroy()).Forget();
             }
         }
 
         return effectObj;
     }
 
-    private async Cysharp.Threading.Tasks.UniTaskVoid AutoDespawnEffectAsync(GameObject effectObj, float duration, System.Threading.CancellationToken cancellationToken)
+    private async Cysharp.Threading.Tasks.UniTaskVoid AutoDespawnEffectAsync(GameObject effectObj, uint generation, float duration, System.Threading.CancellationToken cancellationToken)
     {
         await Cysharp.Threading.Tasks.UniTask.Delay(System.TimeSpan.FromSeconds(duration), cancellationToken: cancellationToken);
-        DespawnEffect(effectObj);
+        if (effectObj != null && effectGenerations.TryGetValue(effectObj, out uint current) && current == generation)
+            DespawnEffect(effectObj);
     }
 
     public GameObject SpawnEffect(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
@@ -78,19 +115,17 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
             effectObj.name = key;
         }
 
-        activeEffects.Add(effectObj);
+        TrackEffect(effectObj, key);
         return effectObj;
     }
 
     public void DespawnEffect(GameObject effectObj)
     {
-        if (effectObj == null) return;
+        if (effectObj == null || !activeEffects.Remove(effectObj)) return;
 
         string key = effectObj.name;
         effectObj.SetActive(false);
         effectObj.transform.SetParent(transform);
-
-        activeEffects.Remove(effectObj);
 
         if (!poolDict.TryGetValue(key, out var queue))
         {

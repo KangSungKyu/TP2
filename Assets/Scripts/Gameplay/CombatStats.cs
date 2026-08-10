@@ -50,7 +50,8 @@ public class CombatStats : MonoBehaviour
 
     private float groggyTimer = 0f;
     private const float DefaultGroggyDuration = 3.0f;
-    private Rigidbody2D rb2d;
+    private const float HitReactionDuration = 0.15f;
+    private KinematicMotor2D motor;
 
 
     // =========================================================================
@@ -59,7 +60,7 @@ public class CombatStats : MonoBehaviour
 
     private void Awake()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        motor = GetComponent<KinematicMotor2D>();
         InitStats();
     }
 
@@ -69,6 +70,7 @@ public class CombatStats : MonoBehaviour
         CurrentMp = MaxMp;
         CurrentPosture = 0f;
         IsGroggy = false;
+        IsDead = false;
         groggyTimer = 0f;
     }
 
@@ -87,6 +89,7 @@ public class CombatStats : MonoBehaviour
 
     public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
     {
+        if (IsDead) return false;
         if (IsGroggy)
         {
             amount *= 1.5f;
@@ -125,11 +128,10 @@ public class CombatStats : MonoBehaviour
             AddPosture(guardCost);
             SpawnResponseEffect(8011);
 
-            if (attacker != null && rb2d != null)
+            if (attacker != null)
             {
-                Vector2 pushDir = (transform.position - attacker.transform.position).normalized;
                 float knockbackForce = (amount / 10f) * 3.0f;
-                rb2d.AddForce(pushDir * knockbackForce, ForceMode2D.Impulse);
+                ApplyKnockback(attacker, knockbackForce);
             }
 
             Debug.Log($"[{gameObject.name}] 가드(Guard) 성공!");
@@ -139,11 +141,9 @@ public class CombatStats : MonoBehaviour
         if (amount <= 0f) return false;
 
         SpawnResponseEffect(8013);
-        CurrentHp = Mathf.Max(CurrentHp - amount, 0f);
-        OnHpChanged?.Invoke(CurrentHp / MaxHp);
+        ApplyHpDamage(amount, attacker);
 
         // 몬스터 / 유닛 피격 반응 연출 (스프라이트 적색 플래시 & 넉백)
-        TriggerHitVisualFeedback(attacker, amount);
 
         if (CurrentHp <= 0f && !IsDead)
         {
@@ -158,18 +158,30 @@ public class CombatStats : MonoBehaviour
 
     public void TakeExecutionDamage(float damage, CombatStats attacker = null)
     {
+        if (IsDead || damage <= 0f) return;
         IsGroggy = false;
         groggyTimer = 0f;
         CurrentPosture = 0f;
         OnPostureChanged?.Invoke(0f);
         OnGroggyEnded?.Invoke();
 
-        CurrentHp = Mathf.Max(CurrentHp - damage, 0f);
-        OnHpChanged?.Invoke(CurrentHp / MaxHp);
-
-        TriggerHitVisualFeedback(attacker, damage);
+        ApplyHpDamage(damage, attacker);
 
         Debug.Log($"<color=red>[Execution Impact] {gameObject.name} (이)가 {damage} 의 처형 피해를 입었습니다!</color>");
+    }
+
+    private void ApplyHpDamage(float damage, CombatStats attacker)
+    {
+        if (IsDead || damage <= 0f) return;
+        CurrentHp = Mathf.Max(CurrentHp - damage, 0f);
+        OnHpChanged?.Invoke(MaxHp > 0f ? CurrentHp / MaxHp : 0f);
+        TriggerHitVisualFeedback(attacker, damage);
+        if (CurrentHp > 0f) return;
+
+        IsDead = true;
+        Debug.Log($"[{gameObject.name}] died.");
+        OnHpZero?.Invoke();
+        OnDeath?.Invoke();
     }
 
     public void AddPosture(float amount)
@@ -216,13 +228,25 @@ public class CombatStats : MonoBehaviour
             FlashSpriteRedAsync(rend, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        if (attacker != null && rb2d != null)
+        if (attacker != null)
         {
-            Vector2 pushDir = (transform.position - attacker.transform.position).normalized;
-            pushDir.y = Mathf.Max(pushDir.y, 0.2f);
             float knockbackForce = Mathf.Clamp(dmg * 0.15f, 1.5f, 4.0f);
-            rb2d.AddForce(pushDir * knockbackForce, ForceMode2D.Impulse);
+            ApplyKnockback(attacker, knockbackForce);
         }
+    }
+
+    private void ApplyKnockback(CombatStats attacker, float force)
+    {
+        if (motor == null) return;
+        if (IsSuperArmorActive)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            return;
+        }
+        Vector2 pushDir = transform.position - attacker.transform.position;
+        pushDir.x = Mathf.Approximately(pushDir.x, 0f) ? 1f : Mathf.Sign(pushDir.x);
+        pushDir.y = Mathf.Max(pushDir.normalized.y, 0.2f);
+        motor.ApplyKnockback(pushDir * force, HitReactionDuration);
     }
 
     private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, CancellationToken cancellationToken)
@@ -230,7 +254,7 @@ public class CombatStats : MonoBehaviour
         if (rend == null) return;
         Color original = rend.color;
         rend.color = Color.red;
-        await UniTask.Delay(System.TimeSpan.FromSeconds(0.15f), cancellationToken: cancellationToken);
+        await UniTask.Delay(System.TimeSpan.FromSeconds(HitReactionDuration), cancellationToken: cancellationToken);
         if (rend != null) rend.color = original;
     }
 

@@ -1,112 +1,209 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 룸 청크 내 SpawnPointMarker 정보를 읽어 플레이어, 일반 몬스터, 보스를 동적으로 스폰하는 유닛 매니저.
-/// </summary>
 public class UnitSpawner : Singleton<UnitSpawner>
 {
+    private const int MinimumCombatZones = 3;
+    private const int MaximumActiveMonsters = 4;
+    private const float MinimumZoneDistance = 15f;
+    private const float MinimumEntryDistance = 14f;
+    private const float MinimumPortalClearance = 7f;
+
     public void SpawnUnitsFromMarkers(GameObject roomInstance)
     {
         if (roomInstance == null) return;
-
-        var markers = roomInstance.GetComponentsInChildren<SpawnPointMarker>(true);
+        SpawnPointMarker[] markers = roomInstance.GetComponentsInChildren<SpawnPointMarker>(true);
         if (markers == null || markers.Length == 0)
         {
-            Debug.LogWarning("[UnitSpawner] 룸 청크 내에 SpawnPointMarker가 존재하지 않습니다.");
+            uint[] missingMarkerEncounter = GetCurrentEncounter(Array.Empty<SpawnPointMarker>());
+            if (missingMarkerEncounter.Length == 0) return;
+
+            uint resourceIdx = 0;
+            string resourcePath = string.Empty;
+            StageRunData currentRun = StageManager.Instance?.CurrentRun;
+            if (currentRun != null && currentRun.TryGetSlot(currentRun.CurrentSlotIdx, out ChunkSlotData slot) && slot != null)
+                resourceIdx = slot.ChunkResourceIdx;
+            ResourceDataTable resources = DataTableManager.Instance != null
+                ? DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource)
+                : null;
+            if (resources != null) resourcePath = resources.GetResourcePath(resourceIdx);
+            Debug.LogError($"[UnitSpawner] Combat chunk has no SpawnPointMarker. " +
+                $"ChunkResourceIdx={resourceIdx}, Path='{resourcePath}', Root='{roomInstance.name}', " +
+                $"Active={roomInstance.activeInHierarchy}.");
             return;
         }
 
-        // 유닛 중복 생성 완전 방지: 기존 몬스터 제거 및 플레이어 유일성 보장
         CleanupExistingUnits();
-
-        foreach (var marker in markers)
+        Array.Sort(markers, CompareMarkers);
+        SpawnPointMarker playerMarker = null;
+        SpawnPointMarker bossMarker = null;
+        var zones = new List<SpawnPointMarker>(MaximumActiveMonsters);
+        foreach (SpawnPointMarker marker in markers)
         {
-            ProcessSpawnMarker(marker, roomInstance);
+            if (marker == null || !marker.EnableSpawn) continue;
+            if (marker.Type == SpawnType.Player && playerMarker == null) playerMarker = marker;
+            else if (marker.Type == SpawnType.Boss && bossMarker == null) bossMarker = marker;
+            else if (marker.Type == SpawnType.Monster) zones.Add(marker);
         }
-    }
 
-    private void CleanupExistingUnits()
-    {
-        if (UnitPoolManager.Instance != null)
+        if (playerMarker != null) SpawnPlayerAt(playerMarker.transform.position);
+        if (bossMarker != null)
         {
-            UnitPoolManager.Instance.DespawnAllMonsters();
-        }
-    }
-
-    private void ProcessSpawnMarker(SpawnPointMarker marker, GameObject roomInstance)
-    {
-        if (marker == null || !marker.EnableSpawn || marker.Type == SpawnType.None)
-        {
+            SpawnMonsterUnit(bossMarker.MonsterId, bossMarker.transform.position, true);
             return;
         }
 
-        bool isBossRoom = marker.Type == SpawnType.Boss;
-
-        switch (marker.Type)
+        uint[] encounter = GetCurrentEncounter(zones);
+        if (encounter.Length == 0) return;
+        if (!ValidateSpawnZones(roomInstance, zones, playerMarker != null ? playerMarker.transform : null, out string error))
         {
-            case SpawnType.Player:
-                SpawnPlayerAt(marker.transform.position);
-                break;
+            Debug.LogError($"[UnitSpawner] Invalid combat SpawnZone layout: {error}");
+            SpawnFallbackOnce(zones, encounter);
+            return;
+        }
 
-            case SpawnType.Monster:
-                SpawnMonsterUnit(marker, isBoss: false);
-                break;
-
-            case SpawnType.Boss:
-                if (isBossRoom)
-                {
-                    SpawnMonsterUnit(marker, isBoss: true);
-                }
-                else
-                {
-                    Debug.Log($"<color=yellow>[UnitSpawner] 일반 룸 청크 '{roomInstance.name}' 내 보스 마커 스폰 차단.</color>");
-                }
-                break;
+        int start = GetDeterministicStart(zones.Count);
+        StageRunData run = StageManager.Instance?.CurrentRun;
+        uint[] allocation = BuildEncounterAllocation(encounter, zones.Count,
+            run != null ? run.Seed : 0u, run != null ? run.CurrentSlotIdx : (byte)0);
+        for (int i = 0; i < allocation.Length; i++)
+        {
+            SpawnPointMarker zone = zones[(start + i) % zones.Count];
+            SpawnMonsterUnit(allocation[i], zone.transform.position, false);
         }
     }
 
-    private void SpawnPlayerAt(Vector3 spawnPos)
+    public static uint[] BuildEncounterAllocation(IReadOnlyList<uint> encounter, int zoneCount, uint seed, byte slotIdx)
     {
-        if (UnitPoolManager.Instance != null)
+        if (encounter == null || zoneCount <= 0) return Array.Empty<uint>();
+        int limit = Mathf.Min(MaximumActiveMonsters, zoneCount);
+        var allocation = new List<uint>(limit);
+        bool highThreatAdded = false;
+        int offset = encounter.Count > 0 ? (int)((seed + slotIdx) % (uint)encounter.Count) : 0;
+        for (int i = 0; i < encounter.Count && allocation.Count < limit; i++)
         {
-            UnitPoolManager.Instance.SpawnPlayerAsync(spawnPos).Forget();
+            uint unitIdx = encounter[(offset + i) % encounter.Count];
+            bool highThreat = unitIdx == 3103u || unitIdx == 3106u;
+            if (highThreat && highThreatAdded) continue;
+            highThreatAdded |= highThreat;
+            allocation.Add(unitIdx);
         }
+        return allocation.ToArray();
     }
 
-    private void SpawnMonsterUnit(SpawnPointMarker marker, bool isBoss)
+    public static bool ValidateSpawnZones(GameObject roomInstance, IReadOnlyList<SpawnPointMarker> zones,
+        Transform entry, out string error)
     {
-        Vector3 spawnPos = marker.transform.position;
-        if (UnitPoolManager.Instance != null)
+        error = string.Empty;
+        if (zones == null || zones.Count < MinimumCombatZones)
         {
-            UnitPoolManager.Instance.SpawnMonsterAsync(marker.MonsterId, spawnPos).ContinueWith(monster =>
+            error = $"requires at least {MinimumCombatZones} zones, found {zones?.Count ?? 0}";
+            return false;
+        }
+
+        for (int i = 0; i < zones.Count; i++)
+        {
+            if (zones[i] == null) { error = "contains a null zone"; return false; }
+            Vector3 position = zones[i].transform.position;
+            if (entry != null && Vector2.Distance(position, entry.position) < MinimumEntryDistance)
             {
-                if (monster != null)
+                error = $"zone {i} is closer than {MinimumEntryDistance}m to entry";
+                return false;
+            }
+            for (int j = i + 1; j < zones.Count; j++)
+            {
+                if (zones[j] == null || Vector2.Distance(position, zones[j].transform.position) < MinimumZoneDistance)
                 {
-                    ConfigureMonsterUIAndRewards(monster, isBoss);
+                    error = $"zones {i}/{j} are closer than {MinimumZoneDistance}m";
+                    return false;
                 }
-            }).Forget();
+            }
         }
+
+        if (roomInstance == null) return true;
+        ChunkSocketMarker[] sockets = roomInstance.GetComponentsInChildren<ChunkSocketMarker>(true);
+        foreach (ChunkSocketMarker socket in sockets)
+        {
+            if (socket == null) continue;
+            foreach (SpawnPointMarker zone in zones)
+            {
+                if (Vector2.Distance(zone.transform.position, socket.transform.position) < MinimumPortalClearance)
+                {
+                    error = $"zone is inside {MinimumPortalClearance}m portal clearance";
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    private void ConfigureMonsterUIAndRewards(UnitBase unit, bool isBoss)
+    private static int CompareMarkers(SpawnPointMarker left, SpawnPointMarker right)
+    {
+        if (left == null) return right == null ? 0 : 1;
+        if (right == null) return -1;
+        int x = left.transform.localPosition.x.CompareTo(right.transform.localPosition.x);
+        return x != 0 ? x : left.transform.localPosition.y.CompareTo(right.transform.localPosition.y);
+    }
+
+    private static uint[] GetCurrentEncounter(IReadOnlyList<SpawnPointMarker> zones)
+    {
+        StageManager stage = StageManager.Instance;
+        if (stage?.CurrentRun == null ||
+            !stage.CurrentRun.TryGetSlot(stage.CurrentRun.CurrentSlotIdx, out ChunkSlotData slot))
+        {
+            var fallback = new List<uint>(zones?.Count ?? 0);
+            if (zones != null)
+                foreach (SpawnPointMarker zone in zones)
+                    if (zone != null && zone.MonsterId != 0) fallback.Add(zone.MonsterId);
+            return fallback.ToArray();
+        }
+        return slot.MonsterUnitIdxList ?? Array.Empty<uint>();
+    }
+
+    private static int GetDeterministicStart(int zoneCount)
+    {
+        StageRunData run = StageManager.Instance?.CurrentRun;
+        return run == null || zoneCount == 0 ? 0 : (int)((run.Seed + run.CurrentSlotIdx) % (uint)zoneCount);
+    }
+
+    private static void SpawnFallbackOnce(IReadOnlyList<SpawnPointMarker> zones, IReadOnlyList<uint> encounter)
+    {
+        if (zones == null || zones.Count == 0 || zones[0] == null || encounter == null || encounter.Count == 0) return;
+        UnitSpawner instance = Instance;
+        if (instance != null) instance.SpawnMonsterUnit(encounter[0], zones[0].transform.position, false);
+    }
+
+    private static void CleanupExistingUnits()
+    {
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnAllMonsters();
+    }
+
+    private static void SpawnPlayerAt(Vector3 position)
+    {
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.SpawnPlayerAsync(position).Forget();
+    }
+
+    private void SpawnMonsterUnit(uint unitIdx, Vector3 position, bool isBoss)
+    {
+        if (unitIdx == 0)
+        {
+            Debug.LogError("[UnitSpawner] Spawn marker has no validated uint unit idx.");
+            return;
+        }
+        if (UnitPoolManager.Instance == null) return;
+        UnitPoolManager.Instance.SpawnMonsterAsync(unitIdx, position).ContinueWith(monster =>
+        {
+            if (monster != null) ConfigureMonsterUIAndRewards(monster, isBoss);
+        }).Forget();
+    }
+
+    private static void ConfigureMonsterUIAndRewards(UnitBase unit, bool isBoss)
     {
         if (unit == null) return;
-
-        if (isBoss)
-        {
-            var testHud = TestPlayerHUDUI.Instance;
-            if (testHud != null)
-            {
-                testHud.BindBossTarget(unit);
-            }
-            Debug.Log($"<color=magenta>[UnitSpawner] '{unit.name}' -> 화면 상단 대형 보스 HUD 및 보스 특별 보상 바인딩 완료!</color>");
-        }
-        else
-        {
-            Debug.Log($"<color=yellow>[UnitSpawner] '{unit.name}' -> 머리 위 오버레이 HP HUD 및 일반 드롭 보상 바인딩 완료!</color>");
-        }
+        Debug.Log(isBoss
+            ? $"<color=magenta>[UnitSpawner] Boss idx {unit.UnitIdx} spawned.</color>"
+            : $"<color=yellow>[UnitSpawner] Monster idx {unit.UnitIdx} spawned.</color>");
     }
 }
-

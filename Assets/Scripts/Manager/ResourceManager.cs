@@ -229,7 +229,7 @@ public class ResourceManager : Singleton<ResourceManager>
                 handle = Addressables.InstantiateAsync(key, parent);
             }
 
-            await handle.Task;
+            await handle.ToUniTask();
 
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
@@ -273,12 +273,11 @@ public class ResourceManager : Singleton<ResourceManager>
 
         try
         {
-            int idx = this.instantiateHandles.FindIndex(o => o.Result == (object)go);
-            Addressables.ReleaseInstance(go);
-            if (idx > -1)
-            {
-                this.instantiateHandles.RemoveAt(idx);
-            }
+            int idx = this.instantiateHandles.FindIndex(o => o.IsValid() && o.Result == (object)go);
+            if (idx < 0) return;
+            var handle = this.instantiateHandles[idx];
+            this.instantiateHandles.RemoveAt(idx);
+            if (handle.IsValid()) Addressables.ReleaseInstance(handle);
         }
         catch (Exception ex)
         {

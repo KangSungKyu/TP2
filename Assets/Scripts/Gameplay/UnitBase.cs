@@ -17,6 +17,7 @@ public class UnitBase : MonoBehaviour
     public string UnitName { get; protected set; } = string.Empty;
     public uint UnitIdx { get; protected set; }
     public uint UnitId => UnitIdx;
+    public CombatStats Stats => stats;
 
 
     // =========================================================================

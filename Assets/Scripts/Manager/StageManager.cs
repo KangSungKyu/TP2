@@ -141,6 +141,7 @@ public static class Stage1RunGenerator
         {
             ChunkSlotData slot = run.Slots[i];
             if (slot.SlotIdx == run.StartSlotIdx || slot.SlotIdx == run.BossGateSlotIdx) continue;
+            bool acceptsEncounter = slot.ChunkResourceIdx == 1041u;
 
             if (chunks != null && chunks.Count > 0)
             {
@@ -156,15 +157,20 @@ public static class Stage1RunGenerator
                 {
                     ChunkResourceData selected = validChunks[(int)((seed + slot.SlotIdx) % (uint)validChunks.Count)];
                     slot.ChunkResourceIdx = selected.ResourceIdx;
+                    acceptsEncounter = selected.ChunkType == 1 || selected.ChunkType == 2;
                     resourceUseCounts.TryGetValue(selected.ResourceIdx, out int used);
                     resourceUseCounts[selected.ResourceIdx] = used + 1;
                 }
             }
 
-            if (encounters != null && encounters.Count > 0)
+            if (acceptsEncounter && encounters != null && encounters.Count > 0)
             {
                 MonsterEncounterData encounter = encounters[(int)((seed + slot.SlotIdx) % (uint)encounters.Count)];
                 slot.MonsterUnitIdxList = encounter.UnitIdxList ?? Array.Empty<uint>();
+            }
+            else
+            {
+                slot.MonsterUnitIdxList = Array.Empty<uint>();
             }
         }
         return run;
@@ -257,12 +263,15 @@ public static class Stage1RunGenerator
 /// </summary>
 public class StageManager : Singleton<StageManager>
 {
+    public event Action<uint, int, int> ProgressChanged;
     [Header("Current Stage Configuration")]
     public uint CurrentStageIdx = 9001; // 1Stage (TaoShrine)
     public int CurrentRoomSequenceIndex { get; private set; } = 0;
     public StageRunData CurrentRun { get; private set; }
+    public uint RoomGeneration { get; private set; }
     private bool isLoadingRoom;
     private bool completionTransitionInProgress;
+    private bool portalTransitionLocked;
 
     public StageBaseData CurrentStageData
     {
@@ -332,6 +341,8 @@ public class StageManager : Singleton<StageManager>
             await LoadNextRoomAsync(1041, cancellationToken);
             return;
         }
+
+        PublishProgress();
 
         await LoadNextRoomAsync(1040, cancellationToken);
     }
@@ -417,6 +428,8 @@ public class StageManager : Singleton<StageManager>
 
         Debug.Log($"<color=cyan>[StageManager] 정수 idx 참조 동적 룸 전환: TargetKey='{targetAddressKey}' (ResourceIdx: {roomResourceIdx}, Stage: {CurrentStageIdx})</color>");
 
+        RoomGeneration++;
+        portalTransitionLocked = true;
         var builder = TilemapStageBuilder.Instance;
         if (builder == null)
         {
@@ -430,7 +443,23 @@ public class StageManager : Singleton<StageManager>
         finally
         {
             isLoadingRoom = false;
+            portalTransitionLocked = false;
         }
+    }
+
+    public bool IsCurrentPortal(byte ownerSlotIdx, uint roomGeneration) =>
+        CurrentRun != null && ownerSlotIdx == CurrentRun.CurrentSlotIdx && roomGeneration == RoomGeneration;
+
+    public bool TryBeginPortalTransition(byte ownerSlotIdx, uint roomGeneration)
+    {
+        if (portalTransitionLocked || !IsCurrentPortal(ownerSlotIdx, roomGeneration)) return false;
+        portalTransitionLocked = true;
+        return true;
+    }
+
+    public void CancelPortalTransition(byte ownerSlotIdx, uint roomGeneration)
+    {
+        if (IsCurrentPortal(ownerSlotIdx, roomGeneration)) portalTransitionLocked = false;
     }
 
     public async UniTask<bool> LoadConnectedRoomAsync(byte targetSlotIdx = byte.MaxValue,
@@ -448,35 +477,30 @@ public class StageManager : Singleton<StageManager>
             return false;
 
         List<byte> connected = GetConnectedSlotIndices(CurrentRun, current);
-        if (connected.Count == 0) return false;
-
-        byte destination = targetSlotIdx;
-        if (destination == byte.MaxValue)
+        if (targetSlotIdx == byte.MaxValue || !connected.Contains(targetSlotIdx))
         {
-            destination = connected[0];
-            foreach (byte slotIdx in connected)
-            {
-                if (CurrentRun.TryGetSlot(slotIdx, out ChunkSlotData slot) && !slot.Visited)
-                {
-                    destination = slotIdx;
-                    break;
-                }
-                if (destination == CurrentRun.PreviousSlotIdx && slotIdx != CurrentRun.PreviousSlotIdx)
-                    destination = slotIdx;
-            }
-        }
-        else if (!connected.Contains(destination))
-        {
+            Debug.LogWarning($"[StageManager] Invalid portal graph target {targetSlotIdx} from slot {current.SlotIdx}.");
             return false;
         }
 
+        byte destination = targetSlotIdx;
         if (!CurrentRun.TryGetSlot(destination, out ChunkSlotData target)) return false;
         byte previous = CurrentRun.CurrentSlotIdx;
         CurrentRun.PreviousSlotIdx = previous;
         CurrentRun.CurrentSlotIdx = destination;
         CurrentRun.TryVisit(destination);
+        PublishProgress();
         roomResourceIdx = target.ChunkResourceIdx != 0 ? target.ChunkResourceIdx : 1041u;
         return true;
+    }
+
+    public void PublishProgress()
+    {
+        if (CurrentRun?.Slots == null) return;
+        int visited = 0;
+        foreach (ChunkSlotData slot in CurrentRun.Slots)
+            if (slot != null && slot.Visited) visited++;
+        ProgressChanged?.Invoke(CurrentStageIdx, visited, CurrentRun.Slots.Length);
     }
 
     public bool TryGetConnectedSlot(ChunkSocketDirection direction, out byte slotIdx)
@@ -543,7 +567,7 @@ public class StageManager : Singleton<StageManager>
         return result;
     }
 
-    private static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken)
+    public static async UniTask<bool> ReturnToHubAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (GameSceneManager.Instance == null)
@@ -627,5 +651,16 @@ public class StageManager : Singleton<StageManager>
                 else DestroyImmediate(tr.gameObject);
             }
         }
+    }
+
+    public void ResetRunForHub()
+    {
+        CleanupActiveChunksAndEffects();
+        RoomGeneration++;
+        CurrentRun = null;
+        CurrentRoomSequenceIndex = 0;
+        isLoadingRoom = false;
+        completionTransitionInProgress = false;
+        portalTransitionLocked = false;
     }
 }

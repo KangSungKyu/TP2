@@ -8,7 +8,7 @@ using System.Threading;
 /// </summary>
 public class InitScene : MonoBehaviour
 {
-    [SerializeField] private GameSceneManager.SceneName nextScene = GameSceneManager.SceneName.Main;
+    [SerializeField] private GameSceneManager.SceneName nextScene = GameSceneManager.SceneName.Hub;
 
     private async void Start()
     {

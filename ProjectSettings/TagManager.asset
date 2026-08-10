@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -13,8 +13,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Player
+  - Enemy
   - 
   - 
   - 
@@ -41,3 +41,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: FarBackground
+    uniqueID: 120001
+    locked: 0
+  - name: NearBackground
+    uniqueID: 120002
+    locked: 0
+  - name: Tilemap
+    uniqueID: 120003
+    locked: 0
+  - name: Unit
+    uniqueID: 120004
+    locked: 0
+  - name: Effect
+    uniqueID: 120005
+    locked: 0
+  - name: WorldUI
+    uniqueID: 120006
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  m_MigratedRenderPipelines: []
