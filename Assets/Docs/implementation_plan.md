@@ -53,6 +53,7 @@
 | 2026-08-10 | NRE 수선 검증 후 unityMCP 직접 실행으로 24종 모듈 및 Stage 1 룸 청크 11종 전면 실시간 재생성·Addressables 바인딩 완결 (`ebae731`) | `Module_A1.prefab`~`Room_11063.prefab` |
 | 2026-08-10 | 청크 10x5 모듈 배열 내 모든 Entry Point (West, East, North, South) 간 100% 연속 통과 경로 BFS 검증 및 Socket Marker 주입 재빌드 완결 (`8634eaa`) | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md`, `Prefab_1040.prefab`~`Room_11063.prefab` |
 | 2026-08-10 | 40종 모듈 확충, 1-Way PlatformEffector2D 상향/하향 통과 탑재 & 11종 고유 청크 10x5 레이아웃 중복 해소 전면 재생성 완결 (`1d14c5a`) | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md`, `Module_A1`~`Module_J4`, `Prefab_1040`~`Room_11063` |
+| 2026-08-10 | Module_L1 레벨 밸런스 수선(착지대 3m 개방), 가변 NxM(3<=N,M<=20) 좁은/넓은 청크 균일 공간 배치 & Stage 1 함정 밀도 조절 완결 (`2b17588`) | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md`, `Prefab_1040`~`Room_11063` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -323,3 +324,11 @@
 - **플레이어 규격(폭 1.0m, 높이 2.0m) 틈새 보장**: 수평/수직 통로 폭 최소 2.0m 이상 보장 및 발판 상단 천장 고도 2.5m 이상 확보로 플레이어 이동/도약 끼임 100% 방지.
 - **1-Way 발판 상향/하향 통과 (PlatformEffector2D)**: `Tilemap_Platforms`에 `PlatformEffector2D` (`useOneWay = true`, `surfaceArc = 180f`) 및 `TilemapCollider2D.usedByEffector = true` 적용하여 아래에서 위로 도약 통과 및 `Down + Jump` 하향 통과 구현.
 - **40종 모듈 확충 & 11종 고유 청크 중복 해소**: 모듈 템플릿을 40종(`Module_A1`~`Module_J4`)으로 확충하고, 11개 룸 청크(`Prefab_1040`~`Room_11063`)에 100% 서로 다른 고유 10x5 모듈 매트릭스를 지정하여 동일 청크 중복감을 완벽 해소. `unityMCP` 재빌드 및 원격 Push (`1d14c5a`) 완료.
+
+---
+
+### 2026-08-10 KST — Module_L1 레벨 디자인 수선 & 가변 NxM 청크 공간 배치 회고
+
+- **`Module_L1` 밸런스 전면 수선**: 함정, 지형, 발판 밀집 억까 구조를 배제하고 3m 개방 착지대 및 2.5m 이상 이격 공간을 확보하여 쾌적한 플랫포머 패턴 제공.
+- **가변 NxM 청크 공간 배치 ($3 \le N, M \le 20$)**: 청크 규격을 좁은 통로/샤프트/쉼터($4 \times 5$, $5 \times 3$, $6 \times 3$)부터 넓은 아레나/광장($8 \times 4$, $10 \times 5$)까지 가변 배치하여 룸 다양성 및 균일한 공간감 보장.
+- **Stage 1 함정 밀도 감축**: 초반 스테이지 피로도를 고려하여 함정 수 및 플랫포밍 난이도를 대폭 조절하고, `unityMCP` 재빌드 및 원격 Push (`2b17588`) 완료.
