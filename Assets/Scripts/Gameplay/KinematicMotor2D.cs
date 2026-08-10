@@ -39,6 +39,7 @@ public class KinematicMotor2D : MonoBehaviour
     public Collider2D WallCollider { get; private set; }
     public WallJumpSurface WallSurface { get; private set; }
     public bool IsPassingThrough => isPassThroughActive;
+    public Vector2 LastSafeGroundedPosition { get; private set; }
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
@@ -168,6 +169,15 @@ public class KinematicMotor2D : MonoBehaviour
         knockbackGeneration++;
     }
 
+    public void TeleportToSafeGround()
+    {
+        Vector2 safePos = LastSafeGroundedPosition != Vector2.zero ? LastSafeGroundedPosition : body.position;
+        Teleport(safePos);
+        SetTargetVelocityX(0f);
+        SetVelocityY(0f);
+        Debug.Log($"<color=cyan>[KinematicMotor2D] 함정 피격 ➔ 안전 지형 복귀 ({safePos})</color>");
+    }
+
     public void SetGroundNormal(Vector2 normal)
     {
         if (normal.sqrMagnitude > 0.001f)
@@ -238,6 +248,13 @@ public class KinematicMotor2D : MonoBehaviour
             {
                 groundNormal = hitBuffer[i].normal;
                 Velocity = new Vector2(Velocity.x, 0f);
+
+                // ponytail: record last safe grounded position when touching solid ground (not one-way platform)
+                if (((1 << hitBuffer[i].collider.gameObject.layer) & SolidGroundLayer) != 0)
+                {
+                    LastSafeGroundedPosition = body.position;
+                }
+
                 return true;
             }
         }

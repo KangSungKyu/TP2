@@ -2,7 +2,7 @@
 
 ## 1. 개요
 
-본 서브계획서는 2D 사이드뷰 메트로배니아 환경에서 사용되는 **가시 함정 (Spike Trap)** 및 **둥근 톱날 함정 (Circular Saw Blade Trap)**의 데이터 매핑, 물리 판정, 이동 제어 및 피해 부여 라이프사이클을 규정합니다.
+본 서브계획서는 2D 사이드뷰 메트로배니아 환경에서 사용되는 **가시 함정 (Spike Trap)** 및 **둥근 톱날 함정 (Circular Saw Blade Trap)**의 데이터 매핑, 물리 판정, 피해 및 **안전 지형 복귀 (Safe Ground Respawn)** 라이프사이클을 규정합니다.
 
 ---
 
@@ -24,7 +24,21 @@
 
 ---
 
-## 3. 함정 시스템 클래스 구조
+## 3. 세부 동작 메카닉 (유저 확정 스펙)
+
+### 3.1 노크백 없음 & 안전 지형 복귀 계약 (No Knockback & Safe Ground Teleport)
+- **노크백 제거**: 함정 접촉 시 물리 밀침/노크백 효과를 적용하지 않음 (`knockbackForce = 0`).
+- **안전 지형 이송**:
+  - `KinematicMotor2D`는 유닛이 고체 지면(`SolidGroundLayer`) 상에 정상 착지한 시점의 위치(`LastSafeGroundedPosition`)를 지속 갱신합니다.
+  - 함정에 감전/피격 시 대미지 적용 후 즉시 `motor.TeleportToSafeGround()`를 구동하여 **가장 가까운 안전 지형**으로 위치를 복귀시킵니다.
+  - 연속 피격 방지를 위해 `0.5초` 피격 쿨다운(i-frame)을 유지합니다.
+
+### 3.2 발판 하향 통과 입력 계약 (One-Way Downward Pass-Through)
+- `OneWayPlatform` 발판에서 아래로 내려가는 입력 조작은 **아래 방향키/S 키 + 점프 키 (`Down + Jump`)** 조합으로 확정 구동합니다.
+
+---
+
+## 4. 클래스 구조
 
 ```mermaid
 classDiagram
@@ -35,12 +49,11 @@ classDiagram
     class HazardBase {
         #uint hazardId
         #int damage
-        #float knockbackForce
         #float cooldownBetweenHits
         #LayerMask targetMask
         +OnTriggerEnter2D(Collider2D col)
         +OnTriggerStay2D(Collider2D col)
-        #ApplyHazardDamage(CombatStats stats, Vector2 hitNormal)
+        #ApplyHazardDamage(CombatStats stats)
     }
 
     class SpikeTrap {
@@ -62,25 +75,7 @@ classDiagram
 
 ---
 
-## 4. 세부 동작 메카닉
-
-### 4.1 가시 함정 (`SpikeTrap.cs`)
-- **설치 유연성**: 바닥(Angle 0°), 천장(Angle 180°), 좌측 벽면(Angle -90°), 우측 벽면(Angle 90°)에 맞추어 Transform 회전 또는 RaycastSurfaceAlign으로 자동 배치.
-- **피해 & 노크백**: 
-  - 접촉 시 `Player` 또는 `UnitBase`의 `CombatStats`에 대미지 전달.
-  - 노크백 방향은 가시가 향하는 법선 방향(`surfaceNormal`)으로 밀쳐냄.
-  - 연속 피격 방지를 위해 `0.5초` 피격 쿨다운(i-frame) 보장.
-
-### 4.2 둥근 톱날 함정 (`SawBladeTrap.cs`)
-- **회전 연출**: `Z-axis` 축 지속 회전 (`rotationSpeed = 360°/s`, `Time.deltaTime`).
-- **이동 옵션 (Movement Option)**:
-  - `enableMovement = false`: 고정형 함정.
-  - `enableMovement = true`: 지정된 Waypoint 지점($P_A \leftrightarrow P_B$) 사이를 PingPong / Loop 모드로 이동 (`moveSpeed = 3.0m/s`).
-  - 이동 시 물리 충돌체 피격 틱을 안정적으로유지하기 위해 `FixedUpdate` / `Kinematic` 보정 연산 사용.
-
----
-
 ## 5. 검증 계획 (QA & Automated Tests)
 
-1. **EditMode 테스트**: `HazardBase`, `SpikeTrap`, `SawBladeTrap` 컴포넌트 셋업 및 `ResourceData.idx` (1070, 1071) 매핑 검증.
-2. **PlayMode 테스트**: 플레이어가 가시/톱날 함정에 접촉 시 대미지 감소, 노크백 방향 및 i-frame 정상 작동 여부 검증.
+1. **Safe Ground 복귀 테스트**: 함정 피격 시 노크백 없이 `LastSafeGroundedPosition`으로 플레이어 좌표가 올바르게 복귀하는지 NUnit PlayMode/EditMode 하네스로 검증.
+2. **Downward Drop 테스트**: `Down + Jump` 조작 시 `OneWayPlatformPassThroughAsync`가 정상 실행되어 발판 아래로 착지하는지 검증.

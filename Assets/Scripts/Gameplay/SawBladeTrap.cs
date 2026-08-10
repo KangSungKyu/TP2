@@ -30,7 +30,7 @@ public class SawBladeTrap : HazardBase
     {
         hazardId = 1071; // ResourceData idx: 1071 (Hazard_SawBladeTrap)
         damage = 20;
-        knockbackForce = 11.0f;
+        knockbackForce = 0.0f;
         cooldownBetweenHits = 0.4f;
     }
 

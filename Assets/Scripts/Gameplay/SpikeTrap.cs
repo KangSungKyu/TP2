@@ -16,7 +16,7 @@ public class SpikeTrap : HazardBase
     {
         hazardId = 1070; // ResourceData idx: 1070 (Hazard_SpikeTrap)
         damage = 15;
-        knockbackForce = 9.0f;
+        knockbackForce = 0.0f;
         cooldownBetweenHits = 0.5f;
     }
 
