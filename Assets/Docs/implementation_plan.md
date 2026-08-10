@@ -68,6 +68,7 @@
 | 2026-08-10 | `KinematicMotor2D.cs` TilemapCollider2D 착지 산출 버그(`hit.point.y` 기반 교정) 수선으로 1-Way 발판 상단 착지 불능 결함 완결 수선 (`227d002`) | `KinematicMotor2D.cs`, `ModuleChunkBuilder.cs` |
 | 2026-08-10 | 보스 아레나 청크(`Prefab_1042`) Boss 마커(ID 3201) 추가, QA NUnit 무결성 검수 전원 통과(80/80 PASS) 완결 (`aa2b3fa`) | `ModuleChunkBuilder.cs`, `Prefab_1042.prefab`, `QATestRunner.cs` |
 | 2026-08-10 | 12x12 모듈 경계 고정 지형 타일 수선(Col 0, Col 11 전면 개방)으로 청크 내 100% 이동 도달성 보장 완결 (`197b4da`) | `ModuleChunkBuilder.cs` |
+| 2026-08-10 | EntryMarker relative offset(-0.49f) & South Socket 고도(2.0m) 보정으로 포탈/도어 진입 시 지형 매몰 100% 방지 완결 (`126126c`) | `ModuleChunkBuilder.cs` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -381,3 +382,10 @@
 
 - **모듈 경계 100% 개방**: `Module_C1`, `Module_D1`, `Module_D2`, `Module_E1`, `Module_E2`, `Module_H1`, `Module_I1` 등 20종 모듈 템플릿의 양쪽 경계(Col 0, Col 11) 고정 지형 타일(`#`)을 전면 제거하여 모듈과 모듈 연결 지점(X=+6.0m 부근) 지형 끼임 및 문/포탈 도달 불능 결함 완결 수선.
 - **전담 Conversation 위임 완수**: C# 코드 수선 푸시(`197b4da`) 후 **리소스 작업자 1 (`f4f6cc90-75c3-4e62-890c-fcd62e9a47f7`)** 대화방으로 프리팹 재빌드 및 `unityMCP` 구동 메시지 직접 발송 완료.
+
+---
+
+### 2026-08-10 KST — 포탈/도어 진입 시 지형 매몰 수선 & EntryMarker 고도 보정 회고
+
+- **원인 분석**: `ModuleChunkBuilder.cs` 내 `AddSocket` 생성 시 `EntryMarker` 자식 오브젝트의 상대 위치 오프셋이 미지정(Vector3.zero)되어 `EntryMarker` 월드 Y가 `socket.position.y`와 동일하게 배치되고, South 소켓 고도가 지형 바운더리 내부(Y=1.0m)에 배치됨으로써 포탈 진입 순간 플레이어가 지형 콜라이더 내부에 매몰되던 결함 발견.
+- **수선 및 100% 정상화**: `entry.transform.localPosition = new Vector3(0f, -0.49f, 0f)` 오프셋을 주입하여 `EntryMarker` 스폰 위치를 계약 규격인 `surface + 0.51m`로 정밀 산출하고 South 소켓 고도를 `Y = 2.0m` (surface + 1.0m)로 보정. 원격 Push (`126126c`) 완료 및 **리소스 작업자 1 (`f4f6cc90-75c3-4e62-890c-fcd62e9a47f7`)** 대화방으로 프리팹 재빌드 요청 전달.
