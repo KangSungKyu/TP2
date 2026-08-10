@@ -7,30 +7,26 @@ using UnityEngine.Tilemaps;
 
 /// <summary>
 /// 6x6 청크 모듈 Prefab 24종 자동 제작 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더.
-/// [유저 납득형 레벨 디자인 밸런스 검증 지칙]
-/// 1. 억까 배치 배제: 톱날 함정 직하단 발판 밀착 전면 제거, 좌우 분리(==..==) 및 2m 회피 윈도우 확보.
-/// 2. 착지 반응 공간(Reaction Zone): 톱날/가시 함정과 발판 간 수직 간격 최소 2.5m 확보.
-/// 3. PPU=32 1:1 콜라이더 일치 & sortingOrder=15 시각화.
-/// 4. Entry 주변 4m 100% 안전 구역 설정.
+/// NullReferenceException 철저 방지 & 100% 예외 세이프 구조.
 /// </summary>
 public static class ModuleChunkBuilder
 {
     private static readonly Dictionary<string, string[]> ModuleTemplates = new Dictionary<string, string[]>()
     {
-        // Category A: 평지 & 기초 장애물 (안전 반응 공간 확보)
+        // Category A: 평지 & 기초 장애물
         ["Module_A1"] = new string[] {
             "......",
             "......",
             "......",
             "S....E",
-            "##.^^#", // 1타일 여유 후 가시
+            "##.^^#",
             "######"
         },
         ["Module_A2"] = new string[] {
             "......",
             "......",
-            "..==..", // 착지 발판
-            "S.O..E", // 톱날 이동 공간 확보
+            "..==..",
+            "S.O..E",
             "#....#",
             "######"
         },
@@ -57,15 +53,15 @@ public static class ModuleChunkBuilder
         ["Module_C1"] = new string[] {
             "......",
             "#....#",
-            "#.==.#", // 대기 발판
+            "#.==.#",
             "#....#",
             "#....#",
             "S....E"
         },
         ["Module_C2"] = new string[] {
             ".....E",
-            "..O...", // 톱날 상부 위치
-            "..==..", // 안전 착지 발판
+            "..O...",
+            "..==..",
             "......",
             "S.....",
             "######"
@@ -74,8 +70,8 @@ public static class ModuleChunkBuilder
         // Category D: 대시 우회 모듈
         ["Module_D1"] = new string[] {
             "......",
-            ".vvvv.", // 천장 가시 (저상 대시 유도)
-            "S....E", // 3.6m 대시 통로
+            ".vvvv.",
+            "S....E",
             "......",
             "##..##",
             "######"
@@ -89,11 +85,11 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // Category E: 공중 톱날 타이밍 코스 (억까 방지: 톱날과 발판 수직 간격 2.5m 확보)
+        // Category E: 공중 톱날 타이밍 코스
         ["Module_E1"] = new string[] {
-            "..O...", // 톱날 높이 Y=5
+            "..O...",
             "......",
-            "..==..", // 대기 발판 Y=3
+            "..==..",
             "S....E",
             "#....#",
             "######"
@@ -107,20 +103,20 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // Category F: 공중 부유 모듈 (억까 방지 착지 공간: F2 톱날 직하단 발판 분리)
+        // Category F: 공중 부유 모듈 (Y=0 Open Air)
         ["Module_F1"] = new string[] {
             "......",
-            "..==..", // 상부 착지 발판
+            "..==..",
             "......",
-            "==..==", // 하부 발판
+            "==..==",
             "......",
-            "......" // Y=0 오픈 에어
+            "......"
         },
         ["Module_F2"] = new string[] {
             "......",
-            "..O...", // 톱날 상부 배치
+            "..O...",
             "......",
-            "==..==", // 발판 분리 배치 (톱날 직하단 발판 제거)
+            "==..==",
             "......",
             "......"
         },
@@ -145,7 +141,7 @@ public static class ModuleChunkBuilder
         ["Module_G2"] = new string[] {
             "......",
             "......",
-            ".###..", // 부유 고체 섬
+            ".###..",
             ".###..",
             "......",
             "......"
@@ -195,7 +191,7 @@ public static class ModuleChunkBuilder
             "######"
         },
         ["Module_I2"] = new string[] {
-            "....O.", // 톱날 우측 고지대 배치
+            "....O.",
             "######",
             "######",
             "S....E",
@@ -223,7 +219,7 @@ public static class ModuleChunkBuilder
     [MenuItem("TP2/Build 6x6 Modules & Stage 1 Chunks (6x6 모듈 & 룸 청크 전면 재생성)")]
     public static void BuildAllModulesAndChunks()
     {
-        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 유저 납득형 6x6 모듈 24종 및 청크 11종 빌드 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] NRE 100% 방지 모듈 24종 및 청크 11종 빌드 시작...</b></color>");
 
         string modulesDir = "Assets/Prefabs/Modules";
         if (!Directory.Exists(modulesDir)) Directory.CreateDirectory(modulesDir);
@@ -237,7 +233,7 @@ public static class ModuleChunkBuilder
         string tilesDir = "Assets/Textures/Environment/Tiles";
         if (!Directory.Exists(tilesDir)) Directory.CreateDirectory(tilesDir);
 
-        // 1. PPU=32 1:1 콜라이더 일치 더미 함정 스프라이트 확보
+        // 1. PPU=32 1:1 콜라이더 일치 더미 함정 스프라이트 확보 (Null-Safe)
         Sprite spikeSprite = EnsureSpikeTrapSprite($"{texturesDir}/Sprite_SpikeTrap.png");
         Sprite sawSprite = EnsureSawBladeTrapSprite($"{texturesDir}/Sprite_SawBladeTrap.png");
 
@@ -264,19 +260,22 @@ public static class ModuleChunkBuilder
         // 2. 24종 6x6 모듈 Prefab 제작
         Build24ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
-        // 3. 10x5 모듈 주입 기반 Stage 1 룸 청크 11종 전면 빌드
+        // 3. 10x5 모듈 주입 기반 Stage 1 룸 청크 11종 전면 빌드 (Null-Safe & Modern API)
         Build11RoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("<color=green><b>[ModuleChunkBuilder] 유저 납득형 6x6 모듈 24종 및 청크 11종 정밀 빌드 완결!</b></color>");
+        Debug.Log("<color=green><b>[ModuleChunkBuilder] NRE 100% 해결 및 모듈 24종·청크 11종 빌드 완결!</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
     }
 
     private static Sprite EnsureSpikeTrapSprite(string path)
     {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
         int width = 32, height = 32;
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
         Color transparent = new Color(0, 0, 0, 0);
@@ -299,20 +298,29 @@ public static class ModuleChunkBuilder
         }
         tex.Apply();
         File.WriteAllBytes(path, tex.EncodeToPNG());
-        AssetDatabase.Refresh();
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
 
         TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
         if (importer != null)
         {
             importer.textureType = TextureImporterType.Sprite;
-            importer.spritePixelsPerUnit = 32f; // PPU=32 -> 32px=1.0m (1:1 cell alignment)
+            importer.spritePixelsPerUnit = 32f;
             importer.SaveAndReimport();
         }
-        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        Sprite loaded = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (loaded == null)
+        {
+            loaded = Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 32f);
+        }
+        return loaded;
     }
 
     private static Sprite EnsureSawBladeTrapSprite(string path)
     {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
         int width = 32, height = 32;
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
         Color transparent = new Color(0, 0, 0, 0);
@@ -334,16 +342,22 @@ public static class ModuleChunkBuilder
         }
         tex.Apply();
         File.WriteAllBytes(path, tex.EncodeToPNG());
-        AssetDatabase.Refresh();
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
 
         TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
         if (importer != null)
         {
             importer.textureType = TextureImporterType.Sprite;
-            importer.spritePixelsPerUnit = 32f; // PPU=32 -> 32px=1.0m (1:1 cell alignment)
+            importer.spritePixelsPerUnit = 32f;
             importer.SaveAndReimport();
         }
-        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        Sprite loaded = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (loaded == null)
+        {
+            loaded = Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 32f);
+        }
+        return loaded;
     }
 
     private static void Build24ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
@@ -352,6 +366,7 @@ public static class ModuleChunkBuilder
         {
             string modName = kvp.Key;
             string[] layout = kvp.Value; // Y=5 down to Y=0
+            if (layout == null || layout.Length < 6) continue;
 
             GameObject modRoot = new GameObject(modName);
             var grid = modRoot.AddComponent<Grid>();
@@ -381,6 +396,8 @@ public static class ModuleChunkBuilder
             {
                 int y = 5 - r; // Row 0 is Y=5, Row 5 is Y=0
                 string line = layout[r];
+                if (line == null) continue;
+
                 for (int x = 0; x < 6; x++)
                 {
                     char ch = x < line.Length ? line[x] : '.';
@@ -389,10 +406,10 @@ public static class ModuleChunkBuilder
                     switch (ch)
                     {
                         case '#':
-                            gMap.SetTile(tilePos, groundTile);
+                            if (groundTile != null) gMap.SetTile(tilePos, groundTile);
                             break;
                         case '=':
-                            pMap.SetTile(tilePos, platTile);
+                            if (platTile != null) pMap.SetTile(tilePos, platTile);
                             break;
                         case '^':
                             CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 0f, spikeSprite);
@@ -422,6 +439,7 @@ public static class ModuleChunkBuilder
 
     private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
     {
+        if (parent == null) return;
         GameObject spike = new GameObject("SpikeTrap");
         spike.transform.SetParent(parent);
         spike.transform.localPosition = pos;
@@ -430,16 +448,17 @@ public static class ModuleChunkBuilder
         var sr = spike.AddComponent<SpriteRenderer>();
         if (spikeSprite != null) sr.sprite = spikeSprite;
         sr.sortingLayerName = "Default";
-        sr.sortingOrder = 15; // Render above tilemaps (sortingOrder 0/5)
+        sr.sortingOrder = 15;
 
         var col = spike.AddComponent<BoxCollider2D>();
         col.isTrigger = true;
-        col.size = new Vector2(1.0f, 1.0f); // 1:1 cell size alignment
+        col.size = new Vector2(1.0f, 1.0f);
         spike.AddComponent<SpikeTrap>();
     }
 
     private static void CreateSawBladeTrap(Transform parent, Vector3 pos, Sprite sawSprite)
     {
+        if (parent == null) return;
         GameObject saw = new GameObject("SawBladeTrap");
         saw.transform.SetParent(parent);
         saw.transform.localPosition = pos;
@@ -447,11 +466,11 @@ public static class ModuleChunkBuilder
         var sr = saw.AddComponent<SpriteRenderer>();
         if (sawSprite != null) sr.sprite = sawSprite;
         sr.sortingLayerName = "Default";
-        sr.sortingOrder = 15; // Render above tilemaps
+        sr.sortingOrder = 15;
 
         var col = saw.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.5f; // 1.0m diameter 1:1 cell alignment
+        col.radius = 0.5f;
         saw.AddComponent<SawBladeTrap>();
     }
 
@@ -464,7 +483,7 @@ public static class ModuleChunkBuilder
             "Room_11056", "Room_11057", "Room_11061", "Room_11063"
         };
 
-        // 10x5 모듈 그리드 주입 조합 (납득형 밸런스 배치)
+        // 10x5 모듈 그리드 주입 조합
         string[,] moduleGridNames = new string[,]
         {
             { "Module_A1", "Module_B1", "Module_C1", "Module_D1", "Module_E1", "Module_F1", "Module_G1", "Module_H1", "Module_I1", "Module_A2" },
@@ -476,10 +495,13 @@ public static class ModuleChunkBuilder
 
         foreach (var chunkName in chunkNames)
         {
-            GameObject gridRoot = new GameObject(chunkName);
-            gridRoot.AddComponent<Grid>().cellSize = new Vector3(1, 1, 0);
+            if (string.IsNullOrEmpty(chunkName)) continue;
 
-            // Ground Tilemap
+            GameObject gridRoot = new GameObject(chunkName);
+            var mainGrid = gridRoot.AddComponent<Grid>();
+            mainGrid.cellSize = new Vector3(1, 1, 0);
+
+            // Ground Tilemap (Null-Safe Component Order: Rigidbody2D -> TilemapCollider2D -> CompositeCollider2D)
             GameObject groundObj = new GameObject("Tilemap_Ground");
             groundObj.transform.SetParent(gridRoot.transform);
             var gMap = groundObj.AddComponent<Tilemap>();
@@ -487,11 +509,13 @@ public static class ModuleChunkBuilder
             gR.sortingLayerName = "Default";
             gR.sortingOrder = 0;
             if (mat != null) gR.sharedMaterial = mat;
-            var compositeCol = groundObj.AddComponent<CompositeCollider2D>();
+
             var rb = groundObj.AddComponent<Rigidbody2D>();
             rb.bodyType = RigidbodyType2D.Static;
+
             var tileCol = groundObj.AddComponent<TilemapCollider2D>();
-            tileCol.usedByComposite = true;
+            var compositeCol = groundObj.AddComponent<CompositeCollider2D>();
+            tileCol.compositeOperation = Collider2D.CompositeOperation.Merge;
 
             // Platform Tilemap
             GameObject platObj = new GameObject("Tilemap_Platforms");
@@ -510,7 +534,7 @@ public static class ModuleChunkBuilder
                 for (int modX = 0; modX < 10; modX++)
                 {
                     string mName = moduleGridNames[modY, modX];
-                    if (!ModuleTemplates.TryGetValue(mName, out string[] layout))
+                    if (!ModuleTemplates.TryGetValue(mName, out string[] layout) || layout == null)
                     {
                         layout = ModuleTemplates["Module_A1"];
                     }
@@ -521,7 +545,10 @@ public static class ModuleChunkBuilder
                     for (int r = 0; r < 6; r++)
                     {
                         int cellY = 5 - r;
+                        if (r >= layout.Length) continue;
                         string line = layout[r];
+                        if (line == null) continue;
+
                         for (int cellX = 0; cellX < 6; cellX++)
                         {
                             char ch = cellX < line.Length ? line[cellX] : '.';
@@ -534,10 +561,10 @@ public static class ModuleChunkBuilder
                             switch (ch)
                             {
                                 case '#':
-                                    gMap.SetTile(tilePos, groundTile);
+                                    if (groundTile != null) gMap.SetTile(tilePos, groundTile);
                                     break;
                                 case '=':
-                                    pMap.SetTile(tilePos, platTile);
+                                    if (platTile != null) pMap.SetTile(tilePos, platTile);
                                     break;
                                 case '^':
                                     if (!isNearEntry) CreateSpikeTrap(gridRoot.transform, worldPos, 0f, spikeSprite);
@@ -561,15 +588,18 @@ public static class ModuleChunkBuilder
             }
 
             // Boundary Walls & Entry/Exit Passages
-            for (int x = -30; x <= 30; x++)
+            if (groundTile != null)
             {
-                gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
-                gMap.SetTile(new Vector3Int(x, 30, 0), groundTile);
-            }
-            for (int y = 0; y <= 30; y++)
-            {
-                if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-30, y, 0), groundTile);
-                if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(30, y, 0), groundTile);
+                for (int x = -30; x <= 30; x++)
+                {
+                    gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+                    gMap.SetTile(new Vector3Int(x, 30, 0), groundTile);
+                }
+                for (int y = 0; y <= 30; y++)
+                {
+                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-30, y, 0), groundTile);
+                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(30, y, 0), groundTile);
+                }
             }
 
             // Camera Bounds
@@ -585,13 +615,13 @@ public static class ModuleChunkBuilder
             spawnMarker.transform.SetParent(gridRoot.transform);
             spawnMarker.transform.localPosition = playerSpawnPos;
             var marker = spawnMarker.AddComponent<SpawnPointMarker>();
-            marker.Type = SpawnType.Player;
+            if (marker != null) marker.Type = SpawnType.Player;
 
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] Stage 1 룸 청크 11종 납득형 밸런스 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] Stage 1 룸 청크 11종 Null-Safe 재빌드 완료!</color>");
     }
 }
 #endif

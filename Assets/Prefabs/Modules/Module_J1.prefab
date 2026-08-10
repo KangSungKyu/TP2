@@ -522,7 +522,7 @@ Transform:
   - {fileID: 3484741875794152635}
   - {fileID: 4643769617287893845}
   - {fileID: 2971507781750729021}
-  - {fileID: 6453577483364168547}
+  - {fileID: 4497916102178401231}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &15179871015630610
@@ -697,7 +697,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   surfaceNormal: {x: 0, y: 1}
   autoAlignToSurface: 1
---- !u!1 &6209638288562615666
+--- !u!1 &8158548606054983876
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -705,10 +705,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6453577483364168547}
-  - component: {fileID: 7852648108448483025}
-  - component: {fileID: 6784880225551066707}
-  - component: {fileID: 4207082809629677461}
+  - component: {fileID: 4497916102178401231}
+  - component: {fileID: 2139657513014140945}
+  - component: {fileID: 1497734316463329321}
+  - component: {fileID: 9055694708269762903}
   m_Layer: 0
   m_Name: SpikeTrap
   m_TagString: Untagged
@@ -716,13 +716,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6453577483364168547
+--- !u!4 &4497916102178401231
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6209638288562615666}
+  m_GameObject: {fileID: 8158548606054983876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.5, y: 1.5, z: 0}
@@ -731,14 +731,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6700373630432544016}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &7852648108448483025
+--- !u!212 &2139657513014140945
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6209638288562615666}
+  m_GameObject: {fileID: 8158548606054983876}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -790,13 +790,13 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!61 &6784880225551066707
+--- !u!61 &1497734316463329321
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6209638288562615666}
+  m_GameObject: {fileID: 8158548606054983876}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -836,13 +836,13 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4207082809629677461
+--- !u!114 &9055694708269762903
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6209638288562615666}
+  m_GameObject: {fileID: 8158548606054983876}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc326213c43991f49a25310c67b4e102, type: 3}
