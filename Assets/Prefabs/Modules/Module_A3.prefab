@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 5256955628542516614}
   - component: {fileID: 65780358960631011}
   - component: {fileID: 4233029251568463633}
-  m_Layer: 0
+  - component: {fileID: 2521749079263302799}
+  m_Layer: 10
   m_Name: Tilemap_Platforms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -226,8 +227,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 120003
+  m_SortingLayer: 3
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -294,6 +295,18 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
+--- !u!114 &2521749079263302799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622362090048514397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1eccb7ad878e3c45a440d07cb4c3617, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::OneWayPlatformPassThrough
 --- !u!1 &7995459735320101125
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,8 +692,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 120003
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}

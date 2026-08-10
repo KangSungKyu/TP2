@@ -16,11 +16,18 @@
 | `1070` | `Hazard_SpikeTrap` | 가시 함정 프리팹 (지면/벽/천장 가변 설치) |
 | `1071` | `Hazard_SawBladeTrap` | 둥근 톱날 함정 프리팹 (고정/웨이포인트 이동) |
 
-### 2.2 `TextData.csv` 등록 예약
-| `TextData.idx` | English | Korean |
-|---:|---|---|
-| `2040` | Spike Trap | 가시 함정 |
-| `2041` | Saw Blade Trap | 톱날 함정 |
+### 2.2 `TextData.csv` 연동
+
+- Hazard는 표시명 `TextData` FK를 사용하지 않는다.
+- `2040`은 Hub Stage 1 안내, `2042`는 전투 구역 경고에 예약한다.
+- 구 pair row `2041`, `2043`은 실제 참조가 없어 제거한다.
+
+### 2.3 직렬화 기준
+
+| Hazard | ResourceData | Damage | Knockback | Hit cooldown |
+|---|---:|---:|---:|---:|
+| SpikeTrap | `1070` | 15 | 0 | 0.5s |
+| SawBladeTrap | `1071` | 20 | 0 | 0.4s |
 
 ---
 

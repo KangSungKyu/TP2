@@ -1,5 +1,28 @@
 # QA Test Report
 
+최종 갱신: 2026-08-10 18:22 KST
+
+## 2026-08-10 Stage1 module/chunk 신규 Assert
+
+| 계약 | 신규 통과 기준 |
+|---|---|
+| OneWay 재착지 | 실제 `Unit_3001/KinematicMotor2D`가 좌·우 각 2회 착지 → 하향 이탈 → collider 완전 이탈 → 동일 발판 재착지 |
+| Socket 안전성 | Stage1 room 11, socket 44/44, 실제 지지면 3-cell landing, EntryMarker `surface + 0.51m`, head clearance 2m |
+| Room 도달성 | 11 room × 12 ordered pairs = 실제 motor replay 132/132 PASS |
+| Module/Room OneWay | authoritative module 20/20 및 room 11/11이 layer 10, collider effector, one-way surface arc 계약 유지 |
+| Spawn/Camera | combat room 11050~11053 각 SpawnZone 3개, room 11/11 CameraBounds 60×30 |
+| Stage graph | 200 seeds에서 reciprocal connection과 room resource loadability PASS |
+| 회귀 | 신규·관련 18/18, PlayMode 1/1, QATestRunner 81/81 PASS |
+
+### 인프라 차단
+
+| 테스트 | 결과 | 분류 |
+|---|---:|---|
+| `PlayerPool_DespawnAndRespawnReuseSameIdentity` | 180초 TIMEOUT | `editor_unfocused` Addressables async 대기; Assert 실패·제품 예외 0 |
+| `UnitPrefabFk_InstantiatesThroughResourceManager` | 180초 TIMEOUT | `editor_unfocused` Addressables async 대기; Assert 실패·제품 예외 0 |
+
+`QATestRunner`는 `[UnityTest]`, `[TestCaseSource]`, `Stage1P0ResourceTests`, `Stage1TraversalGateTests`를 포함하지 않으므로 보조 지표로만 사용한다.
+
 최종 갱신: 2026-08-07 18:57 KST
 
 ## 2026-08-07 Portal/Landing·비동기 회귀 신규 Assert

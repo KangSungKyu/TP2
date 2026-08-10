@@ -1,5 +1,13 @@
 # Implementation Plan (마스터 명세서)
 
+## [🔄 PM 동기화 변경 이력 테이블]
+
+| 최근 수정 일시 | 수정자 (역할) | 수정 및 추가된 파일/메서드 명세 | QA 검증 통과 기준 (Assert) |
+|---|---|---|---|
+| 2026-08-10 18:22 KST | PM / 메인프로그래머 / 리소스작업자1 / QA프로그래머 | `KinematicMotor2D.PassThroughOneWayPlatformAsync`, `TilemapStageBuilder.CalculateSafeEntryPosition`, `StageManager.LoadConnectedRoomAsync`; `ModuleChunkBuilder` authoritative OneWay/socket/corridor 생성; Stage1 module 20·room 11 재생성; `Stage1TraversalGateTests` | OneWay 좌·우 각 2회 재착지, socket 44/44 landing·head clearance, room ordered pair 실제 motor 132/132, seed 200, 관련 18/18, PlayMode 1/1 |
+
+> 인프라 격리: EditMode 131/133 PASS이며 나머지 2건은 `editor_unfocused` 상태에서 Addressables 비동기 대기 180초 TIMEOUT이다. Assert 실패 및 제품 예외는 0건이다.
+
 ## 프로젝트 상태
 
 - 최신 점검(2026-08-06): EditMode 71/71 PASS, PlayMode 1/1 PASS, QATestRunner 52/52 PASS
@@ -389,3 +397,13 @@
 
 - **원인 분석**: `ModuleChunkBuilder.cs` 내 `AddSocket` 생성 시 `EntryMarker` 자식 오브젝트의 상대 위치 오프셋이 미지정(Vector3.zero)되어 `EntryMarker` 월드 Y가 `socket.position.y`와 동일하게 배치되고, South 소켓 고도가 지형 바운더리 내부(Y=1.0m)에 배치됨으로써 포탈 진입 순간 플레이어가 지형 콜라이더 내부에 매몰되던 결함 발견.
 - **수선 및 100% 정상화**: `entry.transform.localPosition = new Vector3(0f, -0.49f, 0f)` 오프셋을 주입하여 `EntryMarker` 스폰 위치를 계약 규격인 `surface + 0.51m`로 정밀 산출하고 South 소켓 고도를 `Y = 2.0m` (surface + 1.0m)로 보정. 원격 Push (`126126c`) 완료 및 **리소스 작업자 1 (`f4f6cc90-75c3-4e62-890c-fcd62e9a47f7`)** 대화방으로 프리팹 재빌드 요청 전달.
+
+---
+
+### 2026-08-10 18:22 KST — Stage1 module/chunk 실제 이동 검증 회고
+
+- 정적 BFS와 socket mask만으로는 실제 플레이어의 점프·낙하·one-way 재착지를 보증하지 못했다. 이후 Stage room 승인은 실제 `Unit_3001/KinematicMotor2D` 1/60 step ordered-pair 주행을 필수 게이트로 사용한다.
+- 포털과 Entry는 방향별 상수가 아니라 실제 지지면과 `EntryMarker`를 권위 데이터로 삼는다. builder 재생성 후에도 landing 3-cell, head clearance 2m, 연속 도달 경로가 유지되어야 한다.
+- one-way 통과 복구는 시간만으로 결정하지 않고 접촉 collider를 완전히 벗어난 상태를 기준으로 한다. Teleport·비활성화·pool 재사용은 stale async를 무효화한다.
+- Unity 자산 공정과 QA 공정을 순차 점유하여 충돌을 줄였다. 단, 비포커스 Editor의 Addressables 테스트 2건은 제품 결함과 분리된 인프라 차단으로 남겼다.
+- 차기 방어 지침: builder 변경 시 `generator → static contract → one-way 반복 → room 132방향 → seed 200 → 전체 회귀` 순서를 고정한다.

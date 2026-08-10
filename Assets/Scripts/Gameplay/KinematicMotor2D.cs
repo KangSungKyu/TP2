@@ -55,6 +55,7 @@ public class KinematicMotor2D : MonoBehaviour
     private int knockbackStepsRemaining;
     private int knockbackGeneration;
     private bool isPassThroughActive;
+    private int passThroughGeneration;
     private bool isJumpHeld;
 
     public void InitMotor()
@@ -145,29 +146,67 @@ public class KinematicMotor2D : MonoBehaviour
     public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.35f, CancellationToken cancellationToken = default)
     {
         if (isPassThroughActive) return;
+        Collider2D platform = FindCurrentOneWayPlatform(out float platformTopY);
+        int generation = ++passThroughGeneration;
         isPassThroughActive = true;
         IsGrounded = false;
         Velocity = new Vector2(Velocity.x, -6.5f);
 
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: cancellationToken);
+            if (platform == null)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: cancellationToken);
+                return;
+            }
+            float deadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, durationSec);
+            while (generation == passThroughGeneration && platform != null &&
+                   physicsCollider.bounds.max.y >= platformTopY - SkinWidth &&
+                   Time.realtimeSinceStartup < deadline)
+                await UniTask.NextFrame(cancellationToken);
         }
         catch (OperationCanceledException) { }
         finally
         {
-            isPassThroughActive = false;
+            if (generation == passThroughGeneration) isPassThroughActive = false;
         }
+    }
+
+    private Collider2D FindCurrentOneWayPlatform(out float platformTopY)
+    {
+        platformTopY = physicsCollider != null ? physicsCollider.bounds.min.y : transform.position.y;
+        if (physicsCollider == null) return null;
+        int count = physicsCollider.Cast(Vector2.down, groundWithPlatformFilter, hitBuffer, SkinWidth * 4f);
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D collider = hitBuffer[i].collider;
+            if (collider == null) continue;
+            bool isOneWay = ((1 << collider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                            collider.GetComponent<PlatformEffector2D>() != null ||
+                            collider.GetComponent<OneWayPlatformPassThrough>() != null;
+            if (!isOneWay) continue;
+            platformTopY = collider is TilemapCollider2D ? hitBuffer[i].point.y : collider.bounds.max.y;
+            return collider;
+        }
+        return null;
     }
 
     public void Teleport(Vector3 position)
     {
+        passThroughGeneration++;
+        isPassThroughActive = false;
         body.position = position;
         Velocity = Vector2.zero;
         targetVelocityX = 0f;
         knockbackVelocityX = 0f;
         knockbackStepsRemaining = 0;
         knockbackGeneration++;
+    }
+
+    private void OnDisable()
+    {
+        passThroughGeneration++;
+        isPassThroughActive = false;
     }
 
     public void TeleportToSafeGround()

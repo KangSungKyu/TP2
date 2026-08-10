@@ -370,7 +370,6 @@ public static class ModuleChunkBuilder
 
         Debug.Log("<color=green><b>[ModuleChunkBuilder] 12x12 모듈 & 청크 전면 재생성 파싱 완료!</b></color>");
 
-        AddressablePipeline.BuildAndDeploy();
     }
 
     private static Sprite EnsureSpikeTrapSprite(string path)
@@ -479,7 +478,7 @@ public static class ModuleChunkBuilder
             groundObj.transform.SetParent(modRoot.transform);
             var gMap = groundObj.AddComponent<Tilemap>();
             var gRend = groundObj.AddComponent<TilemapRenderer>();
-            gRend.sortingLayerName = "Default";
+            gRend.sortingLayerName = "Tilemap";
             gRend.sortingOrder = 0;
             if (mat != null) gRend.sharedMaterial = mat;
             groundObj.AddComponent<TilemapCollider2D>();
@@ -491,7 +490,7 @@ public static class ModuleChunkBuilder
             if (oneWayLayer >= 0) platObj.layer = oneWayLayer;
             var pMap = platObj.AddComponent<Tilemap>();
             var pRend = platObj.AddComponent<TilemapRenderer>();
-            pRend.sortingLayerName = "Default";
+            pRend.sortingLayerName = "Tilemap";
             pRend.sortingOrder = 5;
             if (mat != null) pRend.sharedMaterial = mat;
 
@@ -501,6 +500,7 @@ public static class ModuleChunkBuilder
             var pEff = platObj.AddComponent<PlatformEffector2D>();
             pEff.useOneWay = true;
             pEff.surfaceArc = 180f;
+            platObj.AddComponent<OneWayPlatformPassThrough>();
 
             // Parse 12x12 Grid Layout (Y=11 down to Y=0, X=0 to X=11)
             for (int r = 0; r < 12; r++)
@@ -541,6 +541,7 @@ public static class ModuleChunkBuilder
                 }
             }
 
+            NormalizeOneWayPlatforms(pMap, gMap);
             string prefabPath = $"{modulesDir}/{modName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
@@ -564,7 +565,7 @@ public static class ModuleChunkBuilder
         var col = spike.AddComponent<BoxCollider2D>();
         col.isTrigger = true;
         col.size = new Vector2(1.0f, 1.0f);
-        spike.AddComponent<SpikeTrap>();
+        ConfigureHazard(spike.AddComponent<SpikeTrap>(), 1070u, 15, 0f, 0.5f);
     }
 
     private static void CreateSawBladeTrap(Transform parent, Vector3 pos, Sprite sawSprite)
@@ -582,7 +583,18 @@ public static class ModuleChunkBuilder
         var col = saw.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
         col.radius = 0.5f;
-        saw.AddComponent<SawBladeTrap>();
+        ConfigureHazard(saw.AddComponent<SawBladeTrap>(), 1071u, 20, 0f, 0.4f);
+    }
+
+    private static void ConfigureHazard(HazardBase hazard, uint id, int hazardDamage,
+        float hazardKnockback, float hitCooldown)
+    {
+        var serialized = new SerializedObject(hazard);
+        serialized.FindProperty("hazardId").longValue = id;
+        serialized.FindProperty("damage").intValue = hazardDamage;
+        serialized.FindProperty("knockbackForce").floatValue = hazardKnockback;
+        serialized.FindProperty("cooldownBetweenHits").floatValue = hitCooldown;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
@@ -699,7 +711,7 @@ public static class ModuleChunkBuilder
             groundObj.transform.SetParent(gridRoot.transform);
             var gMap = groundObj.AddComponent<Tilemap>();
             var gR = groundObj.AddComponent<TilemapRenderer>();
-            gR.sortingLayerName = "Default";
+            gR.sortingLayerName = "Tilemap";
             gR.sortingOrder = 0;
             if (mat != null) gR.sharedMaterial = mat;
 
@@ -717,7 +729,7 @@ public static class ModuleChunkBuilder
             if (oneWayLayer >= 0) platObj.layer = oneWayLayer;
             var pMap = platObj.AddComponent<Tilemap>();
             var pRend = platObj.AddComponent<TilemapRenderer>();
-            pRend.sortingLayerName = "Default";
+            pRend.sortingLayerName = "Tilemap";
             pRend.sortingOrder = 5;
             if (mat != null) pRend.sharedMaterial = mat;
 
@@ -727,6 +739,7 @@ public static class ModuleChunkBuilder
             var pEff = platObj.AddComponent<PlatformEffector2D>();
             pEff.useOneWay = true;
             pEff.surfaceArc = 180f;
+            platObj.AddComponent<OneWayPlatformPassThrough>();
 
             Vector3 playerSpawnPos = new Vector3(-halfW + 5f, 2f, 0f);
 
@@ -806,19 +819,26 @@ public static class ModuleChunkBuilder
                 }
             }
 
+            if (RequiresP0TraversalCorridor(chunkName))
+                EnsureP0TraversalCorridor(gMap, pMap, groundTile, worldWidth);
+            NormalizeOneWayPlatforms(pMap, gMap);
             // Camera Bounds
             GameObject cameraBounds = new GameObject("CameraBounds");
             cameraBounds.transform.SetParent(gridRoot.transform);
-            cameraBounds.transform.localPosition = new Vector3(-0.5f, worldHeight / 2f, 0f);
+            cameraBounds.transform.localPosition = new Vector3(-0.5f, 15f, 0f);
             var box = cameraBounds.AddComponent<BoxCollider2D>();
-            box.size = new Vector2(worldWidth, worldHeight);
+            box.size = new Vector2(60f, 30f);
             box.isTrigger = true;
 
             // Dynamic Sockets (West, East, South, North) - surface=1m 기준 center=2m, EntryMarker=1.51m(surface+0.51m)
-            AddSocket(gridRoot.transform, ChunkSocketDirection.West, new Vector3(-halfW + 1f, 2f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.East, new Vector3(halfW - 2f, 2f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.South, new Vector3(0f, 2f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.North, new Vector3(0f, worldHeight - 1f, 0f));
+            float[] socketXs = { -worldWidth * 0.375f, -worldWidth * 0.125f, worldWidth * 0.125f, worldWidth * 0.375f };
+            ChunkSocketDirection[] socketDirections =
+            {
+                ChunkSocketDirection.West, ChunkSocketDirection.North,
+                ChunkSocketDirection.South, ChunkSocketDirection.East
+            };
+            for (int i = 0; i < socketDirections.Length; i++)
+                AddGroundedSocket(gridRoot.transform, gMap, groundTile, socketDirections[i], socketXs[i]);
 
             // Player Spawn Marker
             GameObject spawnMarker = new GameObject("SpawnPoint_Player");
@@ -831,7 +851,7 @@ public static class ModuleChunkBuilder
             {
                 GameObject bossMarkerObj = new GameObject("SpawnPoint_Boss");
                 bossMarkerObj.transform.SetParent(gridRoot.transform);
-                bossMarkerObj.transform.localPosition = new Vector3(0f, 2f, 0f);
+                bossMarkerObj.transform.localPosition = new Vector3(0f, 6f, 0f);
                 var bMarker = bossMarkerObj.AddComponent<SpawnPointMarker>();
                 if (bMarker != null)
                 {
@@ -841,11 +861,102 @@ public static class ModuleChunkBuilder
                 }
             }
 
+            if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
+                chunkName == "Room_11052" || chunkName == "Room_11053")
+                AddCombatSpawnZones(gridRoot.transform, worldWidth, worldHeight);
+
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
         Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 가변 NxM 룸 청크 11종 재빌드 완료!</color>");
+    }
+
+    private static void AddGroundedSocket(Transform parent, Tilemap ground, Tile groundTile,
+        ChunkSocketDirection direction, float desiredX)
+    {
+        int centerX = Mathf.Clamp(Mathf.RoundToInt(desiredX), ground.cellBounds.xMin + 2, ground.cellBounds.xMax - 3);
+        int surfaceCellY = 0;
+
+        for (int x = centerX - 1; x <= centerX + 1; x++)
+        {
+            ground.SetTile(new Vector3Int(x, surfaceCellY, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, surfaceCellY - 1, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, surfaceCellY + 1, 0), null);
+            ground.SetTile(new Vector3Int(x, surfaceCellY + 2, 0), null);
+        }
+
+        AddSocket(parent, direction, new Vector3(centerX + 0.5f, surfaceCellY + 2f, 0f));
+    }
+
+    private static bool RequiresP0TraversalCorridor(string chunkName)
+    {
+        return chunkName == "Prefab_1041" || chunkName == "Prefab_1042" ||
+            chunkName == "Room_11050" || chunkName == "Room_11051" ||
+            chunkName == "Room_11052" || chunkName == "Room_11053" ||
+            chunkName == "Room_11057";
+    }
+
+    private static void EnsureP0TraversalCorridor(Tilemap ground, Tilemap platforms, Tile groundTile, int worldWidth)
+    {
+        int left = Mathf.RoundToInt(-worldWidth * 0.375f) - 1;
+        int right = Mathf.RoundToInt(worldWidth * 0.375f) + 1;
+        for (int x = left; x <= right; x++)
+        {
+            ground.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, 0, 0), groundTile);
+            for (int y = 1; y <= 3; y++)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+    }
+
+    private static void NormalizeOneWayPlatforms(Tilemap platforms, Tilemap ground)
+    {
+        var rows = new Dictionary<int, List<int>>();
+        foreach (Vector3Int cell in platforms.cellBounds.allPositionsWithin)
+        {
+            if (!platforms.HasTile(cell)) continue;
+            if (ground.HasTile(cell))
+            {
+                platforms.SetTile(cell, null);
+                continue;
+            }
+            if (!rows.TryGetValue(cell.y, out List<int> xs)) rows[cell.y] = xs = new List<int>();
+            xs.Add(cell.x);
+        }
+
+        foreach (var row in rows)
+        {
+            int[] xs = row.Value.ToArray();
+            System.Array.Sort(xs);
+            int start = 0;
+            for (int i = 1; i <= xs.Length; i++)
+            {
+                if (i < xs.Length && xs[i] == xs[i - 1] + 1) continue;
+                if (i - start < 3)
+                    for (int j = start; j < i; j++) platforms.SetTile(new Vector3Int(xs[j], row.Key, 0), null);
+                start = i;
+            }
+        }
+    }
+
+    private static void AddCombatSpawnZones(Transform parent, int worldWidth, int worldHeight)
+    {
+        Vector3[] positions = worldWidth < 30
+            ? new[] { new Vector3(-9f, 10f), new Vector3(9f, 10f), new Vector3(0f, 28f) }
+            : new[] { new Vector3(-18f, 10f), new Vector3(0f, 20f), new Vector3(18f, 10f) };
+        for (int i = 0; i < positions.Length; i++)
+        {
+            var zone = new GameObject($"SpawnZone_{i + 1}", typeof(SpawnPointMarker));
+            zone.transform.SetParent(parent);
+            zone.transform.localPosition = new Vector3(positions[i].x, Mathf.Min(positions[i].y, worldHeight - 4f), 0f);
+            var marker = zone.GetComponent<SpawnPointMarker>();
+            marker.Type = SpawnType.Monster;
+            marker.EnableSpawn = true;
+        }
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
