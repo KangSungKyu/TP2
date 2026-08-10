@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 /// <summary>
-/// 40종 다양화 6x6 청크 모듈 Prefab 제작 및 11종 전용 고유 10x5 청크 재생성 빌더.
-/// 1. 플레이어 규격(폭 1.0m, 높이 2.0m) 반영 통로 틈새(2.0m 이상) & 천장 고도(2.5m 이상) 100% 보장.
-/// 2. PlatformEffector2D 적용으로 1-Way 발판 상향/하향 통과 지원.
-/// 3. 11종 룸 청크별 고유 10x5 모듈 매트릭스 적용으로 중복성 해소 & BFS 통과 경로 검증.
+/// 40종 다양화 6x6 청크 모듈 Prefab 제작 및 가변 규격(NxM, 3<=N,M<=20) Stage 1 룸 청크 재생성 빌더.
+/// 1. Module_L1 포함 함정-발판 인접 밀집 구조 전면 수선 (2.5m 이상 착지/회피 여유 공간 확보).
+/// 2. 좁은 공간(4x5, 5x3) ~ 넓은 공간(8x4, 10x5) 가변 NxM 모듈 그리드 균일 공간 배치.
+/// 3. Stage 1 초반 난이도 곡선 반영: 함정 및 복잡 플랫포머 수 대폭 감축 (청크당 0~2개 미만).
 /// </summary>
 public static class ModuleChunkBuilder
 {
@@ -21,14 +21,14 @@ public static class ModuleChunkBuilder
             "......",
             "......",
             "S....E",
-            "##.^^#",
+            "######",
             "######"
         },
         ["Module_A2"] = new string[] {
             "......",
             "......",
             "..==..",
-            "S.O..E",
+            "S....E",
             "#....#",
             "######"
         },
@@ -63,7 +63,7 @@ public static class ModuleChunkBuilder
             "##==..",
             "......",
             "....==",
-            "...^.E",
+            ".....E",
             "######"
         },
         ["Module_B3"] = new string[] {
@@ -94,7 +94,7 @@ public static class ModuleChunkBuilder
         },
         ["Module_C2"] = new string[] {
             ".....E",
-            "..O...",
+            "......",
             "..==..",
             "......",
             "S.....",
@@ -117,10 +117,10 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // === Category D: 대시 우회 & 슬라이딩 지형 ===
+        // === Category D: 대시 우회 & 쾌적 지형 ===
         ["Module_D1"] = new string[] {
             "......",
-            ".vvvv.",
+            "......",
             "S....E",
             "......",
             "##..##",
@@ -131,12 +131,12 @@ public static class ModuleChunkBuilder
             "......",
             "S....E",
             "##..##",
-            "##^^##",
+            "######",
             "######"
         },
         ["Module_D3"] = new string[] {
             "......",
-            "..vv..",
+            "......",
             "S....E",
             "......",
             "###.##",
@@ -147,13 +147,13 @@ public static class ModuleChunkBuilder
             "......",
             "S....E",
             "#....#",
-            "#.^^.#",
+            "######",
             "######"
         },
 
-        // === Category E: 공중 톱날 & 타이밍 챌린지 ===
+        // === Category E: 라이트 타이밍 코스 (Stage 1 저밀도 함정) ===
         ["Module_E1"] = new string[] {
-            "..O...",
+            "......",
             "......",
             "..==..",
             "S....E",
@@ -165,12 +165,12 @@ public static class ModuleChunkBuilder
             "...=..",
             "..=...",
             "S=....",
-            "#...^#",
+            "#....#",
             "######"
         },
         ["Module_E3"] = new string[] {
             ".....E",
-            ".O..O.",
+            "......",
             "======",
             "......",
             "S.....",
@@ -178,9 +178,9 @@ public static class ModuleChunkBuilder
         },
         ["Module_E4"] = new string[] {
             "......",
-            ".O....",
+            "......",
             "===...",
-            "S...OE",
+            "S....E",
             "#....#",
             "######"
         },
@@ -196,7 +196,7 @@ public static class ModuleChunkBuilder
         },
         ["Module_F2"] = new string[] {
             "......",
-            "..O...",
+            "......",
             "......",
             "==..==",
             "......",
@@ -221,7 +221,7 @@ public static class ModuleChunkBuilder
 
         // === Category G: 부유 섬 & 공중 아레나 ===
         ["Module_G1"] = new string[] {
-            ".vvvv.",
+            "......",
             "......",
             "S....E",
             "..==..",
@@ -287,7 +287,7 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // === Category I: 고지대 경사면 & 안전 트랙 ===
+        // === Category I: 고지대 경사면 ===
         ["Module_I1"] = new string[] {
             "....##",
             "...###",
@@ -297,7 +297,7 @@ public static class ModuleChunkBuilder
             "######"
         },
         ["Module_I2"] = new string[] {
-            "....O.",
+            "......",
             "######",
             "######",
             "S....E",
@@ -321,17 +321,42 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // === Category J: 결합 & 보충 모듈 ===
-        ["Module_J1"] = new string[] { "......", "..==..", "S....E", "##..##", "#.^^.#", "######" },
-        ["Module_J2"] = new string[] { "......", ".vvvv.", "S....E", "##..##", "......", "######" },
+        // === Category J & L: 수선된 납득형 결합 모듈 (Module_L1 수선) ===
+        ["Module_J1"] = new string[] { "......", "..==..", "S....E", "##..##", "......", "######" },
+        ["Module_J2"] = new string[] { "......", "......", "S....E", "##..##", "......", "######" },
         ["Module_J3"] = new string[] { "......", "..==..", "S....E", "######", "######", "######" },
-        ["Module_J4"] = new string[] { "......", ".====", "S....E", "##..##", "......", "######" }
+        ["Module_J4"] = new string[] { "......", ".====", "S....E", "##..##", "......", "######" },
+
+        // Module_L1 수선: 함정-발판-지형 밀집 배제. 톱날(O)은 상단 중앙에만 단 1개 이격 배치, 3m 중앙 착지대 보장.
+        ["Module_L1"] = new string[] {
+            "..O...",
+            "......",
+            "S....E",
+            "..==..",
+            "......",
+            "######"
+        },
+        ["Module_L2"] = new string[] {
+            "......",
+            "S....E",
+            "....##",
+            "..==..",
+            "......",
+            "######"
+        }
     };
+
+    private class ChunkGridConfig
+    {
+        public int GridWidth { get; set; }  // ModX 갯수 (N)
+        public int GridHeight { get; set; } // ModY 갯수 (M)
+        public string[,] Matrix { get; set; }
+    }
 
     [MenuItem("TP2/Build 6x6 Modules & Stage 1 Chunks (6x6 모듈 & 룸 청크 전면 재생성)")]
     public static void BuildAllModulesAndChunks()
     {
-        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 40종 모듈 & 11종 고유 청크 레이아웃 빌드 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 가변 NxM 청크 규격 & 수선 모듈 빌드 시작...</b></color>");
 
         string modulesDir = "Assets/Prefabs/Modules";
         if (!Directory.Exists(modulesDir)) Directory.CreateDirectory(modulesDir);
@@ -371,13 +396,13 @@ public static class ModuleChunkBuilder
         // 1. 40종 6x6 모듈 Prefab 제작
         Build40ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
-        // 2. 11종 고유 10x5 모듈 매트릭스 주입 기반 Stage 1 룸 청크 전면 빌드
-        Build11UniqueRoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
+        // 2. 가변 NxM 그리드 11종 Stage 1 룸 청크 빌드
+        BuildVariableRoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("<color=green><b>[ModuleChunkBuilder] 40종 모듈 & 11종 고유 청크 전면 재생성 완결!</b></color>");
+        Debug.Log("<color=green><b>[ModuleChunkBuilder] 가변 NxM 모듈 & 청크 전면 재생성 완결!</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
     }
@@ -493,7 +518,7 @@ public static class ModuleChunkBuilder
             if (mat != null) gRend.sharedMaterial = mat;
             groundObj.AddComponent<TilemapCollider2D>();
 
-            // Platform Tilemap (1-Way PlatformEffector2D 적용)
+            // Platform Tilemap (PlatformEffector2D 1-Way 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(modRoot.transform);
             var pMap = platObj.AddComponent<Tilemap>();
@@ -552,7 +577,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 40종 다양화 6x6 모듈 Prefab 제작 완결!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 납득형 40종 모듈 Prefab 제작 완결!</color>");
     }
 
     private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
@@ -592,99 +617,128 @@ public static class ModuleChunkBuilder
         saw.AddComponent<SawBladeTrap>();
     }
 
-    private static void Build11UniqueRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
+    private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
-        // 11종 룸 청크별 완전히 상이한 고유 10x5 모듈 매트릭스 사전
-        Dictionary<string, string[,]> uniqueChunkGrids = new Dictionary<string, string[,]>()
+        // 11종 룸 청크별 가변 NxM 모듈 규격 (3 <= N, M <= 20) 사전
+        Dictionary<string, ChunkGridConfig> chunkConfigs = new Dictionary<string, ChunkGridConfig>()
         {
-            ["Prefab_1040"] = new string[,] { // Entry Safe Room
-                { "Module_A1", "Module_A3", "Module_A4", "Module_B1", "Module_C1", "Module_A1", "Module_A3", "Module_A4", "Module_C1", "Module_A1" },
-                { "Module_A2", "Module_A4", "Module_B3", "Module_F1", "Module_C1", "Module_A2", "Module_A4", "Module_F1", "Module_C1", "Module_A2" },
-                { "Module_A3", "Module_B1", "Module_A1", "Module_B2", "Module_C1", "Module_A3", "Module_B1", "Module_A1", "Module_C1", "Module_A3" },
-                { "Module_H1", "Module_H4", "Module_A4", "Module_I1", "Module_C1", "Module_H1", "Module_H4", "Module_A4", "Module_C1", "Module_H1" },
-                { "Module_A1", "Module_A2", "Module_A3", "Module_B1", "Module_C1", "Module_A1", "Module_A2", "Module_A3", "Module_C1", "Module_A1" }
+            ["Prefab_1040"] = new ChunkGridConfig { // Entry Safe Room (6x3 Modules = 36m x 18m)
+                GridWidth = 6, GridHeight = 3,
+                Matrix = new string[,] {
+                    { "Module_A1", "Module_A3", "Module_A4", "Module_B1", "Module_C1", "Module_A1" },
+                    { "Module_A2", "Module_A4", "Module_B3", "Module_F1", "Module_C1", "Module_A2" },
+                    { "Module_A1", "Module_A2", "Module_A3", "Module_B1", "Module_C1", "Module_A1" }
+                }
             },
-            ["Prefab_1041"] = new string[,] { // Battle Room A
-                { "Module_B1", "Module_F1", "Module_B2", "Module_F2", "Module_C1", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_B1" },
-                { "Module_J1", "Module_F3", "Module_J4", "Module_F4", "Module_C1", "Module_J1", "Module_F3", "Module_J4", "Module_C1", "Module_J1" },
-                { "Module_B2", "Module_G1", "Module_B3", "Module_G2", "Module_C1", "Module_B2", "Module_G1", "Module_B3", "Module_C1", "Module_B2" },
-                { "Module_F2", "Module_J3", "Module_F1", "Module_J1", "Module_C1", "Module_F2", "Module_J3", "Module_F1", "Module_C1", "Module_F2" },
-                { "Module_A1", "Module_B1", "Module_A2", "Module_B2", "Module_C1", "Module_A1", "Module_B1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Prefab_1041"] = new ChunkGridConfig { // Battle Room A (8x4 Modules = 48m x 24m)
+                GridWidth = 8, GridHeight = 4,
+                Matrix = new string[,] {
+                    { "Module_B1", "Module_F1", "Module_B2", "Module_F2", "Module_C1", "Module_B1", "Module_F1", "Module_B2" },
+                    { "Module_J1", "Module_F3", "Module_J4", "Module_F4", "Module_C1", "Module_J1", "Module_F3", "Module_J4" },
+                    { "Module_B2", "Module_G1", "Module_B3", "Module_G2", "Module_C1", "Module_B2", "Module_G1", "Module_B3" },
+                    { "Module_A1", "Module_B1", "Module_A2", "Module_B2", "Module_C1", "Module_A1", "Module_B1", "Module_A2" }
+                }
             },
-            ["Prefab_1042"] = new string[,] { // Boss Arena
-                { "Module_G1", "Module_G2", "Module_G3", "Module_G4", "Module_C1", "Module_G1", "Module_G2", "Module_G3", "Module_C1", "Module_G1" },
-                { "Module_G4", "Module_H4", "Module_F4", "Module_H4", "Module_C1", "Module_G4", "Module_H4", "Module_F4", "Module_C1", "Module_G4" },
-                { "Module_G2", "Module_F1", "Module_G3", "Module_F2", "Module_C1", "Module_G2", "Module_F1", "Module_G3", "Module_C1", "Module_G2" },
-                { "Module_H4", "Module_G1", "Module_H4", "Module_G4", "Module_C1", "Module_H4", "Module_G1", "Module_H4", "Module_C1", "Module_H4" },
-                { "Module_A1", "Module_G3", "Module_A2", "Module_G2", "Module_C1", "Module_A1", "Module_G3", "Module_A2", "Module_C1", "Module_A1" }
+            ["Prefab_1042"] = new ChunkGridConfig { // Boss Arena (10x5 Modules = 60m x 30m)
+                GridWidth = 10, GridHeight = 5,
+                Matrix = new string[,] {
+                    { "Module_G1", "Module_G2", "Module_G3", "Module_G4", "Module_C1", "Module_G1", "Module_G2", "Module_G3", "Module_C1", "Module_G1" },
+                    { "Module_G4", "Module_H4", "Module_F4", "Module_H4", "Module_C1", "Module_G4", "Module_H4", "Module_F4", "Module_C1", "Module_G4" },
+                    { "Module_G2", "Module_F1", "Module_G3", "Module_F2", "Module_C1", "Module_G2", "Module_F1", "Module_G3", "Module_C1", "Module_G2" },
+                    { "Module_H4", "Module_G1", "Module_H4", "Module_G4", "Module_C1", "Module_H4", "Module_G1", "Module_H4", "Module_C1", "Module_H4" },
+                    { "Module_A1", "Module_G3", "Module_A2", "Module_G2", "Module_C1", "Module_A1", "Module_G3", "Module_A2", "Module_C1", "Module_A1" }
+                }
             },
-            ["Room_11050"] = new string[,] { // Ascent Shaft Room
-                { "Module_C1", "Module_C2", "Module_C3", "Module_C4", "Module_C1", "Module_C1", "Module_C2", "Module_C3", "Module_C1", "Module_C1" },
-                { "Module_B3", "Module_C1", "Module_B4", "Module_C2", "Module_C1", "Module_B3", "Module_C1", "Module_B4", "Module_C1", "Module_B3" },
-                { "Module_C4", "Module_B1", "Module_C2", "Module_B2", "Module_C1", "Module_C4", "Module_B1", "Module_C2", "Module_C1", "Module_C4" },
-                { "Module_I1", "Module_C3", "Module_I3", "Module_C4", "Module_C1", "Module_I1", "Module_C3", "Module_I3", "Module_C1", "Module_I1" },
-                { "Module_A1", "Module_C1", "Module_A2", "Module_C2", "Module_C1", "Module_A1", "Module_C1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11050"] = new ChunkGridConfig { // Ascent Shaft (4x5 Modules = 24m x 30m, 좁은 수직 상승)
+                GridWidth = 4, GridHeight = 5,
+                Matrix = new string[,] {
+                    { "Module_C1", "Module_C2", "Module_C3", "Module_C4" },
+                    { "Module_B3", "Module_C1", "Module_B4", "Module_C2" },
+                    { "Module_C4", "Module_B1", "Module_C2", "Module_B2" },
+                    { "Module_I1", "Module_C3", "Module_I3", "Module_C4" },
+                    { "Module_A1", "Module_C1", "Module_A2", "Module_C2" }
+                }
             },
-            ["Room_11051"] = new string[,] { // Descent Drop Room
-                { "Module_C3", "Module_D1", "Module_C4", "Module_D3", "Module_C1", "Module_C3", "Module_D1", "Module_C4", "Module_C1", "Module_C3" },
-                { "Module_F4", "Module_C2", "Module_F3", "Module_C1", "Module_C1", "Module_F4", "Module_C2", "Module_F3", "Module_C1", "Module_F4" },
-                { "Module_D4", "Module_C3", "Module_D2", "Module_C4", "Module_C1", "Module_D4", "Module_C3", "Module_D2", "Module_C1", "Module_D4" },
-                { "Module_C2", "Module_F1", "Module_C3", "Module_F2", "Module_C1", "Module_C2", "Module_F1", "Module_C3", "Module_C1", "Module_C2" },
-                { "Module_A1", "Module_C1", "Module_A2", "Module_C2", "Module_C1", "Module_A1", "Module_C1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11051"] = new ChunkGridConfig { // Descent Drop (4x5 Modules = 24m x 30m, 좁은 수직 낙하)
+                GridWidth = 4, GridHeight = 5,
+                Matrix = new string[,] {
+                    { "Module_C3", "Module_D1", "Module_C4", "Module_D3" },
+                    { "Module_F4", "Module_C2", "Module_F3", "Module_C1" },
+                    { "Module_D4", "Module_C3", "Module_D2", "Module_C4" },
+                    { "Module_C2", "Module_F1", "Module_C3", "Module_F2" },
+                    { "Module_A1", "Module_C1", "Module_A2", "Module_C2" }
+                }
             },
-            ["Room_11052"] = new string[,] { // Corridor East-West
-                { "Module_D2", "Module_E1", "Module_D4", "Module_E2", "Module_C1", "Module_D2", "Module_E1", "Module_D4", "Module_C1", "Module_D2" },
-                { "Module_E3", "Module_D1", "Module_E4", "Module_D3", "Module_C1", "Module_E3", "Module_D1", "Module_E4", "Module_C1", "Module_E3" },
-                { "Module_D3", "Module_E2", "Module_D2", "Module_E1", "Module_C1", "Module_D3", "Module_E2", "Module_D2", "Module_C1", "Module_D3" },
-                { "Module_E4", "Module_D4", "Module_E3", "Module_D1", "Module_C1", "Module_E4", "Module_D4", "Module_E3", "Module_C1", "Module_E4" },
-                { "Module_A1", "Module_A2", "Module_B1", "Module_B2", "Module_C1", "Module_A1", "Module_A2", "Module_B1", "Module_C1", "Module_A1" }
+            ["Room_11052"] = new ChunkGridConfig { // Corridor East-West (8x3 Modules = 48m x 18m, 수평 횡단 복도)
+                GridWidth = 8, GridHeight = 3,
+                Matrix = new string[,] {
+                    { "Module_D2", "Module_E1", "Module_D4", "Module_E2", "Module_C1", "Module_D2", "Module_E1", "Module_D4" },
+                    { "Module_E3", "Module_D1", "Module_E4", "Module_D3", "Module_C1", "Module_E3", "Module_D1", "Module_E4" },
+                    { "Module_A1", "Module_A2", "Module_B1", "Module_B2", "Module_C1", "Module_A1", "Module_A2", "Module_B1" }
+                }
             },
-            ["Room_11053"] = new string[,] { // Elite Arena
-                { "Module_E3", "Module_G3", "Module_J2", "Module_E4", "Module_C1", "Module_E3", "Module_G3", "Module_J2", "Module_C1", "Module_E3" },
-                { "Module_J4", "Module_E1", "Module_J1", "Module_E2", "Module_C1", "Module_J4", "Module_E1", "Module_J1", "Module_C1", "Module_J4" },
-                { "Module_G2", "Module_J3", "Module_G4", "Module_J2", "Module_C1", "Module_G2", "Module_J3", "Module_G4", "Module_C1", "Module_G2" },
-                { "Module_E4", "Module_G1", "Module_E3", "Module_G3", "Module_C1", "Module_E4", "Module_G1", "Module_E3", "Module_C1", "Module_E4" },
-                { "Module_A1", "Module_J1", "Module_A2", "Module_J4", "Module_C1", "Module_A1", "Module_J1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11053"] = new ChunkGridConfig { // Elite Arena (8x4 Modules = 48m x 24m)
+                GridWidth = 8, GridHeight = 4,
+                Matrix = new string[,] {
+                    { "Module_E3", "Module_G3", "Module_J2", "Module_E4", "Module_C1", "Module_E3", "Module_G3", "Module_J2" },
+                    { "Module_J4", "Module_E1", "Module_J1", "Module_E2", "Module_C1", "Module_J4", "Module_E1", "Module_J1" },
+                    { "Module_G2", "Module_J3", "Module_G4", "Module_J2", "Module_C1", "Module_G2", "Module_J3", "Module_G4" },
+                    { "Module_A1", "Module_J1", "Module_A2", "Module_J4", "Module_C1", "Module_A1", "Module_J1", "Module_A2" }
+                }
             },
-            ["Room_11056"] = new string[,] { // High Cliffs
-                { "Module_H1", "Module_H2", "Module_H3", "Module_H4", "Module_C1", "Module_H1", "Module_H2", "Module_H3", "Module_C1", "Module_H1" },
-                { "Module_I1", "Module_I2", "Module_I3", "Module_I4", "Module_C1", "Module_I1", "Module_I2", "Module_I3", "Module_C1", "Module_I1" },
-                { "Module_H3", "Module_I4", "Module_H1", "Module_I2", "Module_C1", "Module_H3", "Module_I4", "Module_H1", "Module_C1", "Module_H3" },
-                { "Module_I2", "Module_H4", "Module_I1", "Module_H2", "Module_C1", "Module_I2", "Module_H4", "Module_I1", "Module_C1", "Module_I2" },
-                { "Module_A1", "Module_H1", "Module_A2", "Module_I1", "Module_C1", "Module_A1", "Module_H1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11056"] = new ChunkGridConfig { // High Cliffs (6x4 Modules = 36m x 24m)
+                GridWidth = 6, GridHeight = 4,
+                Matrix = new string[,] {
+                    { "Module_H1", "Module_H2", "Module_H3", "Module_H4", "Module_C1", "Module_H1" },
+                    { "Module_I1", "Module_I2", "Module_I3", "Module_I4", "Module_C1", "Module_I1" },
+                    { "Module_H3", "Module_I4", "Module_H1", "Module_I2", "Module_C1", "Module_H3" },
+                    { "Module_A1", "Module_H1", "Module_A2", "Module_I1", "Module_C1", "Module_A1" }
+                }
             },
-            ["Room_11057"] = new string[,] { // Platform Maze
-                { "Module_F1", "Module_F2", "Module_F3", "Module_F4", "Module_C1", "Module_F1", "Module_F2", "Module_F3", "Module_C1", "Module_F1" },
-                { "Module_F4", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_F4", "Module_B1", "Module_F1", "Module_C1", "Module_F4" },
-                { "Module_F2", "Module_B3", "Module_F4", "Module_B4", "Module_C1", "Module_F2", "Module_B3", "Module_F4", "Module_C1", "Module_F2" },
-                { "Module_F3", "Module_F1", "Module_F2", "Module_F4", "Module_C1", "Module_F3", "Module_F1", "Module_F2", "Module_C1", "Module_F3" },
-                { "Module_A1", "Module_F1", "Module_A2", "Module_F3", "Module_C1", "Module_A1", "Module_F1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11057"] = new ChunkGridConfig { // Platform Maze (6x4 Modules = 36m x 24m)
+                GridWidth = 6, GridHeight = 4,
+                Matrix = new string[,] {
+                    { "Module_F1", "Module_F2", "Module_F3", "Module_F4", "Module_C1", "Module_F1" },
+                    { "Module_F4", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_F4" },
+                    { "Module_F2", "Module_B3", "Module_F4", "Module_B4", "Module_C1", "Module_F2" },
+                    { "Module_A1", "Module_F1", "Module_A2", "Module_F3", "Module_C1", "Module_A1" }
+                }
             },
-            ["Room_11061"] = new string[,] { // Rest Shelter
-                { "Module_A4", "Module_J3", "Module_K1", "Module_A3", "Module_C1", "Module_A4", "Module_J3", "Module_K1", "Module_C1", "Module_A4" },
-                { "Module_A3", "Module_K2", "Module_A4", "Module_J3", "Module_C1", "Module_A3", "Module_K2", "Module_A4", "Module_C1", "Module_A3" },
-                { "Module_J3", "Module_A4", "Module_K1", "Module_A3", "Module_C1", "Module_J3", "Module_A4", "Module_K1", "Module_C1", "Module_J3" },
-                { "Module_K1", "Module_A3", "Module_J3", "Module_K2", "Module_C1", "Module_K1", "Module_A3", "Module_J3", "Module_C1", "Module_K1" },
-                { "Module_A1", "Module_A4", "Module_A2", "Module_J3", "Module_C1", "Module_A1", "Module_A4", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11061"] = new ChunkGridConfig { // Rest Shelter (5x3 Modules = 30m x 18m, 아늑한 쉼터)
+                GridWidth = 5, GridHeight = 3,
+                Matrix = new string[,] {
+                    { "Module_A4", "Module_J3", "Module_K1", "Module_A3", "Module_C1" },
+                    { "Module_A3", "Module_K2", "Module_A4", "Module_J3", "Module_C1" },
+                    { "Module_A1", "Module_A4", "Module_A2", "Module_J3", "Module_C1" }
+                }
             },
-            ["Room_11063"] = new string[,] { // Trap Challenge
-                { "Module_D3", "Module_E4", "Module_I4", "Module_D2", "Module_C1", "Module_D3", "Module_E4", "Module_I4", "Module_C1", "Module_D3" },
-                { "Module_E2", "Module_D4", "Module_E1", "Module_D3", "Module_C1", "Module_E2", "Module_D4", "Module_E1", "Module_C1", "Module_E2" },
-                { "Module_I4", "Module_E3", "Module_D2", "Module_E4", "Module_C1", "Module_I4", "Module_E3", "Module_D2", "Module_C1", "Module_I4" },
-                { "Module_D4", "Module_I2", "Module_E4", "Module_D1", "Module_C1", "Module_D4", "Module_I2", "Module_E4", "Module_C1", "Module_D4" },
-                { "Module_A1", "Module_E1", "Module_A2", "Module_D2", "Module_C1", "Module_A1", "Module_E1", "Module_A2", "Module_C1", "Module_A1" }
+            ["Room_11063"] = new ChunkGridConfig { // Platform Challenge (7x4 Modules = 42m x 24m)
+                GridWidth = 7, GridHeight = 4,
+                Matrix = new string[,] {
+                    { "Module_D3", "Module_E4", "Module_L1", "Module_D2", "Module_C1", "Module_D3", "Module_E4" },
+                    { "Module_E2", "Module_D4", "Module_E1", "Module_D3", "Module_C1", "Module_E2", "Module_D4" },
+                    { "Module_L2", "Module_E3", "Module_D2", "Module_E4", "Module_C1", "Module_L2", "Module_E3" },
+                    { "Module_A1", "Module_E1", "Module_A2", "Module_D2", "Module_C1", "Module_A1", "Module_E1" }
+                }
             }
         };
 
-        foreach (var kvp in uniqueChunkGrids)
+        foreach (var kvp in chunkConfigs)
         {
             string chunkName = kvp.Key;
-            string[,] moduleGridNames = kvp.Value;
+            ChunkGridConfig config = kvp.Value;
+            int nX = config.GridWidth;  // ModX count
+            int nY = config.GridHeight; // ModY count
+            string[,] moduleGridNames = config.Matrix;
 
-            bool isValid = ValidateChunkPathways(moduleGridNames);
+            int worldWidth = nX * 6;  // e.g. 6x6 = 36m
+            int worldHeight = nY * 6; // e.g. 3x6 = 18m
+            int halfW = worldWidth / 2;
+
+            bool isValid = ValidateChunkPathways(moduleGridNames, nX, nY);
             if (isValid)
             {
-                Debug.Log($"<color=cyan>[ModuleChunkBuilder] {chunkName} Entry Point 간 BFS 연속 경로 검증 통과!</color>");
+                Debug.Log($"<color=cyan>[ModuleChunkBuilder] {chunkName} ({nX}x{nY}) Entry Point 간 BFS 연속 경로 검증 통과!</color>");
             }
 
             GameObject gridRoot = new GameObject(chunkName);
@@ -707,7 +761,7 @@ public static class ModuleChunkBuilder
             var compositeCol = groundObj.AddComponent<CompositeCollider2D>();
             tileCol.compositeOperation = Collider2D.CompositeOperation.Merge;
 
-            // Platform Tilemap (PlatformEffector2D 적용)
+            // Platform Tilemap (PlatformEffector2D 1-Way 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(gridRoot.transform);
             var pMap = platObj.AddComponent<Tilemap>();
@@ -723,12 +777,12 @@ public static class ModuleChunkBuilder
             pEff.useOneWay = true;
             pEff.surfaceArc = 180f;
 
-            Vector3 playerSpawnPos = new Vector3(-25f, 2f, 0f);
+            Vector3 playerSpawnPos = new Vector3(-halfW + 5f, 2f, 0f);
 
-            // Assemble 10x5 Modules into 60x30 Chunk (X: -30 to +29, Y: 0 to 29)
-            for (int modY = 0; modY < 5; modY++)
+            // Assemble NxM Modules into World Coordinates (X: -halfW to +halfW-1, Y: 0 to worldHeight-1)
+            for (int modY = 0; modY < nY; modY++)
             {
-                for (int modX = 0; modX < 10; modX++)
+                for (int modX = 0; modX < nX; modX++)
                 {
                     string mName = moduleGridNames[modY, modX];
                     if (!ModuleTemplates.TryGetValue(mName, out string[] layout) || layout == null)
@@ -736,8 +790,8 @@ public static class ModuleChunkBuilder
                         layout = ModuleTemplates["Module_A1"];
                     }
 
-                    int offsetX = (modX * 6) - 30; // X range -30 to +29
-                    int offsetY = modY * 6;        // Y range 0 to 29
+                    int offsetX = (modX * 6) - halfW; // Centered X range
+                    int offsetY = modY * 6;          // Y range 0 to worldHeight
 
                     for (int r = 0; r < 6; r++)
                     {
@@ -784,40 +838,40 @@ public static class ModuleChunkBuilder
                 }
             }
 
-            // Boundary Walls & Entry/Exit Passages (West, East, South, North Sockets)
+            // Dynamic Boundary Walls & Entry/Exit Passages (West, East, South, North Sockets)
             if (groundTile != null)
             {
                 // Top/Bottom Boundary Walls
-                for (int x = -30; x <= 30; x++)
+                for (int x = -halfW; x <= halfW; x++)
                 {
                     // South Socket Passage (X: -2 to +2)
                     if (x < -2 || x > 2) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
                     // North Socket Passage (X: -2 to +2)
-                    if (x < -2 || x > 2) gMap.SetTile(new Vector3Int(x, 30, 0), groundTile);
+                    if (x < -2 || x > 2) gMap.SetTile(new Vector3Int(x, worldHeight, 0), groundTile);
                 }
                 // Left/Right Boundary Walls
-                for (int y = 0; y <= 30; y++)
+                for (int y = 0; y <= worldHeight; y++)
                 {
                     // West Socket Passage (Y: 1 to 4)
-                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-30, y, 0), groundTile);
+                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-halfW, y, 0), groundTile);
                     // East Socket Passage (Y: 1 to 4)
-                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(30, y, 0), groundTile);
+                    if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(halfW - 1, y, 0), groundTile);
                 }
             }
 
-            // Camera Bounds
+            // Camera Bounds (Dynamic Size based on NxM World Dimensions)
             GameObject cameraBounds = new GameObject("CameraBounds");
             cameraBounds.transform.SetParent(gridRoot.transform);
-            cameraBounds.transform.localPosition = new Vector3(-0.5f, 15f, 0f);
+            cameraBounds.transform.localPosition = new Vector3(-0.5f, worldHeight / 2f, 0f);
             var box = cameraBounds.AddComponent<BoxCollider2D>();
-            box.size = new Vector2(60f, 30f);
+            box.size = new Vector2(worldWidth, worldHeight);
             box.isTrigger = true;
 
-            // Sockets (West, East, South, North)
-            AddSocket(gridRoot.transform, ChunkSocketDirection.West, new Vector3(-29f, 2f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.East, new Vector3(28f, 2f, 0f));
+            // Dynamic Sockets (West, East, South, North)
+            AddSocket(gridRoot.transform, ChunkSocketDirection.West, new Vector3(-halfW + 1f, 2f, 0f));
+            AddSocket(gridRoot.transform, ChunkSocketDirection.East, new Vector3(halfW - 2f, 2f, 0f));
             AddSocket(gridRoot.transform, ChunkSocketDirection.South, new Vector3(0f, 1f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.North, new Vector3(0f, 29f, 0f));
+            AddSocket(gridRoot.transform, ChunkSocketDirection.North, new Vector3(0f, worldHeight - 1f, 0f));
 
             // Player Spawn Marker
             GameObject spawnMarker = new GameObject("SpawnPoint_Player");
@@ -830,7 +884,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 11종 전용 고유 Stage 1 룸 청크 정밀 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 가변 NxM 룸 청크 11종 정밀 재빌드 완료!</color>");
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
@@ -848,11 +902,9 @@ public static class ModuleChunkBuilder
         }
     }
 
-    private static bool ValidateChunkPathways(string[,] grid)
+    private static bool ValidateChunkPathways(string[,] grid, int nX, int nY)
     {
-        int width = grid.GetLength(1);
-        int height = grid.GetLength(0);
-        bool[,] visited = new bool[height, width];
+        bool[,] visited = new bool[nY, nX];
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
         queue.Enqueue(new Vector2Int(0, 0)); // West Entry (0,0)
@@ -868,7 +920,7 @@ public static class ModuleChunkBuilder
             {
                 int nx = curr.x + dx[i];
                 int ny = curr.y + dy[i];
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited[ny, nx])
+                if (nx >= 0 && nx < nX && ny >= 0 && ny < nY && !visited[ny, nx])
                 {
                     visited[ny, nx] = true;
                     queue.Enqueue(new Vector2Int(nx, ny));
@@ -876,7 +928,11 @@ public static class ModuleChunkBuilder
             }
         }
 
-        return visited[0, 9] && visited[0, 4] && visited[4, 4];
+        int lastX = nX - 1;
+        int midX = nX / 2;
+        int lastY = nY - 1;
+
+        return visited[0, lastX] && visited[0, midX] && visited[lastY, midX];
     }
 }
 #endif

@@ -1,53 +1,45 @@
-# [SubPlan] 6x6 스테이지 청크 모듈 템플릿 명세서 (40종 모듈 & 11종 고유 청크 레이아웃)
+# [SubPlan] 6x6 스테이지 청크 모듈 템플릿 명세서 (가변 NxM 청크 & 초반 함정 밀도 조절)
 
 ## 1. 개요 및 유저 확정 요구사항
 
-본 문서는 플레이어의 정밀 물리 이동 스펙 및 바운딩 크기(폭 1.0m, 높이 2.0m)를 반영한 **40종 6x6 모듈 템플릿** 및 **11종 고유 10x5 청크 레이아웃 마스크**를 정의합니다.
+본 문서는 플레이어의 경험(UX) 및 스테이지 난이도 곡선(Progression Curve)을 반영한 **모듈 패턴 수선**, **가변 규격 청크 아키텍처($N \times M$ 모듈, $3 \le N, M \le 20$)**, 및 **Stage 1 함정/플랫포밍 난이도 완화 지칙**을 정의합니다.
 
-### 1.1 유저 확정 3대 핵심 지칙 (Confirmed Directives)
-1. **플레이어 규격 고려 지형/발판/벽 틈새 보장**:
-   - 플레이어 바운딩: **폭 1.0m, 높이 2.0m**
-   - 최소 통행 틈새: 수평/수직 통로 폭 **최소 1.5m ~ 2.0m** 보장 (플레이어 끼임 방지)
-   - 머리 위 최소 천장 고도: 발판 상단 여유 고도 **최소 2.5m** 보장
-2. **1-Way 발판 하향/상향 자유 통과 (PlatformEffector2D)**:
-   - `Tilemap_Platforms`에 `PlatformEffector2D` (`useOneWay = true`, `surfaceArc = 180f`) 및 `TilemapCollider2D.usedByEffector = true` 적용.
-   - 아래에서 위로 점프하여 상향 통과 가능, 상단 착지, `Down + Jump` 하향 통과 보장.
-3. **청크 다양화 (40종 모듈 & 11종 전용 고유 10x5 청크 배치)**:
-   - 11개 룸 청크(`Prefab_1040`~`Room_11063`)가 서로 완전히 다른 고유한 10x5 모듈 배열 패턴을 가져 중복 느낌을 전면 해소.
-
----
-
-## 2. 모듈 틈새 & 플레이어 물리 규격 계약 (Passage Clearance Specs)
-
-```
-        ▲ 천장 (Min Clearance: 2.5m)
-        │
-┌───────┴───────┐
-│ Player 1.0m   │ Height: 2.0m
-│   Width       │
-└───────┬───────┘
-        ▼ 발판 (One-Way Platform)
-```
-
-| 항목 | 실측 수치 | 틈새 및 배치 지칙 |
-|---|---:|---|
-| **플레이어 높이** | `2.0 m` | 통로 높이 최소 `2.5m` 이상 (3타일) |
-| **플레이어 폭** | `1.0 m` | 수직 통로 폭 최소 `1.5m ~ 2.0m` (2타일 이상) |
-| **최대 수직 점프** | `2.5 m` | 발판 간 수직 간격 `2.0m ~ 2.5m` |
-| **최대 수평 점프** | `4.5 m` | 끊어진 지형 간 수평 도약 갭 `3.0m ~ 4.0m` |
+### 1.1 유저 확정 3대 개선 지칙 (Confirmed Directives)
+1. **`Module_L1` 및 함정 모듈 구조 개선**:
+   - 함정, 지형, 발판이 인접하여 밀집된 억까 구조 전면 철폐.
+   - 함정 주변 최소 **2.5m 이상의 착지/회피 여유 공간** 확보 및 직관적 도약 곡선 제공.
+2. **가변 청크 규격 ($N \times M$ 모듈, $3 \le N, M \le 20$) & 공간 균일 배치**:
+   - 모든 청크를 동일한 $10 \times 5$ 규격으로 강제하지 않고, **좁은 공간(좁은 통로/샤프트/쉼터)**과 **넓은 공간(광장/아레나/통로)**을 균일하게 배정.
+   - 청크별 고유 크기 지정:
+     - 좁은 룸: $4 \times 5$ ($24\text{m} \times 30\text{m}$), $5 \times 3$ ($30\text{m} \times 18\text{m}$)
+     - 중간 룸: $6 \times 3$ ($36\text{m} \times 18\text{m}$), $6 \times 4$ ($36\text{m} \times 24\text{m}$), $7 \times 4$ ($42\text{m} \times 24\text{m}$)
+     - 넓은 룸: $8 \times 4$ ($48\text{m} \times 24\text{m}$), $10 \times 5$ ($60\text{m} \times 30\text{m}$)
+3. **Stage 1 함정 & 복잡 플랫포밍 난이도 조절**:
+   - 낮은 스테이지(Stage 1) 특성을 고려하여 **가시/톱날 함정 수 및 복잡 플랫포밍 밀도를 최소화**.
+   - 쾌적하고 쾌감 있는 전투 및 탐험 중심 동선 보장.
 
 ---
 
-## 3. 11종 고유 청크 아키텍처 명세 (Unique 10x5 Chunk Grids)
+## 2. 11종 가변 규격 청크 공간 배치 사전 (Variable Chunk Grid Dimensions)
 
-1. **`Prefab_1040` (Entry Safe Room)**: 평탄한 수평 주 통로 위주 (A1, A2, A3, H1 배치)
-2. **`Prefab_1041` (Battle Room A)**: 2층 부유 발판 코스 (B1, F1, F2, J1 배치)
-3. **`Prefab_1042` (Boss Arena)**: 중앙 광대 개방 아레나 구조 (G1, G2, H4 배치)
-4. **`Room_11050` (Ascent Shaft)**: 수직 상승 샤프트 위주 (C1, C2, B3, I1 배치)
-5. **`Room_11051` (Descent Drop)**: 하강 낙하 샤프트 코스 (C3, D1, F4 배치)
-6. **`Room_11052` (Corridor East-West)**: 대시 타이밍 지그재그 코스 (D2, E1, E2 배치)
-7. **`Room_11053` (Elite Arena)**: 정예 중앙 기둥 및 공중 톱날 코스 (E3, G3, J2 배치)
-8. **`Room_11056` (High Cliffs)**: 절벽 등반 및 언덕 모듈 (H1, H2, H3, I2 배치)
-9. **`Room_11057` (Platform Maze)**: 부유 발판 미로 (F1, F2, F3, F4 배치)
-10. **`Room_11061` (Rest Shelter)**: 안전 휴식 쉼터 (A4, J3, K1 배치)
-11. **`Room_11063` (Trap Challenge)**: 고난도 가시/톱날 챌린지 (D3, E4, I4 배치)
+| 청크 Name | 용도 분류 | 공간 성격 | 모듈 규격 ($N \times M$) | 실제 월드 크기 |
+|---|---|---|:---:|:---:|
+| **`Prefab_1040`** | Entry Safe Room | 입구 쉼터 | **$6 \times 3$** | $36\text{m} \times 18\text{m}$ |
+| **`Prefab_1041`** | Battle Room A | 주 전투 룸 | **$8 \times 4$** | $48\text{m} \times 24\text{m}$ |
+| **`Prefab_1042`** | Boss Arena | 보스 광장 아레나 | **$10 \times 5$** | $60\text{m} \times 30\text{m}$ |
+| **`Room_11050`** | Ascent Shaft | 수직 상승 샤프트 | **$4 \times 5$** | $24\text{m} \times 30\text{m}$ |
+| **`Room_11051`** | Descent Drop | 수직 낙하 샤프트 | **$4 \times 5$** | $24\text{m} \times 30\text{m}$ |
+| **`Room_11052`** | Corridor East-West | 수평 횡단 복도 | **$8 \times 3$** | $48\text{m} \times 18\text{m}$ |
+| **`Room_11053`** | Elite Arena | 정예 아레나 | **$8 \times 4$** | $48\text{m} \times 24\text{m}$ |
+| **`Room_11056`** | High Cliffs | 고지대 절벽 | **$6 \times 4$** | $36\text{m} \times 24\text{m}$ |
+| **`Room_11057`** | Platform Maze | 부유 발판 코스 | **$6 \times 4$** | $36\text{m} \times 24\text{m}$ |
+| **`Room_11061`** | Rest Shelter | 휴식 아늑한 쉼터 | **$5 \times 3$** | $30\text{m} \times 18\text{m}$ |
+| **`Room_11063`** | Challenge Room | 라이트 플랫포머 | **$7 \times 4$** | $42\text{m} \times 24\text{m}$ |
+
+---
+
+## 3. 함정 밀도 조절 계약 (Low Stage 1 Hazard Density)
+
+- **Stage 1 평균 함정 수**: 청크당 **0 ~ 2개 이하**로 제한 (초반 가파른 피로도 방지).
+- **Module_L1/L2 개선**:
+  - 기존 톱날-발판 인접 배치를 분리하여 **착지대 중앙 3m 개방**, 톱날은 벽면 가장자리에만 미세 배치.
