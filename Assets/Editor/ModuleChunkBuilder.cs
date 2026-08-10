@@ -417,7 +417,7 @@ public static class ModuleChunkBuilder
                         string line = layout[r];
                         for (int cellX = 0; cellX < 6; cellX++)
                         {
-                            char ch = cellX < line.Length ? line[x: cellX] : '.';
+                            char ch = cellX < line.Length ? line[cellX] : '.';
                             Vector3Int tilePos = new Vector3Int(offsetX + cellX, offsetY + cellY, 0);
 
                             switch (ch)
