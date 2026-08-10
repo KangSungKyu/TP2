@@ -65,6 +65,7 @@
 | 2026-08-10 | Module_L1 레벨 밸런스 수선(착지대 3m 개방), 가변 NxM(3<=N,M<=20) 좁은/넓은 청크 균일 공간 배치 & Stage 1 함정 밀도 조절 완결 (`2b17588`) | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md`, `Prefab_1040`~`Room_11063` |
 | 2026-08-10 | 1-Way 발판-고정 지형 접촉 전면 금지, 독립 부유 발판화 & 모듈 경계/층간 통로 3~4m 확장 재빌드 완결 (`1c0e898`) | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md`, `Module_A1`~`Module_L2`, `Prefab_1040`~`Room_11063` |
 | 2026-08-10 | 모듈 단위 크기 6x6 -> 12x12(12m x 12m) 전면 확대, 단독 자율 플레이어 이동/점프 완결 모듈 명세 및 C# 파서 구축 완료 | `ModuleChunkBuilder.cs`, `plan_chunk_6x6_modules.md` |
+| 2026-08-10 | `KinematicMotor2D.cs` TilemapCollider2D 착지 산출 버그(`hit.point.y` 기반 교정) 수선으로 1-Way 발판 상단 착지 불능 결함 완결 수선 (`227d002`) | `KinematicMotor2D.cs`, `ModuleChunkBuilder.cs` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -357,3 +358,10 @@
 
 - **단일 모듈 $12\text{m} \times 12\text{m}$ ($12 \times 12\text{ cells}$) 전면 확대**: 6x6 모듈의 좁은 이동 반경을 해소하고, 단일 모듈 하나만으로 수평 이동(12m), 대시(3.6m), 수직 점프(2.5m) 및 부유 발판 층간 착지가 완결되는 자율 독립 플레이어 공간 구축.
 - **R&R 서브에이전트 위임 구축**: C# 파서 작성 및 명세 수립은 메인 에이전트가 완료하고, 실제 디스크 프리팹 생성, Addressables 바인딩 및 `unityMCP` 에디터 재빌드 구동은 **리소스 작업자 1 (`f4f6cc90-75c3-4e62-890c-fcd62e9a47f7`)** 서브에이전트에게 전적으로 전달·위임.
+
+---
+
+### 2026-08-10 KST — KinematicMotor2D Tilemap_Platforms 1-Way 착지 불능 버그 수선 회고
+
+- **원인 분석**: `KinematicMotor2D.cs` 내 1-Way 발판 착지 검사에서 `hit.collider.bounds.max.y`를 사용하여 `TilemapCollider2D` 전체 타일맵 바운즈 상단 Y(29m)가 참조됨으로써, 발판 상단 Y(3m) 착지 시 도달 높이 미달 조건(`feetY < platformTopY - 0.40f`)에 걸려 충돌이 무시되던 원인 발견.
+- **수선 및 100% 정상화**: `(hit.collider is TilemapCollider2D) ? hit.point.y : hit.collider.bounds.max.y`로 충돌 표면 Y값을 정밀 교정하고 `Tilemap_Platforms` 레이어를 `"OneWayPlatform"`으로 정밀 할당. 원격 Push (`227d002`) 완료 및 리소스 작업자 1에게 프리팹 재빌드 위임.
