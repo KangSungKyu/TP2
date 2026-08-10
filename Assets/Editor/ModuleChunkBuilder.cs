@@ -814,10 +814,10 @@ public static class ModuleChunkBuilder
             box.size = new Vector2(worldWidth, worldHeight);
             box.isTrigger = true;
 
-            // Dynamic Sockets (West, East, South, North)
+            // Dynamic Sockets (West, East, South, North) - surface=1m 기준 center=2m, EntryMarker=1.51m(surface+0.51m)
             AddSocket(gridRoot.transform, ChunkSocketDirection.West, new Vector3(-halfW + 1f, 2f, 0f));
             AddSocket(gridRoot.transform, ChunkSocketDirection.East, new Vector3(halfW - 2f, 2f, 0f));
-            AddSocket(gridRoot.transform, ChunkSocketDirection.South, new Vector3(0f, 1f, 0f));
+            AddSocket(gridRoot.transform, ChunkSocketDirection.South, new Vector3(0f, 2f, 0f));
             AddSocket(gridRoot.transform, ChunkSocketDirection.North, new Vector3(0f, worldHeight - 1f, 0f));
 
             // Player Spawn Marker
@@ -855,6 +855,7 @@ public static class ModuleChunkBuilder
         socketObj.transform.localPosition = position;
         var entry = new GameObject($"Entry_{direction}");
         entry.transform.SetParent(socketObj.transform);
+        entry.transform.localPosition = new Vector3(0f, -0.49f, 0f); // EntryMarker surface+0.51m 계약 (socket.y=surface+1m - 0.49m)
         var marker = socketObj.GetComponent<ChunkSocketMarker>();
         if (marker != null)
         {
