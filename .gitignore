@@ -60,3 +60,4 @@ __pycache__/
 
 # Crash reports & local dumps
 sysinfo.txt
+test_out*.log
