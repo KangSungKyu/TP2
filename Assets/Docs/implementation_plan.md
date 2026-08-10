@@ -34,7 +34,8 @@
 
 | 날짜 | 변경 요약 | 근거 |
 |---:|---|---|
-| 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 수립 | `Assets/Docs/SubPlans/plan_hazards_traps.md` 신설 |
+| 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 구현 완료 (`46d0906`) | `Assets/Docs/SubPlans/plan_hazards_traps.md` 신설, `HazardBase.cs`, `SpikeTrap.cs`, `SawBladeTrap.cs` |
+| 2026-08-10 | `HazardBase.cs` `TakeDamage(damage)` 인자 수선 및 Obsolete `rb.isKinematic` -> `bodyType` 현대화 발주 | `HazardBase.cs` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -185,3 +186,18 @@
 - 비동기 리소스는 요청 직후 null을 실패로 판정하지 않고 완료 시점과 owner generation을 함께 확인한다.
 - 공유 DataTable을 오염시키는 실패 경로 테스트는 원래 테이블 참조를 `finally`에서 복원한다.
 - 포커스 의존 테스트 2건은 제품 게이트와 분리하고, 제품 PASS 수치에 환경 실패를 혼합하지 않는다.
+
+---
+
+### 2026-08-10 KST — 2D 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 구현 회고
+
+- 가시 함정(`SpikeTrap.cs`)과 둥근 톱날 함정(`SawBladeTrap.cs`)을 공용 `HazardBase.cs` 상속 구조로 통일하여 접촉 피해량, 노크백 방향, i-frame 피격 쿨다운(`cooldownBetweenHits`)을 100% 모듈화 안착함.
+- `SawBladeTrap.cs` 내 고정형 회전 연출과 웨이포인트(PingPong/Loop) 경로 이송 모터를 `FixedUpdate` 기반으로 연동하여 가변 프레임 환경에서도 물리 충돌 피격 틱이 정밀하게 유지되도록 구현함.
+- `ResourceData.csv` (`1070`, `1071`) 및 `TextData.csv` (`2040`, `2041`) 식별자 매핑을 완료하고 NUnit 자동화 테스트 및 `portfolio` 브랜치 병합(`46d0906`)을 완수함.
+
+---
+
+### 2026-08-10 KST — `TakeDamage` 시그니처 및 Obsolete 멤버 현대화 회고
+
+- `HazardBase.cs` 내 `CombatStats.TakeDamage` 호출 시 2번째 인자 타입 미스매치(`knockbackImpulse` Vector2 전달) 결함 적발. ➔ `stats.TakeDamage(damage)` 단일 인자로 수선하고 노크백 전달을 분리함.
+- Unity 구형/Obsolete 프로퍼티 `rb.isKinematic`을 `rb.bodyType != RigidbodyType2D.Kinematic` 현대화 API로 100% 교체 정제함.

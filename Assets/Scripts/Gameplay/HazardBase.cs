@@ -65,7 +65,7 @@ public abstract class HazardBase : MonoBehaviour
         if (stats == null) return;
 
         Vector2 knockbackImpulse = hitNormal * knockbackForce;
-        stats.TakeDamage(damage, knockbackImpulse);
+        stats.TakeDamage(damage);
 
         var motor = stats.GetComponent<KinematicMotor2D>();
         if (motor != null && motor.enabled)
@@ -75,7 +75,7 @@ public abstract class HazardBase : MonoBehaviour
         else
         {
             var rb = stats.GetComponent<Rigidbody2D>();
-            if (rb != null && !rb.isKinematic)
+            if (rb != null && rb.bodyType != RigidbodyType2D.Kinematic)
             {
                 rb.AddForce(knockbackImpulse, ForceMode2D.Impulse);
             }
