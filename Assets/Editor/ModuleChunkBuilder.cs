@@ -827,6 +827,20 @@ public static class ModuleChunkBuilder
             var marker = spawnMarker.AddComponent<SpawnPointMarker>();
             if (marker != null) marker.Type = SpawnType.Player;
 
+            if (chunkName == "Prefab_1042")
+            {
+                GameObject bossMarkerObj = new GameObject("SpawnPoint_Boss");
+                bossMarkerObj.transform.SetParent(gridRoot.transform);
+                bossMarkerObj.transform.localPosition = new Vector3(0f, 2f, 0f);
+                var bMarker = bossMarkerObj.AddComponent<SpawnPointMarker>();
+                if (bMarker != null)
+                {
+                    bMarker.Type = SpawnType.Boss;
+                    bMarker.MonsterId = 3201;
+                    bMarker.EnableSpawn = true;
+                }
+            }
+
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
