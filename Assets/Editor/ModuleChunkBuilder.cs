@@ -10,13 +10,13 @@ using UnityEngine.Tilemaps;
 /// 6x6 그리드(Y=0~5, X=0~5) 레이아웃 파서:
 /// '#' : 지면 타일 (Solid Ground)
 /// '=' : 1-Way 발판 (One-Way Platform)
-/// '^' : 바닥 가시 함정 (Up Spike)
-/// 'v' : 천장 가시 함정 (Down Spike)
+/// '^' : 바닥 가시 함정 (Upward Spike)
+/// 'v' : 천장 가시 함정 (Downward Spike)
 /// '<' : 좌측 벽 가시 함정 (Left Spike)
 /// '>' : 우측 벽 가시 함정 (Right Spike)
 /// 'O' : 둥근 톱날 함정 (Saw Blade Trap)
 /// 'S' / 'E' : 진입 / 진출 Marker
-/// '.' : 통과 가능 공간 (Open Air)
+/// '.' : 통과 공간 (Open Air - 공중 부유 모듈 지원)
 /// </summary>
 public static class ModuleChunkBuilder
 {
@@ -208,7 +208,7 @@ public static class ModuleChunkBuilder
             "######"
         },
 
-        // Duplicate fallbacks to ensure full 24 keys
+        // Category J~L: 보충 결합 모듈
         ["Module_J1"] = new string[] { "......", "..==..", "S....E", "##..##", "##^^##", "######" },
         ["Module_J2"] = new string[] { "######", "#vvvv#", "S....E", "##..##", "......", "######" },
         ["Module_K1"] = new string[] { "......", ".####.", "S....E", "..==..", "..^^..", "######" },
@@ -228,8 +228,15 @@ public static class ModuleChunkBuilder
         string roomsDir = "Assets/Prefabs/Rooms";
         if (!Directory.Exists(roomsDir)) Directory.CreateDirectory(roomsDir);
 
+        string texturesDir = "Assets/Textures/Environment";
+        if (!Directory.Exists(texturesDir)) Directory.CreateDirectory(texturesDir);
+
         string tilesDir = "Assets/Textures/Environment/Tiles";
         if (!Directory.Exists(tilesDir)) Directory.CreateDirectory(tilesDir);
+
+        // 1. 더미 함정 스프라이트 자산 확보 (SpikeTrap, SawBladeTrap)
+        Sprite spikeSprite = EnsureSpikeTrapSprite($"{texturesDir}/Sprite_SpikeTrap.png");
+        Sprite sawSprite = EnsureSawBladeTrapSprite($"{texturesDir}/Sprite_SawBladeTrap.png");
 
         Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset");
         if (groundTile == null)
@@ -251,11 +258,11 @@ public static class ModuleChunkBuilder
 
         Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat");
 
-        // 1. 24종 6x6 모듈 Prefab 제작
-        Build24ModulePrefabs(modulesDir, groundTile, platTile, mat);
+        // 2. 24종 6x6 모듈 Prefab 제작
+        Build24ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
-        // 2. 10x5 모듈 주입 기반 Stage 1 룸 청크 11종 전면 빌드
-        Build11RoomChunkPrefabs(roomsDir, groundTile, platTile, mat);
+        // 3. 10x5 모듈 주입 기반 Stage 1 룸 청크 11종 전면 빌드
+        Build11RoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -265,7 +272,72 @@ public static class ModuleChunkBuilder
         AddressablePipeline.BuildAndDeploy();
     }
 
-    private static void Build24ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat)
+    private static Sprite EnsureSpikeTrapSprite(string path)
+    {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
+        int width = 32, height = 32;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        Color transparent = new Color(0, 0, 0, 0);
+        Color redSpike = new Color(0.9f, 0.2f, 0.1f, 1f);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                // Triangle spike shape
+                int dx = Mathf.Abs(x - 16);
+                if (y <= (32 - dx * 2)) tex.SetPixel(x, y, redSpike);
+                else tex.SetPixel(x, y, transparent);
+            }
+        }
+        tex.Apply();
+        File.WriteAllBytes(path, tex.EncodeToPNG());
+        AssetDatabase.Refresh();
+
+        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.SaveAndReimport();
+        }
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static Sprite EnsureSawBladeTrapSprite(string path)
+    {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
+        int width = 32, height = 32;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        Color transparent = new Color(0, 0, 0, 0);
+        Color silver = new Color(0.75f, 0.75f, 0.8f, 1f);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float dist = Vector2.Distance(new Vector2(x, y), new Vector2(16, 16));
+                if (dist <= 14f) tex.SetPixel(x, y, silver);
+                else tex.SetPixel(x, y, transparent);
+            }
+        }
+        tex.Apply();
+        File.WriteAllBytes(path, tex.EncodeToPNG());
+        AssetDatabase.Refresh();
+
+        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.SaveAndReimport();
+        }
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static void Build24ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
         foreach (var kvp in ModuleTemplates)
         {
@@ -310,19 +382,19 @@ public static class ModuleChunkBuilder
                             pMap.SetTile(tilePos, platTile);
                             break;
                         case '^':
-                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 0f);
+                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 0f, spikeSprite);
                             break;
                         case 'v':
-                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 180f);
+                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 180f, spikeSprite);
                             break;
                         case '<':
-                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), -90f);
+                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), -90f, spikeSprite);
                             break;
                         case '>':
-                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 90f);
+                            CreateSpikeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), 90f, spikeSprite);
                             break;
                         case 'O':
-                            CreateSawBladeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f));
+                            CreateSawBladeTrap(modRoot.transform, new Vector3(x + 0.5f, y + 0.5f, 0f), sawSprite);
                             break;
                     }
                 }
@@ -332,33 +404,41 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 6x6 모듈 Prefab 24종 ASCII 정밀 배치 빌드 완결!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 6x6 모듈 Prefab 24종 ASCII 정밀 배치 및 더미 리소스 적용 빌드 완결!</color>");
     }
 
-    private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg)
+    private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
     {
         GameObject spike = new GameObject("SpikeTrap");
         spike.transform.SetParent(parent);
         spike.transform.localPosition = pos;
         spike.transform.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
+
+        var sr = spike.AddComponent<SpriteRenderer>();
+        if (spikeSprite != null) sr.sprite = spikeSprite;
+
         var col = spike.AddComponent<BoxCollider2D>();
         col.isTrigger = true;
         col.size = new Vector2(0.8f, 0.8f);
         spike.AddComponent<SpikeTrap>();
     }
 
-    private static void CreateSawBladeTrap(Transform parent, Vector3 pos)
+    private static void CreateSawBladeTrap(Transform parent, Vector3 pos, Sprite sawSprite)
     {
         GameObject saw = new GameObject("SawBladeTrap");
         saw.transform.SetParent(parent);
         saw.transform.localPosition = pos;
+
+        var sr = saw.AddComponent<SpriteRenderer>();
+        if (sawSprite != null) sr.sprite = sawSprite;
+
         var col = saw.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
         col.radius = 0.5f;
         saw.AddComponent<SawBladeTrap>();
     }
 
-    private static void Build11RoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat)
+    private static void Build11RoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
         string[] chunkNames = new string[]
         {
@@ -388,7 +468,11 @@ public static class ModuleChunkBuilder
             var gMap = groundObj.AddComponent<Tilemap>();
             var gR = groundObj.AddComponent<TilemapRenderer>();
             if (mat != null) gR.sharedMaterial = mat;
-            groundObj.AddComponent<TilemapCollider2D>();
+            var compositeCol = groundObj.AddComponent<CompositeCollider2D>();
+            var rb = groundObj.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Static;
+            var tileCol = groundObj.AddComponent<TilemapCollider2D>();
+            tileCol.usedByComposite = true;
 
             // Platform Tilemap
             GameObject platObj = new GameObject("Tilemap_Platforms");
@@ -429,19 +513,19 @@ public static class ModuleChunkBuilder
                                     pMap.SetTile(tilePos, platTile);
                                     break;
                                 case '^':
-                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 0f);
+                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 0f, spikeSprite);
                                     break;
                                 case 'v':
-                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 180f);
+                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 180f, spikeSprite);
                                     break;
                                 case '<':
-                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), -90f);
+                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), -90f, spikeSprite);
                                     break;
                                 case '>':
-                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 90f);
+                                    CreateSpikeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), 90f, spikeSprite);
                                     break;
                                 case 'O':
-                                    CreateSawBladeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f));
+                                    CreateSawBladeTrap(gridRoot.transform, new Vector3(offsetX + cellX + 0.5f, offsetY + cellY + 0.5f, 0f), sawSprite);
                                     break;
                             }
                         }
@@ -461,6 +545,14 @@ public static class ModuleChunkBuilder
                 gMap.SetTile(new Vector3Int(30, y, 0), groundTile);
             }
 
+            // Camera Bounds
+            GameObject cameraBounds = new GameObject("CameraBounds");
+            cameraBounds.transform.SetParent(gridRoot.transform);
+            cameraBounds.transform.localPosition = new Vector3(-0.5f, 15f, 0f);
+            var box = cameraBounds.AddComponent<BoxCollider2D>();
+            box.size = new Vector2(60f, 30f);
+            box.isTrigger = true;
+
             // Player Spawn Marker & Portals
             GameObject spawnMarker = new GameObject("SpawnPoint_Player");
             spawnMarker.transform.SetParent(gridRoot.transform);
@@ -472,7 +564,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] Stage 1 룸 청크 11종 10x5 모듈 주입 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] Stage 1 룸 청크 11종 10x5 모듈 주입 및 더미 리소스 적용 재빌드 완료!</color>");
     }
 }
 #endif
