@@ -327,9 +327,10 @@ public class KinematicMotor2D : MonoBehaviour
             if (isOneWayPlatform)
             {
                 float feetY = physicsCollider.bounds.min.y;
-                float platformTopY = hit.collider.bounds.max.y;
+                // TilemapCollider2D의 경우 전체 타일맵 바운즈(max.y) 대신 실제 충돌 지점(hit.point.y) 사용
+                float platformTopY = (hit.collider is TilemapCollider2D) ? hit.point.y : hit.collider.bounds.max.y;
 
-                // 1) 점프 도달 정점(Apex Y) 미리 계산 ➔ 최대 도달 높이가 발판 상단보다 낮으면 무조건 통과 (중간 걸침/붙음 100% 방지!)
+                // 1) 점프 도달 정점(Apex Y) 미리 계산 ➔ 최대 도달 높이가 발판 상단보다 낮으면 무조건 통과
                 float vy = Velocity.y;
                 float apexY = feetY;
                 if (vy > 0f)

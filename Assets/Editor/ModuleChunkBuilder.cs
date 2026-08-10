@@ -487,6 +487,8 @@ public static class ModuleChunkBuilder
             // Platform Tilemap (PlatformEffector2D 1-Way 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(modRoot.transform);
+            int oneWayLayer = LayerMask.NameToLayer("OneWayPlatform");
+            if (oneWayLayer >= 0) platObj.layer = oneWayLayer;
             var pMap = platObj.AddComponent<Tilemap>();
             var pRend = platObj.AddComponent<TilemapRenderer>();
             pRend.sortingLayerName = "Default";
@@ -711,11 +713,13 @@ public static class ModuleChunkBuilder
             // Platform Tilemap (PlatformEffector2D 1-Way 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(gridRoot.transform);
+            int oneWayLayer = LayerMask.NameToLayer("OneWayPlatform");
+            if (oneWayLayer >= 0) platObj.layer = oneWayLayer;
             var pMap = platObj.AddComponent<Tilemap>();
-            var pR = platObj.AddComponent<TilemapRenderer>();
-            pR.sortingLayerName = "Default";
-            pR.sortingOrder = 5;
-            if (mat != null) pR.sharedMaterial = mat;
+            var pRend = platObj.AddComponent<TilemapRenderer>();
+            pRend.sortingLayerName = "Default";
+            pRend.sortingOrder = 5;
+            if (mat != null) pRend.sharedMaterial = mat;
 
             var pCol = platObj.AddComponent<TilemapCollider2D>();
             pCol.usedByEffector = true;
