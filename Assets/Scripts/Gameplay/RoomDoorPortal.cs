@@ -16,6 +16,39 @@ public class RoomDoorPortal : MonoBehaviour
 
     private bool isTransitioning = false;
 
+    private void Start()
+    {
+        // ponytail: visualize portal door with cyan glowing indicator
+        EnsureVisualOverlay();
+    }
+
+    private void EnsureVisualOverlay()
+    {
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr == null)
+        {
+            sr = gameObject.AddComponent<SpriteRenderer>();
+            Texture2D tex = Texture2D.whiteTexture;
+            sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+            sr.color = new Color(0f, 0.9f, 1f, 0.65f);
+            transform.localScale = new Vector3(1.2f, 2.5f, 1f);
+        }
+
+        var col = GetComponent<Collider2D>();
+        if (col == null)
+        {
+            var box = gameObject.AddComponent<BoxCollider2D>();
+            box.isTrigger = true;
+            box.size = new Vector2(1.5f, 2.8f);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0f, 0.9f, 1f, 0.8f);
+        Gizmos.DrawWireCube(transform.position, new Vector3(1.5f, 2.8f, 0f));
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!AutoTriggerOnTouch || isTransitioning) return;

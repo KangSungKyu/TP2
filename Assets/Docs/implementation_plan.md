@@ -34,6 +34,7 @@
 
 | 날짜 | 변경 요약 | 근거 |
 |---:|---|---|
+| 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 수립 | `Assets/Docs/SubPlans/plan_hazards_traps.md` 신설 |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |

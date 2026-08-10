@@ -107,6 +107,7 @@ public class Player : UnitBase
 
     protected override void Awake()
     {
+        // ponytail: prevent duplicate player instance when scene transitions
         if (Instance != null && Instance != this)
         {
             if (Application.isPlaying) Destroy(gameObject);
@@ -116,6 +117,8 @@ public class Player : UnitBase
 
         base.Awake();
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         motor = GetComponent<KinematicMotor2D>();
         if (motor == null)
         {
