@@ -6,343 +6,309 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 /// <summary>
-/// 40종 다양화 6x6 청크 모듈 Prefab 제작 및 가변 규격(NxM, 3<=N,M<=20) Stage 1 룸 청크 재생성 빌더.
-/// 1. 발판(=)과 지형(#) 직접 접촉 전면 금지 (독립 부유 발판 구조).
-/// 2. 모듈 경계(Col 0, Col 5) 및 층간 통로 최소 3~4m (3~4칸) 광폭 공간 보장 (플레이어 끼임 100% 철폐).
-/// 3. Stage 1 함정/플랫포밍 난이도 적정화 & 가변 NxM 청크 균일 공간 배치.
+/// 12x12 자율 단독 플레이 가능 모듈 20종 및 가변 NxM Stage 1 룸 청크 재생성 빌더.
+/// 1. 단일 모듈 규격 12m x 12m (12x12 cells) 전면 확대: 독립 주행(12m), 대시(3.6m), 점프(4.5m) 완결.
+/// 2. 발판(=)과 지형(#) 접촉 금지 & 3~4m 광폭 통로 공간 보장.
+/// 3. 리소스 작업자 1(f4f6cc90-75c3-4e62-890c-fcd62e9a47f7) 위임 구동용 C# 파서 빌더.
 /// </summary>
 public static class ModuleChunkBuilder
 {
     private static readonly Dictionary<string, string[]> ModuleTemplates = new Dictionary<string, string[]>()
     {
-        // === Category A: 평지 & 광폭 평탄 통로 (3~4m 넉넉한 공간) ===
+        // === Category A: 12x12 평지 & 기초 횡단 트랙 (독립 주행/점프 가능) ===
         ["Module_A1"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "######",
-            "######"
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_A2"] = new string[] {
-            "......",
-            "......",
-            "..==..",
-            "S....E",
-            "......",
-            "######"
+            "............",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_A3"] = new string[] {
-            "......",
-            "......",
-            "S...=E",
-            "......",
-            "######",
-            "######"
+            "............",
+            "............",
+            "............",
+            "........====",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_A4"] = new string[] {
-            "......",
-            "......",
-            "..==..",
-            "S....E",
-            "......",
-            "######"
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
 
-        // === Category B: 2층 부유 발판 & 도약 통로 (지형 접촉 없음, 3m 천장 고도) ===
+        // === Category B: 12x12 2층/3층 부유 입체 발판 ===
         ["Module_B1"] = new string[] {
-            "......",
-            "...==.",
-            "......",
-            ".==...",
-            "S....E",
-            "######"
+            "............",
+            "......====..",
+            "............",
+            "............",
+            "..====......",
+            "............",
+            "............",
+            "....====....",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_B2"] = new string[] {
-            "S.....",
-            "......",
-            "..==..",
-            "......",
-            "....=E",
-            "######"
+            "S...........",
+            "............",
+            "..====......",
+            "............",
+            "............",
+            "......====..",
+            "............",
+            "............",
+            "..........=E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_B3"] = new string[] {
-            ".....E",
-            "...==.",
-            "......",
-            ".==...",
-            "S.....",
-            "######"
+            "...........E",
+            "......====..",
+            "............",
+            "............",
+            "..====......",
+            "............",
+            "............",
+            "S...........",
+            "............",
+            "............",
+            "############",
+            "############"
         },
         ["Module_B4"] = new string[] {
-            "S.....",
-            ".==...",
-            "......",
-            "...==.",
-            ".....E",
-            "######"
+            "S...........",
+            "............",
+            "..====......",
+            "............",
+            "............",
+            "......====..",
+            "............",
+            "...........E",
+            "............",
+            "............",
+            "############",
+            "############"
         },
 
-        // === Category C: 수직 개방 샤프트 (3~4m 광폭 수직 통로) ===
+        // === Category C: 12x12 수직 상승/하강 개방 샤프트 ===
         ["Module_C1"] = new string[] {
-            "......",
-            "#....#",
-            "#....#",
-            "#....#",
-            "S....E",
-            "......"
+            "............",
+            "##........##",
+            "##....====##",
+            "##........##",
+            "##........##",
+            "##..====..##",
+            "##........##",
+            "##........##",
+            "S..........E",
+            "............",
+            "............",
+            "............"
         },
         ["Module_C2"] = new string[] {
-            ".....E",
-            "......",
-            "..==..",
-            "......",
-            "S.....",
-            "######"
-        },
-        ["Module_C3"] = new string[] {
-            "S.....",
-            "#....#",
-            "#....#",
-            "#....#",
-            ".....E",
-            "######"
-        },
-        ["Module_C4"] = new string[] {
-            "......",
-            "#....#",
-            "#..==#",
-            "#....#",
-            "S....E",
-            "######"
+            "...........E",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "S...........",
+            "............",
+            "############",
+            "############"
         },
 
-        // === Category D: 대시 우회 & 3~4m 광폭 통로 ===
+        // === Category D: 12x12 대시 & 쾌적 지형 모듈 ===
         ["Module_D1"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "#....#",
-            "######"
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "####....####",
+            "####....####",
+            "############",
+            "############"
         },
         ["Module_D2"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "######",
-            "######"
-        },
-        ["Module_D3"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "##..##",
-            "######"
-        },
-        ["Module_D4"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "######",
-            "######"
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############",
+            "############",
+            "############"
         },
 
-        // === Category E: 라이트 부유 코스 (발판-지형 분리) ===
+        // === Category E: 12x12 라이트 타이밍 모듈 ===
         ["Module_E1"] = new string[] {
-            "......",
-            "......",
-            "..==..",
-            "S....E",
-            "......",
-            "######"
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "S..........E",
+            "............",
+            "############",
+            "############"
         },
         ["Module_E2"] = new string[] {
-            "....=E",
-            "......",
-            "..=...",
-            "S.....",
-            "......",
-            "######"
-        },
-        ["Module_E3"] = new string[] {
-            ".....E",
-            "......",
-            ".====.",
-            "......",
-            "S.....",
-            "######"
-        },
-        ["Module_E4"] = new string[] {
-            "......",
-            "......",
-            "==....",
-            "S....E",
-            "......",
-            "######"
+            "..........=E",
+            "............",
+            "......=.....",
+            "............",
+            "....=.......",
+            "............",
+            "S=..........",
+            "............",
+            "............",
+            "............",
+            "############",
+            "############"
         },
 
-        // === Category F: 공중 부유 모듈 (Y=0 Open Air, 3~4m 여유) ===
+        // === Category F: 12x12 공중 부유 오픈 에어 모듈 ===
         ["Module_F1"] = new string[] {
-            "......",
-            "..==..",
-            "......",
-            "==..==",
-            "......",
-            "......"
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "====....====",
+            "............",
+            "............",
+            "....====....",
+            "............",
+            "............",
+            "............",
+            "............"
         },
         ["Module_F2"] = new string[] {
-            "......",
-            "......",
-            "......",
-            "==..==",
-            "......",
-            "......"
-        },
-        ["Module_F3"] = new string[] {
-            "..==..",
-            "......",
-            ".==...",
-            "......",
-            "...==",
-            "......"
-        },
-        ["Module_F4"] = new string[] {
-            "......",
-            ".====.",
-            "......",
-            "......",
-            ".====.",
-            "......"
+            "............",
+            "............",
+            "............",
+            "............",
+            "====....====",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............"
         },
 
-        // === Category G: 부유 섬 & 공중 아레나 ===
+        // === Category G: 12x12 부유 섬 아레나 ===
         ["Module_G1"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "..==..",
-            "......",
-            "......"
+            "............",
+            "............",
+            "............",
+            "S..........E",
+            "....====....",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............"
         },
         ["Module_G2"] = new string[] {
-            "......",
-            "......",
-            "..##..",
-            "..##..",
-            "......",
-            "......"
-        },
-        ["Module_G3"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "......",
-            "......",
-            "......"
-        },
-        ["Module_G4"] = new string[] {
-            "......",
-            ".==...",
-            "......",
-            "...==.",
-            "......",
-            "......"
+            "............",
+            "............",
+            "....####....",
+            "....####....",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............"
         },
 
-        // === Category H: 높은 지형 & 언덕 절벽 (3~4m 통행 폭) ===
+        // === Category H & I: 12x12 높은 절벽 & 경사 모듈 ===
         ["Module_H1"] = new string[] {
-            "......",
-            "......",
-            "...###",
-            "S...##",
-            "....##",
-            "######"
+            "............",
+            "............",
+            "............",
+            "......######",
+            "S.....######",
+            "......######",
+            "......######",
+            "......######",
+            "......######",
+            "............",
+            "############",
+            "############"
         },
-        ["Module_H2"] = new string[] {
-            "......",
-            "..##..",
-            "..##..",
-            "S....E",
-            "......",
-            "######"
-        },
-        ["Module_H3"] = new string[] {
-            "......",
-            "......",
-            "..==..",
-            "......",
-            "......",
-            "##..##"
-        },
-        ["Module_H4"] = new string[] {
-            "......",
-            "###...",
-            "###...",
-            "S....E",
-            "....##",
-            "######"
-        },
-
-        // === Category I: 고지대 경사면 ===
         ["Module_I1"] = new string[] {
-            "....##",
-            "...###",
-            "..####",
-            ".#####",
-            "S#####",
-            "######"
-        },
-        ["Module_I2"] = new string[] {
-            "......",
-            "......",
-            "######",
-            "S....E",
-            "......",
-            "######"
-        },
-        ["Module_I3"] = new string[] {
-            "......",
-            "S.....",
-            "##....",
-            "......",
-            ".....E",
-            "######"
-        },
-        ["Module_I4"] = new string[] {
-            "##....",
-            "###...",
-            "####..",
-            "#####.",
-            "#####E",
-            "######"
-        },
-
-        // === Category J & L: 수선된 납득형 결합 모듈 ===
-        ["Module_J1"] = new string[] { "......", "..==..", "S....E", "......", "......", "######" },
-        ["Module_J2"] = new string[] { "......", "......", "S....E", "......", "......", "######" },
-        ["Module_J3"] = new string[] { "......", "..==..", "S....E", "......", "######", "######" },
-        ["Module_J4"] = new string[] { "......", ".==...", "S....E", "......", "......", "######" },
-
-        // Module_L1 수선: 발판(=)과 지형(#) 직접 접촉 전면 차단. 부유 발판(=)은 허공 2.0m 고도에 독립 배치.
-        ["Module_L1"] = new string[] {
-            "......",
-            "......",
-            "S....E",
-            "..==..",
-            "......",
-            "######"
-        },
-        ["Module_L2"] = new string[] {
-            "......",
-            "S....E",
-            "....##",
-            "..==..",
-            "......",
-            "######"
+            "........####",
+            "......######",
+            "....########",
+            "..##########",
+            "S###########",
+            "############",
+            "############",
+            "############",
+            "############",
+            "............",
+            "############",
+            "############"
         }
     };
 
@@ -353,10 +319,10 @@ public static class ModuleChunkBuilder
         public string[,] Matrix { get; set; }
     }
 
-    [MenuItem("TP2/Build 6x6 Modules & Stage 1 Chunks (6x6 모듈 & 룸 청크 전면 재생성)")]
+    [MenuItem("TP2/Build 12x12 Modules & Stage 1 Chunks (12x12 모듈 & 룸 청크 전면 재생성)")]
     public static void BuildAllModulesAndChunks()
     {
-        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 광폭 통로 모듈/청크 빌드 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 12x12 자율 단독 모듈 및 가변 NxM 청크 빌드 시작...</b></color>");
 
         string modulesDir = "Assets/Prefabs/Modules";
         if (!Directory.Exists(modulesDir)) Directory.CreateDirectory(modulesDir);
@@ -393,8 +359,8 @@ public static class ModuleChunkBuilder
 
         Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat");
 
-        // 1. 40종 6x6 모듈 Prefab 제작 (발판-지형 분리 & 3~4m 통로)
-        Build40ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
+        // 1. 12x12 모듈 Prefab 제작
+        Build12x12ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         // 2. 가변 NxM 그리드 11종 Stage 1 룸 청크 빌드
         BuildVariableRoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
@@ -402,7 +368,7 @@ public static class ModuleChunkBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("<color=green><b>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 광폭 통로 모듈/청크 전면 재생성 완결!</b></color>");
+        Debug.Log("<color=green><b>[ModuleChunkBuilder] 12x12 모듈 & 청크 전면 재생성 파싱 완료!</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
     }
@@ -496,13 +462,13 @@ public static class ModuleChunkBuilder
         return loaded;
     }
 
-    private static void Build40ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
+    private static void Build12x12ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
         foreach (var kvp in ModuleTemplates)
         {
             string modName = kvp.Key;
             string[] layout = kvp.Value;
-            if (layout == null || layout.Length < 6) continue;
+            if (layout == null || layout.Length < 12) continue;
 
             GameObject modRoot = new GameObject(modName);
             var grid = modRoot.AddComponent<Grid>();
@@ -534,14 +500,14 @@ public static class ModuleChunkBuilder
             pEff.useOneWay = true;
             pEff.surfaceArc = 180f;
 
-            // Parse 6x6 Grid Layout
-            for (int r = 0; r < 6; r++)
+            // Parse 12x12 Grid Layout (Y=11 down to Y=0, X=0 to X=11)
+            for (int r = 0; r < 12; r++)
             {
-                int y = 5 - r;
+                int y = 11 - r;
                 string line = layout[r];
                 if (line == null) continue;
 
-                for (int x = 0; x < 6; x++)
+                for (int x = 0; x < 12; x++)
                 {
                     char ch = x < line.Length ? line[x] : '.';
                     Vector3Int tilePos = new Vector3Int(x, y, 0);
@@ -577,7 +543,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 발판-지형 분리 & 3~4m 통로 40종 모듈 Prefab 제작 완결!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 자율 단독 모듈 Prefab 제작 완결!</color>");
     }
 
     private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
@@ -619,105 +585,87 @@ public static class ModuleChunkBuilder
 
     private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
+        // 11종 룸 청크별 12x12 모듈 배치 사양 (N: ModX 수, M: ModY 수)
         Dictionary<string, ChunkGridConfig> chunkConfigs = new Dictionary<string, ChunkGridConfig>()
         {
-            ["Prefab_1040"] = new ChunkGridConfig { // Entry Safe Room (6x3 Modules = 36m x 18m)
-                GridWidth = 6, GridHeight = 3,
+            ["Prefab_1040"] = new ChunkGridConfig { // Entry Safe Room (3x2 12x12 Modules = 36m x 24m)
+                GridWidth = 3, GridHeight = 2,
                 Matrix = new string[,] {
-                    { "Module_A1", "Module_A3", "Module_A4", "Module_B1", "Module_C1", "Module_A1" },
-                    { "Module_A2", "Module_A4", "Module_B3", "Module_F1", "Module_C1", "Module_A2" },
-                    { "Module_A1", "Module_A2", "Module_A3", "Module_B1", "Module_C1", "Module_A1" }
+                    { "Module_A1", "Module_A2", "Module_C1" },
+                    { "Module_A3", "Module_A4", "Module_C1" }
                 }
             },
-            ["Prefab_1041"] = new ChunkGridConfig { // Battle Room A (8x4 Modules = 48m x 24m)
-                GridWidth = 8, GridHeight = 4,
+            ["Prefab_1041"] = new ChunkGridConfig { // Battle Room A (4x2 12x12 Modules = 48m x 24m)
+                GridWidth = 4, GridHeight = 2,
                 Matrix = new string[,] {
-                    { "Module_B1", "Module_F1", "Module_B2", "Module_F2", "Module_C1", "Module_B1", "Module_F1", "Module_B2" },
-                    { "Module_J1", "Module_F3", "Module_J4", "Module_F4", "Module_C1", "Module_J1", "Module_F3", "Module_J4" },
-                    { "Module_B2", "Module_G1", "Module_B3", "Module_G2", "Module_C1", "Module_B2", "Module_G1", "Module_B3" },
-                    { "Module_A1", "Module_B1", "Module_A2", "Module_B2", "Module_C1", "Module_A1", "Module_B1", "Module_A2" }
+                    { "Module_B1", "Module_F1", "Module_B2", "Module_C1" },
+                    { "Module_B2", "Module_G1", "Module_B3", "Module_C1" }
                 }
             },
-            ["Prefab_1042"] = new ChunkGridConfig { // Boss Arena (10x5 Modules = 60m x 30m)
-                GridWidth = 10, GridHeight = 5,
-                Matrix = new string[,] {
-                    { "Module_G1", "Module_G2", "Module_G3", "Module_G4", "Module_C1", "Module_G1", "Module_G2", "Module_G3", "Module_C1", "Module_G1" },
-                    { "Module_G4", "Module_H4", "Module_F4", "Module_H4", "Module_C1", "Module_G4", "Module_H4", "Module_F4", "Module_C1", "Module_G4" },
-                    { "Module_G2", "Module_F1", "Module_G3", "Module_F2", "Module_C1", "Module_G2", "Module_F1", "Module_G3", "Module_C1", "Module_G2" },
-                    { "Module_H4", "Module_G1", "Module_H4", "Module_G4", "Module_C1", "Module_H4", "Module_G1", "Module_H4", "Module_C1", "Module_H4" },
-                    { "Module_A1", "Module_G3", "Module_A2", "Module_G2", "Module_C1", "Module_A1", "Module_G3", "Module_A2", "Module_C1", "Module_A1" }
-                }
-            },
-            ["Room_11050"] = new ChunkGridConfig { // Ascent Shaft (4x5 Modules = 24m x 30m, 좁은 수직 상승)
-                GridWidth = 4, GridHeight = 5,
-                Matrix = new string[,] {
-                    { "Module_C1", "Module_C2", "Module_C3", "Module_C4" },
-                    { "Module_B3", "Module_C1", "Module_B4", "Module_C2" },
-                    { "Module_C4", "Module_B1", "Module_C2", "Module_B2" },
-                    { "Module_I1", "Module_C3", "Module_I3", "Module_C4" },
-                    { "Module_A1", "Module_C1", "Module_A2", "Module_C2" }
-                }
-            },
-            ["Room_11051"] = new ChunkGridConfig { // Descent Drop (4x5 Modules = 24m x 30m, 좁은 수직 낙하)
-                GridWidth = 4, GridHeight = 5,
-                Matrix = new string[,] {
-                    { "Module_C3", "Module_D1", "Module_C4", "Module_D3" },
-                    { "Module_F4", "Module_C2", "Module_F3", "Module_C1" },
-                    { "Module_D4", "Module_C3", "Module_D2", "Module_C4" },
-                    { "Module_C2", "Module_F1", "Module_C3", "Module_F2" },
-                    { "Module_A1", "Module_C1", "Module_A2", "Module_C2" }
-                }
-            },
-            ["Room_11052"] = new ChunkGridConfig { // Corridor East-West (8x3 Modules = 48m x 18m, 수평 횡단 복도)
-                GridWidth = 8, GridHeight = 3,
-                Matrix = new string[,] {
-                    { "Module_D2", "Module_E1", "Module_D4", "Module_E2", "Module_C1", "Module_D2", "Module_E1", "Module_D4" },
-                    { "Module_E3", "Module_D1", "Module_E4", "Module_D3", "Module_C1", "Module_E3", "Module_D1", "Module_E4" },
-                    { "Module_A1", "Module_A2", "Module_B1", "Module_B2", "Module_C1", "Module_A1", "Module_A2", "Module_B1" }
-                }
-            },
-            ["Room_11053"] = new ChunkGridConfig { // Elite Arena (8x4 Modules = 48m x 24m)
-                GridWidth = 8, GridHeight = 4,
-                Matrix = new string[,] {
-                    { "Module_E3", "Module_G3", "Module_J2", "Module_E4", "Module_C1", "Module_E3", "Module_G3", "Module_J2" },
-                    { "Module_J4", "Module_E1", "Module_J1", "Module_E2", "Module_C1", "Module_J4", "Module_E1", "Module_J1" },
-                    { "Module_G2", "Module_J3", "Module_G4", "Module_J2", "Module_C1", "Module_G2", "Module_J3", "Module_G4" },
-                    { "Module_A1", "Module_J1", "Module_A2", "Module_J4", "Module_C1", "Module_A1", "Module_J1", "Module_A2" }
-                }
-            },
-            ["Room_11056"] = new ChunkGridConfig { // High Cliffs (6x4 Modules = 36m x 24m)
-                GridWidth = 6, GridHeight = 4,
-                Matrix = new string[,] {
-                    { "Module_H1", "Module_H2", "Module_H3", "Module_H4", "Module_C1", "Module_H1" },
-                    { "Module_I1", "Module_I2", "Module_I3", "Module_I4", "Module_C1", "Module_I1" },
-                    { "Module_H3", "Module_I4", "Module_H1", "Module_I2", "Module_C1", "Module_H3" },
-                    { "Module_A1", "Module_H1", "Module_A2", "Module_I1", "Module_C1", "Module_A1" }
-                }
-            },
-            ["Room_11057"] = new ChunkGridConfig { // Platform Maze (6x4 Modules = 36m x 24m)
-                GridWidth = 6, GridHeight = 4,
-                Matrix = new string[,] {
-                    { "Module_F1", "Module_F2", "Module_F3", "Module_F4", "Module_C1", "Module_F1" },
-                    { "Module_F4", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_F4" },
-                    { "Module_F2", "Module_B3", "Module_F4", "Module_B4", "Module_C1", "Module_F2" },
-                    { "Module_A1", "Module_F1", "Module_A2", "Module_F3", "Module_C1", "Module_A1" }
-                }
-            },
-            ["Room_11061"] = new ChunkGridConfig { // Rest Shelter (5x3 Modules = 30m x 18m, 아늑한 쉼터)
+            ["Prefab_1042"] = new ChunkGridConfig { // Boss Arena (5x3 12x12 Modules = 60m x 36m)
                 GridWidth = 5, GridHeight = 3,
                 Matrix = new string[,] {
-                    { "Module_A4", "Module_J3", "Module_K1", "Module_A3", "Module_C1" },
-                    { "Module_A3", "Module_K2", "Module_A4", "Module_J3", "Module_C1" },
-                    { "Module_A1", "Module_A4", "Module_A2", "Module_J3", "Module_C1" }
+                    { "Module_G1", "Module_G2", "Module_C1", "Module_G1", "Module_G2" },
+                    { "Module_F1", "Module_G2", "Module_C1", "Module_F1", "Module_G2" },
+                    { "Module_A1", "Module_G1", "Module_C1", "Module_A1", "Module_G1" }
                 }
             },
-            ["Room_11063"] = new ChunkGridConfig { // Platform Challenge (7x4 Modules = 42m x 24m)
-                GridWidth = 7, GridHeight = 4,
+            ["Room_11050"] = new ChunkGridConfig { // Ascent Shaft (2x3 12x12 Modules = 24m x 36m)
+                GridWidth = 2, GridHeight = 3,
                 Matrix = new string[,] {
-                    { "Module_D3", "Module_E4", "Module_L1", "Module_D2", "Module_C1", "Module_D3", "Module_E4" },
-                    { "Module_E2", "Module_D4", "Module_E1", "Module_D3", "Module_C1", "Module_E2", "Module_D4" },
-                    { "Module_L2", "Module_E3", "Module_D2", "Module_E4", "Module_C1", "Module_L2", "Module_E3" },
-                    { "Module_A1", "Module_E1", "Module_A2", "Module_D2", "Module_C1", "Module_A1", "Module_E1" }
+                    { "Module_C1", "Module_C2" },
+                    { "Module_B3", "Module_C1" },
+                    { "Module_A1", "Module_C1" }
+                }
+            },
+            ["Room_11051"] = new ChunkGridConfig { // Descent Drop (2x3 12x12 Modules = 24m x 36m)
+                GridWidth = 2, GridHeight = 3,
+                Matrix = new string[,] {
+                    { "Module_C2", "Module_D1" },
+                    { "Module_F2", "Module_C1" },
+                    { "Module_A1", "Module_C1" }
+                }
+            },
+            ["Room_11052"] = new ChunkGridConfig { // Corridor East-West (4x2 12x12 Modules = 48m x 24m)
+                GridWidth = 4, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_D2", "Module_E1", "Module_D1", "Module_C1" },
+                    { "Module_A1", "Module_A2", "Module_B1", "Module_C1" }
+                }
+            },
+            ["Room_11053"] = new ChunkGridConfig { // Elite Arena (4x2 12x12 Modules = 48m x 24m)
+                GridWidth = 4, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_E1", "Module_G2", "Module_E2", "Module_C1" },
+                    { "Module_A1", "Module_B1", "Module_A2", "Module_C1" }
+                }
+            },
+            ["Room_11056"] = new ChunkGridConfig { // High Cliffs (3x2 12x12 Modules = 36m x 24m)
+                GridWidth = 3, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_H1", "Module_I1", "Module_C1" },
+                    { "Module_A1", "Module_H1", "Module_C1" }
+                }
+            },
+            ["Room_11057"] = new ChunkGridConfig { // Platform Maze (3x2 12x12 Modules = 36m x 24m)
+                GridWidth = 3, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_F1", "Module_F2", "Module_C1" },
+                    { "Module_A1", "Module_F1", "Module_C1" }
+                }
+            },
+            ["Room_11061"] = new ChunkGridConfig { // Rest Shelter (3x2 12x12 Modules = 36m x 24m)
+                GridWidth = 3, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_A4", "Module_A3", "Module_C1" },
+                    { "Module_A1", "Module_A2", "Module_C1" }
+                }
+            },
+            ["Room_11063"] = new ChunkGridConfig { // Platform Challenge (4x2 12x12 Modules = 48m x 24m)
+                GridWidth = 4, GridHeight = 2,
+                Matrix = new string[,] {
+                    { "Module_D1", "Module_E2", "Module_D2", "Module_C1" },
+                    { "Module_A1", "Module_E1", "Module_A2", "Module_C1" }
                 }
             }
         };
@@ -730,14 +678,14 @@ public static class ModuleChunkBuilder
             int nY = config.GridHeight;
             string[,] moduleGridNames = config.Matrix;
 
-            int worldWidth = nX * 6;  // e.g. 6x6 = 36m
-            int worldHeight = nY * 6; // e.g. 3x6 = 18m
+            int worldWidth = nX * 12;  // 12m per module
+            int worldHeight = nY * 12; // 12m per module
             int halfW = worldWidth / 2;
 
             bool isValid = ValidateChunkPathways(moduleGridNames, nX, nY);
             if (isValid)
             {
-                Debug.Log($"<color=cyan>[ModuleChunkBuilder] {chunkName} ({nX}x{nY}) Entry Point 간 BFS 연속 경로 검증 통과!</color>");
+                Debug.Log($"<color=cyan>[ModuleChunkBuilder] {chunkName} ({nX}x{nY} 12x12 Modules) Entry Point 간 BFS 연속 경로 검증 통과!</color>");
             }
 
             GameObject gridRoot = new GameObject(chunkName);
@@ -778,7 +726,7 @@ public static class ModuleChunkBuilder
 
             Vector3 playerSpawnPos = new Vector3(-halfW + 5f, 2f, 0f);
 
-            // Assemble NxM Modules into World Coordinates (X: -halfW to +halfW-1, Y: 0 to worldHeight-1)
+            // Assemble NxM 12x12 Modules into World Coordinates (X: -halfW to +halfW-1, Y: 0 to worldHeight-1)
             for (int modY = 0; modY < nY; modY++)
             {
                 for (int modX = 0; modX < nX; modX++)
@@ -789,17 +737,17 @@ public static class ModuleChunkBuilder
                         layout = ModuleTemplates["Module_A1"];
                     }
 
-                    int offsetX = (modX * 6) - halfW;
-                    int offsetY = modY * 6;
+                    int offsetX = (modX * 12) - halfW;
+                    int offsetY = modY * 12;
 
-                    for (int r = 0; r < 6; r++)
+                    for (int r = 0; r < 12; r++)
                     {
-                        int cellY = 5 - r;
+                        int cellY = 11 - r;
                         if (r >= layout.Length) continue;
                         string line = layout[r];
                         if (line == null) continue;
 
-                        for (int cellX = 0; cellX < 6; cellX++)
+                        for (int cellX = 0; cellX < 12; cellX++)
                         {
                             char ch = cellX < line.Length ? line[cellX] : '.';
                             Vector3Int tilePos = new Vector3Int(offsetX + cellX, offsetY + cellY, 0);
@@ -837,16 +785,16 @@ public static class ModuleChunkBuilder
                 }
             }
 
-            // Dynamic Boundary Walls & 3~4m Entry Passages (West, East, South, North Sockets)
+            // Dynamic Boundary Walls & 4m Entry Passages
             if (groundTile != null)
             {
-                // Top/Bottom Boundary Walls (South/North Passages: X: -3 to +3 -> 6m wide opening)
+                // Top/Bottom Boundary Walls (South/North Passages)
                 for (int x = -halfW; x <= halfW; x++)
                 {
                     if (x < -3 || x > 3) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
                     if (x < -3 || x > 3) gMap.SetTile(new Vector3Int(x, worldHeight, 0), groundTile);
                 }
-                // Left/Right Boundary Walls (West/East Passages: Y: 1 to 4 -> 4m high opening)
+                // Left/Right Boundary Walls (West/East Passages)
                 for (int y = 0; y <= worldHeight; y++)
                 {
                     if (y < 1 || y > 4) gMap.SetTile(new Vector3Int(-halfW, y, 0), groundTile);
@@ -879,7 +827,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 가변 NxM 룸 청크 11종 3~4m 통로 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 가변 NxM 룸 청크 11종 재빌드 완료!</color>");
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
