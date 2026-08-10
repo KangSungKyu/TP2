@@ -40,7 +40,10 @@
 | 2026-08-10 | 전 스크립트 대상 Modern Unity API 규격(`FindFirstObjectByType`, `FindObjectsByType`, `bodyType`) 적용 및 거버넌스 전면 확립 (`cd73b69`) | `TilemapStageBuilderTests.cs`, `HazardBase.cs`, `implementation_plan.md` |
 | 2026-08-10 | `fix/` 브랜치(`fix/ppu100-regression-gates` 등) 100% 통합 병합(`aa049b6`) 및 `portfolio` 브랜치 원격 Push 최신화 완결 | Git Repository |
 | 2026-08-10 | 플레이어 정밀 물리 이동 스펙 기반 6x6 스테이지 청크 구성 모듈 템플릿 명세서 수립 및 물리 검증 통합 완료 (`e968bb4`) | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` 신설 |
-| 2026-08-10 | 유저 확정 5대 계약(노크백 제거&안전지형 이송, Down+Jump 발판 통과, 모듈->청크 주입 생명주기) 동기화 발주 | `plan_hazards_traps.md`, `plan_chunk_6x6_modules.md`, `HazardBase.cs` |
+| 2026-08-10 | 유저 확정 5대 계약(노크백 제거&안전지형 이송, Down+Jump 발판 통과, 모듈->청크 주입 생명주기) 구현 및 C# 동기화 완결 (`8fa945c`) | `plan_hazards_traps.md`, `plan_chunk_6x6_modules.md`, `HazardBase.cs` |
+| 2026-08-10 | 청크($10 \times 5$ 모듈 배열) 수직/중단 전개용 공용 부유 모듈(Floating Air Modules) 템플릿 6종 추가 명세 수립 | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
+| 2026-08-10 | 높은 지형/절벽/언덕 표현용 고지대 모듈(High Terrain / Elevation Modules) 템플릿 6종 신규 명세 수립 (총 24종 템플릿 완성) | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
+| 2026-08-10 | 24종 6x6 모듈 Prefab 수성 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더 구축 발주 | `Assets/Editor/Stage1ChunkBuilder.cs`, `Assets/Editor/ModuleChunkBuilder.cs` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -224,3 +227,31 @@
 - 플레이어 정밀 물리 실측 수치(Speed 6.0m/s, Dash 12.0m/s, Dash Range 3.6m, Max Jump Height 2.2~2.5m, Jump Range 4.5m, Wall Jump 3.0m) 기반으로 12개 6x6 청크 모듈 템플릿 수립완료.
 - 지형 타일(Solid Ground/Wall), 1-Way 발판(One-Way Platform), 함정(SpikeTrap, SawBladeTrap)의 조합으로 도약 한계선 내 레벨 접근성 100% 무결성을 확보함.
 - NUnit 자동화 테스트 100% PASS 검증 완료 및 `portfolio` 브랜치 병합(`e968bb4`) 완수함.
+
+---
+
+### 2026-08-10 KST — 유저 확정 5대 아키텍처 계약 구현 회고
+
+- 함정 피격 시 물리 노크백 연산 전면 제거(`knockbackForce = 0`) 및 `KinematicMotor2D.LastSafeGroundedPosition` 텔레포트 복귀 연동 안착.
+- `OneWayPlatform` 하향 통과 입식을 `Down 방향(S/Down Arrow) + Jump` 조합으로 결합 동기화.
+- 모듈(Prefab) ➔ 청크(Prefab) 데이터 주입 파이프라인 명세 수립 및 NUnit 자동화 테스트 100% PASS / `portfolio` 원격 Push(`8fa945c`) 완수.
+
+---
+
+### 2026-08-10 KST — 공중 부유 모듈 (Mid-Air Floating 6x6 Modules) 추가 수립 회고
+
+- 룸 청크($60\text{m} \times 30\text{m}$) 내 $10 \times 5$ 모듈 배열의 수직/중단 레이어 전개를 고려하여 바닥 미고정(Y=0 오픈 에어) 공중 부유 모듈 템플릿 6종(Category F: 공중 1-Way 징검다리, 톱날 주행 코스, 엇갈림 발판; Category G: 천장가시 공중대시, 부유 고체 섬, 통과 관통 샤프트)을 신규 명세 수립함.
+- 하부 모듈 및 상부 모듈 간 자유 낙하/도약 동선 무결성을 확보함.
+
+---
+
+### 2026-08-10 KST — 높은 지형 모듈 (High Terrain / Elevation Modules) 추가 수립 회고
+
+- 룸 청크 내 고지대, 암벽 절벽, 대지 요새, 경사면 및 고지대 톱날 순찰 지형 표현용 높은 지형 모듈 템플릿 6종(Category H: 우측 절벽, 중앙 요새, 쌍둥이 절벽 공중다리; Category I: 계단식 등반, 고지대 톱날 순찰, 고지대 대시 낙하)을 추가 수립하여 총 24종 모듈 템플릿 안착.
+
+---
+
+### 2026-08-10 KST — 6x6 모듈 Prefab 수성 및 Stage 1 청크 11종 전면 재생성 회고
+
+- 총 24종 6x6 모듈 Prefab(`Assets/Prefabs/Modules/`) 자동 빌드 및 10x5 모듈 그리드 레이아웃 주입 파이프라인 수립.
+- Stage 1 룸 청크 11종(`Prefab_1040`, `Prefab_1041`, `Prefab_1042`, `Room_11050`~`Room_11063`)의 타일맵(Ground, Platform, Background), 1-Way 발판, 함정(`SpikeTrap`, `SawBladeTrap`), 스폰 마커 및 관문 포탈의 전면 재빌드 및 무결성 검증을 발주함.
