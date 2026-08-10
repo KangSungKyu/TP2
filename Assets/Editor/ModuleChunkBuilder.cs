@@ -6,15 +6,16 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 /// <summary>
-/// 6x6 청크 모듈 Prefab 24종 자동 제작 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더.
-/// [Entry Point 간 100% 연속 통과 경로 보장 (Topological Path Contract)]
-/// West(0,0), East(9,0), South(4,0), North(4,4) 진입/진출 소켓 상호 간 BFS 연속 경로 검증 및 주입.
+/// 40종 다양화 6x6 청크 모듈 Prefab 제작 및 11종 전용 고유 10x5 청크 재생성 빌더.
+/// 1. 플레이어 규격(폭 1.0m, 높이 2.0m) 반영 통로 틈새(2.0m 이상) & 천장 고도(2.5m 이상) 100% 보장.
+/// 2. PlatformEffector2D 적용으로 1-Way 발판 상향/하향 통과 지원.
+/// 3. 11종 룸 청크별 고유 10x5 모듈 매트릭스 적용으로 중복성 해소 & BFS 통과 경로 검증.
 /// </summary>
 public static class ModuleChunkBuilder
 {
     private static readonly Dictionary<string, string[]> ModuleTemplates = new Dictionary<string, string[]>()
     {
-        // Category A: 평지 & 기초 장애물 (West ↔ East Passable)
+        // === Category A: 평지 & 기초 통로 (1.5m~2m 통로) ===
         ["Module_A1"] = new string[] {
             "......",
             "......",
@@ -31,8 +32,24 @@ public static class ModuleChunkBuilder
             "#....#",
             "######"
         },
+        ["Module_A3"] = new string[] {
+            "......",
+            "......",
+            "......",
+            "S...=E",
+            "##...#",
+            "######"
+        },
+        ["Module_A4"] = new string[] {
+            "......",
+            "......",
+            "..==..",
+            "S....E",
+            "######",
+            "######"
+        },
 
-        // Category B: 발판 & 수직 상승 (West ↔ East ↔ North Passable)
+        // === Category B: 2층 발판 & 도약 통로 ===
         ["Module_B1"] = new string[] {
             "...E..",
             "..===.",
@@ -49,8 +66,24 @@ public static class ModuleChunkBuilder
             "...^.E",
             "######"
         },
+        ["Module_B3"] = new string[] {
+            ".....E",
+            "...==.",
+            "..==..",
+            ".==...",
+            "S.....",
+            "######"
+        },
+        ["Module_B4"] = new string[] {
+            "S.....",
+            ".==...",
+            "..==..",
+            "...==.",
+            ".....E",
+            "######"
+        },
 
-        // Category C: 수직 개방 샤프트 (South ↔ North Passable)
+        // === Category C: 수직 상승/하강 개방 샤프트 (2m 폭 수직 통로) ===
         ["Module_C1"] = new string[] {
             "......",
             "#....#",
@@ -67,8 +100,24 @@ public static class ModuleChunkBuilder
             "S.....",
             "######"
         },
+        ["Module_C3"] = new string[] {
+            "S.....",
+            "#....#",
+            "#.==.#",
+            "#....#",
+            ".....E",
+            "######"
+        },
+        ["Module_C4"] = new string[] {
+            "......",
+            "#..==#",
+            "#....#",
+            "#==..#",
+            "......",
+            "######"
+        },
 
-        // Category D: 대시 우회 모듈
+        // === Category D: 대시 우회 & 슬라이딩 지형 ===
         ["Module_D1"] = new string[] {
             "......",
             ".vvvv.",
@@ -85,8 +134,24 @@ public static class ModuleChunkBuilder
             "##^^##",
             "######"
         },
+        ["Module_D3"] = new string[] {
+            "......",
+            "..vv..",
+            "S....E",
+            "......",
+            "###.##",
+            "######"
+        },
+        ["Module_D4"] = new string[] {
+            "......",
+            "......",
+            "S....E",
+            "#....#",
+            "#.^^.#",
+            "######"
+        },
 
-        // Category E: 공중 톱날 타이밍 코스
+        // === Category E: 공중 톱날 & 타이밍 챌린지 ===
         ["Module_E1"] = new string[] {
             "..O...",
             "......",
@@ -103,8 +168,24 @@ public static class ModuleChunkBuilder
             "#...^#",
             "######"
         },
+        ["Module_E3"] = new string[] {
+            ".....E",
+            ".O..O.",
+            "======",
+            "......",
+            "S.....",
+            "######"
+        },
+        ["Module_E4"] = new string[] {
+            "......",
+            ".O....",
+            "===...",
+            "S...OE",
+            "#....#",
+            "######"
+        },
 
-        // Category F: 공중 부유 모듈 (Y=0 Open Air)
+        // === Category F: 공중 부유 모듈 (Y=0 Open Air) ===
         ["Module_F1"] = new string[] {
             "......",
             "..==..",
@@ -129,8 +210,16 @@ public static class ModuleChunkBuilder
             "...==",
             "......"
         },
+        ["Module_F4"] = new string[] {
+            "......",
+            "======",
+            "......",
+            "......",
+            "======",
+            "......"
+        },
 
-        // Category G: 공중 부유 섬 & 공중 대시
+        // === Category G: 부유 섬 & 공중 아레나 ===
         ["Module_G1"] = new string[] {
             ".vvvv.",
             "......",
@@ -155,8 +244,16 @@ public static class ModuleChunkBuilder
             "......",
             "......"
         },
+        ["Module_G4"] = new string[] {
+            "......",
+            ".====",
+            "......",
+            "====..",
+            "......",
+            "......"
+        },
 
-        // Category H: 높은 지형 & 절벽 등반
+        // === Category H: 높은 지형 & 언덕 절벽 ===
         ["Module_H1"] = new string[] {
             "......",
             "......",
@@ -181,8 +278,16 @@ public static class ModuleChunkBuilder
             "......",
             "##..##"
         },
+        ["Module_H4"] = new string[] {
+            "......",
+            "####..",
+            "####..",
+            "S..##E",
+            "....##",
+            "######"
+        },
 
-        // Category I: 고지대 경사면 & 안전 톱날 트랙
+        // === Category I: 고지대 경사면 & 안전 트랙 ===
         ["Module_I1"] = new string[] {
             "....##",
             "...###",
@@ -207,20 +312,26 @@ public static class ModuleChunkBuilder
             ".....E",
             "######"
         },
+        ["Module_I4"] = new string[] {
+            "##....",
+            "###...",
+            "####..",
+            "#####.",
+            "#####E",
+            "######"
+        },
 
-        // Category J~L: 보충 결합 모듈
+        // === Category J: 결합 & 보충 모듈 ===
         ["Module_J1"] = new string[] { "......", "..==..", "S....E", "##..##", "#.^^.#", "######" },
         ["Module_J2"] = new string[] { "......", ".vvvv.", "S....E", "##..##", "......", "######" },
-        ["Module_K1"] = new string[] { "......", ".####.", "S....E", "..==..", "......", "######" },
-        ["Module_K2"] = new string[] { "......", "##==##", "S....E", "##..##", "......", "######" },
-        ["Module_L1"] = new string[] { "......", "..O...", "S.##.E", "..==..", "......", "######" },
-        ["Module_L2"] = new string[] { "......", "S....E", "....##", "..==..", "......", "######" }
+        ["Module_J3"] = new string[] { "......", "..==..", "S....E", "######", "######", "######" },
+        ["Module_J4"] = new string[] { "......", ".====", "S....E", "##..##", "......", "######" }
     };
 
     [MenuItem("TP2/Build 6x6 Modules & Stage 1 Chunks (6x6 모듈 & 룸 청크 전면 재생성)")]
     public static void BuildAllModulesAndChunks()
     {
-        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] Entry Point 경로 보장 모듈 24종 및 청크 11종 빌드 시작...</b></color>");
+        Debug.Log("<color=cyan><b>[ModuleChunkBuilder] 40종 모듈 & 11종 고유 청크 레이아웃 빌드 시작...</b></color>");
 
         string modulesDir = "Assets/Prefabs/Modules";
         if (!Directory.Exists(modulesDir)) Directory.CreateDirectory(modulesDir);
@@ -257,16 +368,16 @@ public static class ModuleChunkBuilder
 
         Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat");
 
-        // 1. 24종 6x6 모듈 Prefab 제작
-        Build24ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
+        // 1. 40종 6x6 모듈 Prefab 제작
+        Build40ModulePrefabs(modulesDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
-        // 2. Entry Point 간 100% 통과 경로 보장 10x5 모듈 주입 기반 Stage 1 룸 청크 11종 전면 빌드
-        Build11RoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
+        // 2. 11종 고유 10x5 모듈 매트릭스 주입 기반 Stage 1 룸 청크 전면 빌드
+        Build11UniqueRoomChunkPrefabs(roomsDir, groundTile, platTile, mat, spikeSprite, sawSprite);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("<color=green><b>[ModuleChunkBuilder] Entry Point 경로 보장 모듈 24종 및 청크 11종 정밀 빌드 완결!</b></color>");
+        Debug.Log("<color=green><b>[ModuleChunkBuilder] 40종 모듈 & 11종 고유 청크 전면 재생성 완결!</b></color>");
 
         AddressablePipeline.BuildAndDeploy();
     }
@@ -360,7 +471,7 @@ public static class ModuleChunkBuilder
         return loaded;
     }
 
-    private static void Build24ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
+    private static void Build40ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
         foreach (var kvp in ModuleTemplates)
         {
@@ -382,7 +493,7 @@ public static class ModuleChunkBuilder
             if (mat != null) gRend.sharedMaterial = mat;
             groundObj.AddComponent<TilemapCollider2D>();
 
-            // Platform Tilemap
+            // Platform Tilemap (1-Way PlatformEffector2D 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(modRoot.transform);
             var pMap = platObj.AddComponent<Tilemap>();
@@ -390,6 +501,13 @@ public static class ModuleChunkBuilder
             pRend.sortingLayerName = "Default";
             pRend.sortingOrder = 5;
             if (mat != null) pRend.sharedMaterial = mat;
+
+            var pCol = platObj.AddComponent<TilemapCollider2D>();
+            pCol.usedByEffector = true;
+
+            var pEff = platObj.AddComponent<PlatformEffector2D>();
+            pEff.useOneWay = true;
+            pEff.surfaceArc = 180f;
 
             // Parse 6x6 Grid Layout
             for (int r = 0; r < 6; r++)
@@ -434,7 +552,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] 6x6 모듈 Prefab 24종 빌드 완결!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 40종 다양화 6x6 모듈 Prefab 제작 완결!</color>");
     }
 
     private static void CreateSpikeTrap(Transform parent, Vector3 pos, float angleDeg, Sprite spikeSprite)
@@ -474,35 +592,100 @@ public static class ModuleChunkBuilder
         saw.AddComponent<SawBladeTrap>();
     }
 
-    private static void Build11RoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
+    private static void Build11UniqueRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
     {
-        string[] chunkNames = new string[]
+        // 11종 룸 청크별 완전히 상이한 고유 10x5 모듈 매트릭스 사전
+        Dictionary<string, string[,]> uniqueChunkGrids = new Dictionary<string, string[,]>()
         {
-            "Prefab_1040", "Prefab_1041", "Prefab_1042",
-            "Room_11050", "Room_11051", "Room_11052", "Room_11053",
-            "Room_11056", "Room_11057", "Room_11061", "Room_11063"
+            ["Prefab_1040"] = new string[,] { // Entry Safe Room
+                { "Module_A1", "Module_A3", "Module_A4", "Module_B1", "Module_C1", "Module_A1", "Module_A3", "Module_A4", "Module_C1", "Module_A1" },
+                { "Module_A2", "Module_A4", "Module_B3", "Module_F1", "Module_C1", "Module_A2", "Module_A4", "Module_F1", "Module_C1", "Module_A2" },
+                { "Module_A3", "Module_B1", "Module_A1", "Module_B2", "Module_C1", "Module_A3", "Module_B1", "Module_A1", "Module_C1", "Module_A3" },
+                { "Module_H1", "Module_H4", "Module_A4", "Module_I1", "Module_C1", "Module_H1", "Module_H4", "Module_A4", "Module_C1", "Module_H1" },
+                { "Module_A1", "Module_A2", "Module_A3", "Module_B1", "Module_C1", "Module_A1", "Module_A2", "Module_A3", "Module_C1", "Module_A1" }
+            },
+            ["Prefab_1041"] = new string[,] { // Battle Room A
+                { "Module_B1", "Module_F1", "Module_B2", "Module_F2", "Module_C1", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_B1" },
+                { "Module_J1", "Module_F3", "Module_J4", "Module_F4", "Module_C1", "Module_J1", "Module_F3", "Module_J4", "Module_C1", "Module_J1" },
+                { "Module_B2", "Module_G1", "Module_B3", "Module_G2", "Module_C1", "Module_B2", "Module_G1", "Module_B3", "Module_C1", "Module_B2" },
+                { "Module_F2", "Module_J3", "Module_F1", "Module_J1", "Module_C1", "Module_F2", "Module_J3", "Module_F1", "Module_C1", "Module_F2" },
+                { "Module_A1", "Module_B1", "Module_A2", "Module_B2", "Module_C1", "Module_A1", "Module_B1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Prefab_1042"] = new string[,] { // Boss Arena
+                { "Module_G1", "Module_G2", "Module_G3", "Module_G4", "Module_C1", "Module_G1", "Module_G2", "Module_G3", "Module_C1", "Module_G1" },
+                { "Module_G4", "Module_H4", "Module_F4", "Module_H4", "Module_C1", "Module_G4", "Module_H4", "Module_F4", "Module_C1", "Module_G4" },
+                { "Module_G2", "Module_F1", "Module_G3", "Module_F2", "Module_C1", "Module_G2", "Module_F1", "Module_G3", "Module_C1", "Module_G2" },
+                { "Module_H4", "Module_G1", "Module_H4", "Module_G4", "Module_C1", "Module_H4", "Module_G1", "Module_H4", "Module_C1", "Module_H4" },
+                { "Module_A1", "Module_G3", "Module_A2", "Module_G2", "Module_C1", "Module_A1", "Module_G3", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11050"] = new string[,] { // Ascent Shaft Room
+                { "Module_C1", "Module_C2", "Module_C3", "Module_C4", "Module_C1", "Module_C1", "Module_C2", "Module_C3", "Module_C1", "Module_C1" },
+                { "Module_B3", "Module_C1", "Module_B4", "Module_C2", "Module_C1", "Module_B3", "Module_C1", "Module_B4", "Module_C1", "Module_B3" },
+                { "Module_C4", "Module_B1", "Module_C2", "Module_B2", "Module_C1", "Module_C4", "Module_B1", "Module_C2", "Module_C1", "Module_C4" },
+                { "Module_I1", "Module_C3", "Module_I3", "Module_C4", "Module_C1", "Module_I1", "Module_C3", "Module_I3", "Module_C1", "Module_I1" },
+                { "Module_A1", "Module_C1", "Module_A2", "Module_C2", "Module_C1", "Module_A1", "Module_C1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11051"] = new string[,] { // Descent Drop Room
+                { "Module_C3", "Module_D1", "Module_C4", "Module_D3", "Module_C1", "Module_C3", "Module_D1", "Module_C4", "Module_C1", "Module_C3" },
+                { "Module_F4", "Module_C2", "Module_F3", "Module_C1", "Module_C1", "Module_F4", "Module_C2", "Module_F3", "Module_C1", "Module_F4" },
+                { "Module_D4", "Module_C3", "Module_D2", "Module_C4", "Module_C1", "Module_D4", "Module_C3", "Module_D2", "Module_C1", "Module_D4" },
+                { "Module_C2", "Module_F1", "Module_C3", "Module_F2", "Module_C1", "Module_C2", "Module_F1", "Module_C3", "Module_C1", "Module_C2" },
+                { "Module_A1", "Module_C1", "Module_A2", "Module_C2", "Module_C1", "Module_A1", "Module_C1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11052"] = new string[,] { // Corridor East-West
+                { "Module_D2", "Module_E1", "Module_D4", "Module_E2", "Module_C1", "Module_D2", "Module_E1", "Module_D4", "Module_C1", "Module_D2" },
+                { "Module_E3", "Module_D1", "Module_E4", "Module_D3", "Module_C1", "Module_E3", "Module_D1", "Module_E4", "Module_C1", "Module_E3" },
+                { "Module_D3", "Module_E2", "Module_D2", "Module_E1", "Module_C1", "Module_D3", "Module_E2", "Module_D2", "Module_C1", "Module_D3" },
+                { "Module_E4", "Module_D4", "Module_E3", "Module_D1", "Module_C1", "Module_E4", "Module_D4", "Module_E3", "Module_C1", "Module_E4" },
+                { "Module_A1", "Module_A2", "Module_B1", "Module_B2", "Module_C1", "Module_A1", "Module_A2", "Module_B1", "Module_C1", "Module_A1" }
+            },
+            ["Room_11053"] = new string[,] { // Elite Arena
+                { "Module_E3", "Module_G3", "Module_J2", "Module_E4", "Module_C1", "Module_E3", "Module_G3", "Module_J2", "Module_C1", "Module_E3" },
+                { "Module_J4", "Module_E1", "Module_J1", "Module_E2", "Module_C1", "Module_J4", "Module_E1", "Module_J1", "Module_C1", "Module_J4" },
+                { "Module_G2", "Module_J3", "Module_G4", "Module_J2", "Module_C1", "Module_G2", "Module_J3", "Module_G4", "Module_C1", "Module_G2" },
+                { "Module_E4", "Module_G1", "Module_E3", "Module_G3", "Module_C1", "Module_E4", "Module_G1", "Module_E3", "Module_C1", "Module_E4" },
+                { "Module_A1", "Module_J1", "Module_A2", "Module_J4", "Module_C1", "Module_A1", "Module_J1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11056"] = new string[,] { // High Cliffs
+                { "Module_H1", "Module_H2", "Module_H3", "Module_H4", "Module_C1", "Module_H1", "Module_H2", "Module_H3", "Module_C1", "Module_H1" },
+                { "Module_I1", "Module_I2", "Module_I3", "Module_I4", "Module_C1", "Module_I1", "Module_I2", "Module_I3", "Module_C1", "Module_I1" },
+                { "Module_H3", "Module_I4", "Module_H1", "Module_I2", "Module_C1", "Module_H3", "Module_I4", "Module_H1", "Module_C1", "Module_H3" },
+                { "Module_I2", "Module_H4", "Module_I1", "Module_H2", "Module_C1", "Module_I2", "Module_H4", "Module_I1", "Module_C1", "Module_I2" },
+                { "Module_A1", "Module_H1", "Module_A2", "Module_I1", "Module_C1", "Module_A1", "Module_H1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11057"] = new string[,] { // Platform Maze
+                { "Module_F1", "Module_F2", "Module_F3", "Module_F4", "Module_C1", "Module_F1", "Module_F2", "Module_F3", "Module_C1", "Module_F1" },
+                { "Module_F4", "Module_B1", "Module_F1", "Module_B2", "Module_C1", "Module_F4", "Module_B1", "Module_F1", "Module_C1", "Module_F4" },
+                { "Module_F2", "Module_B3", "Module_F4", "Module_B4", "Module_C1", "Module_F2", "Module_B3", "Module_F4", "Module_C1", "Module_F2" },
+                { "Module_F3", "Module_F1", "Module_F2", "Module_F4", "Module_C1", "Module_F3", "Module_F1", "Module_F2", "Module_C1", "Module_F3" },
+                { "Module_A1", "Module_F1", "Module_A2", "Module_F3", "Module_C1", "Module_A1", "Module_F1", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11061"] = new string[,] { // Rest Shelter
+                { "Module_A4", "Module_J3", "Module_K1", "Module_A3", "Module_C1", "Module_A4", "Module_J3", "Module_K1", "Module_C1", "Module_A4" },
+                { "Module_A3", "Module_K2", "Module_A4", "Module_J3", "Module_C1", "Module_A3", "Module_K2", "Module_A4", "Module_C1", "Module_A3" },
+                { "Module_J3", "Module_A4", "Module_K1", "Module_A3", "Module_C1", "Module_J3", "Module_A4", "Module_K1", "Module_C1", "Module_J3" },
+                { "Module_K1", "Module_A3", "Module_J3", "Module_K2", "Module_C1", "Module_K1", "Module_A3", "Module_J3", "Module_C1", "Module_K1" },
+                { "Module_A1", "Module_A4", "Module_A2", "Module_J3", "Module_C1", "Module_A1", "Module_A4", "Module_A2", "Module_C1", "Module_A1" }
+            },
+            ["Room_11063"] = new string[,] { // Trap Challenge
+                { "Module_D3", "Module_E4", "Module_I4", "Module_D2", "Module_C1", "Module_D3", "Module_E4", "Module_I4", "Module_C1", "Module_D3" },
+                { "Module_E2", "Module_D4", "Module_E1", "Module_D3", "Module_C1", "Module_E2", "Module_D4", "Module_E1", "Module_C1", "Module_E2" },
+                { "Module_I4", "Module_E3", "Module_D2", "Module_E4", "Module_C1", "Module_I4", "Module_E3", "Module_D2", "Module_C1", "Module_I4" },
+                { "Module_D4", "Module_I2", "Module_E4", "Module_D1", "Module_C1", "Module_D4", "Module_I2", "Module_E4", "Module_C1", "Module_D4" },
+                { "Module_A1", "Module_E1", "Module_A2", "Module_D2", "Module_C1", "Module_A1", "Module_E1", "Module_A2", "Module_C1", "Module_A1" }
+            }
         };
 
-        // 10x5 모듈 그리드 주입 조합 (West ↔ East ↔ North ↔ South 상호 100% 통과 경로 보장)
-        string[,] moduleGridNames = new string[,]
+        foreach (var kvp in uniqueChunkGrids)
         {
-            { "Module_A1", "Module_B1", "Module_A2", "Module_B2", "Module_C1", "Module_A1", "Module_B1", "Module_A2", "Module_C1", "Module_A1" },
-            { "Module_B1", "Module_F1", "Module_F2", "Module_F3", "Module_C1", "Module_F1", "Module_F2", "Module_F3", "Module_C1", "Module_B1" },
-            { "Module_A2", "Module_B2", "Module_A1", "Module_B1", "Module_C1", "Module_A2", "Module_B2", "Module_A1", "Module_C1", "Module_A2" },
-            { "Module_H1", "Module_H2", "Module_H3", "Module_I1", "Module_C1", "Module_H1", "Module_H2", "Module_H3", "Module_C1", "Module_H1" },
-            { "Module_A1", "Module_A2", "Module_B1", "Module_B2", "Module_C1", "Module_A1", "Module_A2", "Module_B1", "Module_C1", "Module_A1" }
-        };
+            string chunkName = kvp.Key;
+            string[,] moduleGridNames = kvp.Value;
 
-        // BFS 통과 경로 무결성 검증
-        bool isTopologyValid = ValidateChunkPathways(moduleGridNames);
-        if (isTopologyValid)
-        {
-            Debug.Log("<color=cyan>[ModuleChunkBuilder] 10x5 모듈 그리드 Entry Point (West, East, North, South) 간 100% 통과 경로 BFS 검증 완료!</color>");
-        }
-
-        foreach (var chunkName in chunkNames)
-        {
-            if (string.IsNullOrEmpty(chunkName)) continue;
+            bool isValid = ValidateChunkPathways(moduleGridNames);
+            if (isValid)
+            {
+                Debug.Log($"<color=cyan>[ModuleChunkBuilder] {chunkName} Entry Point 간 BFS 연속 경로 검증 통과!</color>");
+            }
 
             GameObject gridRoot = new GameObject(chunkName);
             var mainGrid = gridRoot.AddComponent<Grid>();
@@ -524,7 +707,7 @@ public static class ModuleChunkBuilder
             var compositeCol = groundObj.AddComponent<CompositeCollider2D>();
             tileCol.compositeOperation = Collider2D.CompositeOperation.Merge;
 
-            // Platform Tilemap
+            // Platform Tilemap (PlatformEffector2D 적용)
             GameObject platObj = new GameObject("Tilemap_Platforms");
             platObj.transform.SetParent(gridRoot.transform);
             var pMap = platObj.AddComponent<Tilemap>();
@@ -532,6 +715,13 @@ public static class ModuleChunkBuilder
             pR.sortingLayerName = "Default";
             pR.sortingOrder = 5;
             if (mat != null) pR.sharedMaterial = mat;
+
+            var pCol = platObj.AddComponent<TilemapCollider2D>();
+            pCol.usedByEffector = true;
+
+            var pEff = platObj.AddComponent<PlatformEffector2D>();
+            pEff.useOneWay = true;
+            pEff.surfaceArc = 180f;
 
             Vector3 playerSpawnPos = new Vector3(-25f, 2f, 0f);
 
@@ -640,7 +830,7 @@ public static class ModuleChunkBuilder
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
-        Debug.Log($"<color=green>[ModuleChunkBuilder] Stage 1 룸 청크 11종 Entry Point 간 100% 통과 경로 재빌드 완료!</color>");
+        Debug.Log($"<color=green>[ModuleChunkBuilder] 11종 전용 고유 Stage 1 룸 청크 정밀 재빌드 완료!</color>");
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)

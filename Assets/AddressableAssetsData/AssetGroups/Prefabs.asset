@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c3a8386f3dd20248863cb98cb35fc29
+    m_Address: Module_A4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1f0d9418c69c49c4cb34f6620a32fae8
     m_Address: Module_F1
     m_ReadOnly: 0
@@ -53,6 +59,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26fe2bf7d9178dd4e98ad16c012404ad
     m_Address: Module_K1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ee062800c193444ca5ddbbbafb8e9f7
+    m_Address: Module_F4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -75,8 +87,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3310b363867b5f24dba2936b2bb4880b
+    m_Address: Module_D3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 346a3a98313d63140a1590a257499157
     m_Address: Module_A2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e7c8e7a6532d247961277f768e6a9d
+    m_Address: Module_J4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -93,8 +117,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c6549d8166894248a7016c9658d99a0
+    m_Address: Module_I4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3d7c234a1179b9f499d59ad8664b8932
     m_Address: Module_D1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f8e3a2663a4edd4796419d715205689
+    m_Address: Module_B4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47112c1066a725645a9327b84d8566d8
+    m_Address: Module_J3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -107,6 +149,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ea9c71b289748d419e21d933ad0f605
     m_Address: Particle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51a002bbe61953e43bfc9b7573a28f99
+    m_Address: Module_E3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -125,6 +173,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5b385ea7c9e07d34bb907566200d5178
     m_Address: Room_11056
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f7569e378f1ee54eb450ba6635ac61b
+    m_Address: Module_A3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -153,6 +207,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72559a18f6eee404b894338a57fb48d0
+    m_Address: Module_C4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 778078124abc9fa41b9eb1028e4bf414
+    m_Address: Module_H4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 813ae21e14e165949861d0d53b94ddb9
     m_Address: Room_11057
     m_ReadOnly: 0
@@ -167,6 +233,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93a2f6754dd7b9644bc8e858ba6652a6
     m_Address: Unit_3105
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97e746fc3686ec846a3d8c7434136bba
+    m_Address: Module_B3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -249,6 +321,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c8b1df0b8a07fc448a88a730f1a6e3c6
+    m_Address: Module_G4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d00000000000000014f4cd8e24935f91
     m_Address: Effect_8012
     m_ReadOnly: 0
@@ -327,6 +405,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d729715b8dd5e55429c4cdb788e47104
+    m_Address: Module_C3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d92f91b8a578eb649a75fbc8ab09a36c
+    m_Address: Module_E4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dac518d0c74badf48b22348a0137b734
     m_Address: Module_K2
     m_ReadOnly: 0
@@ -341,6 +431,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dca5c29bf7bab5649a4e681f27db6e9f
     m_Address: Module_I2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e37cc9ec2f76f574b9df7b984095fa0f
+    m_Address: Module_D4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
