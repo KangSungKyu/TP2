@@ -1,0 +1,5 @@
+일시 (KST),상태,요청·발주 요약,결과·변경 요약,Conversation ID,Turn ID
+2026-08-10 15:44,완료,12x12m 모듈 44종 & 룸 청크 11종 디스크 생성 및 배포,"Assets/Prefabs/Modules/ 44종 & Assets/Prefabs/Rooms/ 11종 재빌드, Addressables 로컬 서버(TP2LocalServer) 배포 완결",f4f6cc90-75c3-4e62-890c-fcd62e9a47f7,turn-001
+2026-08-10 16:06,완료,Col 0 & Col 11 경계 개방 모듈 및 청크 11종 재생성 배포,좌우 경계 벽 타일 제거 개방형 12x12 모듈 44종 & 룸 청크 11종 프리팹 재생성 및 로컬 서버 동기화 완료,f4f6cc90-75c3-4e62-890c-fcd62e9a47f7,turn-002
+2026-08-10 16:20,완료,EntryMarker surface + 0.51m 지형 매몰 방지 에셋 재생성,EntryMarker +0.51m 및 South 소켓 2.0m 보정 룸 청크 11종 프리팹 재빌드 배포 완결,f4f6cc90-75c3-4e62-890c-fcd62e9a47f7,turn-003
+2026-08-11 11:28,완료,AddGroundedSpawnMarker 몬스터/보스 스폰 자동 접지 에셋 배포,몬스터/보스 스폰 마커가 surface + 0.51m 수면에 자동 접지된 룸 청크 11종 프리팹 재빌드 및 Addressables 로컬 배포 완결,f4f6cc90-75c3-4e62-890c-fcd62e9a47f7,turn-004

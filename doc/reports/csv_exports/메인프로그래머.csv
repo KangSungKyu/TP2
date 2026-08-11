@@ -1,0 +1,3 @@
+일시 (KST),상태,요청·발주 요약,결과·변경 요약,Conversation ID,Turn ID
+2026-08-10 15:48,완료,KinematicMotor2D.cs 1-Way 발판 착지 로직 수선 및 레이어 연동,"(hit.collider is TilemapCollider2D) ? hit.point.y : hit.collider.bounds.max.y 정밀 교정으로 착지 무결성 확보 (227d002)",bbabc4a9-bfbf-441a-8dc2-3a2746748ce1,turn-001
+2026-08-11 11:03,완료,다층 1-Way 발판 하향 통과(Down + Jump) 직하단 착지 수선,관통 무시 판정 조건 physicsCollider.bounds.min.y >= platformTopY - 0.15f로 교정하여 직하단 발판 100% 착지 구현 (f0bdc65),bbabc4a9-bfbf-441a-8dc2-3a2746748ce1,turn-002
