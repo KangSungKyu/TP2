@@ -1,8 +1,7 @@
 import json
 import urllib.request
-import urllib.parse
 
-GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywo64AyKs64q_r8avw_BIl6EC-evuZH9dPDb-VGq8E8O_3GCgRv1wuzT8i4ZKwHUXv/exec"
+GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyGV4GbXMyzMFZHdYAwHaUIdgu-bi_-1Ld3_AMbmSUkadnWJp4FVzGCGk0-Np_EwsJK/exec"
 
 CHAT_DB_DATA = {
     "PM": [
@@ -53,10 +52,8 @@ CHAT_DB_DATA = {
     ]
 }
 
-def sync_to_gas():
-    payload = {
-        "sheets": CHAT_DB_DATA
-    }
+def sync_all_sheets():
+    payload = {"sheets": CHAT_DB_DATA}
     json_bytes = json.dumps(payload, ensure_ascii=False).encode('utf-8')
     req = urllib.request.Request(
         GAS_WEB_APP_URL,
@@ -66,9 +63,9 @@ def sync_to_gas():
     try:
         with urllib.request.urlopen(req) as resp:
             body = resp.read().decode('utf-8')
-            print("Response:", body)
+            print("Sync Status:", body)
     except Exception as e:
-        print("Error:", e)
+        print("Sync Error:", e)
 
 if __name__ == "__main__":
-    sync_to_gas()
+    sync_all_sheets()
