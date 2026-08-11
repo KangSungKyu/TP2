@@ -12,7 +12,7 @@
 
 - 최신 점검(2026-08-06): EditMode 71/71 PASS, PlayMode 1/1 PASS, QATestRunner 52/52 PASS
 - Stage 1 종단 PlayMode 흐름은 미검증이며 최종 게이트는 FAIL이다.
-- 문서의 단일 기준 루트는 `Assets/Docs/`다.
+- 문서의 단일 기준 루트는 `/doc/`다.
 
 ## 코어 데이터 및 리소스 규칙
 
@@ -77,6 +77,7 @@
 | 2026-08-10 | 보스 아레나 청크(`Prefab_1042`) Boss 마커(ID 3201) 추가, QA NUnit 무결성 검수 전원 통과(80/80 PASS) 완결 (`aa2b3fa`) | `ModuleChunkBuilder.cs`, `Prefab_1042.prefab`, `QATestRunner.cs` |
 | 2026-08-10 | 12x12 모듈 경계 고정 지형 타일 수선(Col 0, Col 11 전면 개방)으로 청크 내 100% 이동 도달성 보장 완결 (`197b4da`) | `ModuleChunkBuilder.cs` |
 | 2026-08-10 | EntryMarker relative offset(-0.49f) & South Socket 고도(2.0m) 보정으로 포탈/도어 진입 시 지형 매몰 100% 방지 완결 (`126126c`) | `ModuleChunkBuilder.cs` |
+| 2026-08-11 | `Assets/Docs/` 전체 산출물(마스터/서브플랜, QA, 보고서, 스펙) 프로젝트 루트 `/doc/` 폴더로 전면 이관 및 단일 기준 경로 일원화 완결 | `/doc/` |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -407,3 +408,10 @@
 - one-way 통과 복구는 시간만으로 결정하지 않고 접촉 collider를 완전히 벗어난 상태를 기준으로 한다. Teleport·비활성화·pool 재사용은 stale async를 무효화한다.
 - Unity 자산 공정과 QA 공정을 순차 점유하여 충돌을 줄였다. 단, 비포커스 Editor의 Addressables 테스트 2건은 제품 결함과 분리된 인프라 차단으로 남겼다.
 - 차기 방어 지침: builder 변경 시 `generator → static contract → one-way 반복 → room 132방향 → seed 200 → 전체 회귀` 순서를 고정한다.
+
+---
+
+### 2026-08-11 KST — Assets/Docs 전체 문서 산출물 /doc/ 이관 및 통합 회고
+
+- **프로젝트 문서 루트 이원화 해소**: 기존 `Assets/Docs/` 및 `doc/`로 분산되어 있던 프로젝트 마스터 명세서(`implementation_plan.md`), 서브플랜(`SubPlans/`), QA 보고서(`QA/`), 일일/주간 보고서(`reports/`), 기술 스펙(`specs/`)을 프로젝트 루트 **`/doc/`** 디렉토리로 전면 통합 이관.
+- **단일 기준 경로 일원화**: 프로젝트 헌법 거버넌스 및 파이프라인 상의 문서 단일 기준 루트를 `/doc/`로 일원화하고, **문서 작업자 (`be7fc5bc-582d-4699-b1b5-1ea26ef6e305`)** 대화방으로 사후 이관 상태 전달 완료.
