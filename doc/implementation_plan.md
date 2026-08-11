@@ -81,7 +81,8 @@
 | 2026-08-10 | EntryMarker relative offset(-0.49f) & South Socket 고도(2.0m) 보정으로 포탈/도어 진입 시 지형 매몰 100% 방지 완결 (`126126c`) | `ModuleChunkBuilder.cs` |
 | 2026-08-11 | `Assets/Docs/` 전체 산출물(마스터/서브플랜, QA, 보고서, 스펙) 프로젝트 루트 `/doc/` 폴더로 전면 이관 및 단일 기준 경로 일원화 완결 | `/doc/` |
 | 2026-08-11 | 1-Way 발판 다층 하향 통과(Down+Jump) 직하단 착지 조건(`bounds.min.y >= platformTopY - 0.15f`) 및 몬스터/보스 스폰 마커 지형 표면(`surface + 0.51m`) 자동 접지 파서 완결 수선 (`f0bdc65`) | `KinematicMotor2D.cs`, `ModuleChunkBuilder.cs` |
-| 2026-08-11 | 세로 연동 1-Way 발판 다층 착지 수선, 룸 청크 포탈/도어 수직 고도 다변화 및 몬스터 청크 외벽 이탈 방지 경계 콜라이더 발주 위임 | 메인프로그래머, 게임플레이기획자 위임 |
+| 2026-08-11 | 세로 연동 1-Way 발판 다층 착지 수선, 룸 청크 포탈/도어 수직 고도 다변화 및 몬스터 청크 외벽 이탈 방지 경계 콜라이더 발주 (유저 요청으로 취소 철회) | 이전 발주 취소 |
+| 2026-08-11 | Stage 1 MVP 7대 카테고리(플레이어, 몬스터 3종, 보스, 타일셋, 함정 2종, VFX, UI/HUD) 아트 리소스 전수 리스트업 및 견적 산출 완료 | `doc/specs/art_resource_inventory_and_budget.md` 신설 |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -426,3 +427,10 @@
 
 - **다층 1-Way 발판 하향 통과(`Down + Jump`) 직하단 착지 수선**: `KinematicMotor2D.cs` 내 하향 통과 무시 루프 판정을 머리 고도(`bounds.max.y`)에서 발 고도(`bounds.min.y >= platformTopY - 0.15f`)로 교정하여, 하향 점프 시 직하단에 위치한 1-Way 발판에 100% 정상 착지하도록 물리 로직 수선.
 - **몬스터/보스 스폰 마커 자동 접지 연동**: `ModuleChunkBuilder.cs` 내 `AddGroundedSpawnMarker` 파서를 신설하여 몬스터 및 보스 스폰 마커가 지형/발판 내부가 아닌 상단 개방 수면(`surface + 0.51m`)에 자동 배치되도록 파서 보정 완결. 원격 Push (`f0bdc65`) 완료 및 **리소스 작업자 1 (`f4f6cc90-75c3-4e62-890c-fcd62e9a47f7`)** 대화방으로 프리팹 재빌드 요청 전달.
+
+---
+
+### 2026-08-11 KST — TP2 아트 리소스 전수 리스트업 및 외주 견적 예산서 산출 회고
+
+- **이전 물리/레벨 발주 취소 반영**: 유저의 외부 작업 진행 지시에 따라 1-way 발판 하향 착지/수직 도어/몬스터 콜라이더 태스크 취소.
+- **Stage 1 MVP 아트 리소스 7대 카테고리 풀세트 구축**: 플레이어 메인 유닛(12모션/84f), 일반 몬스터 3종(125f), 대형 보스(60f), 지형/환경 타일셋 36종, 함정 2종, 전투 VFX 4종, Main HUD UI 자산의 전수 리스트업 및 픽셀 외주 단가/공수 견적서([art_resource_inventory_and_budget.md](file:///c:/Users/PC/Projects/TP2/doc/specs/art_resource_inventory_and_budget.md)) 수립 완결.
