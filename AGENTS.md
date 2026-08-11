@@ -75,7 +75,28 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 ### 📝 문서작업자
 * **임무** : 보고서 관리 및 전체 마일스톤 현황, 비용 분석서 등 서류 작업 전반을 전담한다.
 
-## 🔄 5. 출력 및 사후 환류(Feedback) 마감 수칙
+## 🗃️ 5. 작업자 세션 대화 이력 자동 기록
+
+1. 공식 작업자 세션의 완료된 대화는 AI 모델 채널별로 지정된 Google Sheets에 기록하고, 해당 문서 안에서는 역할별 시트를 사용한다.
+2. 기록 대상은 다음 라우팅 테이블을 단일 기준으로 사용한다. 모델 버전이 달라도 동일한 `OpenAI Codex` 실행 채널이면 Codex 문서에 기록한다.
+
+| AI 모델 채널 | Google Sheets 문서 | Spreadsheet ID / URL | 상태 |
+|---|---|---|---|
+| OpenAI Codex | `chat_db` | `1MHvB1NXMr-RjfcE5JESTyo1j_eZdcZzqi7eBtCGWoVQ` / `https://docs.google.com/spreadsheets/d/1MHvB1NXMr-RjfcE5JESTyo1j_eZdcZzqi7eBtCGWoVQ/edit` | 활성 |
+| Antigravity | `chat_db` | `1EZAxW6K_Y7gwl3kEH5-9wj0-kC0qUZ22froDNk3BVyY` / `https://docs.google.com/spreadsheets/d/1EZAxW6K_Y7gwl3kEH5-9wj0-kC0qUZ22froDNk3BVyY/edit` | 활성 |
+| 기타 AI 모델 채널 | 미지정 | 사용자에게 부여받은 Spreadsheet ID / URL 필요 | 기록 보류 |
+
+3. Codex 문서의 시트명은 `PM`, `메인프로그래머`, `게임플레이기획자`, `리소스작업자`, `QA`, `CI`, `문서작업자`, `아트디자이너`로 고정한다.
+4. 기록 시점은 해당 세션의 마지막 응답 이후 1시간 동안 추가 입력이나 응답이 없고 turn 상태가 완료된 시점이다.
+5. 기록 컬럼은 `일시 (KST)`, `상태`, `요청·발주 요약`, `결과·변경 요약`, `Conversation ID`, `Turn ID`를 사용한다.
+6. `Conversation ID + turn ID`를 중복 방지 키로 사용하며 이미 기록된 대화는 다시 추가하지 않는다.
+7. 원문 전체를 복사하지 않고 작업 목적, 변경 파일·메서드, QA 결과, Git 결과, 후속 위험을 중심으로 요약한다. 비밀·인증정보·불필요한 내부 추론은 기록하지 않는다.
+8. 라우팅 테이블에 주소가 없는 AI 모델 채널의 기록은 다른 문서에 임의 혼합하지 않고 보류하며 사용자에게 대상 URL을 요청한다.
+9. 자동 기록 실패는 제품 작업을 차단하지 않으며 다음 실행에서 누락된 완료 turn만 재시도한다.
+10. 대화 동기화 자동화는 **문서작업자 세션 `019fee44-7f00-7e81-81a0-f0557e75ef8b`에 귀속된 단일 heartbeat 1개**만 사용한다.
+11. 동기화 실행마다 신규 Codex 작업·독립 세션·하위 에이전트를 생성하지 않는다. PM은 자동화 설정과 예외만 통제하며 실제 정기 기록은 문서작업자 heartbeat가 전담한다.
+
+## 🔄 6. 출력 및 사후 환류(Feedback) 마감 수칙
 * **[Strict Output Constraint]** : 모든 에이전트는 대화 시 인사말, 진행 상황 브리핑 등 부가적인 모든 자연어 서술(Filler Text)을 완전히 배제한다. 오직 즉시 컴파일 가능한 C# 코드 블록 또는 정제된 기술 마크다운 문서 포맷만 깨끗하게 출력하여 전체 토큰 소모량을 최소화한다.
 * **[마감 환류 규칙]** : 기술 작업 완료 시, 답변 최하단에 다음 양식의 변경 이력 테이블을 필수 갱신 출력하여 프로젝트매니저(PM) 세션의 마스터 계획서 하단 [🧠 AGI 자율 회고록] 최신화 및 누적 학습을 보장한다.
 
