@@ -90,9 +90,11 @@ def parse_all_history():
     return full_history
 
 if __name__ == "__main__":
+    import sys
+    sync_mode = "overwrite" if "--overwrite" in sys.argv else "append"
     history = parse_all_history()
     payload = {
-        "mode": "overwrite",
+        "mode": sync_mode,
         "sheets": history
     }
     json_bytes = json.dumps(payload, ensure_ascii=False).encode('utf-8')
