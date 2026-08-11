@@ -67,6 +67,7 @@ namespace QA.Tests
 
         public static void RunBatchTests()
         {
+            ModuleChunkBuilder.BuildAllModulesAndChunks();
             RunAllTests();
             EditorApplication.Exit(0);
         }

@@ -10,7 +10,7 @@ public abstract class HazardBase : MonoBehaviour
     [Header("Hazard Base Settings")]
     [SerializeField] protected uint hazardId = 1070;
     [SerializeField] protected int damage = 15;
-    [SerializeField] protected float knockbackForce = 8.0f;
+    [SerializeField] protected float knockbackForce = 0.0f;
     [SerializeField] protected float cooldownBetweenHits = 0.5f;
     [SerializeField] protected LayerMask targetMask = ~0;
 
@@ -64,21 +64,13 @@ public abstract class HazardBase : MonoBehaviour
     {
         if (stats == null) return;
 
-        Vector2 knockbackImpulse = hitNormal * knockbackForce;
         stats.TakeDamage(damage);
 
         var motor = stats.GetComponent<KinematicMotor2D>();
         if (motor != null && motor.enabled)
         {
-            motor.ApplyKnockback(knockbackImpulse);
-        }
-        else
-        {
-            var rb = stats.GetComponent<Rigidbody2D>();
-            if (rb != null && rb.bodyType != RigidbodyType2D.Kinematic)
-            {
-                rb.AddForce(knockbackImpulse, ForceMode2D.Impulse);
-            }
+            // ponytail: teleport target to last safe grounded position instead of physical knockback
+            motor.TeleportToSafeGround();
         }
     }
 }

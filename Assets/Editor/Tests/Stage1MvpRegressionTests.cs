@@ -459,6 +459,28 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_EntryPosition_UsesEntryMarkerAsAuthoritativePosition()
+        {
+            var socketObject = new GameObject("EntryMarker_Authority_QA");
+            var markerObject = new GameObject("Entry_QA");
+            try
+            {
+                markerObject.transform.SetParent(socketObject.transform);
+                markerObject.transform.position = new Vector3(7.25f, 3.5f, 0f);
+                var socket = socketObject.AddComponent<ChunkSocketMarker>();
+                socket.Direction = ChunkSocketDirection.North;
+                socket.EntryMarker = markerObject.transform;
+
+                Assert.AreEqual(markerObject.transform.position,
+                    TilemapStageBuilder.CalculateSafeEntryPosition(socket, Vector3.one, 0.01f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(socketObject);
+            }
+        }
+
+        [Test]
         public void Test_BossCompletion_SurvivesBossObjectDestructionDuringDelay()
         {
             string source = File.ReadAllText("Assets/Scripts/Gameplay/BossMonster.cs");

@@ -117,7 +117,10 @@ public class Player : UnitBase
 
         base.Awake();
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (Application.isPlaying)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
         motor = GetComponent<KinematicMotor2D>();
         if (motor == null)

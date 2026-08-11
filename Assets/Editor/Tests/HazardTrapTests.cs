@@ -8,10 +8,13 @@ public class HazardTrapTests
     {
         GameObject spikeObj = new GameObject("SpikeTrap_Test");
         SpikeTrap spike = spikeObj.AddComponent<SpikeTrap>();
+        typeof(SpikeTrap).GetMethod("Awake", System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.NonPublic).Invoke(spike, null);
 
         Assert.AreEqual(1070u, spike.HazardId);
         Assert.AreEqual(15, spike.Damage);
-        Assert.Greater(spike.KnockbackForce, 0f);
+        Assert.AreEqual(0f, spike.KnockbackForce);
+        Assert.AreEqual(0.5f, spike.CooldownBetweenHits);
 
         spike.AlignToSurface(Vector2.up);
         Assert.AreEqual(Vector2.up, spike.SurfaceNormal);
@@ -24,9 +27,13 @@ public class HazardTrapTests
     {
         GameObject sawObj = new GameObject("SawBladeTrap_Test");
         SawBladeTrap saw = sawObj.AddComponent<SawBladeTrap>();
+        typeof(SawBladeTrap).GetMethod("Awake", System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.NonPublic).Invoke(saw, null);
 
         Assert.AreEqual(1071u, saw.HazardId);
         Assert.AreEqual(20, saw.Damage);
+        Assert.AreEqual(0f, saw.KnockbackForce);
+        Assert.AreEqual(0.4f, saw.CooldownBetweenHits);
         Assert.Greater(saw.RotationSpeed, 0f);
 
         GameObject p1 = new GameObject("P1");

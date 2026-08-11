@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 /// <summary>
 /// 커스텀 Non-Physics 2D 운동학 모터 (Unity 공식 2D Platformer KinematicObject 참고 개선).
@@ -39,6 +40,7 @@ public class KinematicMotor2D : MonoBehaviour
     public Collider2D WallCollider { get; private set; }
     public WallJumpSurface WallSurface { get; private set; }
     public bool IsPassingThrough => isPassThroughActive;
+    public Vector2 LastSafeGroundedPosition { get; private set; }
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
@@ -53,6 +55,7 @@ public class KinematicMotor2D : MonoBehaviour
     private int knockbackStepsRemaining;
     private int knockbackGeneration;
     private bool isPassThroughActive;
+    private int passThroughGeneration;
     private bool isJumpHeld;
 
     public void InitMotor()
@@ -143,29 +146,76 @@ public class KinematicMotor2D : MonoBehaviour
     public async UniTask PassThroughOneWayPlatformAsync(float durationSec = 0.35f, CancellationToken cancellationToken = default)
     {
         if (isPassThroughActive) return;
+        Collider2D platform = FindCurrentOneWayPlatform(out float platformTopY);
+        int generation = ++passThroughGeneration;
         isPassThroughActive = true;
         IsGrounded = false;
         Velocity = new Vector2(Velocity.x, -6.5f);
 
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: cancellationToken);
+            if (platform == null)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: cancellationToken);
+                return;
+            }
+            float deadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, durationSec);
+            while (generation == passThroughGeneration && platform != null &&
+                   physicsCollider.bounds.max.y >= platformTopY - SkinWidth &&
+                   Time.realtimeSinceStartup < deadline)
+                await UniTask.NextFrame(cancellationToken);
         }
         catch (OperationCanceledException) { }
         finally
         {
-            isPassThroughActive = false;
+            if (generation == passThroughGeneration) isPassThroughActive = false;
         }
+    }
+
+    private Collider2D FindCurrentOneWayPlatform(out float platformTopY)
+    {
+        platformTopY = physicsCollider != null ? physicsCollider.bounds.min.y : transform.position.y;
+        if (physicsCollider == null) return null;
+        int count = physicsCollider.Cast(Vector2.down, groundWithPlatformFilter, hitBuffer, SkinWidth * 4f);
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D collider = hitBuffer[i].collider;
+            if (collider == null) continue;
+            bool isOneWay = ((1 << collider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                            collider.GetComponent<PlatformEffector2D>() != null ||
+                            collider.GetComponent<OneWayPlatformPassThrough>() != null;
+            if (!isOneWay) continue;
+            platformTopY = collider is TilemapCollider2D ? hitBuffer[i].point.y : collider.bounds.max.y;
+            return collider;
+        }
+        return null;
     }
 
     public void Teleport(Vector3 position)
     {
+        passThroughGeneration++;
+        isPassThroughActive = false;
         body.position = position;
         Velocity = Vector2.zero;
         targetVelocityX = 0f;
         knockbackVelocityX = 0f;
         knockbackStepsRemaining = 0;
         knockbackGeneration++;
+    }
+
+    private void OnDisable()
+    {
+        passThroughGeneration++;
+        isPassThroughActive = false;
+    }
+
+    public void TeleportToSafeGround()
+    {
+        Vector2 safePos = LastSafeGroundedPosition != Vector2.zero ? LastSafeGroundedPosition : body.position;
+        Teleport(safePos);
+        SetTargetVelocityX(0f);
+        SetVelocityY(0f);
+        Debug.Log($"<color=cyan>[KinematicMotor2D] 함정 피격 ➔ 안전 지형 복귀 ({safePos})</color>");
     }
 
     public void SetGroundNormal(Vector2 normal)
@@ -238,6 +288,13 @@ public class KinematicMotor2D : MonoBehaviour
             {
                 groundNormal = hitBuffer[i].normal;
                 Velocity = new Vector2(Velocity.x, 0f);
+
+                // ponytail: record last safe grounded position when touching solid ground (not one-way platform)
+                if (((1 << hitBuffer[i].collider.gameObject.layer) & SolidGroundLayer) != 0)
+                {
+                    LastSafeGroundedPosition = body.position;
+                }
+
                 return true;
             }
         }
@@ -310,9 +367,10 @@ public class KinematicMotor2D : MonoBehaviour
             if (isOneWayPlatform)
             {
                 float feetY = physicsCollider.bounds.min.y;
-                float platformTopY = hit.collider.bounds.max.y;
+                // TilemapCollider2D의 경우 전체 타일맵 바운즈(max.y) 대신 실제 충돌 지점(hit.point.y) 사용
+                float platformTopY = (hit.collider is TilemapCollider2D) ? hit.point.y : hit.collider.bounds.max.y;
 
-                // 1) 점프 도달 정점(Apex Y) 미리 계산 ➔ 최대 도달 높이가 발판 상단보다 낮으면 무조건 통과 (중간 걸침/붙음 100% 방지!)
+                // 1) 점프 도달 정점(Apex Y) 미리 계산 ➔ 최대 도달 높이가 발판 상단보다 낮으면 무조건 통과
                 float vy = Velocity.y;
                 float apexY = feetY;
                 if (vy > 0f)

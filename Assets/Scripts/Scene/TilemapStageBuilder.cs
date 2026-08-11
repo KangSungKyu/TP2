@@ -68,7 +68,7 @@ public class TilemapStageBuilder : MonoBehaviour
         }
     }
 
-    public async UniTask BuildTilemapStageAsync(CancellationToken cancellationToken = default)
+    public async UniTask<bool> BuildTilemapStageAsync(CancellationToken cancellationToken = default)
     {
         setupFadeOverlay();
         if (fadeOverlayCanvasGroup != null)
@@ -85,10 +85,6 @@ public class TilemapStageBuilder : MonoBehaviour
 #if UNITY_EDITOR
         string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Prefab_1040";
         chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/{targetKey}.prefab");
-        if (chunkPrefab == null)
-        {
-            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Prefab_1040.prefab");
-        }
 #endif
 
         if (chunkPrefab == null && ResourceManager.Instance != null)
@@ -152,6 +148,7 @@ public class TilemapStageBuilder : MonoBehaviour
 
         await fadeInScreenAsync(cancellationToken);
         Debug.Log("<color=green>[TilemapStageBuilder] 버퍼 시간 종료 및 화면 페이드 인 전개 완결!</color>");
+        return loadedFromPrefab;
     }
 
     private async UniTask ConfigureChunkPortalsAsync(GameObject chunk, CancellationToken cancellationToken)
@@ -196,6 +193,7 @@ public class TilemapStageBuilder : MonoBehaviour
     public static Vector3 CalculateSafeEntryPosition(ChunkSocketMarker socket, Vector3 playerExtents, float skinWidth)
     {
         if (socket == null) return Vector3.zero;
+        if (socket.EntryMarker != null) return socket.EntryMarker.position;
         float horizontalClearance = playerExtents.x + Mathf.Max(0f, skinWidth);
         float verticalClearance = playerExtents.y + Mathf.Max(0f, skinWidth);
         switch (socket.Direction)

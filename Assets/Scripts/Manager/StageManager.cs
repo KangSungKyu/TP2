@@ -390,9 +390,9 @@ public class StageManager : Singleton<StageManager>
         }
     }
 
-    public async UniTask LoadNextRoomAsync(uint roomResourceIdx = 0, CancellationToken cancellationToken = default)
+    public async UniTask<bool> LoadNextRoomAsync(uint roomResourceIdx = 0, CancellationToken cancellationToken = default)
     {
-        if (isLoadingRoom) return;
+        if (isLoadingRoom) return false;
         isLoadingRoom = true;
 
         try
@@ -402,7 +402,7 @@ public class StageManager : Singleton<StageManager>
         if (CurrentRun != null && roomResourceIdx == 1042 && CurrentRun.CurrentSlotIdx != CurrentRun.BossGateSlotIdx)
         {
             Debug.LogWarning("[StageManager] Boss room transition rejected before reaching the BossGate slot.");
-            return;
+            return false;
         }
 
         if (roomResourceIdx > 0)
@@ -438,7 +438,7 @@ public class StageManager : Singleton<StageManager>
         }
 
         builder.TilemapAddressableKey = targetAddressKey;
-        await builder.BuildTilemapStageAsync(cancellationToken);
+        return await builder.BuildTilemapStageAsync(cancellationToken);
         }
         finally
         {
@@ -465,9 +465,22 @@ public class StageManager : Singleton<StageManager>
     public async UniTask<bool> LoadConnectedRoomAsync(byte targetSlotIdx = byte.MaxValue,
         CancellationToken cancellationToken = default)
     {
+        byte previousSlotIdx = CurrentRun != null ? CurrentRun.CurrentSlotIdx : byte.MaxValue;
+        byte previousPreviousSlotIdx = CurrentRun != null ? CurrentRun.PreviousSlotIdx : byte.MaxValue;
+        bool targetWasVisited = CurrentRun != null && CurrentRun.TryGetSlot(targetSlotIdx, out ChunkSlotData previousTarget) && previousTarget.Visited;
         if (!TryMoveToConnectedSlot(targetSlotIdx, out uint roomResourceIdx)) return false;
-        await LoadNextRoomAsync(roomResourceIdx, cancellationToken);
-        return true;
+        bool loaded = await LoadNextRoomAsync(roomResourceIdx, cancellationToken);
+        if (loaded) return true;
+
+        if (CurrentRun != null && CurrentRun.TryGetSlot(targetSlotIdx, out ChunkSlotData target))
+            target.Visited = targetWasVisited;
+        if (CurrentRun != null)
+        {
+            CurrentRun.CurrentSlotIdx = previousSlotIdx;
+            CurrentRun.PreviousSlotIdx = previousPreviousSlotIdx;
+            PublishProgress();
+        }
+        return false;
     }
 
     public bool TryMoveToConnectedSlot(byte targetSlotIdx, out uint roomResourceIdx)
