@@ -849,21 +849,12 @@ public static class ModuleChunkBuilder
 
             if (chunkName == "Prefab_1042")
             {
-                GameObject bossMarkerObj = new GameObject("SpawnPoint_Boss");
-                bossMarkerObj.transform.SetParent(gridRoot.transform);
-                bossMarkerObj.transform.localPosition = new Vector3(0f, 6f, 0f);
-                var bMarker = bossMarkerObj.AddComponent<SpawnPointMarker>();
-                if (bMarker != null)
-                {
-                    bMarker.Type = SpawnType.Boss;
-                    bMarker.MonsterId = 3201;
-                    bMarker.EnableSpawn = true;
-                }
+                AddGroundedSpawnMarker(gridRoot.transform, gMap, pMap, "SpawnPoint_Boss", 0f, 6f, SpawnType.Boss, 3201);
             }
 
             if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
                 chunkName == "Room_11052" || chunkName == "Room_11053")
-                AddCombatSpawnZones(gridRoot.transform, worldWidth, worldHeight);
+                AddCombatSpawnZones(gridRoot.transform, gMap, pMap, worldWidth, worldHeight);
 
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
@@ -943,20 +934,40 @@ public static class ModuleChunkBuilder
         }
     }
 
-    private static void AddCombatSpawnZones(Transform parent, int worldWidth, int worldHeight)
+    private static void AddCombatSpawnZones(Transform parent, Tilemap ground, Tilemap platforms, int worldWidth, int worldHeight)
     {
         Vector3[] positions = worldWidth < 30
             ? new[] { new Vector3(-9f, 10f), new Vector3(9f, 10f), new Vector3(0f, 28f) }
             : new[] { new Vector3(-18f, 10f), new Vector3(0f, 20f), new Vector3(18f, 10f) };
         for (int i = 0; i < positions.Length; i++)
         {
-            var zone = new GameObject($"SpawnZone_{i + 1}", typeof(SpawnPointMarker));
-            zone.transform.SetParent(parent);
-            zone.transform.localPosition = new Vector3(positions[i].x, Mathf.Min(positions[i].y, worldHeight - 4f), 0f);
-            var marker = zone.GetComponent<SpawnPointMarker>();
-            marker.Type = SpawnType.Monster;
-            marker.EnableSpawn = true;
+            AddGroundedSpawnMarker(parent, ground, platforms, $"SpawnZone_{i + 1}", positions[i].x, Mathf.Min(positions[i].y, worldHeight - 4f), SpawnType.Monster);
         }
+    }
+
+    private static void AddGroundedSpawnMarker(Transform parent, Tilemap ground, Tilemap platforms, string name, float desiredX, float desiredY, SpawnType type, uint monsterId = 0)
+    {
+        int cellX = Mathf.RoundToInt(desiredX);
+        int startY = Mathf.RoundToInt(desiredY);
+        int surfaceY = 1; // default fallback floor
+
+        for (int y = startY; y >= 0; y--)
+        {
+            Vector3Int cell = new Vector3Int(cellX, y, 0);
+            if (ground.HasTile(cell) || platforms.HasTile(cell))
+            {
+                surfaceY = y + 1;
+                break;
+            }
+        }
+
+        var zone = new GameObject(name, typeof(SpawnPointMarker));
+        zone.transform.SetParent(parent);
+        zone.transform.localPosition = new Vector3(desiredX, surfaceY + 0.51f, 0f);
+        var marker = zone.GetComponent<SpawnPointMarker>();
+        marker.Type = type;
+        if (monsterId > 0) marker.MonsterId = monsterId;
+        marker.EnableSpawn = true;
     }
 
     private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)

@@ -161,9 +161,11 @@ public class KinematicMotor2D : MonoBehaviour
             }
             float deadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, durationSec);
             while (generation == passThroughGeneration && platform != null &&
-                   physicsCollider.bounds.max.y >= platformTopY - SkinWidth &&
+                   physicsCollider.bounds.min.y >= platformTopY - 0.15f &&
                    Time.realtimeSinceStartup < deadline)
+            {
                 await UniTask.NextFrame(cancellationToken);
+            }
         }
         catch (OperationCanceledException) { }
         finally
