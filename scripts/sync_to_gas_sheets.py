@@ -1,7 +1,7 @@
 import json
 import urllib.request
 
-GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyGV4GbXMyzMFZHdYAwHaUIdgu-bi_-1Ld3_AMbmSUkadnWJp4FVzGCGk0-Np_EwsJK/exec"
+GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwtTg9UUNTAlwplogwDeKa7w59NPjo905bv7Ckp8x-lpBT943ih5nfTARn4zB5MSyol/exec"
 
 CHAT_DB_DATA = {
     "PM": [
