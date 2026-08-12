@@ -100,7 +100,7 @@ public static class ModuleChunkBuilder
             "......====..",
             "............",
             "............",
-            "..........=E",
+            "...........E",
             "............",
             "############",
             "############"
@@ -170,12 +170,12 @@ public static class ModuleChunkBuilder
             "............",
             "............",
             "............",
-            "............",
-            "............",
+            "....####....",
+            "....####....",
             "S..........E",
             "............",
-            "....####....",
-            "....####....",
+            "............",
+            "............",
             "............",
             "############"
         },
@@ -210,13 +210,13 @@ public static class ModuleChunkBuilder
             "############"
         },
         ["Module_E2"] = new string[] {
-            "..........=E",
+            "........===E",
             "............",
-            "......=.....",
+            "......===...",
             "............",
-            "....=.......",
+            "....===.....",
             "............",
-            "S=..........",
+            "S===........",
             "............",
             "............",
             "............",
@@ -294,7 +294,7 @@ public static class ModuleChunkBuilder
             "..######....",
             "..######....",
             "..######....",
-            "..######....",
+            "............",
             "............",
             "............",
             "############"
@@ -308,7 +308,7 @@ public static class ModuleChunkBuilder
             ".##########.",
             ".##########.",
             ".##########.",
-            ".##########.",
+            "............",
             "............",
             "............",
             "############"
@@ -350,7 +350,7 @@ public static class ModuleChunkBuilder
             "............",
             "............",
             "............",
-            "............",
+            "....===.....",
             "............",
             "S..........E",
             "............",
@@ -359,11 +359,104 @@ public static class ModuleChunkBuilder
         }
     };
 
+    static ModuleChunkBuilder()
+    {
+        AddPromotedLegacyTemplates();
+    }
+
+    private static void AddPromotedLegacyTemplates()
+    {
+        string[] names = {
+            "Module_C3", "Module_C4", "Module_D3", "Module_D4", "Module_E3", "Module_E4",
+            "Module_F3", "Module_F4", "Module_G4", "Module_H2", "Module_H3", "Module_H4",
+            "Module_I2", "Module_I3", "Module_I4", "Module_J1", "Module_J2", "Module_J3",
+            "Module_J4", "Module_K1", "Module_K2", "Module_L1", "Module_L2"
+        };
+
+        for (int i = 0; i < names.Length; i++)
+        {
+            char[][] rows = new char[12][];
+            for (int row = 0; row < rows.Length; row++) rows[row] = "............".ToCharArray();
+
+            rows[8] = "S..........E".ToCharArray();
+            rows[10] = "############".ToCharArray();
+            rows[11] = "############".ToCharArray();
+            SetPlatformRun(rows[7], i % 8, 3 + i / 8);
+
+            int role = i % 3;
+            int variant = i / 3;
+            if (role == 0) // Connector: low and mid-height choices over the full-width ground route.
+            {
+                SetPlatformRun(rows[6], 1 + variant % 4, 3 + variant % 2);
+                SetPlatformRun(rows[3], 7 - variant % 3, 3);
+            }
+            else if (role == 1) // Return Shaft: three reachable alternating landings.
+            {
+                SetPlatformRun(rows[5], 5 + variant % 2, 3);
+                SetPlatformRun(rows[3], 8 - variant % 3, 3);
+            }
+            else // Combat Pocket: clear center with elevated edge cover.
+            {
+                SetPlatformRun(rows[6], variant % 2 == 0 ? 1 : 8, 3);
+                SetPlatformRun(rows[4], 4 + variant % 3, 3 + variant % 2);
+            }
+
+            ModuleTemplates.Add(names[i], System.Array.ConvertAll(rows, row => new string(row)));
+        }
+    }
+
+    private static void SetPlatformRun(char[] row, int startX, int length)
+    {
+        for (int x = startX; x < startX + length && x < row.Length; x++) row[x] = '=';
+    }
+
     private class ChunkGridConfig
     {
         public int GridWidth { get; set; }  // ModX 갯수 (N)
         public int GridHeight { get; set; } // ModY 갯수 (M)
         public string[,] Matrix { get; set; }
+    }
+
+    private enum ModuleRole { Connector, ReturnShaft, CombatPocket }
+
+    private static bool IsValidModuleTemplate(string[] template)
+    {
+        if (template == null || template.Length != 12) return false;
+        for (int y = 0; y < template.Length; y++)
+        {
+            if (template[y] == null || template[y].Length < 12) return false;
+            for (int x = 0; x < 12; x++)
+                if (".#=SE^v<>O".IndexOf(template[y][x]) < 0) return false;
+        }
+        return true;
+    }
+
+    private static ModuleRole GetModuleRole(string[] template)
+    {
+        uint hash = 2166136261u;
+        foreach (string row in template)
+            foreach (char cell in row)
+                hash = (hash ^ cell) * 16777619u;
+        return (ModuleRole)(hash % 3u);
+    }
+
+    private static string[] SelectModuleTemplate(string[] requested, uint seed, int cellOrdinal,
+        IList<string[]> candidates = null)
+    {
+        if (requested == null) return ModuleTemplates["Module_A1"];
+        ModuleRole role = GetModuleRole(requested);
+        var pool = new List<string[]>();
+        foreach (string[] candidate in candidates ?? new List<string[]>(ModuleTemplates.Values))
+            if (candidate != null && GetModuleRole(candidate) == role) pool.Add(candidate);
+
+        if (pool.Count == 0) return requested;
+        int start = (int)((seed + (uint)cellOrdinal) % (uint)pool.Count);
+        for (int offset = 0; offset < pool.Count; offset++)
+        {
+            string[] candidate = pool[(start + offset) % pool.Count];
+            if (IsValidModuleTemplate(candidate)) return candidate;
+        }
+        return requested;
     }
 
     [MenuItem("TP2/Build 12x12 Modules & Stage 1 Chunks (12x12 모듈 & 룸 청크 전면 재생성)")]
@@ -420,7 +513,9 @@ public static class ModuleChunkBuilder
     }
 
     [MenuItem("TP2/Rebuild Stage 1 Room Chunks")]
-    public static void RebuildStage1RoomChunks()
+    public static void RebuildStage1RoomChunks() => RebuildStage1RoomChunks(0u);
+
+    public static void RebuildStage1RoomChunks(uint selectionSeed)
     {
         const string tilesDir = "Assets/Textures/Environment/Tiles";
         BuildVariableRoomChunkPrefabs(
@@ -429,7 +524,8 @@ public static class ModuleChunkBuilder
             AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset"),
             AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat"),
             AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SpikeTrap.png"),
-            AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SawBladeTrap.png"));
+            AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SawBladeTrap.png"),
+            selectionSeed: selectionSeed);
         AssetDatabase.SaveAssets();
     }
 
@@ -684,7 +780,7 @@ public static class ModuleChunkBuilder
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite, string onlyChunkName = null)
+    private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite, string onlyChunkName = null, uint selectionSeed = 0)
     {
         LastNormalizeCount = 0;
         LastRejectCount = 0;
@@ -843,6 +939,7 @@ public static class ModuleChunkBuilder
                     {
                         layout = ModuleTemplates["Module_A1"];
                     }
+                    layout = SelectModuleTemplate(layout, selectionSeed, modY * nX + modX);
 
                     int offsetX = (modX * 12) - halfW;
                     int offsetY = modY * 12;

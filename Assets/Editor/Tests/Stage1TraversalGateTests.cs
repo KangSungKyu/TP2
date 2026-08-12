@@ -429,9 +429,70 @@ namespace QA.Tests
             var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
                 .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             string[] generatedModules = templates.Keys.Select(name => $"Assets/Prefabs/Modules/{name}.prefab").ToArray();
-            Assert.AreEqual(23, generatedModules.Length, "The authoritative generator must produce 23 module templates.");
+            Assert.AreEqual(46, generatedModules.Length, "The authoritative generator must produce the approved 2x module set.");
             foreach (string path in generatedModules) AssertModulePhysics(path);
             foreach (string path in RoomPaths) AssertRoomContracts(path);
+        }
+
+        [Test]
+        public void ModuleSelection_200Seeds_CoversAllAuthoritativeTemplatesDeterministically()
+        {
+            var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
+                .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            MethodInfo select = typeof(ModuleChunkBuilder).GetMethod("SelectModuleTemplate", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo role = typeof(ModuleChunkBuilder).GetMethod("GetModuleRole", BindingFlags.Static | BindingFlags.NonPublic);
+            var covered = new HashSet<string[]>();
+
+            foreach (string[] requested in templates.Values)
+                for (uint seed = 0; seed < 200; seed++)
+                {
+                    string[] first = (string[])select.Invoke(null, new object[] { requested, seed, 0, null });
+                    string[] second = (string[])select.Invoke(null, new object[] { requested, seed, 0, null });
+                    Assert.AreSame(first, second, $"seed {seed} must be deterministic");
+                    Assert.AreEqual(role.Invoke(null, new object[] { requested }), role.Invoke(null, new object[] { first }));
+                    covered.Add(first);
+                }
+
+            Assert.AreEqual(46, covered.Count, "Every authoritative template must be selectable within 200 seeds.");
+
+            string[] fallback = templates.Values.First();
+            string[] invalid = fallback.Concat(new[] { string.Empty }).ToArray();
+            string[] selected = (string[])select.Invoke(null,
+                new object[] { fallback, 0u, 0, new List<string[]> { invalid, fallback } });
+            Assert.AreSame(fallback, selected, "Invalid same-role candidate must fall through deterministically.");
+        }
+
+        [Test]
+        public void AllAuthoritativeModules_HaveClearActualPlayerSweep()
+        {
+            var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
+                .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            string[] names = templates.Keys.OrderBy(name => name).ToArray();
+            Assert.AreEqual(46, names.Length);
+            var instances = new List<GameObject>();
+            try
+            {
+                for (int i = 0; i < names.Length; i++)
+                {
+                    GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Modules/{names[i]}.prefab");
+                    Assert.NotNull(prefab, $"{names[i]} source prefab is missing.");
+                    GameObject instance = Object.Instantiate(prefab, new Vector3(i * 100f, 0f, 0f), Quaternion.identity);
+                    instances.Add(instance);
+                }
+
+                Physics2D.SyncTransforms();
+                for (int i = 0; i < names.Length; i++)
+                {
+                    Vector2 origin = new Vector2(i * 100f + 0.51f, 2.52f);
+                    RaycastHit2D hit = Physics2D.CapsuleCast(origin, new Vector2(0.52f, 1.02f),
+                        CapsuleDirection2D.Vertical, 0f, Vector2.right, 10.98f);
+                    Assert.IsNull(hit.collider, $"{names[i]} corridor blocked by {hit.collider?.name} at {hit.distance}");
+                }
+            }
+            finally
+            {
+                foreach (GameObject instance in instances) Object.DestroyImmediate(instance);
+            }
         }
 
         [Test]
