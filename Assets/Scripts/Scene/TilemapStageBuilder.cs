@@ -41,7 +41,7 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject chunkPrefab = null;
 
 #if UNITY_EDITOR
-        chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Tilemap_Room_TestDummy.prefab");
+        chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Development/Tilemap_Room_TestDummy.prefab");
 #endif
 
         if (chunkPrefab != null)
@@ -171,8 +171,10 @@ public class TilemapStageBuilder : MonoBehaviour
             if (portalObject == null) continue;
 
             portalObject.SetActive(false);
+            stageManager.CurrentRun.TryGetSlot(targetSlotIdx, out ChunkSlotData destinationSlot);
             ConfigureSocketPortal(socket, portalObject, targetSlotIdx,
-                stageManager.CurrentRun.CurrentSlotIdx, stageManager.RoomGeneration);
+                stageManager.CurrentRun.CurrentSlotIdx, stageManager.RoomGeneration,
+                destinationSlot != null ? destinationSlot.ChunkResourceIdx : 0u);
             portals.Add(portalObject);
             if (targetSlotIdx == stageManager.CurrentRun.PreviousSlotIdx && socket.EntryMarker != null)
                 entrance = socket;
@@ -210,14 +212,15 @@ public class TilemapStageBuilder : MonoBehaviour
     }
 
     public static RoomDoorPortal ConfigureSocketPortal(ChunkSocketMarker socket, GameObject portalObject, byte targetSlotIdx,
-        byte ownerSlotIdx = byte.MaxValue, uint roomGeneration = 0)
+        byte ownerSlotIdx = byte.MaxValue, uint roomGeneration = 0, uint destinationChunkResourceIdx = 0)
     {
         if (socket == null || portalObject == null) return null;
         socket.gameObject.SetActive(true);
         portalObject.transform.SetParent(socket.transform, true);
         portalObject.transform.position = socket.transform.position;
-        RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
-        portal.Configure(targetSlotIdx, ownerSlotIdx, roomGeneration);
+        if (!portalObject.TryGetComponent(out RoomDoorPortal portal))
+            portal = portalObject.AddComponent<RoomDoorPortal>();
+        portal.Configure(targetSlotIdx, ownerSlotIdx, roomGeneration, destinationChunkResourceIdx);
         portalObject.SetActive(false);
         return portal;
     }

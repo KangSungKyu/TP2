@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,17 +14,21 @@ public class RoomDoorPortal : MonoBehaviour
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public byte TargetSlotIdx = byte.MaxValue;
     public bool AutoTriggerOnTouch = false;
+    public bool ShowPrototypeDestination = true;
+    public uint DestinationChunkResourceIdx { get; private set; }
     public byte OwnerSlotIdx { get; private set; } = byte.MaxValue;
     public uint RoomGeneration { get; private set; }
 
     private bool isTransitioning = false;
     private readonly HashSet<Collider2D> playerCandidates = new HashSet<Collider2D>();
     private int lastInteractionFrame = -1;
+    [SerializeField] private TextMeshPro destinationLabel;
 
     private void Start()
     {
         // ponytail: visualize portal door with cyan glowing indicator
         EnsureVisualOverlay();
+        RefreshDestinationLabel();
     }
 
     private void EnsureVisualOverlay()
@@ -81,7 +86,9 @@ public class RoomDoorPortal : MonoBehaviour
 
     private bool TryConsumeInteraction(bool pressed)
     {
+        Player player = Player.Instance;
         if (!pressed || !isActiveAndEnabled || isTransitioning || playerCandidates.Count == 0 ||
+            player == null || player.Motor == null || !player.Motor.IsGrounded ||
             lastInteractionFrame == Time.frameCount) return false;
         lastInteractionFrame = Time.frameCount;
         return true;
@@ -135,11 +142,31 @@ public class RoomDoorPortal : MonoBehaviour
         }
     }
 
-    public void Configure(byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration)
+    public void Configure(byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration,
+        uint destinationChunkResourceIdx = 0)
     {
         TargetSlotIdx = targetSlotIdx;
         OwnerSlotIdx = ownerSlotIdx;
         RoomGeneration = roomGeneration;
+        DestinationChunkResourceIdx = destinationChunkResourceIdx;
+        RefreshDestinationLabel();
+    }
+
+    public void SetDestinationLabelVisible(bool visible)
+    {
+        ShowPrototypeDestination = visible;
+        RefreshDestinationLabel();
+    }
+
+    public string GetDestinationLabelText() =>
+        DestinationChunkResourceIdx == 0 ? string.Empty : $"Chunk {DestinationChunkResourceIdx}";
+
+    private void RefreshDestinationLabel()
+    {
+        if (destinationLabel == null) return;
+        destinationLabel.gameObject.SetActive(ShowPrototypeDestination && DestinationChunkResourceIdx != 0);
+        if (destinationLabel.gameObject.activeSelf)
+            destinationLabel.SetText("Chunk {0}", DestinationChunkResourceIdx);
     }
 
     public bool TryAcquireTransition(StageManager stageManager)

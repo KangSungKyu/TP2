@@ -65,6 +65,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1295f76a306573d43981b1a0121280db, type: 2}
   - {fileID: 11400000, guid: c2df0a4d4d9a3c04b9a90b4f6371839a, type: 2}
   - {fileID: 11400000, guid: 2362ba43dcc9d0d47bcb8c1bea7a6161, type: 2}
+  - {fileID: 11400000, guid: 0b3b05ed68aac9a43ad4abef170ddb9e, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -107,6 +108,7 @@ MonoBehaviour:
     - Datas
     - Anims
     - Prefabs
+    - Development
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 60914059704ab084fa3dfcd536a7e6b6, type: 2}

@@ -255,12 +255,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e0000000000000002040949844e0ef09
-    m_Address: Garon_Charge_Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e000000000000000290e8b0fb4943da2
     m_Address: Player_Attack_Hit1_Effect
     m_ReadOnly: 0
@@ -275,12 +269,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e0000000000000005d77a75ecd351117
     m_Address: Player_Attack_Hit3_Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e0000000000000006e0036cf043655b7
-    m_Address: Garon_OverheadSmash_Effect
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims
@@ -303,20 +291,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e000000000000000a737dc3d099b7d24
-    m_Address: Garon_Shockwave_Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e000000000000000b02435f9de4d9b5c
     m_Address: Placeholder_Parry
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e000000000000000fd6480ade4930f28
-    m_Address: Garon_ComboSlash_Effect
     m_ReadOnly: 0
     m_SerializedLabels:
     - Anims

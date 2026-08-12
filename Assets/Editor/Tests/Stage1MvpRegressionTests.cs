@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace QA.Tests
@@ -22,9 +23,13 @@ namespace QA.Tests
             try
             {
                 RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
+                playerObject.AddComponent<Rigidbody2D>();
                 Collider2D playerCollider = playerObject.AddComponent<BoxCollider2D>();
+                KinematicMotor2D motor = playerObject.AddComponent<KinematicMotor2D>();
                 Player player = playerObject.AddComponent<Player>();
                 playerProperty.GetSetMethod(true).Invoke(null, new object[] { player });
+                typeof(UnitBase).GetField("motor", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, motor);
+                motor.InitMotor();
                 Collider2D monsterCollider = monsterObject.AddComponent<BoxCollider2D>();
                 MethodInfo enter = typeof(RoomDoorPortal).GetMethod("OnTriggerEnter2D", BindingFlags.Instance | BindingFlags.NonPublic);
                 MethodInfo exit = typeof(RoomDoorPortal).GetMethod("OnTriggerExit2D", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -36,6 +41,8 @@ namespace QA.Tests
                 Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Monster collider must never become a portal candidate.");
                 enter.Invoke(portal, new object[] { playerCollider });
                 Assert.IsFalse((bool)consume.Invoke(portal, new object[] { false }), "Contact alone must not transition.");
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Airborne or falling player must not transition.");
+                motor.SetGroundNormal(Vector2.up);
                 Assert.IsTrue((bool)consume.Invoke(portal, new object[] { true }), "W press must be consumed once.");
                 Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Held or duplicate input in one frame must be ignored.");
 
@@ -58,6 +65,63 @@ namespace QA.Tests
                 UnityEngine.Object.DestroyImmediate(playerObject);
                 UnityEngine.Object.DestroyImmediate(portalObject);
                 playerProperty.GetSetMethod(true).Invoke(null, new object[] { previousPlayer });
+            }
+        }
+
+        [Test]
+        public void Test_RoomDoorPortal_DestinationIdxLabel_IsOptionalAndNeverRoutesByText()
+        {
+            var portalObject = new GameObject("PortalDestinationLabel_QA");
+            try
+            {
+                RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
+                portal.Configure(7, 3, 11, 1057);
+                Assert.AreEqual((byte)7, portal.TargetSlotIdx);
+                Assert.AreEqual(1057u, portal.DestinationChunkResourceIdx);
+                Assert.AreEqual("Chunk 1057", portal.GetDestinationLabelText());
+                portal.SetDestinationLabelVisible(false);
+                Assert.IsFalse(portal.ShowPrototypeDestination);
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/RoomDoorPortal.cs");
+                StringAssert.Contains("LoadConnectedRoomAsync(TargetSlotIdx)", source);
+                StringAssert.DoesNotContain("LoadConnectedRoomAsync(GetDestinationLabelText", source);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(portalObject);
+            }
+        }
+
+        [Test]
+        public void Test_ConfigureSocketPortal_ReusesPrefabComponentAndSerializedDestinationLabel()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Structures/Portal_Gate.prefab");
+            GameObject portalObject = UnityEngine.Object.Instantiate(prefab);
+            GameObject socketObject = new GameObject("PortalSocket_QA", typeof(ChunkSocketMarker));
+            try
+            {
+                RoomDoorPortal original = portalObject.GetComponent<RoomDoorPortal>();
+                Assert.NotNull(original);
+                FieldInfo labelField = typeof(RoomDoorPortal).GetField("destinationLabel", BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.NotNull(labelField.GetValue(original), "Prefab destinationLabel serialization must be preserved.");
+
+                RoomDoorPortal configured = TilemapStageBuilder.ConfigureSocketPortal(
+                    socketObject.GetComponent<ChunkSocketMarker>(), portalObject, 7, 3, 11, 1057);
+
+                Assert.AreSame(original, configured);
+                Assert.AreEqual(1, portalObject.GetComponents<RoomDoorPortal>().Length);
+                Assert.NotNull(labelField.GetValue(configured));
+                Assert.AreEqual((byte)7, configured.TargetSlotIdx);
+                Assert.AreEqual(1057u, configured.DestinationChunkResourceIdx);
+                configured.SetDestinationLabelVisible(false);
+                Assert.IsFalse(configured.ShowPrototypeDestination);
+                configured.SetDestinationLabelVisible(true);
+                Assert.IsTrue(configured.ShowPrototypeDestination);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(socketObject);
+                UnityEngine.Object.DestroyImmediate(portalObject);
             }
         }
 

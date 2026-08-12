@@ -171,6 +171,8 @@ public class KinematicMotor2D : MonoBehaviour
         {
             float deadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, durationSec);
             while (generation == passThroughGeneration &&
+                   this != null && isActiveAndEnabled &&
+                   physicsCollider != null && physicsCollider.enabled &&
                    physicsCollider.bounds.min.y >= ignoredPlatformTopY - 0.20f &&
                    Time.realtimeSinceStartup < deadline)
             {
@@ -423,6 +425,7 @@ public class KinematicMotor2D : MonoBehaviour
         {
             var hit = hitBuffer[i];
             var currentNormal = hit.normal;
+            bool landsOnOneWayTop = false;
 
             bool isOneWayPlatform = ((1 << hit.collider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
                                    hit.collider.GetComponent<PlatformEffector2D>() != null ||
@@ -467,6 +470,7 @@ public class KinematicMotor2D : MonoBehaviour
                     {
                         continue;
                     }
+                    landsOnOneWayTop = feetY >= platformTopY - SkinWidth * 2f;
                 }
 
                 // 5) 수평 이동 중 (!yMovement): 발 위치가 발판 상단보다 낮으면 측면 걸림 무시
@@ -476,9 +480,10 @@ public class KinematicMotor2D : MonoBehaviour
                 }
             }
 
-            if (yMovement && move.y <= 0f && currentNormal.y > MinGroundNormalY)
+            if (yMovement && move.y <= 0f && (currentNormal.y > MinGroundNormalY || landsOnOneWayTop))
             {
                 IsGrounded = true;
+                currentNormal = landsOnOneWayTop ? Vector2.up : currentNormal;
                 groundNormal = currentNormal;
                 groundCollider = hit.collider;
                 currentNormal.x = 0;

@@ -134,6 +134,31 @@ namespace QA.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator DropThrough_DestroyedPhysicsCollider_CancelsWithoutMissingReference()
+        {
+            GameObject player = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab"));
+            GameObject platform = CreateOneWayPlatform("DestroyedColliderOneWay", 0f);
+            try
+            {
+                KinematicMotor2D motor = player.GetComponent<KinematicMotor2D>();
+                Collider2D playerCollider = player.GetComponents<Collider2D>().First(candidate => !candidate.isTrigger);
+                motor.InitMotor();
+                motor.Teleport(new Vector3(0f, platform.GetComponent<Collider2D>().bounds.max.y + playerCollider.bounds.extents.y));
+                Physics2D.SyncTransforms();
+                motor.SimulateStep(Time.fixedDeltaTime);
+
+                motor.PassThroughOneWayPlatformAsync().Forget();
+                Object.DestroyImmediate(player);
+                yield return null;
+            }
+            finally
+            {
+                Object.DestroyImmediate(platform);
+                if (player != null) Object.DestroyImmediate(player);
+            }
+        }
+
         [Test]
         public void Player_DropThroughRequiresDownAndJumpKeyDownWhileGrounded()
         {
@@ -271,6 +296,58 @@ namespace QA.Tests
             {
                 Physics2D.simulationMode = previousMode;
                 Object.DestroyImmediate(playerObject);
+                Object.DestroyImmediate(room);
+            }
+        }
+
+        [Test]
+        public void Room11053_WallJumpArc_LandsOnOneWayFromBothSidesWithoutPassThrough()
+        {
+            GameObject room = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Room_11053.prefab"));
+            SimulationMode2D previousMode = Physics2D.simulationMode;
+            try
+            {
+                Physics2D.simulationMode = SimulationMode2D.Script;
+                foreach (int side in new[] { -1, 1 })
+                foreach (bool shortJump in new[] { false, true })
+                {
+                    GameObject playerObject = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab"));
+                    try
+                    {
+                        KinematicMotor2D motor = playerObject.GetComponent<KinematicMotor2D>();
+                        Collider2D collider = playerObject.GetComponents<Collider2D>().First(candidate => !candidate.isTrigger);
+                        motor.InitMotor();
+                        motor.Teleport(new Vector3(side < 0 ? 19.4f : 15.6f, 7f));
+                        Physics2D.SyncTransforms();
+                        motor.SetTargetVelocityX(side * 9.5f);
+                        motor.SetVelocityY(12.5f);
+                        motor.SetJumpHeld(!shortJump);
+                        int generation = (int)typeof(KinematicMotor2D)
+                            .GetField("passThroughGeneration", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(motor);
+
+                        for (int step = 0; step < 180 && !motor.IsGrounded; step++)
+                        {
+                            if (shortJump && step == 2) motor.SetVelocityY(motor.Velocity.y * 0.4f);
+                            if (step >= 9) motor.SetTargetVelocityX(Mathf.Sign(17.75f - playerObject.transform.position.x) * 6f);
+                            motor.SimulateStep(Time.fixedDeltaTime);
+                            Physics2D.Simulate(Time.fixedDeltaTime);
+                            Physics2D.SyncTransforms();
+                        }
+
+                        Assert.IsTrue(motor.IsGrounded, $"side {side}, short {shortJump}: failed to land");
+                        Assert.GreaterOrEqual(collider.bounds.min.y, 7f - motor.SkinWidth * 2f);
+                        Assert.AreEqual(generation, (int)typeof(KinematicMotor2D)
+                            .GetField("passThroughGeneration", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(motor));
+                    }
+                    finally
+                    {
+                        Object.DestroyImmediate(playerObject);
+                    }
+                }
+            }
+            finally
+            {
+                Physics2D.simulationMode = previousMode;
                 Object.DestroyImmediate(room);
             }
         }

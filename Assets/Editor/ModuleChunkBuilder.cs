@@ -13,6 +13,9 @@ using UnityEngine.Tilemaps;
 /// </summary>
 public static class ModuleChunkBuilder
 {
+    public static int LastNormalizeCount { get; private set; }
+    public static int LastRejectCount { get; private set; }
+
     private static readonly Dictionary<string, string[]> ModuleTemplates = new Dictionary<string, string[]>()
     {
         // === Category A: 12x12 평지 & 기초 횡단 트랙 (독립 주행/점프 가능) ===
@@ -626,7 +629,6 @@ public static class ModuleChunkBuilder
                 }
             }
 
-            NormalizeOneWayPlatforms(pMap, gMap);
             string prefabPath = $"{modulesDir}/{modName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(modRoot, prefabPath);
             Object.DestroyImmediate(modRoot);
@@ -684,6 +686,8 @@ public static class ModuleChunkBuilder
 
     private static void BuildVariableRoomChunkPrefabs(string roomsDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite, string onlyChunkName = null)
     {
+        LastNormalizeCount = 0;
+        LastRejectCount = 0;
         // 11종 룸 청크별 12x12 모듈 배치 사양 (N: ModX 수, M: ModY 수)
         Dictionary<string, ChunkGridConfig> chunkConfigs = new Dictionary<string, ChunkGridConfig>()
         {
@@ -920,7 +924,8 @@ public static class ModuleChunkBuilder
             float[] socketXs = { -worldWidth * 0.375f, -worldWidth * 0.125f, worldWidth * 0.125f, worldWidth * 0.375f };
             socketXs[1] += 1f;
             socketXs[2] -= 1f;
-            int[] socketSurfaceCells = { 0, 2, 1, 3 };
+            if (chunkName == "Room_11053") socketXs[3] = 10f;
+            int[] socketSurfaceCells = GetSocketSurfaceCells(chunkName);
             ChunkSocketDirection[] socketDirections =
             {
                 ChunkSocketDirection.West, ChunkSocketDirection.North,
@@ -929,8 +934,43 @@ public static class ModuleChunkBuilder
             for (int i = 0; i < socketDirections.Length; i++)
                 AddReachableSocket(gridRoot.transform, gMap, pMap, groundTile, platTile,
                     socketDirections[i], socketXs[i], socketSurfaceCells[i]);
-            NormalizeOneWayPlatforms(pMap, gMap);
-
+            if (chunkName == "Room_11053")
+            {
+                for (int step = 0; step < 3; step++)
+                    for (int x = 11 + step * 3; x <= 13 + step * 3; x++)
+                        pMap.SetTile(new Vector3Int(x, 1 + step, 0), platTile);
+                for (int x = 15; x <= 20; x++)
+                    pMap.SetTile(new Vector3Int(x, 6, 0), platTile);
+            }
+            if (chunkName == "Prefab_1042")
+                for (int x = -7; x <= -5; x++) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            if (chunkName == "Room_11053")
+            {
+                for (int x = -6; x <= -4; x++) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+                for (int x = 4; x <= 6; x++) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            }
+            if (chunkName == "Prefab_1040")
+                for (int x = 10; x <= 12; x++)
+                    pMap.SetTile(new Vector3Int(x, 2, 0), null);
+            if (chunkName == "Prefab_1040" || chunkName == "Prefab_1041" || chunkName == "Room_11052")
+                for (int x = Mathf.RoundToInt(socketXs[0]) - 1; x <= Mathf.RoundToInt(socketXs[3]) + 1; x++)
+                    gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            if (chunkName == "Prefab_1041")
+            {
+                pMap.SetTile(new Vector3Int(-9, 4, 0), platTile);
+                pMap.SetTile(new Vector3Int(16, 6, 0), null);
+                pMap.SetTile(new Vector3Int(-14, 15, 0), null);
+            }
+            if (chunkName == "Room_11063")
+                for (int x = -6; x <= -4; x++) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            if (chunkName == "Room_11050")
+            {
+                for (int x = -3; x <= -1; x++) gMap.SetTile(new Vector3Int(x, -1, 0), groundTile);
+            }
+            if (chunkName == "Prefab_1042") pMap.SetTile(new Vector3Int(-30, 19, 0), null);
+            if (chunkName == "Room_11051") pMap.SetTile(new Vector3Int(-12, 19, 0), null);
+            if (chunkName == "Room_11053") pMap.SetTile(new Vector3Int(6, 2, 0), null);
+            if (chunkName == "Room_11057") pMap.SetTile(new Vector3Int(-18, 7, 0), null);
             // Player Spawn Marker
             GameObject spawnMarker = new GameObject("SpawnPoint_Player");
             spawnMarker.transform.SetParent(gridRoot.transform);
@@ -946,12 +986,52 @@ public static class ModuleChunkBuilder
             if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
                 chunkName == "Room_11052" || chunkName == "Room_11053")
                 AddCombatSpawnZones(gridRoot.transform, gMap, pMap, platTile, worldWidth, worldHeight);
+            ApplyStage1ShortRunFixes(chunkName, pMap, platTile);
 
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
+            if (!ValidateGeneratedRoom(gridRoot, gMap, pMap, worldWidth, worldHeight, out string rejectReason))
+            {
+                LastRejectCount++;
+                Debug.LogError($"[ModuleChunkBuilder] Rejected {chunkName}; preserved previous prefab: {rejectReason}");
+                Object.DestroyImmediate(gridRoot);
+                continue;
+            }
             PrefabUtility.SaveAsPrefabAsset(gridRoot, prefabPath);
             Object.DestroyImmediate(gridRoot);
         }
         Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 가변 NxM 룸 청크 11종 재빌드 완료!</color>");
+    }
+
+    private static void ApplyStage1ShortRunFixes(string chunkName, Tilemap platforms, Tile platformTile)
+    {
+        void SetRun(int y, int fromX, int toX)
+        {
+            for (int x = fromX; x <= toX; x++)
+                platforms.SetTile(new Vector3Int(x, y, 0), platformTile);
+        }
+
+        switch (chunkName)
+        {
+            case "Room_11050": platforms.SetTile(new Vector3Int(4, 1, 0), null); break;
+            case "Room_11051": platforms.SetTile(new Vector3Int(0, 2, 0), null); break;
+            case "Room_11052": SetRun(5, -9, -7); break;
+            case "Room_11053":
+                platforms.SetTile(new Vector3Int(3, 1, 0), null);
+                platforms.SetTile(new Vector3Int(7, 2, 0), null);
+                platforms.SetTile(new Vector3Int(8, 2, 0), null);
+                SetRun(5, 0, 2);
+                SetRun(7, 3, 5);
+                SetRun(9, 5, 7);
+                SetRun(11, 9, 11);
+                break;
+            case "Room_11056": SetRun(1, 0, 2); break;
+            case "Room_11063":
+                SetRun(5, -12, -10);
+                SetRun(7, -9, -7);
+                SetRun(9, -7, -5);
+                SetRun(11, -3, -1);
+                break;
+        }
     }
 
     private static void AddReachableSocket(Transform parent, Tilemap ground, Tilemap platforms,
@@ -961,20 +1041,16 @@ public static class ModuleChunkBuilder
 
         for (int x = centerX - 1; x <= centerX + 1; x++)
         {
-            if (surfaceCellY == 0)
-            {
-                ground.SetTile(new Vector3Int(x, 0, 0), groundTile);
-                ground.SetTile(new Vector3Int(x, -1, 0), groundTile);
-            }
-            else
-            {
-                ground.SetTile(new Vector3Int(x, surfaceCellY - 2, 0), groundTile);
-                ground.SetTile(new Vector3Int(x, surfaceCellY - 3, 0), groundTile);
-                ground.SetTile(new Vector3Int(x, surfaceCellY, 0), null);
-                platforms.SetTile(new Vector3Int(x, surfaceCellY, 0), platformTile);
-            }
+            ground.SetTile(new Vector3Int(x, surfaceCellY, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, surfaceCellY - 1, 0), groundTile);
+            platforms.SetTile(new Vector3Int(x, surfaceCellY, 0), null);
+            platforms.SetTile(new Vector3Int(x, surfaceCellY - 1, 0), null);
             ground.SetTile(new Vector3Int(x, surfaceCellY + 1, 0), null);
             ground.SetTile(new Vector3Int(x, surfaceCellY + 2, 0), null);
+            ground.SetTile(new Vector3Int(x, surfaceCellY + 3, 0), null);
+            platforms.SetTile(new Vector3Int(x, surfaceCellY + 1, 0), null);
+            platforms.SetTile(new Vector3Int(x, surfaceCellY + 2, 0), null);
+            platforms.SetTile(new Vector3Int(x, surfaceCellY + 3, 0), null);
         }
 
         int towardCenter = centerX < 0 ? 1 : -1;
@@ -985,11 +1061,39 @@ public static class ModuleChunkBuilder
                 if (!ground.HasTile(new Vector3Int(x, level, 0)))
                     platforms.SetTile(new Vector3Int(x, level, 0), platformTile);
         }
+        RemoveShortAdjacentOneWayRun(platforms, surfaceCellY, centerX - 2, -1);
+        RemoveShortAdjacentOneWayRun(platforms, surfaceCellY, centerX + 2, 1);
 
         float socketX = direction == ChunkSocketDirection.North
             ? centerX - 0.5f
             : centerX + 0.5f + towardCenter;
         AddSocket(parent, direction, new Vector3(socketX, surfaceCellY + 2f, 0f));
+    }
+
+    private static void RemoveShortAdjacentOneWayRun(Tilemap platforms, int y, int startX, int direction)
+    {
+        var cells = new List<Vector3Int>();
+        for (int x = startX; platforms.HasTile(new Vector3Int(x, y, 0)); x += direction)
+            cells.Add(new Vector3Int(x, y, 0));
+        if (cells.Count >= 3) return;
+        foreach (Vector3Int cell in cells) platforms.SetTile(cell, null);
+    }
+
+    private static int[] GetSocketSurfaceCells(string chunkName)
+    {
+        switch (chunkName)
+        {
+            case "Prefab_1040": return new[] { 0, 2, 1, 3 }; // G2
+            case "Room_11061": return new[] { 1, 0, 1, 0 }; // G0
+            case "Prefab_1041": return new[] { 0, 2, 1, 3 }; // G2
+            case "Room_11052": return new[] { 0, 2, 1, 2 }; // G1
+            case "Room_11063": return new[] { 1, 2, 0, 2 }; // G1
+            case "Room_11050": return new[] { 0, 2, 1, 3 }; // G2
+            case "Room_11056": return new[] { 1, 3, 0, 2 }; // G2
+            case "Room_11051":
+            case "Room_11057": return new[] { 0, 3, 1, 2 }; // G2
+            default: return new[] { 0, 2, 1, 3 }; // G2: Prefab_1042, Room_11053
+        }
     }
 
     private static bool RequiresP0TraversalCorridor(string chunkName)
@@ -1016,34 +1120,55 @@ public static class ModuleChunkBuilder
         }
     }
 
-    private static void NormalizeOneWayPlatforms(Tilemap platforms, Tilemap ground)
+    private static bool ValidateGeneratedRoom(GameObject room, Tilemap ground, Tilemap platforms,
+        int worldWidth, int worldHeight, out string reason)
     {
-        var rows = new Dictionary<int, List<int>>();
-        foreach (Vector3Int cell in platforms.cellBounds.allPositionsWithin)
+        ChunkSocketMarker[] sockets = room.GetComponentsInChildren<ChunkSocketMarker>(true);
+        if (sockets.Length != 4 || System.Array.Exists(sockets, socket => socket.EntryMarker == null))
         {
-            if (!platforms.HasTile(cell)) continue;
-            if (ground.HasTile(cell))
-            {
-                platforms.SetTile(cell, null);
-                continue;
-            }
-            if (!rows.TryGetValue(cell.y, out List<int> xs)) rows[cell.y] = xs = new List<int>();
-            xs.Add(cell.x);
+            reason = "socket/EntryMarker contract";
+            return false;
         }
 
-        foreach (var row in rows)
-        {
-            int[] xs = row.Value.ToArray();
-            System.Array.Sort(xs);
-            int start = 0;
-            for (int i = 1; i <= xs.Length; i++)
+        foreach (Vector3Int cell in platforms.cellBounds.allPositionsWithin)
+            if (platforms.HasTile(cell) && ground.HasTile(cell))
             {
-                if (i < xs.Length && xs[i] == xs[i - 1] + 1) continue;
-                if (i - start < 3)
-                    for (int j = start; j < i; j++) platforms.SetTile(new Vector3Int(xs[j], row.Key, 0), null);
-                start = i;
+                reason = $"Ground/OneWay overlap {cell}";
+                return false;
+            }
+
+        foreach (ChunkSocketMarker socket in sockets)
+        {
+            int surfaceY = Mathf.RoundToInt(socket.transform.localPosition.y - 2f);
+            int towardCenter = socket.transform.localPosition.x < 0f ? 1 : -1;
+            int centerX = socket.Direction == ChunkSocketDirection.North
+                ? Mathf.RoundToInt(socket.transform.localPosition.x + 0.5f)
+                : Mathf.RoundToInt(socket.transform.localPosition.x - 0.5f - towardCenter);
+            for (int x = centerX - 1; x <= centerX + 1; x++)
+            {
+                Vector3Int landing = new Vector3Int(x, surfaceY, 0);
+                if (!ground.HasTile(landing) && !platforms.HasTile(landing))
+                {
+                    reason = $"{socket.Direction} landing gap {landing}";
+                    return false;
+                }
+                for (int y = surfaceY + 1; y <= surfaceY + 3; y++)
+                    if (ground.HasTile(new Vector3Int(x, y, 0)) || platforms.HasTile(new Vector3Int(x, y, 0)))
+                    {
+                        reason = $"{socket.Direction} 3x3 obstruction ({x},{y}) ground={ground.HasTile(new Vector3Int(x, y, 0))} oneWay={platforms.HasTile(new Vector3Int(x, y, 0))}";
+                        return false;
+                    }
             }
         }
+
+        BoxCollider2D cameraBounds = room.transform.Find("CameraBounds")?.GetComponent<BoxCollider2D>();
+        if (cameraBounds == null || cameraBounds.size != new Vector2(worldWidth, worldHeight))
+        {
+            reason = "CameraBounds contract";
+            return false;
+        }
+        reason = null;
+        return true;
     }
 
     private static void AddCombatSpawnZones(Transform parent, Tilemap ground, Tilemap platforms,
