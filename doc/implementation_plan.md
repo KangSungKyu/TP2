@@ -86,6 +86,7 @@
 | 2026-08-11 | 전체 스테이지(Stage 1~4) 범위 확장, Spine 2D 뼈대 애니메이션 최적안(70% 예산 절감) 채택 및 2D AI 파이프라인(Scenario, Midjourney v6, PixelLab) 구축 완료 | `doc/specs/all_stages_art_ai_and_spine_budget.md` 신설 |
 | 2026-08-11 | 5개 스테이지 & 5대 메인 보스 스코프 정정 보정, Spine 2D 타격감/히트스탑/모션캔슬 2D 액션성 무결성 기술 검증 및 예산안 수립 완료 | `doc/specs/stage5_spine_action_quality_report.md` 신설 |
 | 2026-08-11 | 프로젝트 공식 CSV(`UnitBaseData.csv`) 유닛/보스(보스 Garon `3201`, SpearSentry `3101` 등 6종) 데이터 정밀 검증 및 2D 프레임 스프라이트 시트(Sprite Sheet) 전용 AI 도구(RetroDiffusion, PixelLab, SpriteDiffusion) 구축 완료 | `doc/specs/ai_sprite_sheet_tools_research.md` 신설 |
+| 2026-08-12 | 3D 모델 애니메이션(.fbx, .gltf) ➔ 2D 스프라이트 시트(.png) 자동 변환 파이프라인(Blender+Pixelizer 셰이더, Unity Sprite Baking Studio, PixelOver) 수립 완료 | `doc/specs/3d_to_2d_sprite_sheet_pipeline.md` 신설 |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -437,3 +438,10 @@
 
 - **이전 물리/레벨 발주 취소 반영**: 유저의 외부 작업 진행 지시에 따라 1-way 발판 하향 착지/수직 도어/몬스터 콜라이더 태스크 취소.
 - **Stage 1 MVP 아트 리소스 7대 카테고리 풀세트 구축**: 플레이어 메인 유닛(12모션/84f), 일반 몬스터 3종(125f), 대형 보스(60f), 지형/환경 타일셋 36종, 함정 2종, 전투 VFX 4종, Main HUD UI 자산의 전수 리스트업 및 픽셀 외주 단가/공수 견적서([art_resource_inventory_and_budget.md](file:///c:/Users/PC/Projects/TP2/doc/specs/art_resource_inventory_and_budget.md)) 수립 완결.
+
+---
+
+### 2026-08-12 KST — 3D 모델 애니메이션 ➔ 2D 스프라이트 시트 자동 변환 파이프라인 수립 회고
+
+- **Dead Cells / Diablo II 방식 3D-to-2D 변환 파이프라인 설계**: 3D 모델링(.fbx/.gltf) 및 Mixamo 애니메이션 모션을 Blender Pixelizer 셰이더/Compositor를 통해 2D 픽셀 아트 스프라이트 시트(.png)로 자동 렌더링 내보내기 구축.
+- **공수 및 예산 80% 이상 절감**: 수작업 드로잉 대비 프레임 간 떨림(Flicker) 0% 및 몬스터 15종 제작 비용 80% 이상 절감 파이프라인 기술 보고서([3d_to_2d_sprite_sheet_pipeline.md](file:///c:/Users/PC/Projects/TP2/doc/specs/3d_to_2d_sprite_sheet_pipeline.md)) 완결.
