@@ -239,7 +239,7 @@ namespace QA.Tests
         }
 
         [Test]
-        public void Test11_RoomDoorPortal_AutoTrigger_AndTargetRoomIdx()
+        public void Test11_RoomDoorPortal_ManualInput_AndTargetRoomIdx()
         {
             GameObject portalObj = new GameObject("Test_RoomDoorPortal");
             var portal = portalObj.AddComponent<RoomDoorPortal>();

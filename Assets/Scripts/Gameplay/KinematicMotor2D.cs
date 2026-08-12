@@ -27,6 +27,7 @@ public class KinematicMotor2D : MonoBehaviour
     [Header("Collision Layers")]
     public LayerMask SolidGroundLayer;
     public LayerMask OneWayPlatformLayer;
+    public LayerMask MonsterBoundaryLayer;
 
     [Header("Wall Settings")]
     public float MaxWallSlideSpeed = 3.5f;
@@ -44,7 +45,6 @@ public class KinematicMotor2D : MonoBehaviour
 
     private Rigidbody2D body;
     private Collider2D physicsCollider;
-    private ContactFilter2D solidFilter;
     private ContactFilter2D groundWithPlatformFilter;
     private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
 
@@ -55,7 +55,12 @@ public class KinematicMotor2D : MonoBehaviour
     private int knockbackStepsRemaining;
     private int knockbackGeneration;
     private bool isPassThroughActive;
+    private Collider2D ignoredPlatformCollider;
+    private Collider2D groundCollider;
+    private float ignoredPlatformTopY = float.MinValue;
     private int passThroughGeneration;
+    private bool hasHorizontalMovementBounds;
+    private Bounds horizontalMovementBounds;
     private bool isJumpHeld;
 
     public void InitMotor()
@@ -91,16 +96,22 @@ public class KinematicMotor2D : MonoBehaviour
         {
             OneWayPlatformLayer = LayerMask.GetMask("OneWayPlatform");
         }
+        if (MonsterBoundaryLayer == 0)
+        {
+            int monsterBoundLayer = LayerMask.NameToLayer("MonsterBoundary");
+            if (monsterBoundLayer >= 0)
+            {
+                MonsterBoundaryLayer = 1 << monsterBoundLayer;
+            }
+        }
 
-        solidFilter = new ContactFilter2D();
-        solidFilter.useTriggers = false;
-        solidFilter.useLayerMask = true;
-        solidFilter.SetLayerMask(SolidGroundLayer);
+        bool isPlayer = GetComponent<Player>() != null;
+        LayerMask wallMask = isPlayer ? SolidGroundLayer : (SolidGroundLayer | (MonsterBoundaryLayer != 0 ? MonsterBoundaryLayer : 0));
 
         groundWithPlatformFilter = new ContactFilter2D();
         groundWithPlatformFilter.useTriggers = false;
         groundWithPlatformFilter.useLayerMask = true;
-        groundWithPlatformFilter.SetLayerMask(SolidGroundLayer | OneWayPlatformLayer);
+        groundWithPlatformFilter.SetLayerMask(wallMask | OneWayPlatformLayer);
     }
 
     private void Awake()
@@ -147,21 +158,20 @@ public class KinematicMotor2D : MonoBehaviour
     {
         if (isPassThroughActive) return;
         Collider2D platform = FindCurrentOneWayPlatform(out float platformTopY);
+        if (platform == null) return;
+        ignoredPlatformCollider = platform;
+        ignoredPlatformTopY = platformTopY;
         int generation = ++passThroughGeneration;
         isPassThroughActive = true;
         IsGrounded = false;
+        groundCollider = null;
         Velocity = new Vector2(Velocity.x, -6.5f);
 
         try
         {
-            if (platform == null)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: cancellationToken);
-                return;
-            }
             float deadline = Time.realtimeSinceStartup + Mathf.Max(0.1f, durationSec);
-            while (generation == passThroughGeneration && platform != null &&
-                   physicsCollider.bounds.min.y >= platformTopY - 0.15f &&
+            while (generation == passThroughGeneration &&
+                   physicsCollider.bounds.min.y >= ignoredPlatformTopY - 0.20f &&
                    Time.realtimeSinceStartup < deadline)
             {
                 await UniTask.NextFrame(cancellationToken);
@@ -170,7 +180,12 @@ public class KinematicMotor2D : MonoBehaviour
         catch (OperationCanceledException) { }
         finally
         {
-            if (generation == passThroughGeneration) isPassThroughActive = false;
+            if (generation == passThroughGeneration)
+            {
+                isPassThroughActive = false;
+                ignoredPlatformCollider = null;
+                ignoredPlatformTopY = float.MinValue;
+            }
         }
     }
 
@@ -197,7 +212,13 @@ public class KinematicMotor2D : MonoBehaviour
     {
         passThroughGeneration++;
         isPassThroughActive = false;
+        ignoredPlatformCollider = null;
+        ignoredPlatformTopY = float.MinValue;
+        groundCollider = null;
         body.position = position;
+        IsGrounded = false;
+        groundNormal = Vector2.up;
+        hasGroundNormalOverride = false;
         Velocity = Vector2.zero;
         targetVelocityX = 0f;
         knockbackVelocityX = 0f;
@@ -209,6 +230,17 @@ public class KinematicMotor2D : MonoBehaviour
     {
         passThroughGeneration++;
         isPassThroughActive = false;
+        ignoredPlatformCollider = null;
+        ignoredPlatformTopY = float.MinValue;
+        groundCollider = null;
+        hasHorizontalMovementBounds = false;
+    }
+
+    public void SetHorizontalMovementBounds(Bounds bounds)
+    {
+        if (physicsCollider == null) InitMotor();
+        horizontalMovementBounds = bounds;
+        hasHorizontalMovementBounds = bounds.size.x > physicsCollider.bounds.size.x;
     }
 
     public void TeleportToSafeGround()
@@ -237,8 +269,10 @@ public class KinematicMotor2D : MonoBehaviour
             InitMotor();
         }
 
+        bool wasGrounded = IsGrounded;
         bool hadGroundNormalOverride = hasGroundNormalOverride;
-        IsGrounded = hadGroundNormalOverride;
+        IsGrounded = hadGroundNormalOverride ||
+            (wasGrounded && (ProbeGround() || IsStillSupportedByGroundCollider()));
         hasGroundNormalOverride = false;
         IsWalledLeft = false;
         IsWalledRight = false;
@@ -286,13 +320,29 @@ public class KinematicMotor2D : MonoBehaviour
         int count = physicsCollider.Cast(Vector2.down, groundWithPlatformFilter, hitBuffer, SkinWidth * 2f);
         for (int i = 0; i < count; i++)
         {
-            if (hitBuffer[i].normal.y > MinGroundNormalY)
+            Collider2D col = hitBuffer[i].collider;
+            if (col == null) continue;
+
+            bool isOneWay = ((1 << col.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                            col.GetComponent<PlatformEffector2D>() != null ||
+                            col.GetComponent<OneWayPlatformPassThrough>() != null;
+
+            if (isOneWay && ShouldIgnoreOneWay(col, hitBuffer[i].point.y))
             {
-                groundNormal = hitBuffer[i].normal;
+                continue;
+            }
+
+            float platformTopY = col is TilemapCollider2D ? hitBuffer[i].point.y : col.bounds.max.y;
+            bool supportsOneWayTop = isOneWay &&
+                physicsCollider.bounds.min.y >= platformTopY - SkinWidth * 2f;
+            if (hitBuffer[i].normal.y > MinGroundNormalY || supportsOneWayTop)
+            {
+                groundNormal = supportsOneWayTop ? Vector2.up : hitBuffer[i].normal;
+                groundCollider = col;
                 Velocity = new Vector2(Velocity.x, 0f);
 
                 // ponytail: record last safe grounded position when touching solid ground (not one-way platform)
-                if (((1 << hitBuffer[i].collider.gameObject.layer) & SolidGroundLayer) != 0)
+                if (((1 << col.gameObject.layer) & SolidGroundLayer) != 0)
                 {
                     LastSafeGroundedPosition = body.position;
                 }
@@ -301,6 +351,20 @@ public class KinematicMotor2D : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private bool IsStillSupportedByGroundCollider()
+    {
+        if (physicsCollider == null || groundCollider == null || !groundCollider.enabled) return false;
+        bool isOneWay = ((1 << groundCollider.gameObject.layer) & OneWayPlatformLayer) != 0 ||
+                        groundCollider.GetComponent<PlatformEffector2D>() != null ||
+                        groundCollider.GetComponent<OneWayPlatformPassThrough>() != null;
+        if (!isOneWay || ShouldIgnoreOneWay(groundCollider, groundCollider.bounds.max.y)) return false;
+        ColliderDistance2D distance = physicsCollider.Distance(groundCollider);
+        if (!distance.isValid || distance.distance > SkinWidth * 2f) return false;
+        groundNormal = Vector2.up;
+        Velocity = new Vector2(Velocity.x, 0f);
+        return true;
     }
 
     // =========================================================================
@@ -351,9 +415,7 @@ public class KinematicMotor2D : MonoBehaviour
         float distance = move.magnitude;
         if (distance < 0.001f) return;
 
-        var filter = (!isPassThroughActive)
-            ? groundWithPlatformFilter
-            : solidFilter;
+        var filter = groundWithPlatformFilter;
 
         int count = physicsCollider.Cast(move.normalized, filter, hitBuffer, distance + SkinWidth);
 
@@ -393,7 +455,7 @@ public class KinematicMotor2D : MonoBehaviour
                 }
 
                 // 3) 하향 통과 키 입력 중 ➔ 발판 아래로 하향 통과
-                if (isPassThroughActive)
+                if (ShouldIgnoreOneWay(hit.collider, platformTopY))
                 {
                     continue;
                 }
@@ -414,10 +476,11 @@ public class KinematicMotor2D : MonoBehaviour
                 }
             }
 
-            if (yMovement && move.y <= 0f && currentNormal.y > MinGroundNormalY && !isPassThroughActive)
+            if (yMovement && move.y <= 0f && currentNormal.y > MinGroundNormalY)
             {
                 IsGrounded = true;
                 groundNormal = currentNormal;
+                groundCollider = hit.collider;
                 currentNormal.x = 0;
             }
 
@@ -464,5 +527,23 @@ public class KinematicMotor2D : MonoBehaviour
 
         distance = Mathf.Max(0f, distance);
         body.position += move.normalized * distance;
+        ClampToHorizontalMovementBounds();
+    }
+
+    private bool ShouldIgnoreOneWay(Collider2D collider, float hitPointY)
+    {
+        if (!isPassThroughActive || collider != ignoredPlatformCollider) return false;
+        float platformTopY = collider is TilemapCollider2D ? hitPointY : collider.bounds.max.y;
+        return platformTopY >= ignoredPlatformTopY - SkinWidth;
+    }
+
+    private void ClampToHorizontalMovementBounds()
+    {
+        if (!hasHorizontalMovementBounds || physicsCollider == null) return;
+        Bounds colliderBounds = physicsCollider.bounds;
+        float centerOffset = colliderBounds.center.x - body.position.x;
+        float minX = horizontalMovementBounds.min.x + colliderBounds.extents.x - centerOffset;
+        float maxX = horizontalMovementBounds.max.x - colliderBounds.extents.x - centerOffset;
+        body.position = new Vector2(Mathf.Clamp(body.position.x, minX, maxX), body.position.y);
     }
 }

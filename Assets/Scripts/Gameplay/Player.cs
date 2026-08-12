@@ -240,7 +240,7 @@ public class Player : UnitBase
         // 1. 하향 점프 (S/Down + C/Space)
         bool isDownPressed = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
         bool isJumpPressedThisFrame = keyboard.cKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame;
-        if (isDownPressed && isJumpPressedThisFrame && isGroundedNow)
+        if (ShouldStartDropThrough(isDownPressed, isJumpPressedThisFrame, isGroundedNow))
         {
             if (motor != null)
             {
@@ -304,6 +304,11 @@ public class Player : UnitBase
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
         }
+    }
+
+    private static bool ShouldStartDropThrough(bool downPressed, bool jumpPressedThisFrame, bool grounded)
+    {
+        return downPressed && jumpPressedThisFrame && grounded;
     }
 
     private bool TryPerformWallJump()

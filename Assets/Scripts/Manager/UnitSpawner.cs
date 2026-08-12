@@ -14,6 +14,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
     public void SpawnUnitsFromMarkers(GameObject roomInstance)
     {
         if (roomInstance == null) return;
+        Bounds? movementBounds = ResolveMovementBounds(roomInstance);
         SpawnPointMarker[] markers = roomInstance.GetComponentsInChildren<SpawnPointMarker>(true);
         if (markers == null || markers.Length == 0)
         {
@@ -51,7 +52,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
         if (playerMarker != null) SpawnPlayerAt(playerMarker.transform.position);
         if (bossMarker != null)
         {
-            SpawnMonsterUnit(bossMarker.MonsterId, bossMarker.transform.position, true);
+            SpawnMonsterUnit(bossMarker.MonsterId, bossMarker.transform.position, true, movementBounds);
             return;
         }
 
@@ -60,7 +61,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
         if (!ValidateSpawnZones(roomInstance, zones, playerMarker != null ? playerMarker.transform : null, out string error))
         {
             Debug.LogError($"[UnitSpawner] Invalid combat SpawnZone layout: {error}");
-            SpawnFallbackOnce(zones, encounter);
+            SpawnFallbackOnce(zones, encounter, movementBounds);
             return;
         }
 
@@ -71,7 +72,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
         for (int i = 0; i < allocation.Length; i++)
         {
             SpawnPointMarker zone = zones[(start + i) % zones.Count];
-            SpawnMonsterUnit(allocation[i], zone.transform.position, false);
+            SpawnMonsterUnit(allocation[i], zone.transform.position, false, movementBounds);
         }
     }
 
@@ -168,11 +169,12 @@ public class UnitSpawner : Singleton<UnitSpawner>
         return run == null || zoneCount == 0 ? 0 : (int)((run.Seed + run.CurrentSlotIdx) % (uint)zoneCount);
     }
 
-    private static void SpawnFallbackOnce(IReadOnlyList<SpawnPointMarker> zones, IReadOnlyList<uint> encounter)
+    private static void SpawnFallbackOnce(IReadOnlyList<SpawnPointMarker> zones, IReadOnlyList<uint> encounter,
+        Bounds? movementBounds)
     {
         if (zones == null || zones.Count == 0 || zones[0] == null || encounter == null || encounter.Count == 0) return;
         UnitSpawner instance = Instance;
-        if (instance != null) instance.SpawnMonsterUnit(encounter[0], zones[0].transform.position, false);
+        if (instance != null) instance.SpawnMonsterUnit(encounter[0], zones[0].transform.position, false, movementBounds);
     }
 
     private static void CleanupExistingUnits()
@@ -185,7 +187,7 @@ public class UnitSpawner : Singleton<UnitSpawner>
         if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.SpawnPlayerAsync(position).Forget();
     }
 
-    private void SpawnMonsterUnit(uint unitIdx, Vector3 position, bool isBoss)
+    private void SpawnMonsterUnit(uint unitIdx, Vector3 position, bool isBoss, Bounds? movementBounds = null)
     {
         if (unitIdx == 0)
         {
@@ -195,8 +197,24 @@ public class UnitSpawner : Singleton<UnitSpawner>
         if (UnitPoolManager.Instance == null) return;
         UnitPoolManager.Instance.SpawnMonsterAsync(unitIdx, position).ContinueWith(monster =>
         {
-            if (monster != null) ConfigureMonsterUIAndRewards(monster, isBoss);
+            if (monster != null)
+            {
+                if (movementBounds.HasValue) monster.SetHorizontalMovementBounds(movementBounds.Value);
+                ConfigureMonsterUIAndRewards(monster, isBoss);
+            }
         }).Forget();
+    }
+
+    private static Bounds? ResolveMovementBounds(GameObject roomInstance)
+    {
+        BoxCollider2D selected = null;
+        foreach (BoxCollider2D candidate in roomInstance.GetComponentsInChildren<BoxCollider2D>(true))
+        {
+            if (!candidate.isTrigger) continue;
+            if (selected == null || candidate.bounds.size.sqrMagnitude > selected.bounds.size.sqrMagnitude)
+                selected = candidate;
+        }
+        return selected != null ? selected.bounds : (Bounds?)null;
     }
 
     private static void ConfigureMonsterUIAndRewards(UnitBase unit, bool isBoss)

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -9,6 +10,57 @@ namespace QA.Tests
 {
     public class Stage1MvpRegressionTests
     {
+        [Test]
+        public void Test_RoomDoorPortal_ConsumesManualPlayerInputOnce()
+        {
+            Player previousPlayer = Player.Instance;
+            var playerProperty = typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+            playerProperty.GetSetMethod(true).Invoke(null, new object[] { null });
+            var portalObject = new GameObject("ManualPortal_QA");
+            var playerObject = new GameObject("PortalPlayer_QA");
+            var monsterObject = new GameObject("PortalMonster_QA");
+            try
+            {
+                RoomDoorPortal portal = portalObject.AddComponent<RoomDoorPortal>();
+                Collider2D playerCollider = playerObject.AddComponent<BoxCollider2D>();
+                Player player = playerObject.AddComponent<Player>();
+                playerProperty.GetSetMethod(true).Invoke(null, new object[] { player });
+                Collider2D monsterCollider = monsterObject.AddComponent<BoxCollider2D>();
+                MethodInfo enter = typeof(RoomDoorPortal).GetMethod("OnTriggerEnter2D", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo exit = typeof(RoomDoorPortal).GetMethod("OnTriggerExit2D", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo consume = typeof(RoomDoorPortal).GetMethod("TryConsumeInteraction", BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo lastFrame = typeof(RoomDoorPortal).GetField("lastInteractionFrame", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Input before trigger entry must be ignored.");
+                enter.Invoke(portal, new object[] { monsterCollider });
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Monster collider must never become a portal candidate.");
+                enter.Invoke(portal, new object[] { playerCollider });
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { false }), "Contact alone must not transition.");
+                Assert.IsTrue((bool)consume.Invoke(portal, new object[] { true }), "W press must be consumed once.");
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Held or duplicate input in one frame must be ignored.");
+
+                lastFrame.SetValue(portal, -1);
+                Assert.IsTrue((bool)consume.Invoke(portal, new object[] { true }), "UpArrow re-press after a failed transition must be accepted.");
+                exit.Invoke(portal, new object[] { playerCollider });
+                lastFrame.SetValue(portal, -1);
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Input outside the trigger must be ignored.");
+                portalObject.SetActive(false);
+                Assert.IsFalse((bool)consume.Invoke(portal, new object[] { true }), "Disabled portal input must be ignored.");
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/RoomDoorPortal.cs");
+                StringAssert.Contains("keyboard.wKey.wasPressedThisFrame", source);
+                StringAssert.Contains("keyboard.upArrowKey.wasPressedThisFrame", source);
+                StringAssert.DoesNotContain("if (!AutoTriggerOnTouch || isTransitioning)", source);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(monsterObject);
+                UnityEngine.Object.DestroyImmediate(playerObject);
+                UnityEngine.Object.DestroyImmediate(portalObject);
+                playerProperty.GetSetMethod(true).Invoke(null, new object[] { previousPlayer });
+            }
+        }
+
         [Test]
         public void Test_BossGate_Access_HasNoProgressOrBuildPowerDependency()
         {
@@ -584,7 +636,7 @@ namespace QA.Tests
                 string spawnerSource = File.ReadAllText("Assets/Scripts/Manager/UnitSpawner.cs");
                 string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
                 StringAssert.Contains("MaximumActiveMonsters = 4", spawnerSource);
-                StringAssert.Contains("SpawnFallbackOnce(zones, encounter)", spawnerSource);
+                StringAssert.Contains("SpawnFallbackOnce(zones, encounter, movementBounds)", spawnerSource);
                 StringAssert.Contains("if (encounter.Length == 0) return;", spawnerSource);
                 StringAssert.Contains("Combat chunk has no SpawnPointMarker", spawnerSource);
                 StringAssert.Contains("GetComponentsInChildren<SpawnPointMarker>(true)", spawnerSource);

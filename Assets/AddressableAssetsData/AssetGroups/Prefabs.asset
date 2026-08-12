@@ -207,6 +207,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fa3b91721e9fca419eed629cee35280
+    m_Address: Projectile_1045
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 72559a18f6eee404b894338a57fb48d0
     m_Address: Module_C4
     m_ReadOnly: 0

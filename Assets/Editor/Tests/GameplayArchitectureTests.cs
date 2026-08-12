@@ -882,6 +882,36 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_MonsterProjectilePatternDataAndGenerationContracts()
+        {
+            var table = new MonsterPatternDataTable();
+            table.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+
+            Assert.IsTrue(table.TryGetPatternData(6005, out var straight));
+            Assert.IsTrue(table.TryGetPatternData(6006, out var low));
+            Assert.AreEqual(7002u, straight.SkillIdx);
+            Assert.AreEqual(1045u, straight.ProjectileResourceIdx);
+            Assert.AreEqual(15f, straight.ProjectileSpeed, 0.01f);
+            Assert.AreEqual(25f, straight.ProjectileMaxDistance, 0.01f);
+            Assert.AreEqual(14f, straight.Damage);
+            Assert.AreEqual(1045u, low.ProjectileResourceIdx);
+            Assert.AreEqual(16f, low.Damage);
+            Assert.AreEqual(25f / 15f, straight.ProjectileMaxDistance / straight.ProjectileSpeed, 0.0001f);
+
+            string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            string pool = File.ReadAllText("Assets/Scripts/Manager/UnitPoolManager.cs");
+            string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/MonsterProjectile2D.cs");
+            StringAssert.Contains("pattern.ProjectileResourceIdx != 0", monster);
+            StringAssert.Contains("pattern.ProjectileResourceIdx == 0", monster);
+            StringAssert.Contains("pattern.Damage", monster);
+            StringAssert.Contains("TryGetResource(resourceIdx", pool);
+            StringAssert.Contains("InstantiateAsyncTask(\n                resourceData.Path", pool);
+            StringAssert.Contains("Collider2D.Cast", projectile.Replace("projectileCollider.Cast", "Collider2D.Cast"));
+            StringAssert.DoesNotContain("SimplePoolManager", projectile);
+            StringAssert.DoesNotContain("Physics.", projectile);
+        }
+
+        [Test]
         public void Test_ProjectileAndEffectPoolsRejectStaleChunkCallbacks()
         {
             string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/Projectile.cs");

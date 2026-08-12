@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 룸/스테이지 관문 포탈 컴포넌트.
@@ -10,11 +12,13 @@ public class RoomDoorPortal : MonoBehaviour
     [Header("Portal Settings")]
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public byte TargetSlotIdx = byte.MaxValue;
-    public bool AutoTriggerOnTouch = true;
+    public bool AutoTriggerOnTouch = false;
     public byte OwnerSlotIdx { get; private set; } = byte.MaxValue;
     public uint RoomGeneration { get; private set; }
 
     private bool isTransitioning = false;
+    private readonly HashSet<Collider2D> playerCandidates = new HashSet<Collider2D>();
+    private int lastInteractionFrame = -1;
 
     private void Start()
     {
@@ -49,15 +53,38 @@ public class RoomDoorPortal : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(1.5f, 2.8f, 0f));
     }
 
+    private void Update()
+    {
+        Keyboard keyboard = Keyboard.current;
+        bool pressed = keyboard != null &&
+            (keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame);
+        if (TryConsumeInteraction(pressed)) TriggerRoomTransitionAsync().Forget();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!AutoTriggerOnTouch || isTransitioning) return;
-
         if (Player.Instance != null &&
             (collision.transform == Player.Instance.transform || collision.transform.IsChildOf(Player.Instance.transform)))
-        {
-            TriggerRoomTransitionAsync().Forget();
-        }
+            playerCandidates.Add(collision);
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        playerCandidates.Remove(collision);
+    }
+
+    private void OnDisable()
+    {
+        playerCandidates.Clear();
+        isTransitioning = false;
+    }
+
+    private bool TryConsumeInteraction(bool pressed)
+    {
+        if (!pressed || !isActiveAndEnabled || isTransitioning || playerCandidates.Count == 0 ||
+            lastInteractionFrame == Time.frameCount) return false;
+        lastInteractionFrame = Time.frameCount;
+        return true;
     }
 
     public async UniTaskVoid TriggerRoomTransitionAsync()

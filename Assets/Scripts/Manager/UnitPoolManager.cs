@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Gameplay.Combat;
 
 /// <summary>
 /// 유닛 전용 오브젝트 풀링 매니저.
@@ -13,6 +14,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     private const uint PlayerUnitIdx = 3001;
     private readonly Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
     private readonly List<Monster> activeMonsterList = new List<Monster>();
+    private readonly Dictionary<uint, Queue<MonsterProjectile2D>> projectilePools = new Dictionary<uint, Queue<MonsterProjectile2D>>();
+    private readonly HashSet<MonsterProjectile2D> activeProjectiles = new HashSet<MonsterProjectile2D>();
 
     public async UniTask<Player> SpawnPlayerAsync(Vector3 position)
     {
@@ -121,6 +124,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
 
     public void DespawnAllMonsters()
     {
+        DespawnAllProjectiles();
         for (int i = activeMonsterList.Count - 1; i >= 0; i--)
         {
             var monster = activeMonsterList[i];
@@ -131,6 +135,93 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             }
         }
         activeMonsterList.Clear();
+    }
+
+    public async UniTask<MonsterProjectile2D> SpawnMonsterProjectileAsync(
+        uint resourceIdx, Monster owner, uint ownerGeneration, Vector2 position,
+        Vector2 direction, float speed, float maxDistance, float damage)
+    {
+        if (resourceIdx == 0) return null;
+        if (speed <= 0f || maxDistance <= 0f)
+        {
+            Debug.LogError($"[UnitPoolManager] Invalid projectile motion for ResourceData idx {resourceIdx}: speed={speed}, maxDistance={maxDistance}.");
+            return null;
+        }
+
+        var resourceTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource)
+            : null;
+        if (resourceTable == null || !resourceTable.TryGetResource(resourceIdx, out var resourceData))
+        {
+            Debug.LogError($"[UnitPoolManager] Missing projectile ResourceData idx {resourceIdx}.");
+            return null;
+        }
+        if (string.IsNullOrWhiteSpace(resourceData.Path))
+        {
+            Debug.LogError($"[UnitPoolManager] Empty projectile ResourceData path at idx {resourceIdx}.");
+            return null;
+        }
+
+        MonsterProjectile2D projectile = null;
+        if (projectilePools.TryGetValue(resourceIdx, out var queue))
+            while (queue.Count > 0 && projectile == null) projectile = queue.Dequeue();
+
+        if (projectile == null)
+        {
+            if (ResourceManager.Instance == null)
+            {
+                Debug.LogError($"[UnitPoolManager] ResourceManager is unavailable for projectile ResourceData idx {resourceIdx}.");
+                return null;
+            }
+            GameObject instance = await ResourceManager.Instance.InstantiateAsyncTask(
+                resourceData.Path, null, position, Quaternion.identity);
+            if (instance == null) return null;
+            projectile = instance.GetComponent<MonsterProjectile2D>();
+            if (projectile == null)
+            {
+                Debug.LogError($"[UnitPoolManager] Projectile ResourceData idx {resourceIdx} has no MonsterProjectile2D component.");
+                ResourceManager.Instance.ReleaseInstance(instance);
+                return null;
+            }
+        }
+
+        if (owner == null || !owner.IsActionGenerationCurrent(ownerGeneration))
+        {
+            ReturnProjectile(resourceIdx, projectile);
+            return null;
+        }
+
+        activeProjectiles.Add(projectile);
+        projectile.Activate(resourceIdx, owner, ownerGeneration, position, direction, speed, maxDistance, damage);
+        return projectile;
+    }
+
+    public void DespawnProjectilesOwnedBy(Monster owner)
+    {
+        if (owner == null || activeProjectiles.Count == 0) return;
+        var snapshot = new List<MonsterProjectile2D>(activeProjectiles);
+        foreach (var projectile in snapshot)
+            if (projectile != null && projectile.Owner == owner) projectile.ReturnToPool();
+    }
+
+    public void DespawnAllProjectiles()
+    {
+        if (activeProjectiles.Count == 0) return;
+        var snapshot = new List<MonsterProjectile2D>(activeProjectiles);
+        foreach (var projectile in snapshot) if (projectile != null) projectile.ReturnToPool();
+        activeProjectiles.Clear();
+    }
+
+    public void ReturnProjectile(uint resourceIdx, MonsterProjectile2D projectile)
+    {
+        if (projectile == null || (!activeProjectiles.Remove(projectile) && !projectile.gameObject.activeSelf)) return;
+        projectile.gameObject.SetActive(false);
+        if (!projectilePools.TryGetValue(resourceIdx, out var queue))
+        {
+            queue = new Queue<MonsterProjectile2D>();
+            projectilePools.Add(resourceIdx, queue);
+        }
+        if (!queue.Contains(projectile)) queue.Enqueue(projectile);
     }
 
     private GameObject GetFromPool(string key)
