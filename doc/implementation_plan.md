@@ -88,6 +88,7 @@
 | 2026-08-11 | 프로젝트 공식 CSV(`UnitBaseData.csv`) 유닛/보스(보스 Garon `3201`, SpearSentry `3101` 등 6종) 데이터 정밀 검증 및 2D 프레임 스프라이트 시트(Sprite Sheet) 전용 AI 도구(RetroDiffusion, PixelLab, SpriteDiffusion) 구축 완료 | `doc/specs/ai_sprite_sheet_tools_research.md` 신설 |
 | 2026-08-12 | 3D 모델 애니메이션(.fbx, .gltf) ➔ 2D 스프라이트 시트(.png) 자동 변환 파이프라인(Blender+Pixelizer 셰이더, Unity Sprite Baking Studio, PixelOver) 수립 완료 | `doc/specs/3d_to_2d_sprite_sheet_pipeline.md` 신설 |
 | 2026-08-12 | 유니티 MCP 기반 3D 파츠 조합 ➔ 몬스터 뼈대(Bone Transform) 변환 ➔ 2D Sprite Sheet (.png) 인엔진 자동 추출 파이프라인 검토(100% 구현 가능 확인) 완료 | `doc/specs/unity_mcp_3d_to_2d_baker_evaluation.md` 신설 |
+| 2026-08-12 | 3D 애니메이션 동작(Motion) AI 자동 생성(Plask, DeepMotion, Mixamo Retargeting, C# Procedural Animation) 검토(100% 자동 생성 가능 확인) 완료 | `doc/specs/3d_animation_motion_generation_evaluation.md` 신설 |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -453,3 +454,10 @@
 
 - **100% 인엔진 자동화 검토 완결**: Unity MCP(`unityMCP`) 도구와 유니티 C# 에디터 자동화 스크립트(`SpriteBakingStudio.cs`)를 연동하여 3D 파츠 조합, 몬스터 뼈대 스케일/회전 변환, 직교 카메라 2D 사이드뷰 세팅, 오프스크린 RenderTexture 128x128 캡처 및 PNG 스프라이트 시트 내보내기가 100% 완전 자동 구현 가능함을 기술 검증.
 - **무한 몬스터 파생 제작 환경 검증**: 3D 베이스 모델 1종으로 뼈대 변환 및 파츠 조합만으로 2D 몬스터 스프라이트 시트 20종 이상을 인엔진에서 자동 렌더링 양산하는 파이프라인 설계서([unity_mcp_3d_to_2d_baker_evaluation.md](file:///c:/Users/PC/Projects/TP2/doc/specs/unity_mcp_3d_to_2d_baker_evaluation.md)) 수립 완료.
+
+---
+
+### 2026-08-12 KST — 3D 애니메이션 동작(Motion) AI 자동 생성 파이프라인 수립 회고
+
+- **100% 모션 자동 생성 검토 완결**: ① AI Video-to-Motion(Plask.ai/DeepMotion)을 통한 비디오 키프레임 10초 내 자동 추출, ② Mixamo 라이브러리 애니메이션 수천 종의 인엔진 자동 리타겟팅, ③ Unity C# 절차적 애니메이션(`AnimationMotionGenerator.cs`)을 연동한 3D 동작 자동 생성 기술 검증 완료.
+- **수작업 애니메이팅 0% 파이프라인 구축**: 수작업 드로잉 및 수작업 애니메이팅 없이 3D 파츠 결합 ➔ 3D 모션 자동 인계 ➔ 2D Sprite Sheet (.png) 출력이 완전 자동화된 기술 보고서([3d_animation_motion_generation_evaluation.md](file:///c:/Users/PC/Projects/TP2/doc/specs/3d_animation_motion_generation_evaluation.md)) 수립 완결.
