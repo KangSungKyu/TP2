@@ -1083,7 +1083,7 @@ public static class ModuleChunkBuilder
             if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
                 chunkName == "Room_11052" || chunkName == "Room_11053")
                 AddCombatSpawnZones(gridRoot.transform, gMap, pMap, platTile, worldWidth, worldHeight);
-            ApplyStage1ShortRunFixes(chunkName, pMap, platTile);
+            ApplyStage1ShortRunFixes(chunkName, gMap, pMap, groundTile, platTile);
 
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
             if (!ValidateGeneratedRoom(gridRoot, gMap, pMap, worldWidth, worldHeight, out string rejectReason))
@@ -1099,12 +1099,26 @@ public static class ModuleChunkBuilder
         Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 가변 NxM 룸 청크 11종 재빌드 완료!</color>");
     }
 
-    private static void ApplyStage1ShortRunFixes(string chunkName, Tilemap platforms, Tile platformTile)
+    private static void ApplyStage1ShortRunFixes(string chunkName, Tilemap ground, Tilemap platforms,
+        Tile groundTile, Tile platformTile)
     {
         void SetRun(int y, int fromX, int toX)
         {
             for (int x = fromX; x <= toX; x++)
                 platforms.SetTile(new Vector3Int(x, y, 0), platformTile);
+        }
+
+        void ClearRun(int y, int fromX, int toX)
+        {
+            for (int x = fromX; x <= toX; x++)
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+        }
+
+        void SetSolidRun(int y, int fromX, int toX)
+        {
+            ClearRun(y, fromX, toX);
+            for (int x = fromX; x <= toX; x++)
+                ground.SetTile(new Vector3Int(x, y, 0), groundTile);
         }
 
         switch (chunkName)
@@ -1121,7 +1135,13 @@ public static class ModuleChunkBuilder
                 SetRun(9, 5, 7);
                 SetRun(11, 9, 11);
                 break;
-            case "Room_11056": SetRun(1, 0, 2); break;
+            case "Room_11056":
+                SetSolidRun(1, -9, -3);
+                SetSolidRun(1, 0, 2);
+                ClearRun(1, 10, 12);
+                SetSolidRun(2, -8, -6);
+                SetSolidRun(2, -2, 0);
+                break;
             case "Room_11063":
                 SetRun(5, -12, -10);
                 SetRun(7, -9, -7);
