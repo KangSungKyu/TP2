@@ -18,6 +18,9 @@ public class UnitBase : MonoBehaviour
     public uint UnitIdx { get; protected set; }
     public uint UnitId => UnitIdx;
     public CombatStats Stats => stats;
+    public FactionType Faction => UnitData != null ? (FactionType)UnitData.Faction :
+        (this is Player ? FactionType.PlayerAlly : this is Monster ? FactionType.Enemy : FactionType.None);
+    public virtual uint ActionGeneration => 0;
 
 
     // =========================================================================
@@ -83,6 +86,11 @@ public class UnitBase : MonoBehaviour
             visualTransform.localScale = new Vector3(1f, scaleY, scaleZ);
         }
     }
+
+    public void SetGuarding(bool state) => stats?.SetGuarding(state);
+    public void SetParrying(bool state) => stats?.SetParrying(state);
+    public void SetDodging(bool state) => stats?.SetDodging(state);
+    public virtual bool IsActionGenerationCurrent(uint generation) => generation == 0 && isActiveAndEnabled;
 
     /// <summary>
     /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
@@ -219,6 +227,7 @@ public class UnitBase : MonoBehaviour
         hitCollider.size = new Vector2(radius * 2f, height);
         hitCollider.offset = new Vector2(0f, height * 0.5f);
         hitCollider.direction = CapsuleDirection2D.Vertical;
+        stats?.SetDefenseBodyCollider(hitCollider);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         SetupGameViewHitboxLine(data, radius * 2f, height, new Vector2(0f, height * 0.5f));

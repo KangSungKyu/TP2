@@ -138,7 +138,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     }
 
     public async UniTask<MonsterProjectile2D> SpawnMonsterProjectileAsync(
-        uint resourceIdx, Monster owner, uint ownerGeneration, Vector2 position,
+        uint resourceIdx, UnitBase owner, uint ownerGeneration, Vector2 position,
         Vector2 direction, float speed, float maxDistance, float damage)
     {
         if (resourceIdx == 0) return null;
@@ -196,7 +196,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         return projectile;
     }
 
-    public void DespawnProjectilesOwnedBy(Monster owner)
+    public void DespawnProjectilesOwnedBy(UnitBase owner)
     {
         if (owner == null || activeProjectiles.Count == 0) return;
         var snapshot = new List<MonsterProjectile2D>(activeProjectiles);

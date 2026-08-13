@@ -67,29 +67,38 @@ namespace QA.Tests
                 SetSingletonInstance(pool);
 
                 ownerObject = new GameObject("ProjectileOwner_QA");
-                ownerObject.transform.position = new Vector3(-10f, 0f);
+                ownerObject.transform.position = new Vector3(-10f, 10f);
                 ownerObject.AddComponent<CombatStats>();
                 var owner = ownerObject.AddComponent<Monster>();
 
                 typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
                     .GetSetMethod(true).Invoke(null, new object[] { null });
                 playerObject = new GameObject("ProjectileTarget_QA");
-                playerObject.transform.position = new Vector3(2f, 0f);
-                playerObject.AddComponent<BoxCollider2D>().size = Vector2.one;
+                playerObject.transform.position = new Vector3(2f, 10f);
+                var playerCollider = playerObject.AddComponent<BoxCollider2D>();
+                playerCollider.size = Vector2.one;
                 var playerStats = playerObject.AddComponent<CombatStats>();
                 playerStats.MaxHp = 100f;
                 playerStats.InitStats();
-                playerObject.AddComponent<Player>();
+                playerStats.SetDefenseBodyCollider(playerCollider);
+                var player = playerObject.AddComponent<Player>();
+                typeof(Player).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(player, null);
                 Physics2D.SyncTransforms();
+                Assert.AreSame(player, Player.Instance, "Fixture must reproduce Player.Awake singleton initialization.");
+                Assert.AreSame(playerStats, player.Stats, "Fixture must reproduce UnitBase combat stats binding.");
+                Assert.AreEqual(new Vector3(2f, 10f), player.transform.position);
+                Assert.IsTrue(playerObject.GetComponent<BoxCollider2D>().enabled);
 
                 uint generation = GetGeneration(owner);
-                var firstTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, Vector2.zero,
+                var firstTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, new Vector2(0f, 10f),
                     Vector2.right, 15f, 25f, 14f).AsTask();
                 await firstTask;
                 Assert.IsFalse(firstTask.IsFaulted, firstTask.Exception?.ToString());
                 MonsterProjectile2D first = firstTask.Result;
                 Assert.NotNull(first);
                 instantiated.Add(first.gameObject);
+                Assert.AreEqual(10f, first.transform.position.y);
                 Assert.AreEqual(15f, first.Speed, 0.01f);
                 Assert.AreEqual(25f, first.MaxDistance, 0.01f);
 
@@ -99,12 +108,15 @@ namespace QA.Tests
                     fixedUpdate.Invoke(first, null);
                     Physics2D.SyncTransforms();
                 }
+                Assert.AreSame(player, Player.Instance);
+                Assert.AreSame(playerStats, Player.Instance.Stats);
+                Assert.AreEqual(new Vector3(2f, 10f), player.transform.position);
                 Assert.AreEqual(86f, playerStats.CurrentHp, 0.01f, "Pattern damage 14 must be authoritative.");
                 AssertQueueCount(pool, 1045, 1);
 
                 playerStats.InitStats();
                 generation = GetGeneration(owner);
-                var secondTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, Vector2.zero,
+                var secondTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, new Vector2(0f, 10f),
                     Vector2.right, 15f, 25f, 16f).AsTask();
                 await secondTask;
                 MonsterProjectile2D second = secondTask.Result;
@@ -118,11 +130,11 @@ namespace QA.Tests
                 Assert.AreEqual(84f, playerStats.CurrentHp, 0.01f, "Pattern damage 16 must be authoritative.");
                 AssertQueueCount(pool, 1045, 1);
 
-                playerObject.transform.position = new Vector3(100f, 0f);
+                playerObject.transform.position = new Vector3(100f, 10f);
                 playerStats.InitStats();
                 Physics2D.SyncTransforms();
                 generation = GetGeneration(owner);
-                var distanceTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, Vector2.zero,
+                var distanceTask = pool.SpawnMonsterProjectileAsync(1045, owner, generation, new Vector2(0f, 10f),
                     Vector2.right, 15f, 25f, 16f).AsTask();
                 await distanceTask;
                 MonsterProjectile2D distanceProjectile = distanceTask.Result;

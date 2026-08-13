@@ -33,6 +33,7 @@ public class Monster : UnitBase
     private bool holdsAttackToken;
     private uint actionGeneration;
     public static int ActiveAttackTokens => activeAttackTokens;
+    public override uint ActionGeneration => actionGeneration;
 
 
     // =========================================================================
@@ -192,7 +193,7 @@ public class Monster : UnitBase
         }
     }
 
-    public bool IsActionGenerationCurrent(uint generation)
+    public override bool IsActionGenerationCurrent(uint generation)
     {
         return generation == actionGeneration && isActiveAndEnabled && !deathSequenceActive;
     }
@@ -390,6 +391,7 @@ public class Monster : UnitBase
         }
 
         uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
+        bool timedAttack = false;
 
         if (skillExecutor != null && CanAct(generation))
         {
@@ -423,9 +425,12 @@ public class Monster : UnitBase
         {
             Color effectColor = new Color(1f, 0f, 0f, 0.4f);
             skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
+            timedAttack = await skillExecutor.ExecuteSkillHitsAsync(
+                patternSkillId, this, playerTarget != null ? playerTarget.GetComponent<UnitBase>() : null,
+                pattern.Damage, cancellationToken);
         }
 
-        if (pattern.ProjectileResourceIdx == 0 && playerTarget != null && CanAct(generation))
+        if (!timedAttack && pattern.ProjectileResourceIdx == 0 && playerTarget != null && CanAct(generation))
         {
             var pStats = playerTarget.GetComponent<CombatStats>();
             if (pStats != null && Vector3.Distance(transform.position, playerTarget.position) <= (attackRange + 0.5f))
