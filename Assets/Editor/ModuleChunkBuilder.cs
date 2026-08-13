@@ -356,6 +356,36 @@ public static class ModuleChunkBuilder
             "............",
             "############",
             "############"
+        },
+        ["Module_M1_LandmarkConnector"] = new string[] {
+            "............", "....===.....", "............", "............",
+            "........===.", "............", ".===........", "............",
+            "S..........E", "............", "############", "############"
+        },
+        ["Module_M2_LandmarkConnector"] = new string[] {
+            "............", "........===.", "............", "...====.....",
+            "............", "............", ".===........", "............",
+            "S..........E", "............", "############", "############"
+        },
+        ["Module_N1_VerticalReturnLoop"] = new string[] {
+            "...===......", "............", "........===.", "............",
+            "....===.....", "............", ".===........", "............",
+            "S..........E", "............", "############", "############"
+        },
+        ["Module_N2_VerticalReturnLoop"] = new string[] {
+            ".......===..", "............", "..===.......", "............",
+            "......===...", "............", ".........===", "............",
+            "S..........E", "............", "############", "############"
+        },
+        ["Module_O1_SplitLevelCombatPocket"] = new string[] {
+            "............", "............", "............", ".===.....===",
+            "............", "............", "....====....", "............",
+            "S..........E", "............", "############", "############"
+        },
+        ["Module_O2_SplitLevelCombatPocket"] = new string[] {
+            "............", "............", "....====....", "............",
+            "............", "===......===", "............", "............",
+            "S..........E", "............", "############", "############"
         }
     };
 
@@ -433,6 +463,14 @@ public static class ModuleChunkBuilder
 
     private static ModuleRole GetModuleRole(string[] template)
     {
+        foreach (var pair in ModuleTemplates)
+        {
+            if (!ReferenceEquals(pair.Value, template)) continue;
+            if (pair.Key.Contains("LandmarkConnector")) return ModuleRole.Connector;
+            if (pair.Key.Contains("VerticalReturnLoop")) return ModuleRole.ReturnShaft;
+            if (pair.Key.Contains("SplitLevelCombatPocket")) return ModuleRole.CombatPocket;
+            break;
+        }
         uint hash = 2166136261u;
         foreach (string row in template)
             foreach (char cell in row)
@@ -542,6 +580,24 @@ public static class ModuleChunkBuilder
         RebuildStage1RoomChunks();
     }
 
+    public static void RebuildStage1ExpansionModules()
+    {
+        const string tilesDir = "Assets/Textures/Environment/Tiles";
+        Build12x12ModulePrefabs(
+            "Assets/Prefabs/Modules",
+            AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset"),
+            AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset"),
+            AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat"),
+            AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SpikeTrap.png"),
+            AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SawBladeTrap.png"),
+            new HashSet<string> {
+                "Module_M1_LandmarkConnector", "Module_M2_LandmarkConnector",
+                "Module_N1_VerticalReturnLoop", "Module_N2_VerticalReturnLoop",
+                "Module_O1_SplitLevelCombatPocket", "Module_O2_SplitLevelCombatPocket"
+            });
+        AssetDatabase.SaveAssets();
+    }
+
     public static void RebuildStage1RoomChunk(string chunkName)
     {
         const string tilesDir = "Assets/Textures/Environment/Tiles";
@@ -645,11 +701,13 @@ public static class ModuleChunkBuilder
         return loaded;
     }
 
-    private static void Build12x12ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite)
+    private static void Build12x12ModulePrefabs(string modulesDir, Tile groundTile, Tile platTile, Material mat, Sprite spikeSprite, Sprite sawSprite,
+        ISet<string> onlyModules = null)
     {
         foreach (var kvp in ModuleTemplates)
         {
             string modName = kvp.Key;
+            if (onlyModules != null && !onlyModules.Contains(modName)) continue;
             string[] layout = kvp.Value;
             if (layout == null || layout.Length < 12) continue;
 

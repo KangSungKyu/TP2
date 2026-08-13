@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,11 @@ public sealed class ProductionMainHUD : MonoBehaviour
     [Header("Stage")]
     [SerializeField] private TMP_Text stageProgressText;
     [SerializeField] private AlertMessage alertMessage;
+    [Header("Attack Telegraph")]
+    [SerializeField] private CanvasGroup attackTelegraphGroup;
+    [SerializeField] private Image attackTelegraphFill;
+    [SerializeField] private Color attackTelegraphWarningColor = Color.white;
+    [SerializeField] private Color attackTelegraphActiveColor = Color.red;
 
     private CombatStats playerStats;
     private Monster activeMonster;
@@ -30,6 +36,8 @@ public sealed class ProductionMainHUD : MonoBehaviour
     private BossMonster activeBoss;
     private CombatStats bossStats;
     private StageManager stageManager;
+    private readonly Dictionary<Monster, Monster.AttackTelegraph> attackTelegraphs =
+        new Dictionary<Monster, Monster.AttackTelegraph>();
 
     private void OnEnable()
     {
@@ -40,6 +48,9 @@ public sealed class ProductionMainHUD : MonoBehaviour
         Player.Deactivated += OnPlayerDeactivated;
         Monster.Activated += OnMonsterActivated;
         Monster.Deactivated += OnMonsterDeactivated;
+        Monster.AttackTelegraphStarted += OnAttackTelegraphStarted;
+        Monster.AttackTelegraphEnded += OnAttackTelegraphEnded;
+        SetVisible(attackTelegraphGroup, false);
         BindSceneState();
     }
 
@@ -49,10 +60,59 @@ public sealed class ProductionMainHUD : MonoBehaviour
         Player.Deactivated -= OnPlayerDeactivated;
         Monster.Activated -= OnMonsterActivated;
         Monster.Deactivated -= OnMonsterDeactivated;
+        Monster.AttackTelegraphStarted -= OnAttackTelegraphStarted;
+        Monster.AttackTelegraphEnded -= OnAttackTelegraphEnded;
+        attackTelegraphs.Clear();
+        SetVisible(attackTelegraphGroup, false);
         BindPlayer(null);
         BindMonster(null);
         BindBoss(null);
         BindStageManager(null);
+    }
+
+    private void Update()
+    {
+        Monster.AttackTelegraph selected = default;
+        bool hasSelection = false;
+        float now = Time.time;
+        foreach (Monster.AttackTelegraph candidate in attackTelegraphs.Values)
+        {
+            if (candidate.Source == null || !candidate.Source.isActiveAndEnabled ||
+                !candidate.Source.IsActionGenerationCurrent(candidate.Generation) ||
+                now > candidate.ActiveEndsAt) continue;
+            if (!hasSelection || candidate.ImpactAt < selected.ImpactAt)
+            {
+                selected = candidate;
+                hasSelection = true;
+            }
+        }
+
+        bool visible = hasSelection && now >= selected.WarningStartsAt && now <= selected.ActiveEndsAt;
+        SetVisible(attackTelegraphGroup, visible);
+        if (!visible || attackTelegraphFill == null) return;
+
+        attackTelegraphFill.fillAmount = CalculateAttackTelegraphFill(
+            now, selected.WarningStartsAt, selected.ImpactAt);
+        attackTelegraphFill.color = now >= selected.ImpactAt
+            ? attackTelegraphActiveColor : attackTelegraphWarningColor;
+    }
+
+    private void OnAttackTelegraphStarted(Monster.AttackTelegraph telegraph)
+    {
+        if (telegraph.Source != null) attackTelegraphs[telegraph.Source] = telegraph;
+    }
+
+    private void OnAttackTelegraphEnded(Monster source, uint generation)
+    {
+        if (source != null && attackTelegraphs.TryGetValue(source, out Monster.AttackTelegraph current) &&
+            current.Generation == generation) attackTelegraphs.Remove(source);
+    }
+
+    public static float CalculateAttackTelegraphFill(float now, float warningStartsAt, float impactAt)
+    {
+        float duration = impactAt - warningStartsAt;
+        return now >= impactAt || duration <= 0f
+            ? 1f : Mathf.Clamp01((now - warningStartsAt) / duration);
     }
 
     public void BindSceneState()

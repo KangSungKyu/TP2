@@ -1317,7 +1317,8 @@ namespace QA.Tests
                 StringAssert.Contains("bossStats.OnHpChanged.RemoveListener", hudSource);
                 StringAssert.Contains("stageManager.ProgressChanged += SetStageProgress", hudSource);
                 StringAssert.Contains("alertMessage.Show(textIdx", hudSource);
-                Assert.IsFalse(Regex.IsMatch(hudSource, @"\b(Update|OnGUI)\s*\("));
+                Assert.IsFalse(Regex.IsMatch(hudSource, @"\bOnGUI\s*\("));
+                StringAssert.Contains("attackTelegraphFill.fillAmount = CalculateAttackTelegraphFill", hudSource);
                 StringAssert.DoesNotContain("new GameObject", hudSource);
                 StringAssert.DoesNotContain("Find", hudSource);
                 StringAssert.DoesNotContain("CoreTestHUD", mainSource);

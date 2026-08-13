@@ -429,9 +429,29 @@ namespace QA.Tests
             var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
                 .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             string[] generatedModules = templates.Keys.Select(name => $"Assets/Prefabs/Modules/{name}.prefab").ToArray();
-            Assert.AreEqual(46, generatedModules.Length, "The authoritative generator must produce the approved 2x module set.");
+            Assert.AreEqual(52, generatedModules.Length, "The authoritative generator must produce the approved expanded module set.");
             foreach (string path in generatedModules) AssertModulePhysics(path);
             foreach (string path in RoomPaths) AssertRoomContracts(path);
+        }
+
+        [Test]
+        public void ExpansionModules_SourceAndPrefabContractsAreComplete()
+        {
+            var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
+                .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            string[] names = { "Module_M1_LandmarkConnector", "Module_M2_LandmarkConnector",
+                "Module_N1_VerticalReturnLoop", "Module_N2_VerticalReturnLoop",
+                "Module_O1_SplitLevelCombatPocket", "Module_O2_SplitLevelCombatPocket" };
+            foreach (string name in names)
+            {
+                Assert.IsTrue(templates.TryGetValue(name, out string[] layout), name);
+                Assert.AreEqual(12, layout.Length, name);
+                Assert.IsTrue(layout.All(row => row.Length == 12), name);
+                Assert.GreaterOrEqual(layout.Sum(row => row.Count(cell => cell == '=')), 3, name);
+                Assert.AreEqual("############", layout[10], name);
+                Assert.AreEqual("############", layout[11], name);
+                AssertModulePhysics($"Assets/Prefabs/Modules/{name}.prefab");
+            }
         }
 
         [Test]
@@ -453,7 +473,7 @@ namespace QA.Tests
                     covered.Add(first);
                 }
 
-            Assert.AreEqual(46, covered.Count, "Every authoritative template must be selectable within 200 seeds.");
+            Assert.AreEqual(52, covered.Count, "Every authoritative template must be selectable within 200 seeds.");
 
             string[] fallback = templates.Values.First();
             string[] invalid = fallback.Concat(new[] { string.Empty }).ToArray();
@@ -468,7 +488,7 @@ namespace QA.Tests
             var templates = (Dictionary<string, string[]>)typeof(ModuleChunkBuilder)
                 .GetField("ModuleTemplates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             string[] names = templates.Keys.OrderBy(name => name).ToArray();
-            Assert.AreEqual(46, names.Length);
+            Assert.AreEqual(52, names.Length);
             var instances = new List<GameObject>();
             try
             {

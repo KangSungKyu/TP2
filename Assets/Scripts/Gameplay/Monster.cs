@@ -11,6 +11,29 @@ using UnityEngine;
 /// </summary>
 public class Monster : UnitBase
 {
+    public readonly struct AttackTelegraph
+    {
+        public readonly Monster Source;
+        public readonly uint Generation;
+        public readonly float WarningStartsAt;
+        public readonly float ImpactAt;
+        public readonly float ActiveEndsAt;
+
+        public AttackTelegraph(Monster source, uint generation, float warningStartsAt,
+            float impactAt, float activeEndsAt)
+        {
+            Source = source;
+            Generation = generation;
+            WarningStartsAt = warningStartsAt;
+            ImpactAt = impactAt;
+            ActiveEndsAt = activeEndsAt;
+        }
+    }
+
+    public const float AttackTelegraphLeadSeconds = 1.5f;
+    private const float FallbackAttackEffectDuration = 0.2f;
+    public static event Action<AttackTelegraph> AttackTelegraphStarted;
+    public static event Action<Monster, uint> AttackTelegraphEnded;
     // =========================================================================
     // 1. PUBLIC FIELDS & PROPERTIES (PascalCase)
     // =========================================================================
@@ -32,6 +55,8 @@ public class Monster : UnitBase
     private static int activeAttackTokens;
     private bool holdsAttackToken;
     private uint actionGeneration;
+    private uint telegraphGeneration;
+    private bool telegraphActive;
     public static int ActiveAttackTokens => activeAttackTokens;
     public override uint ActionGeneration => actionGeneration;
 
@@ -75,6 +100,7 @@ public class Monster : UnitBase
 
     protected virtual void OnDisable()
     {
+        EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         ReleaseAttackToken();
@@ -122,6 +148,7 @@ public class Monster : UnitBase
     {
         if (deathSequenceActive) return;
         deathSequenceActive = true;
+        EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         ReleaseAttackToken();
@@ -383,14 +410,22 @@ public class Monster : UnitBase
         try
         {
         SetFacingRight(playerTarget.position.x >= transform.position.x);
-        if (pattern.PreDelay > 0f)
+        uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
+        GetAttackTiming(patternSkillId, pattern.ProjectileResourceIdx != 0,
+            out float firstHitTiming, out float activeDuration);
+        float effectivePreDelay = CalculateEffectivePreDelay(pattern.PreDelay, firstHitTiming);
+        float attackSequenceStartedAt = Time.time;
+        float impactAt = attackSequenceStartedAt + effectivePreDelay + firstHitTiming;
+        BeginAttackTelegraph(generation, impactAt - AttackTelegraphLeadSeconds,
+            impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration);
+
+        if (effectivePreDelay > 0f)
         {
-            int preMs = Mathf.RoundToInt(pattern.PreDelay * 1000f);
+            int preMs = Mathf.RoundToInt(effectivePreDelay * 1000f);
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
             if (!CanAct(generation)) return;
         }
 
-        uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
         bool timedAttack = false;
 
         if (skillExecutor != null && CanAct(generation))
@@ -420,14 +455,21 @@ public class Monster : UnitBase
                 pattern.ProjectileResourceIdx, this, generation, spawnPos, direction,
                 pattern.ProjectileSpeed, pattern.ProjectileMaxDistance, pattern.Damage);
             if (!CanAct(generation)) return;
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
         else if (skillExecutor != null)
         {
             Color effectColor = new Color(1f, 0f, 0f, 0.4f);
-            skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
+            skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, FallbackAttackEffectDuration, FactionType.Enemy, effectColor);
             timedAttack = await skillExecutor.ExecuteSkillHitsAsync(
                 patternSkillId, this, playerTarget != null ? playerTarget.GetComponent<UnitBase>() : null,
                 pattern.Damage, cancellationToken);
+            if (timedAttack && activeDuration > 0f)
+            {
+                float remainingWindow = attackSequenceStartedAt + effectivePreDelay + activeDuration - Time.time;
+                if (remainingWindow > 0f)
+                    await UniTask.Delay(Mathf.RoundToInt(remainingWindow * 1000f), cancellationToken: cancellationToken);
+            }
         }
 
         if (!timedAttack && pattern.ProjectileResourceIdx == 0 && playerTarget != null && CanAct(generation))
@@ -437,7 +479,10 @@ public class Monster : UnitBase
             {
                 pStats.TakeDamage(pattern.Damage, isGroundAttack: false, isJumped: false, attacker: stats);
             }
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
+
+        EndAttackTelegraph(generation);
 
         if (pattern.Cooldown > 0f)
         {
@@ -455,6 +500,7 @@ public class Monster : UnitBase
         }
         finally
         {
+            EndAttackTelegraph(generation);
             ReleaseAttackToken();
         }
     }
@@ -474,15 +520,23 @@ public class Monster : UnitBase
             try
             {
             SetAnimState(7);
+            float impactAt = Time.time + AttackTelegraphLeadSeconds;
+            BeginAttackTelegraph(generation, Time.time, impactAt, impactAt + Time.fixedDeltaTime);
+            await UniTask.Delay(Mathf.RoundToInt(AttackTelegraphLeadSeconds * 1000f),
+                cancellationToken: cancellationToken);
+            if (!CanAct(generation)) return;
             var pStats = playerTarget.GetComponent<CombatStats>();
             if (pStats != null && CanAct(generation))
             {
                 pStats.TakeDamage(10f, isGroundAttack: false, isJumped: false, attacker: stats);
             }
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            EndAttackTelegraph(generation);
             await UniTask.Delay(1500, cancellationToken: cancellationToken);
             }
             finally
             {
+                EndAttackTelegraph(generation);
                 ReleaseAttackToken();
             }
         }
@@ -529,6 +583,7 @@ public class Monster : UnitBase
 
     private void OnGroggyStarted()
     {
+        EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         ReleaseAttackToken();
         if (skillExecutor != null) skillExecutor.CancelActiveEffects();
@@ -549,6 +604,42 @@ public class Monster : UnitBase
     {
         if (animator == null || animator.runtimeAnimatorController == null) return;
         animator.SetInteger("State", stateValue);
+    }
+
+    public static float CalculateEffectivePreDelay(float configuredPreDelay, float firstHitTiming) =>
+        Mathf.Max(Mathf.Max(0f, configuredPreDelay), AttackTelegraphLeadSeconds - Mathf.Max(0f, firstHitTiming));
+
+    private static void GetAttackTiming(uint skillId, bool projectile, out float firstHitTiming,
+        out float activeDuration)
+    {
+        firstHitTiming = 0f;
+        activeDuration = projectile ? Time.fixedDeltaTime : FallbackAttackEffectDuration;
+        if (projectile) return;
+
+        SkillDataTable table = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
+        if (table == null || !table.TryGetSkillData(skillId, out SkillData skill) ||
+            skill.HitTimings == null || skill.HitTimings.Length == 0) return;
+
+        firstHitTiming = Mathf.Max(0f, skill.HitTimings[0]);
+        activeDuration = Mathf.Max(firstHitTiming, skill.ActiveDuration);
+    }
+
+    private void BeginAttackTelegraph(uint generation, float warningStartsAt, float impactAt,
+        float activeEndsAt)
+    {
+        if (!CanAct(generation)) return;
+        telegraphGeneration = generation;
+        telegraphActive = true;
+        AttackTelegraphStarted?.Invoke(new AttackTelegraph(this, generation, warningStartsAt,
+            impactAt, Mathf.Max(impactAt, activeEndsAt)));
+    }
+
+    private void EndAttackTelegraph(uint generation)
+    {
+        if (!telegraphActive || telegraphGeneration != generation) return;
+        telegraphActive = false;
+        AttackTelegraphEnded?.Invoke(this, generation);
     }
 }
 
