@@ -70,6 +70,7 @@ public class UnitBase : MonoBehaviour
 
     public virtual void SetFacingRight(bool isRight)
     {
+        if (stats != null) stats.SetFacingRight(isRight);
         if (spriteRenderer != null)
         {
             spriteRenderer.flipX = isRight;

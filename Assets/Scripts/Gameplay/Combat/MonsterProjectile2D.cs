@@ -68,7 +68,7 @@ namespace Gameplay.Combat
                     Transform hitTransform = hits[i].collider != null ? hits[i].collider.transform : null;
                     if (hitTransform == null || hitTransform == Owner.transform || hitTransform.IsChildOf(Owner.transform)) continue;
                     if (hitTransform == player.transform || hitTransform.IsChildOf(player.transform))
-                        player.Stats?.TakeDamage(damage, false, false, Owner.Stats);
+                        player.Stats?.TakeDamage(damage, false, false, Owner.Stats, hits[i].point);
                     ReturnToPool();
                     return;
                 }

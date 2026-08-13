@@ -84,23 +84,8 @@ public class SkillEffect : MonoBehaviour
             if (targetUnit.UnitData.Faction == (uint)ownerFaction) return;
         }
 
-        if (targetStats.IsParrying)
-        {
-            Debug.Log($"<color=magenta><b>[SkillEffect] '{targetStats.gameObject.name}' 패링 성공!</b></color>");
-            ReturnToPool();
-            return;
-        }
-
-        if (targetStats.IsGuarding)
-        {
-            float guardDamage = damage * 0.2f;
-            targetStats.TakeDamage(guardDamage, isGroundAttack: false, isJumped: false, attacker: attackerStats);
-            Debug.Log($"<color=yellow><b>[SkillEffect] '{targetStats.gameObject.name}' 가드 성공! 경감 데미지: {guardDamage:F1}</b></color>");
-            ReturnToPool();
-            return;
-        }
-
-        targetStats.TakeDamage(damage, isGroundAttack: false, isJumped: false, attacker: attackerStats);
+        targetStats.TakeDamage(damage, isGroundAttack: false, isJumped: false, attacker: attackerStats,
+            attackOrigin: transform.position, guardAmountMultiplier: 0.2f);
         Debug.Log($"<color=red><b>[SkillEffect] '{targetStats.gameObject.name}' 피격! 데미지: {damage:F1}</b></color>");
 
         ReturnToPool();

@@ -48,6 +48,73 @@ namespace QA.Tests
             Object.DestroyImmediate(attackerObj);
         }
 
+        [TestCase(true, 2f, false, true)]
+        [TestCase(false, -2f, false, true)]
+        [TestCase(true, 2f, true, true)]
+        [TestCase(false, -2f, true, true)]
+        [TestCase(true, -2f, false, false)]
+        [TestCase(false, 2f, true, false)]
+        [TestCase(true, 0f, false, true)]
+        public void Test_GuardAndParry_OnlyDefendFacingHemisphere(
+            bool facingRight, float attackOriginX, bool parrying, bool expectedDefended)
+        {
+            var defenderObject = new GameObject("DirectionalDefense_Defender_QA");
+            var attackerObject = new GameObject("DirectionalDefense_Attacker_QA");
+            try
+            {
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.SetFacingRight(facingRight);
+                defender.SetGuarding(!parrying);
+                defender.SetParrying(parrying);
+
+                bool defended = defender.TakeDamage(20f, attacker: attacker,
+                    attackOrigin: new Vector2(attackOriginX, 10f));
+
+                Assert.AreEqual(expectedDefended, defended);
+                Assert.AreEqual(expectedDefended ? 100f : 80f, defender.CurrentHp);
+                if (expectedDefended && parrying) Assert.AreEqual(40f, attacker.CurrentPosture);
+                if (!expectedDefended) Assert.AreEqual(0f, attacker.CurrentPosture);
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
+        }
+
+        [Test]
+        public void Test_DirectionalParry_PreservesWindowAndSingleResolution()
+        {
+            var defenderObject = new GameObject("DirectionalParry_Defender_QA");
+            var attackerObject = new GameObject("DirectionalParry_Attacker_QA");
+            try
+            {
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.OnParrySuccess = new UnityEngine.Events.UnityEvent();
+                defender.SetFacingRight(true);
+                defender.SetParrying(true);
+                int parryCount = 0;
+                defender.OnParrySuccess.AddListener(() => parryCount++);
+
+                Assert.IsTrue(defender.TakeDamage(20f, attacker: attacker, attackOrigin: Vector2.right));
+                Assert.AreEqual(1, parryCount, "One hit must resolve parry once, independent of render frame rate.");
+                StringAssert.Contains("UniTask.Delay(150", File.ReadAllText("Assets/Scripts/Gameplay/Player.cs"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
+        }
+
         [Test]
         public void Test04_CombatStats_Dodge_EvadesDamage100Percent()
         {

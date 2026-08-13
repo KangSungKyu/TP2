@@ -52,6 +52,7 @@ public class CombatStats : MonoBehaviour
     private const float DefaultGroggyDuration = 3.0f;
     private const float HitReactionDuration = 0.15f;
     private KinematicMotor2D motor;
+    private bool isFacingRight = true;
 
 
     // =========================================================================
@@ -78,6 +79,7 @@ public class CombatStats : MonoBehaviour
     public void SetDodging(bool state) => IsDodging = state;
     public void SetParrying(bool state) => IsParrying = state;
     public void SetJumped(bool state) => IsJumped = state;
+    public void SetFacingRight(bool state) => isFacingRight = state;
 
     public bool ConsumeMp(float amount)
     {
@@ -87,7 +89,8 @@ public class CombatStats : MonoBehaviour
         return true;
     }
 
-    public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
+    public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false,
+        CombatStats attacker = null, Vector2? attackOrigin = null, float guardAmountMultiplier = 1f)
     {
         if (IsDead) return false;
         if (IsGroggy)
@@ -109,7 +112,8 @@ public class CombatStats : MonoBehaviour
             return true;
         }
 
-        if (IsParrying)
+        bool canDefend = IsAttackInFront(attackOrigin ?? (attacker != null ? (Vector2?)attacker.transform.position : null));
+        if (IsParrying && canDefend)
         {
             Debug.Log($"[{gameObject.name}] 패링(Parry) 성공!");
             OnParrySuccess?.Invoke();
@@ -122,9 +126,9 @@ public class CombatStats : MonoBehaviour
             return true;
         }
 
-        if (IsGuarding)
+        if (IsGuarding && canDefend)
         {
-            float guardCost = amount * 0.5f;
+            float guardCost = amount * Mathf.Max(0f, guardAmountMultiplier) * 0.5f;
             AddPosture(guardCost);
             SpawnResponseEffect(8011);
 
@@ -154,6 +158,15 @@ public class CombatStats : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool IsAttackInFront(Vector2? attackOrigin)
+    {
+        if (!attackOrigin.HasValue) return true;
+        float deltaX = attackOrigin.Value.x - transform.position.x;
+        if (Mathf.Approximately(deltaX, 0f)) return true;
+        Vector2 facing = isFacingRight ? Vector2.right : Vector2.left;
+        return Vector2.Dot(facing, new Vector2(deltaX, 0f).normalized) >= 0f;
     }
 
     public void TakeExecutionDamage(float damage, CombatStats attacker = null)
