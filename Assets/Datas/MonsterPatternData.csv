@@ -9,3 +9,4 @@ idx,patternnametextidx,animclipname,executiontype,triggertype,triggervalue,rando
 6004,2015,SpearSentry_Attack,3,0,0.0,100,0.9,1.0,4.0,24,1.0,7001,0,0,0
 6005,2016,ShadowStalker_Attack,4,3,10.0,100,0.6,0.7,2.5,14,1.0,7002,1045,15,25
 6006,2017,ShadowStalker_Attack,4,3,8.0,100,0.8,0.8,4.0,16,1.0,7002,1045,15,25
+6007,2014,SpearSentry_Attack,2,2,4.0,100,0.7,0.8,3.0,18,1.0,7003,0,0,0

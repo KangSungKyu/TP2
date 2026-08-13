@@ -92,6 +92,33 @@ namespace QA.Tests
             Assert.AreEqual(1007u, unit3105.PrefabId);
             Assert.AreEqual(1016u, unit3105.AnimatorId);
 
+            Assert.IsTrue(unitTable.TryGetUnitData(3106, out var unit3106));
+            Assert.AreEqual(1008u, unit3106.PrefabId);
+            Assert.AreEqual(1015u, unit3106.AnimatorId);
+            Assert.AreEqual(2u, unit3106.Faction);
+
+            var patterns = new MonsterPatternDataTable();
+            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+            Assert.IsTrue(patterns.TryGetPatternData(6007, out var pattern6007));
+            Assert.AreEqual(7003u, pattern6007.SkillIdx);
+            Assert.AreEqual(18f, pattern6007.Damage);
+
+            var skills = new SkillDataTable();
+            skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
+            Assert.IsTrue(skills.TryGetSkillData(7003, out var skill7003));
+            CollectionAssert.AreEqual(new[] { 0.10f, 0.25f }, skill7003.HitTimings);
+            Assert.AreEqual(0.40f, skill7003.ActiveDuration);
+
+            var encounters = new MonsterEncounterDataTable();
+            encounters.LoadData(File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
+            Assert.IsTrue(encounters.GetForStage(9001).Any(x => x.Idx == 13005u && x.UnitIdxList.Contains(3106u)));
+
+            var unit3106Prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3106.prefab");
+            Assert.NotNull(unit3106Prefab);
+            Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<Animator>(true).Length);
+            Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<SpriteRenderer>(true).Length);
+            StringAssert.Contains("Unit_3106", File.ReadAllText("Assets/AddressableAssetsData/AssetGroups/Prefabs.asset"));
+
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/ShieldSentinelAnimatorController.controller"));
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/OrbitalMarksmanAnimatorController.controller"));
         }

@@ -117,6 +117,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae8f394c597c7ec4eac9f60d57de3e92
+    m_Address: Unit_3106
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b0b02419ac3e82b4686c37922f9d44c8
     m_Address: Room_11061
     m_ReadOnly: 0
