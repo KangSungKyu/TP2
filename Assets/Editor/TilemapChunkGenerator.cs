@@ -13,7 +13,7 @@ public static class TilemapChunkGenerator
     [MenuItem("TP2/Generate Tilemap_Room_TestDummy Prefab (무결점 타일맵 룸 청크 생성)")]
     public static void GenerateTilemapRoomChunkPrefab()
     {
-        string targetDir = "Assets/Prefabs/Rooms";
+        string targetDir = "Assets/Prefabs/Development";
         if (!Directory.Exists(targetDir))
         {
             Directory.CreateDirectory(targetDir);

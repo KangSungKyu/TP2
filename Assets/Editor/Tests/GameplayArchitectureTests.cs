@@ -48,6 +48,193 @@ namespace QA.Tests
             Object.DestroyImmediate(attackerObj);
         }
 
+        [TestCase(true, 2f, false, true)]
+        [TestCase(false, -2f, false, true)]
+        [TestCase(true, 2f, true, true)]
+        [TestCase(false, -2f, true, true)]
+        [TestCase(true, -2f, false, false)]
+        [TestCase(false, 2f, true, false)]
+        [TestCase(true, 0f, false, true)]
+        public void Test_GuardAndParry_OnlyDefendFacingHemisphere(
+            bool facingRight, float attackOriginX, bool parrying, bool expectedDefended)
+        {
+            var defenderObject = new GameObject("DirectionalDefense_Defender_QA");
+            var attackerObject = new GameObject("DirectionalDefense_Attacker_QA");
+            try
+            {
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.SetFacingRight(facingRight);
+                defender.SetGuarding(!parrying);
+                defender.SetParrying(parrying);
+
+                bool defended = defender.TakeDamage(20f, attacker: attacker,
+                    attackOrigin: new Vector2(attackOriginX, 10f));
+
+                Assert.AreEqual(expectedDefended, defended);
+                Assert.AreEqual(expectedDefended ? 100f : 80f, defender.CurrentHp);
+                if (expectedDefended && parrying) Assert.AreEqual(40f, attacker.CurrentPosture);
+                if (!expectedDefended) Assert.AreEqual(0f, attacker.CurrentPosture);
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
+        }
+
+        [Test]
+        public void Test_DirectionalParry_PreservesWindowAndSingleResolution()
+        {
+            var defenderObject = new GameObject("DirectionalParry_Defender_QA");
+            var attackerObject = new GameObject("DirectionalParry_Attacker_QA");
+            try
+            {
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.OnParrySuccess = new UnityEngine.Events.UnityEvent();
+                defender.SetFacingRight(true);
+                defender.SetParrying(true);
+                int parryCount = 0;
+                defender.OnParrySuccess.AddListener(() => parryCount++);
+
+                Assert.IsTrue(defender.TakeDamage(20f, attacker: attacker, attackOrigin: Vector2.right));
+                Assert.AreEqual(1, parryCount, "One hit must resolve parry once, independent of render frame rate.");
+                StringAssert.Contains("UniTask.Delay(150", File.ReadAllText("Assets/Scripts/Gameplay/Player.cs"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
+        }
+
+        [TestCase(true, 3f, 0f, true)]
+        [TestCase(false, -3f, 0f, true)]
+        [TestCase(true, -3f, 0f, false)]
+        [TestCase(false, 3f, 0f, false)]
+        [TestCase(true, 0.5f, 0f, false)]
+        [TestCase(true, 0f, 0.25f, false)]
+        [TestCase(true, 100f, 0.5f, true)]
+        public void Test_GuardSweep_FirstIntersectionWins(
+            bool facingRight, float startX, float endX, bool expectedDefended)
+        {
+            var defenderObject = new GameObject("GuardSweep_Defender_QA");
+            try
+            {
+                var body = defenderObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(1f, 2f);
+                var defender = defenderObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = 100f;
+                defender.InitStats();
+                defender.SetDefenseBodyCollider(body);
+                defender.SetFacingRight(facingRight);
+                defender.SetGuarding(true);
+                var sweep = new CombatStats.AttackSweep2D(
+                    new Vector2(startX, 0f), new Vector2(endX, 0f), Vector2.zero, 101, 1, 0);
+
+                Assert.AreEqual(expectedDefended, defender.TakeDamage(20f, attackSweep: sweep));
+                Assert.AreEqual(expectedDefended ? 100f : 80f, defender.CurrentHp);
+            }
+            finally { Object.DestroyImmediate(defenderObject); }
+        }
+
+        [Test]
+        public void Test_GuardSweep_GenerationTickAndStateTransitionsAreSingleResolution()
+        {
+            var defenderObject = new GameObject("GuardSweepLifecycle_Defender_QA");
+            try
+            {
+                var body = defenderObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(1f, 2f);
+                var defender = defenderObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = 100f;
+                defender.InitStats();
+                defender.SetDefenseBodyCollider(body);
+                defender.SetFacingRight(true);
+                defender.SetParrying(true);
+
+                var first = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 7, 0);
+                Assert.IsTrue(defender.TakeDamage(20f, attackSweep: first));
+                defender.SetParrying(false);
+                Assert.IsTrue(defender.TakeDamage(20f, attackSweep:
+                    new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 7, 1)));
+                Assert.AreEqual(100f, defender.CurrentHp, "Parried attack generation must not apply later ticks.");
+
+                defender.SetGuarding(true);
+                var guardTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 8, 0);
+                Assert.IsTrue(defender.TakeDamage(20f, attackSweep: guardTick));
+                defender.SetGuarding(false);
+                var releasedTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 8, 1);
+                Assert.IsFalse(defender.TakeDamage(20f, attackSweep: releasedTick));
+                Assert.IsTrue(defender.TakeDamage(20f, attackSweep: releasedTick));
+                Assert.AreEqual(80f, defender.CurrentHp, "One source/generation/tick may damage at most once.");
+
+                Assert.IsFalse(defender.TakeDamage(20f, attackSweep:
+                    new CombatStats.AttackSweep2D(Vector2.left * 3f, Vector2.zero, Vector2.zero, 202, 9, 0)));
+                Assert.AreEqual(60f, defender.CurrentHp, "A pooled source with a new generation must resolve normally.");
+            }
+            finally { Object.DestroyImmediate(defenderObject); }
+        }
+
+        [Test]
+        public void Test_UnitBase_CommonDefenseAndProjectileFactionContracts()
+        {
+            var playerObject = new GameObject("CommonDefense_Player_QA");
+            var monsterObject = new GameObject("CommonDefense_Monster_QA");
+            var bossObject = new GameObject("CommonDefense_Boss_QA");
+            try
+            {
+                playerObject.AddComponent<CombatStats>();
+                monsterObject.AddComponent<CombatStats>();
+                bossObject.AddComponent<CombatStats>();
+                var player = playerObject.AddComponent<Player>();
+                var monster = monsterObject.AddComponent<Monster>();
+                var boss = bossObject.AddComponent<BossMonster>();
+                MethodInfo awake = typeof(UnitBase).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
+                awake.Invoke(monster, null);
+                awake.Invoke(boss, null);
+
+                monster.SetGuarding(true);
+                monster.SetParrying(true);
+                monster.SetDodging(true);
+                boss.SetGuarding(true);
+                boss.SetParrying(true);
+                boss.SetDodging(true);
+                Assert.IsTrue(monster.Stats.IsGuarding && monster.Stats.IsParrying && monster.Stats.IsDodging);
+                Assert.IsTrue(boss.Stats.IsGuarding && boss.Stats.IsParrying && boss.Stats.IsDodging);
+                monster.SetGuarding(false);
+                monster.SetParrying(false);
+                monster.SetDodging(false);
+                boss.SetGuarding(false);
+                boss.SetParrying(false);
+                boss.SetDodging(false);
+                Assert.IsFalse(monster.Stats.IsGuarding || monster.Stats.IsParrying || monster.Stats.IsDodging);
+                Assert.IsFalse(boss.Stats.IsGuarding || boss.Stats.IsParrying || boss.Stats.IsDodging);
+
+                MethodInfo hostile = typeof(Gameplay.Combat.MonsterProjectile2D)
+                    .GetMethod("IsHostile", BindingFlags.Static | BindingFlags.NonPublic);
+                Assert.IsTrue((bool)hostile.Invoke(null, new object[] { player, monster }));
+                Assert.IsTrue((bool)hostile.Invoke(null, new object[] { monster, player }));
+                Assert.IsFalse((bool)hostile.Invoke(null, new object[] { monster, boss }));
+                Assert.IsFalse((bool)hostile.Invoke(null, new object[] { monster, monster }));
+                Assert.IsTrue(typeof(UnitPoolManager).GetMethod("SpawnMonsterProjectileAsync")
+                    .GetParameters()[1].ParameterType == typeof(UnitBase));
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+                Object.DestroyImmediate(monsterObject);
+                Object.DestroyImmediate(bossObject);
+            }
+        }
+
         [Test]
         public void Test04_CombatStats_Dodge_EvadesDamage100Percent()
         {
@@ -879,6 +1066,36 @@ namespace QA.Tests
             {
                 Object.DestroyImmediate(projectileObject);
             }
+        }
+
+        [Test]
+        public void Test_MonsterProjectilePatternDataAndGenerationContracts()
+        {
+            var table = new MonsterPatternDataTable();
+            table.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+
+            Assert.IsTrue(table.TryGetPatternData(6005, out var straight));
+            Assert.IsTrue(table.TryGetPatternData(6006, out var low));
+            Assert.AreEqual(7002u, straight.SkillIdx);
+            Assert.AreEqual(1045u, straight.ProjectileResourceIdx);
+            Assert.AreEqual(15f, straight.ProjectileSpeed, 0.01f);
+            Assert.AreEqual(25f, straight.ProjectileMaxDistance, 0.01f);
+            Assert.AreEqual(14f, straight.Damage);
+            Assert.AreEqual(1045u, low.ProjectileResourceIdx);
+            Assert.AreEqual(16f, low.Damage);
+            Assert.AreEqual(25f / 15f, straight.ProjectileMaxDistance / straight.ProjectileSpeed, 0.0001f);
+
+            string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            string pool = File.ReadAllText("Assets/Scripts/Manager/UnitPoolManager.cs");
+            string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/MonsterProjectile2D.cs");
+            StringAssert.Contains("pattern.ProjectileResourceIdx != 0", monster);
+            StringAssert.Contains("pattern.ProjectileResourceIdx == 0", monster);
+            StringAssert.Contains("pattern.Damage", monster);
+            StringAssert.Contains("TryGetResource(resourceIdx", pool);
+            StringAssert.Contains("InstantiateAsyncTask(\n                resourceData.Path", pool);
+            StringAssert.Contains("Collider2D.Cast", projectile.Replace("projectileCollider.Cast", "Collider2D.Cast"));
+            StringAssert.DoesNotContain("SimplePoolManager", projectile);
+            StringAssert.DoesNotContain("Physics.", projectile);
         }
 
         [Test]

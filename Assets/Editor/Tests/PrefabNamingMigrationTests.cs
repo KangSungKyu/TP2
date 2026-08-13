@@ -99,6 +99,11 @@ namespace QA.Tests
         [UnityTest]
         public IEnumerator PlayerPool_DespawnAndRespawnReuseSameIdentity()
         {
+            UnitPoolManager previousPool = UnitPoolManager.Instance;
+            Player previousPlayer = Player.Instance;
+            SetSingletonInstance<UnitPoolManager>(null);
+            typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
+                .GetSetMethod(true).Invoke(null, new object[] { null });
             GameObject resourceManagerObject = null;
             if (ResourceManager.Instance == null)
             {
@@ -117,12 +122,8 @@ namespace QA.Tests
                 .LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
             dataManager.GetDB<ResourceDataTable>(DataTableType.Resource)
                 .LoadData(File.ReadAllText("Assets/Datas/ResourceData.csv"));
-            GameObject poolObject = null;
-            if (UnitPoolManager.Instance == null)
-            {
-                poolObject = new GameObject("UnitPoolManager_PlayerPool_QA");
-                SetSingletonInstance(poolObject.AddComponent<UnitPoolManager>());
-            }
+            GameObject poolObject = new GameObject("UnitPoolManager_PlayerPool_QA");
+            SetSingletonInstance(poolObject.AddComponent<UnitPoolManager>());
             var pool = UnitPoolManager.Instance;
 
             var firstTask = pool.SpawnPlayerAsync(Vector3.zero).AsTask();
@@ -137,7 +138,10 @@ namespace QA.Tests
             Assert.AreSame(first.gameObject, secondTask.Result.gameObject);
 
             Object.DestroyImmediate(first.gameObject);
-            if (poolObject != null) Object.DestroyImmediate(poolObject);
+            Object.DestroyImmediate(poolObject);
+            SetSingletonInstance(previousPool);
+            typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
+                .GetSetMethod(true).Invoke(null, new object[] { previousPlayer });
             if (dataManagerObject != null) Object.DestroyImmediate(dataManagerObject);
             if (resourceManagerObject != null) Object.DestroyImmediate(resourceManagerObject);
         }

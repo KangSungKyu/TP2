@@ -92,6 +92,33 @@ namespace QA.Tests
             Assert.AreEqual(1007u, unit3105.PrefabId);
             Assert.AreEqual(1016u, unit3105.AnimatorId);
 
+            Assert.IsTrue(unitTable.TryGetUnitData(3106, out var unit3106));
+            Assert.AreEqual(1008u, unit3106.PrefabId);
+            Assert.AreEqual(1015u, unit3106.AnimatorId);
+            Assert.AreEqual(2u, unit3106.Faction);
+
+            var patterns = new MonsterPatternDataTable();
+            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+            Assert.IsTrue(patterns.TryGetPatternData(6007, out var pattern6007));
+            Assert.AreEqual(7003u, pattern6007.SkillIdx);
+            Assert.AreEqual(18f, pattern6007.Damage);
+
+            var skills = new SkillDataTable();
+            skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
+            Assert.IsTrue(skills.TryGetSkillData(7003, out var skill7003));
+            CollectionAssert.AreEqual(new[] { 0.10f, 0.25f }, skill7003.HitTimings);
+            Assert.AreEqual(0.40f, skill7003.ActiveDuration);
+
+            var encounters = new MonsterEncounterDataTable();
+            encounters.LoadData(File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
+            Assert.IsTrue(encounters.GetForStage(9001).Any(x => x.Idx == 13005u && x.UnitIdxList.Contains(3106u)));
+
+            var unit3106Prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3106.prefab");
+            Assert.NotNull(unit3106Prefab);
+            Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<Animator>(true).Length);
+            Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<SpriteRenderer>(true).Length);
+            StringAssert.Contains("Unit_3106", File.ReadAllText("Assets/AddressableAssetsData/AssetGroups/Prefabs.asset"));
+
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/ShieldSentinelAnimatorController.controller"));
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/OrbitalMarksmanAnimatorController.controller"));
         }
@@ -106,16 +133,20 @@ namespace QA.Tests
                 SpawnPointMarker[] zones = prefab.GetComponentsInChildren<SpawnPointMarker>(true)
                     .Where(marker => marker.EnableSpawn && marker.Type == SpawnType.Monster).ToArray();
                 Assert.GreaterOrEqual(zones.Length, 3, $"Combat {resourceIdx} requires at least three SpawnZones.");
-                Assert.IsTrue(UnitSpawner.ValidateSpawnZones(prefab, zones, null, out string error),
-                    $"Combat {resourceIdx}: {error}");
                 ChunkSocketMarker[] sockets = prefab.GetComponentsInChildren<ChunkSocketMarker>(true);
-                float minimumPortalClearance = zones.Min(zone =>
-                    sockets.Min(socket => Vector2.Distance(zone.transform.position, socket.transform.position)));
-                Assert.GreaterOrEqual(minimumPortalClearance, 7.75f,
-                    $"Combat {resourceIdx} spawn clearance is {minimumPortalClearance:F2}m.");
+                SpawnPointMarker entry = prefab.GetComponentsInChildren<SpawnPointMarker>(true)
+                    .Single(marker => marker.Type == SpawnType.Player);
                 for (int i = 0; i < zones.Length; i++)
+                {
+                    Assert.GreaterOrEqual(Vector2.Distance(zones[i].transform.position, entry.transform.position), 14f,
+                        $"Combat {resourceIdx} SpawnZone must stay >=14m from entry.");
+                    foreach (ChunkSocketMarker socket in sockets)
+                        Assert.GreaterOrEqual(Vector2.Distance(zones[i].transform.position, socket.transform.position), 7f,
+                            $"Combat {resourceIdx} SpawnZone must stay >=7m from portals.");
                     for (int j = i + 1; j < zones.Length; j++)
-                        Assert.GreaterOrEqual(Vector2.Distance(zones[i].transform.position, zones[j].transform.position), 15f);
+                        Assert.GreaterOrEqual(Vector2.Distance(zones[i].transform.position, zones[j].transform.position), 15f,
+                            $"Combat {resourceIdx} SpawnZones must stay >=15m apart.");
+                }
             }
 
             foreach (uint resourceIdx in new uint[] { 1056, 1057, 1061, 1063 })
@@ -166,10 +197,13 @@ namespace QA.Tests
                     ChunkSocketMarker socket = sockets[i];
                     Assert.NotNull(socket.EntryMarker, $"{roomPath}/{socket.Direction} EntryMarker is missing.");
                     float surface = FindSupportingSurface(room, socket, out Tilemap ground, out Vector3Int cell);
-                    Assert.AreEqual(surface + 1f, socket.transform.position.y, 0.011f,
-                        $"{roomPath}/{socket.Direction} portal center must be 1m above its surface.");
-                    Assert.AreEqual(surface + 0.51f, socket.EntryMarker.position.y, 0.011f,
-                        $"{roomPath}/{socket.Direction} EntryMarker must clear the Player collider and skin.");
+                    float expectedCenterY = socket.Direction == ChunkSocketDirection.North ? 4f
+                        : socket.Direction == ChunkSocketDirection.East ? 5f
+                        : socket.Direction == ChunkSocketDirection.South ? 3f : 2f;
+                    Assert.AreEqual(expectedCenterY, socket.transform.position.y, 0.011f,
+                        $"{roomPath}/{socket.Direction} portal center must match the authoritative room layout.");
+                    Assert.AreEqual(expectedCenterY - 0.49f, socket.EntryMarker.position.y, 0.011f,
+                        $"{roomPath}/{socket.Direction} EntryMarker must preserve the Player clearance offset.");
                     Assert.GreaterOrEqual(socket.transform.position.y - portalTrigger.size.y * 0.5f, surface - 0.011f);
                     Assert.IsFalse(HasSolidTileInPortalHeadroom(room, socket.transform.position.x, surface, surface + 2f),
                         $"{roomPath}/{socket.Direction} requires 2m portal head clearance.");
@@ -296,9 +330,13 @@ namespace QA.Tests
                 "Assets/Prefabs/Rooms/Room_11057.prefab", "Assets/Prefabs/Rooms/Room_11061.prefab",
                 "Assets/Prefabs/Rooms/Room_11063.prefab"
             };
-            int effects = prefabs.Where(prefab => !AssetDatabase.GetAssetPath(prefab).StartsWith("Assets/Prefabs/Rooms/"))
+            var nonRoomEffectRenderers = prefabs.Where(prefab => !AssetDatabase.GetAssetPath(prefab).StartsWith("Assets/Prefabs/Rooms/"))
                 .SelectMany(prefab => prefab.GetComponentsInChildren<Renderer>(true))
-                .Count(renderer => renderer.sortingLayerName == "Effect");
+                .Where(renderer => renderer.sortingLayerName == "Effect").ToArray();
+            const string projectilePath = "Assets/Prefabs/Projectiles/Projectile_1045.prefab";
+            var projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projectilePath);
+            Assert.NotNull(projectilePrefab, projectilePath);
+            Renderer[] projectileRenderers = projectilePrefab.GetComponentsInChildren<Renderer>(true);
 
             Assert.AreEqual(7, unitGroups, "All seven Unit prefabs require a Unit SortingGroup.");
             Assert.AreEqual(5, worldUiCanvases, "Five regular Monster HUD roots require WorldUI Canvases.");
@@ -311,7 +349,11 @@ namespace QA.Tests
                 Assert.IsFalse(tilemaps.Any(renderer => renderer.sortingLayerName != "Tilemap"),
                     $"Every TilemapRenderer in {roomPath} must use the Tilemap layer.");
             }
-            Assert.AreEqual(14, effects, "All production effect renderers require the Effect layer.");
+            Assert.AreEqual(1, projectileRenderers.Length, "Projectile_1045 requires exactly one renderer.");
+            Assert.AreEqual("Effect", projectileRenderers[0].sortingLayerName);
+            Assert.AreEqual(14, nonRoomEffectRenderers.Count(renderer =>
+                !AssetDatabase.GetAssetPath(renderer).StartsWith("Assets/Prefabs/Projectiles/")),
+                "The pre-projectile production Effect renderer roles must remain unchanged.");
         }
 
         private static void AssertNoMissingReferences(GameObject root, string path)

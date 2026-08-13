@@ -33,6 +33,7 @@ public class Monster : UnitBase
     private bool holdsAttackToken;
     private uint actionGeneration;
     public static int ActiveAttackTokens => activeAttackTokens;
+    public override uint ActionGeneration => actionGeneration;
 
 
     // =========================================================================
@@ -50,6 +51,11 @@ public class Monster : UnitBase
             LoadPatterns(mData);
         }
         if (this != null && isActiveAndEnabled) Activated?.Invoke(this);
+    }
+
+    public void SetHorizontalMovementBounds(Bounds bounds)
+    {
+        if (motor != null) motor.SetHorizontalMovementBounds(bounds);
     }
 
 
@@ -70,6 +76,7 @@ public class Monster : UnitBase
     protected virtual void OnDisable()
     {
         actionGeneration++;
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         ReleaseAttackToken();
         ActiveMonsters.Remove(this);
         Deactivated?.Invoke(this);
@@ -116,6 +123,7 @@ public class Monster : UnitBase
         if (deathSequenceActive) return;
         deathSequenceActive = true;
         actionGeneration++;
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         ReleaseAttackToken();
         if (skillExecutor != null) skillExecutor.CancelActiveEffects();
         SetAnimState(8);
@@ -183,6 +191,11 @@ public class Monster : UnitBase
         {
             transform.position = position;
         }
+    }
+
+    public override bool IsActionGenerationCurrent(uint generation)
+    {
+        return generation == actionGeneration && isActiveAndEnabled && !deathSequenceActive;
     }
 
     private void LoadPatterns(MonsterBaseData mData)
@@ -378,6 +391,7 @@ public class Monster : UnitBase
         }
 
         uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
+        bool timedAttack = false;
 
         if (skillExecutor != null && CanAct(generation))
         {
@@ -389,15 +403,34 @@ public class Monster : UnitBase
             }
         }
 
-        if (skillExecutor != null)
+        Vector3 offset = (spriteRenderer != null && spriteRenderer.flipX) ? Vector3.right * 1.5f : Vector3.left * 1.5f;
+        Vector3 spawnPos = transform.position + offset + Vector3.up * 1.0f;
+        if (pattern.ProjectileResourceIdx != 0)
         {
-            Vector3 offset = (spriteRenderer != null && spriteRenderer.flipX) ? Vector3.right * 1.5f : Vector3.left * 1.5f;
-            Vector3 spawnPos = transform.position + offset + Vector3.up * 1.0f;
+            if (pattern.ProjectileSpeed <= 0f || pattern.ProjectileMaxDistance <= 0f)
+            {
+                Debug.LogError($"[Monster] Pattern idx {pattern.Idx} has invalid projectile speed/distance.");
+                return;
+            }
+            if (UnitPoolManager.Instance == null) return;
+            Vector2 direction = playerTarget != null
+                ? ((Vector2)playerTarget.position - (Vector2)spawnPos).normalized
+                : (spriteRenderer != null && spriteRenderer.flipX ? Vector2.right : Vector2.left);
+            await UnitPoolManager.Instance.SpawnMonsterProjectileAsync(
+                pattern.ProjectileResourceIdx, this, generation, spawnPos, direction,
+                pattern.ProjectileSpeed, pattern.ProjectileMaxDistance, pattern.Damage);
+            if (!CanAct(generation)) return;
+        }
+        else if (skillExecutor != null)
+        {
             Color effectColor = new Color(1f, 0f, 0f, 0.4f);
             skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, 0.2f, FactionType.Enemy, effectColor);
+            timedAttack = await skillExecutor.ExecuteSkillHitsAsync(
+                patternSkillId, this, playerTarget != null ? playerTarget.GetComponent<UnitBase>() : null,
+                pattern.Damage, cancellationToken);
         }
 
-        if (playerTarget != null && CanAct(generation))
+        if (!timedAttack && pattern.ProjectileResourceIdx == 0 && playerTarget != null && CanAct(generation))
         {
             var pStats = playerTarget.GetComponent<CombatStats>();
             if (pStats != null && Vector3.Distance(transform.position, playerTarget.position) <= (attackRange + 0.5f))

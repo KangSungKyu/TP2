@@ -15,7 +15,7 @@ public static class TilemapRoomPrefabBuilder
     {
         Debug.Log("<color=cyan><b>[TilemapRoomPrefabBuilder] 60x30 Tilemap_Room_TestDummy.prefab 제작 시작...</b></color>");
 
-        string roomsDir = "Assets/Prefabs/Rooms";
+        string roomsDir = "Assets/Prefabs/Development";
         if (!Directory.Exists(roomsDir))
         {
             Directory.CreateDirectory(roomsDir);

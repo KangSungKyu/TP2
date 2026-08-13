@@ -30,7 +30,7 @@ namespace QA.Tests
         [Test]
         public void Test01_TilemapRoomTestDummyPrefab_ExistenceAndMarkers()
         {
-            string path = "Assets/Prefabs/Rooms/Tilemap_Room_TestDummy.prefab";
+            string path = "Assets/Prefabs/Development/Tilemap_Room_TestDummy.prefab";
             Assert.IsTrue(File.Exists(path), $"Tilemap_Room_TestDummy.prefab 파일이 존재해야 합니다: {path}");
 
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -239,7 +239,7 @@ namespace QA.Tests
         }
 
         [Test]
-        public void Test11_RoomDoorPortal_AutoTrigger_AndTargetRoomIdx()
+        public void Test11_RoomDoorPortal_ManualInput_AndTargetRoomIdx()
         {
             GameObject portalObj = new GameObject("Test_RoomDoorPortal");
             var portal = portalObj.AddComponent<RoomDoorPortal>();

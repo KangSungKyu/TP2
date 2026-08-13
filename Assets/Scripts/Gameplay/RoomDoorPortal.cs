@@ -1,5 +1,8 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 룸/스테이지 관문 포탈 컴포넌트.
@@ -10,16 +13,22 @@ public class RoomDoorPortal : MonoBehaviour
     [Header("Portal Settings")]
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public byte TargetSlotIdx = byte.MaxValue;
-    public bool AutoTriggerOnTouch = true;
+    public bool AutoTriggerOnTouch = false;
+    public bool ShowPrototypeDestination = true;
+    public uint DestinationChunkResourceIdx { get; private set; }
     public byte OwnerSlotIdx { get; private set; } = byte.MaxValue;
     public uint RoomGeneration { get; private set; }
 
     private bool isTransitioning = false;
+    private readonly HashSet<Collider2D> playerCandidates = new HashSet<Collider2D>();
+    private int lastInteractionFrame = -1;
+    [SerializeField] private TextMeshPro destinationLabel;
 
     private void Start()
     {
         // ponytail: visualize portal door with cyan glowing indicator
         EnsureVisualOverlay();
+        RefreshDestinationLabel();
     }
 
     private void EnsureVisualOverlay()
@@ -49,15 +58,40 @@ public class RoomDoorPortal : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(1.5f, 2.8f, 0f));
     }
 
+    private void Update()
+    {
+        Keyboard keyboard = Keyboard.current;
+        bool pressed = keyboard != null &&
+            (keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame);
+        if (TryConsumeInteraction(pressed)) TriggerRoomTransitionAsync().Forget();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!AutoTriggerOnTouch || isTransitioning) return;
-
         if (Player.Instance != null &&
             (collision.transform == Player.Instance.transform || collision.transform.IsChildOf(Player.Instance.transform)))
-        {
-            TriggerRoomTransitionAsync().Forget();
-        }
+            playerCandidates.Add(collision);
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        playerCandidates.Remove(collision);
+    }
+
+    private void OnDisable()
+    {
+        playerCandidates.Clear();
+        isTransitioning = false;
+    }
+
+    private bool TryConsumeInteraction(bool pressed)
+    {
+        Player player = Player.Instance;
+        if (!pressed || !isActiveAndEnabled || isTransitioning || playerCandidates.Count == 0 ||
+            player == null || player.Motor == null || !player.Motor.IsGrounded ||
+            lastInteractionFrame == Time.frameCount) return false;
+        lastInteractionFrame = Time.frameCount;
+        return true;
     }
 
     public async UniTaskVoid TriggerRoomTransitionAsync()
@@ -108,11 +142,31 @@ public class RoomDoorPortal : MonoBehaviour
         }
     }
 
-    public void Configure(byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration)
+    public void Configure(byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration,
+        uint destinationChunkResourceIdx = 0)
     {
         TargetSlotIdx = targetSlotIdx;
         OwnerSlotIdx = ownerSlotIdx;
         RoomGeneration = roomGeneration;
+        DestinationChunkResourceIdx = destinationChunkResourceIdx;
+        RefreshDestinationLabel();
+    }
+
+    public void SetDestinationLabelVisible(bool visible)
+    {
+        ShowPrototypeDestination = visible;
+        RefreshDestinationLabel();
+    }
+
+    public string GetDestinationLabelText() =>
+        DestinationChunkResourceIdx == 0 ? string.Empty : $"Chunk {DestinationChunkResourceIdx}";
+
+    private void RefreshDestinationLabel()
+    {
+        if (destinationLabel == null) return;
+        destinationLabel.gameObject.SetActive(ShowPrototypeDestination && DestinationChunkResourceIdx != 0);
+        if (destinationLabel.gameObject.activeSelf)
+            destinationLabel.SetText("Chunk {0}", DestinationChunkResourceIdx);
     }
 
     public bool TryAcquireTransition(StageManager stageManager)

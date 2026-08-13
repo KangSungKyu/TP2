@@ -9,6 +9,27 @@ using UnityEngine.Events;
 /// </summary>
 public class CombatStats : MonoBehaviour
 {
+    public readonly struct AttackSweep2D
+    {
+        public readonly Vector2 Previous;
+        public readonly Vector2 Current;
+        public readonly Vector2 HalfExtents;
+        public readonly int SourceId;
+        public readonly uint Generation;
+        public readonly uint Tick;
+
+        public AttackSweep2D(Vector2 previous, Vector2 current, Vector2 halfExtents,
+            int sourceId, uint generation, uint tick)
+        {
+            Previous = previous;
+            Current = current;
+            HalfExtents = halfExtents;
+            SourceId = sourceId;
+            Generation = generation;
+            Tick = tick;
+        }
+    }
+
     // =========================================================================
     // 1. PUBLIC FIELDS & PROPERTIES (PascalCase)
     // =========================================================================
@@ -52,6 +73,13 @@ public class CombatStats : MonoBehaviour
     private const float DefaultGroggyDuration = 3.0f;
     private const float HitReactionDuration = 0.15f;
     private KinematicMotor2D motor;
+    private Collider2D defenseBodyCollider;
+    private bool isFacingRight = true;
+    private int lastAttackSourceId;
+    private uint lastAttackGeneration;
+    private uint lastAttackTick;
+    private int parriedAttackSourceId;
+    private uint parriedAttackGeneration;
 
 
     // =========================================================================
@@ -72,12 +100,28 @@ public class CombatStats : MonoBehaviour
         IsGroggy = false;
         IsDead = false;
         groggyTimer = 0f;
+        lastAttackSourceId = parriedAttackSourceId = 0;
+        lastAttackGeneration = lastAttackTick = parriedAttackGeneration = 0;
     }
 
     public void SetGuarding(bool state) => IsGuarding = state;
     public void SetDodging(bool state) => IsDodging = state;
     public void SetParrying(bool state) => IsParrying = state;
     public void SetJumped(bool state) => IsJumped = state;
+    public void SetFacingRight(bool state) => isFacingRight = state;
+    public void SetDefenseBodyCollider(Collider2D bodyCollider) => defenseBodyCollider = bodyCollider;
+
+    public bool TryGetBodySweepFraction(AttackSweep2D sweep, out float fraction)
+    {
+        if (defenseBodyCollider == null || !defenseBodyCollider.enabled)
+        {
+            fraction = 0f;
+            return false;
+        }
+        Bounds body = defenseBodyCollider.bounds;
+        body.Expand(new Vector3(sweep.HalfExtents.x * 2f, sweep.HalfExtents.y * 2f, 0f));
+        return TryGetSweepFraction(sweep.Previous, sweep.Current, body, out fraction);
+    }
 
     public bool ConsumeMp(float amount)
     {
@@ -87,9 +131,20 @@ public class CombatStats : MonoBehaviour
         return true;
     }
 
-    public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false, CombatStats attacker = null)
+    public bool TakeDamage(float amount, bool isGroundAttack = false, bool isJumped = false,
+        CombatStats attacker = null, Vector2? attackOrigin = null, float guardAmountMultiplier = 1f,
+        AttackSweep2D? attackSweep = null)
     {
         if (IsDead) return false;
+        if (attackSweep.HasValue)
+        {
+            AttackSweep2D sweep = attackSweep.Value;
+            if (sweep.SourceId == parriedAttackSourceId && sweep.Generation == parriedAttackGeneration) return true;
+            if (sweep.SourceId == lastAttackSourceId && sweep.Generation == lastAttackGeneration && sweep.Tick == lastAttackTick) return true;
+            lastAttackSourceId = sweep.SourceId;
+            lastAttackGeneration = sweep.Generation;
+            lastAttackTick = sweep.Tick;
+        }
         if (IsGroggy)
         {
             amount *= 1.5f;
@@ -109,8 +164,16 @@ public class CombatStats : MonoBehaviour
             return true;
         }
 
-        if (IsParrying)
+        bool canDefend = attackSweep.HasValue
+            ? DoesGuardIntersectFirst(attackSweep.Value)
+            : IsAttackInFront(attackOrigin ?? (attacker != null ? (Vector2?)attacker.transform.position : null));
+        if (IsParrying && canDefend)
         {
+            if (attackSweep.HasValue)
+            {
+                parriedAttackSourceId = attackSweep.Value.SourceId;
+                parriedAttackGeneration = attackSweep.Value.Generation;
+            }
             Debug.Log($"[{gameObject.name}] 패링(Parry) 성공!");
             OnParrySuccess?.Invoke();
             SpawnResponseEffect(8010);
@@ -122,9 +185,9 @@ public class CombatStats : MonoBehaviour
             return true;
         }
 
-        if (IsGuarding)
+        if (IsGuarding && canDefend)
         {
-            float guardCost = amount * 0.5f;
+            float guardCost = amount * Mathf.Max(0f, guardAmountMultiplier) * 0.5f;
             AddPosture(guardCost);
             SpawnResponseEffect(8011);
 
@@ -154,6 +217,60 @@ public class CombatStats : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool IsAttackInFront(Vector2? attackOrigin)
+    {
+        if (!attackOrigin.HasValue) return true;
+        float deltaX = attackOrigin.Value.x - transform.position.x;
+        if (Mathf.Approximately(deltaX, 0f)) return true;
+        Vector2 facing = isFacingRight ? Vector2.right : Vector2.left;
+        return Vector2.Dot(facing, new Vector2(deltaX, 0f).normalized) >= 0f;
+    }
+
+    private bool DoesGuardIntersectFirst(AttackSweep2D sweep)
+    {
+        if ((!IsGuarding && !IsParrying) || defenseBodyCollider == null || !defenseBodyCollider.enabled) return false;
+
+        Bounds body = defenseBodyCollider.bounds;
+        Bounds guard = body;
+        guard.center += Vector3.right * (isFacingRight ? body.size.x : -body.size.x);
+        Vector3 expansion = new Vector3(Mathf.Max(0f, sweep.HalfExtents.x), Mathf.Max(0f, sweep.HalfExtents.y), 0f);
+        body.Expand(expansion * 2f);
+        guard.Expand(expansion * 2f);
+
+        if (!TryGetSweepFraction(sweep.Previous, sweep.Current, guard, out float guardFraction) ||
+            !TryGetSweepFraction(sweep.Previous, sweep.Current, body, out float bodyFraction)) return false;
+
+        float epsilon = motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
+        float sweepLength = Vector2.Distance(sweep.Previous, sweep.Current);
+        return sweepLength > 0f && guardFraction + epsilon / sweepLength < bodyFraction;
+    }
+
+    private static bool TryGetSweepFraction(Vector2 start, Vector2 end, Bounds bounds, out float fraction)
+    {
+        Vector2 delta = end - start;
+        float enter = 0f;
+        float exit = 1f;
+        if (!ClipAxis(start.x, delta.x, bounds.min.x, bounds.max.x, ref enter, ref exit) ||
+            !ClipAxis(start.y, delta.y, bounds.min.y, bounds.max.y, ref enter, ref exit))
+        {
+            fraction = 0f;
+            return false;
+        }
+        fraction = enter;
+        return true;
+    }
+
+    private static bool ClipAxis(float start, float delta, float min, float max, ref float enter, ref float exit)
+    {
+        if (Mathf.Approximately(delta, 0f)) return start >= min && start <= max;
+        float first = (min - start) / delta;
+        float second = (max - start) / delta;
+        if (first > second) (first, second) = (second, first);
+        enter = Mathf.Max(enter, first);
+        exit = Mathf.Min(exit, second);
+        return enter <= exit && exit >= 0f && enter <= 1f;
     }
 
     public void TakeExecutionDamage(float damage, CombatStats attacker = null)

@@ -121,6 +121,36 @@ public class SkillExecutor : MonoBehaviour
         }
     }
 
+    public async UniTask<bool> ExecuteSkillHitsAsync(uint skillId, UnitBase owner, UnitBase target,
+        float patternDamage, CancellationToken cancellationToken = default)
+    {
+        var table = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
+        if (owner == null || target == null || table == null ||
+            !table.TryGetSkillData(skillId, out var skill) || skill.HitTimings == null || skill.HitTimings.Length == 0)
+            return false;
+
+        uint generation = owner.ActionGeneration;
+        int sourceId = GetInstanceID() ^ (int)skillId;
+        float previous = 0f;
+        for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
+        {
+            float timing = skill.HitTimings[(int)tick];
+            if (skill.ActiveDuration > 0f && timing > skill.ActiveDuration) break;
+            float delay = timing - previous;
+            previous = timing;
+            if (delay > 0f)
+                await UniTask.Delay(Mathf.RoundToInt(delay * 1000f), cancellationToken: cancellationToken);
+            if (!owner.IsActionGenerationCurrent(generation) || target == null || !target.isActiveAndEnabled) return true;
+
+            Vector2 start = owner.transform.position;
+            Vector2 end = target.transform.position;
+            var sweep = new CombatStats.AttackSweep2D(start, end, Vector2.zero, sourceId, generation, tick);
+            target.Stats?.TakeDamage(patternDamage, attacker: owner.Stats, attackOrigin: start, attackSweep: sweep);
+        }
+        return true;
+    }
+
     public bool TryPlaySkillAnimation(Animator animator, uint skillId)
     {
         var skillTable = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;

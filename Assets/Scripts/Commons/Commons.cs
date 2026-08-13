@@ -298,6 +298,15 @@ public class MonsterPatternData
 
     [Name("skillidx")]
     public uint SkillIdx { get; set; } // 연동 SkillData Idx (Type 7: 7001~)
+
+    [Name("projectileresourceidx")]
+    public uint ProjectileResourceIdx { get; set; }
+
+    [Name("projectilespeed")]
+    public float ProjectileSpeed { get; set; }
+
+    [Name("projectilemaxdistance")]
+    public float ProjectileMaxDistance { get; set; }
 }
 
 
