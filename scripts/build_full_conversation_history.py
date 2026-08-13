@@ -69,16 +69,16 @@ def parse_all_history():
                             req = content.split("<USER_REQUEST>")[1].split("</USER_REQUEST>")[0].strip()
                         else:
                             req = content.strip()
-                        
+
                         if len(req) > 100:
                             req = req[:97] + "..."
-                        
+
                         turn_index += 1
                         turn_id = f"turn-{turn_index:03d}"
-                        
+
                         curr_dt = base_dt + datetime.timedelta(minutes=turn_index * 12)
                         time_str = curr_dt.strftime("%Y-%m-%d %H:%M")
-                        
+
                         # AGENTS.md Section 5 Rule 7 formatting
                         summary_res = f"작업목적: {role_name} 태스크 {turn_id} 수행 / 검증: 무결성 검수 완료 / 상태: 성공"
                         full_history[role_name].append([

@@ -60,7 +60,7 @@ public class SpriteBakingStudio : EditorWindow
 
         // 2. Master Rig 인스턴스화 및 파츠 결합
         GameObject character = Instantiate(masterRigPrefab, Vector3.zero, Quaternion.Euler(0, 90, 0));
-        
+
         // 3. 몬스터 기획 수치에 따른 Bone Transform 스케일/회전 조정
         Transform headBone = character.transform.Find("Armature/Hips/Spine/Head");
         if (headBone != null && boneScales.Length > 0)
