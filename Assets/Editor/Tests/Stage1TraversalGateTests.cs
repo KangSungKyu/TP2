@@ -20,7 +20,11 @@ namespace QA.Tests
             "Assets/Prefabs/Rooms/Room_11051.prefab", "Assets/Prefabs/Rooms/Room_11052.prefab",
             "Assets/Prefabs/Rooms/Room_11053.prefab", "Assets/Prefabs/Rooms/Room_11056.prefab",
             "Assets/Prefabs/Rooms/Room_11057.prefab", "Assets/Prefabs/Rooms/Room_11061.prefab",
-            "Assets/Prefabs/Rooms/Room_11063.prefab"
+            "Assets/Prefabs/Rooms/Room_11063.prefab", "Assets/Prefabs/Rooms/Room_11072.prefab",
+            "Assets/Prefabs/Rooms/Room_11073.prefab", "Assets/Prefabs/Rooms/Room_11074.prefab",
+            "Assets/Prefabs/Rooms/Room_11075.prefab", "Assets/Prefabs/Rooms/Room_11076.prefab",
+            "Assets/Prefabs/Rooms/Room_11077.prefab", "Assets/Prefabs/Rooms/Room_11078.prefab",
+            "Assets/Prefabs/Rooms/Room_11079.prefab"
         };
 
         [UnityTest]
@@ -377,6 +381,67 @@ namespace QA.Tests
             }
         }
 
+        [TestCase("Assets/Prefabs/Rooms/Room_11072.prefab", ChunkSocketDirection.West, ChunkSocketDirection.East)]
+        [TestCase("Assets/Prefabs/Rooms/Room_11075.prefab", ChunkSocketDirection.West, ChunkSocketDirection.East)]
+        [TestCase("Assets/Prefabs/Rooms/Room_11051.prefab", ChunkSocketDirection.West, ChunkSocketDirection.South)]
+        [TestCase("Assets/Prefabs/Rooms/Room_11057.prefab", ChunkSocketDirection.West, ChunkSocketDirection.South)]
+        public void Room_TargetedSocketPair_ReplaysWithActualUnit3001Motor(
+            string roomPath, ChunkSocketDirection fromDirection, ChunkSocketDirection toDirection)
+        {
+            GameObject room = null;
+            GameObject player = null;
+            SimulationMode2D previousMode = Physics2D.simulationMode;
+            try
+            {
+                Physics2D.simulationMode = SimulationMode2D.Script;
+                room = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(roomPath));
+                player = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab"));
+                var motor = player.GetComponent<KinematicMotor2D>();
+                var playerCollider = player.GetComponents<Collider2D>().First(candidate => !candidate.isTrigger);
+                motor.InitMotor();
+                ChunkSocketMarker[] sockets = room.GetComponentsInChildren<ChunkSocketMarker>(true);
+                ChunkSocketMarker from = sockets.Single(socket => socket.Direction == fromDirection);
+                ChunkSocketMarker to = sockets.Single(socket => socket.Direction == toDirection);
+                Vector3 target = to.EntryMarker.position;
+                motor.Teleport(from.EntryMarker.position);
+                motor.SetGroundNormal(Vector2.up);
+                Physics2D.Simulate(1f / 60f);
+                List<Vector2> route = FindSurfaceRoute(CollectStandableSurfaces(room),
+                    new Vector2(from.EntryMarker.position.x, from.EntryMarker.position.y - 0.51f),
+                    new Vector2(target.x, target.y - 0.51f));
+                Assert.NotNull(route, $"{roomPath} {fromDirection}->{toDirection}: no standable-surface route");
+                foreach (Vector2 waypoint in route.Skip(1))
+                {
+                    Vector2 feet = new Vector2(player.transform.position.x, playerCollider.bounds.min.y);
+                    bool requiresJump = waypoint.y > feet.y + 0.2f || Mathf.Abs(waypoint.x - feet.x) > 1.15f;
+                    if (requiresJump && motor.IsGrounded)
+                    {
+                        motor.SetVelocityY(11.5f);
+                        motor.SetJumpHeld(true);
+                    }
+                    for (int step = 0; step < 120 && Mathf.Abs(player.transform.position.x - waypoint.x) > 0.3f; step++)
+                    {
+                        motor.SetTargetVelocityX(Mathf.Sign(waypoint.x - player.transform.position.x) * 6f);
+                        if (motor.WallDir != 0 && motor.IsGrounded) motor.SetVelocityY(11.5f);
+                        motor.SimulateStep(1f / 60f);
+                        Physics2D.Simulate(1f / 60f);
+                        if (playerCollider.bounds.max.y < -5f) break;
+                    }
+                }
+                motor.SetTargetVelocityX(0f);
+                Assert.LessOrEqual(Mathf.Abs(player.transform.position.x - target.x), 0.75f,
+                    $"{roomPath} {fromDirection}->{toDirection}; last={player.transform.position}");
+                Assert.GreaterOrEqual(playerCollider.bounds.min.y, -0.05f,
+                    $"{roomPath} {fromDirection}->{toDirection}; fell out at {player.transform.position}");
+            }
+            finally
+            {
+                Physics2D.simulationMode = previousMode;
+                if (player != null) Object.DestroyImmediate(player);
+                if (room != null) Object.DestroyImmediate(room);
+            }
+        }
+
         [TestCaseSource(nameof(RoomPaths))]
         public void Room_MonsterMotor_LongRunStaysInsideAuthoritativeBounds(string roomPath)
         {
@@ -543,6 +608,56 @@ namespace QA.Tests
                             $"seed {seed}, {slot.SlotIdx}->{neighbor.SlotIdx}");
                     }
                 }
+            }
+        }
+
+        [Test]
+        public void LargeRooms_200SeedsCoverAllEightAndPreserveBossGate()
+        {
+            var chunks = new ChunkResourceDataTable();
+            var layout = new StageLayoutDataTable();
+            var encounters = new MonsterEncounterDataTable();
+            chunks.LoadData(System.IO.File.ReadAllText("Assets/Datas/ChunkResourceData.csv"));
+            layout.LoadData(System.IO.File.ReadAllText("Assets/Datas/StageLayoutData.csv"));
+            encounters.LoadData(System.IO.File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
+            Assert.IsTrue(layout.TryGetByStage(9001, out StageLayoutData stageLayout));
+            var covered = new HashSet<uint>();
+            for (uint seed = 0; seed < 200; seed++)
+            {
+                StageRunData run = Stage1RunGenerator.Generate(seed, stageLayout,
+                    chunks.GetForStage(9001), encounters.GetForStage(9001));
+                Assert.IsTrue(Stage1RunGenerator.Validate(run), $"seed {seed}");
+                Assert.AreEqual(1042u, stageLayout.BossRoomResourceIdx);
+                foreach (ChunkSlotData slot in run.Slots)
+                    if (slot.ChunkResourceIdx >= 1072u && slot.ChunkResourceIdx <= 1079u)
+                        covered.Add(slot.ChunkResourceIdx);
+            }
+            CollectionAssert.AreEquivalent(Enumerable.Range(1072, 8).Select(value => (uint)value), covered);
+        }
+
+        [Test]
+        public async System.Threading.Tasks.Task LargeRooms_LoadThroughResourceManagerByUintFk()
+        {
+            var resources = new ResourceDataTable();
+            resources.LoadData(System.IO.File.ReadAllText("Assets/Datas/ResourceData.csv"));
+            var managerObject = new GameObject("LargeRoomResourceManager_QA");
+            var manager = managerObject.AddComponent<ResourceManager>();
+            var loaded = new List<GameObject>();
+            try
+            {
+                for (uint resourceIdx = 1072; resourceIdx <= 1079; resourceIdx++)
+                {
+                    Assert.IsTrue(resources.TryGetResource(resourceIdx, out ResourceData resource));
+                    Assert.AreEqual($"Room_{10000u + resourceIdx}", resource.Path);
+                    GameObject room = await manager.InstantiateAsyncTask(resource.Path);
+                    Assert.NotNull(room, $"uint FK {resourceIdx} -> {resource.Path}");
+                    loaded.Add(room);
+                }
+            }
+            finally
+            {
+                foreach (GameObject room in loaded) manager.ReleaseInstance(room);
+                Object.DestroyImmediate(managerObject);
             }
         }
 

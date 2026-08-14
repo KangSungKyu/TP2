@@ -598,6 +598,27 @@ public static class ModuleChunkBuilder
         AssetDatabase.SaveAssets();
     }
 
+    public static void RebuildStage1LargeAuthoringRooms()
+    {
+        const string tilesDir = "Assets/Textures/Environment/Tiles";
+        const string outputDir = "Assets/Prefabs/Rooms";
+        if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
+        string[] names = {
+            "Room_11072", "Room_11073", "Room_11074", "Room_11075",
+            "Room_11076", "Room_11077", "Room_11078", "Room_11079"
+        };
+        foreach (string name in names)
+            BuildVariableRoomChunkPrefabs(
+                outputDir,
+                AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Ground.asset"),
+                AssetDatabase.LoadAssetAtPath<Tile>($"{tilesDir}/Tile_Platform.asset"),
+                AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/TilemapDefaultMaterial.mat"),
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SpikeTrap.png"),
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SawBladeTrap.png"),
+                name);
+        AssetDatabase.SaveAssets();
+    }
+
     public static void RebuildStage1RoomChunk(string chunkName)
     {
         const string tilesDir = "Assets/Textures/Environment/Tiles";
@@ -924,7 +945,47 @@ public static class ModuleChunkBuilder
                     { "Module_D1", "Module_E2", "Module_D2", "Module_C1" },
                     { "Module_A1", "Module_E1", "Module_A2", "Module_C1" }
                 }
-            }
+            },
+            ["Room_11072"] = LargeRoom(
+                new[] { "Module_M1_LandmarkConnector", "Module_B2", "Module_O1_SplitLevelCombatPocket", "Module_D1", "Module_N1_VerticalReturnLoop", "Module_A2" },
+                new[] { "Module_E1", "Module_J2", "Module_B1", "Module_L1_CombatPocket", "Module_F3", "Module_C1" },
+                new[] { "Module_A3", "Module_G4", "Module_M2_LandmarkConnector", "Module_E4", "Module_O2_SplitLevelCombatPocket", "Module_D2" },
+                new[] { "Module_K2", "Module_F1", "Module_A4", "Module_N2_VerticalReturnLoop", "Module_H2", "Module_C2" }),
+            ["Room_11073"] = LargeRoom(
+                new[] { "Module_O2_SplitLevelCombatPocket", "Module_D2", "Module_M1_LandmarkConnector", "Module_B4", "Module_N2_VerticalReturnLoop", "Module_A1" },
+                new[] { "Module_F4", "Module_J3", "Module_E2", "Module_L2", "Module_B1", "Module_C2" },
+                new[] { "Module_A4", "Module_G1", "Module_O1_SplitLevelCombatPocket", "Module_D3", "Module_M2_LandmarkConnector", "Module_E1" },
+                new[] { "Module_K1", "Module_F2", "Module_A2", "Module_N1_VerticalReturnLoop", "Module_H3", "Module_C1" }),
+            ["Room_11074"] = LargeRoom(
+                new[] { "Module_N1_VerticalReturnLoop", "Module_B3", "Module_O2_SplitLevelCombatPocket", "Module_D4", "Module_M2_LandmarkConnector", "Module_A3" },
+                new[] { "Module_E3", "Module_J4", "Module_B2", "Module_L1_CombatPocket", "Module_F1", "Module_C2" },
+                new[] { "Module_A1", "Module_G2", "Module_M1_LandmarkConnector", "Module_E2", "Module_O1_SplitLevelCombatPocket", "Module_D1" },
+                new[] { "Module_K2", "Module_F4", "Module_A4", "Module_N2_VerticalReturnLoop", "Module_H4", "Module_C1" }),
+            ["Room_11075"] = LargeRoom(
+                new[] { "Module_M2_LandmarkConnector", "Module_B4", "Module_N2_VerticalReturnLoop", "Module_D2", "Module_O1_SplitLevelCombatPocket", "Module_A2" },
+                new[] { "Module_F3", "Module_J1", "Module_E4", "Module_L2", "Module_B3", "Module_C1" },
+                new[] { "Module_A3", "Module_G4", "Module_O2_SplitLevelCombatPocket", "Module_D4", "Module_M1_LandmarkConnector", "Module_E1" },
+                new[] { "Module_K1", "Module_F2", "Module_A1", "Module_N1_VerticalReturnLoop", "Module_H2", "Module_C2" }),
+            ["Room_11076"] = LargeRoom(
+                new[] { "Module_A1", "Module_M1_LandmarkConnector", "Module_A2", "Module_J2", "Module_A3", "Module_C1" },
+                new[] { "Module_E1", "Module_F1", "Module_A4", "Module_M2_LandmarkConnector", "Module_E3", "Module_C2" },
+                new[] { "Module_A2", "Module_G1", "Module_E2", "Module_J3", "Module_A1", "Module_D2" },
+                new[] { "Module_K1", "Module_F2", "Module_A3", "Module_N1_VerticalReturnLoop", "Module_H1", "Module_C1" }),
+            ["Room_11077"] = LargeRoom(
+                new[] { "Module_M1_LandmarkConnector", "Module_D1", "Module_M2_LandmarkConnector", "Module_B1", "Module_J4", "Module_A1" },
+                new[] { "Module_E2", "Module_F3", "Module_A4", "Module_L1_CombatPocket", "Module_G1", "Module_C2" },
+                new[] { "Module_A3", "Module_J1", "Module_O1_SplitLevelCombatPocket", "Module_D3", "Module_N2_VerticalReturnLoop", "Module_E1" },
+                new[] { "Module_K2", "Module_F1", "Module_A2", "Module_M2_LandmarkConnector", "Module_H3", "Module_C1" }),
+            ["Room_11078"] = LargeRoom(
+                new[] { "Module_N1_VerticalReturnLoop", "Module_B2", "Module_K2", "Module_D1", "Module_N2_VerticalReturnLoop", "Module_A1" },
+                new[] { "Module_E3", "Module_J2", "Module_B4", "Module_L2", "Module_F1", "Module_C2" },
+                new[] { "Module_A4", "Module_G2", "Module_M1_LandmarkConnector", "Module_E1", "Module_O2_SplitLevelCombatPocket", "Module_D2" },
+                new[] { "Module_K1_ReturnShaft", "Module_F4", "Module_A2", "Module_N1_VerticalReturnLoop", "Module_H4", "Module_C1" }),
+            ["Room_11079"] = LargeRoom(
+                new[] { "Module_O1_SplitLevelCombatPocket", "Module_B3", "Module_M1_LandmarkConnector", "Module_D4", "Module_O2_SplitLevelCombatPocket", "Module_A3" },
+                new[] { "Module_E4", "Module_J3", "Module_B1", "Module_L1_CombatPocket", "Module_F2", "Module_C1" },
+                new[] { "Module_A1", "Module_G4", "Module_N2_VerticalReturnLoop", "Module_E2", "Module_M2_LandmarkConnector", "Module_D1" },
+                new[] { "Module_K2", "Module_F3", "Module_A4", "Module_N1_VerticalReturnLoop", "Module_H2", "Module_C2" })
         };
 
         foreach (var kvp in chunkConfigs)
@@ -1141,6 +1202,8 @@ public static class ModuleChunkBuilder
             if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
                 chunkName == "Room_11052" || chunkName == "Room_11053")
                 AddCombatSpawnZones(gridRoot.transform, gMap, pMap, platTile, worldWidth, worldHeight);
+            if (IsLargeCombatRoom(chunkName))
+                AddCombatSpawnZones(gridRoot.transform, gMap, pMap, platTile, worldWidth, worldHeight);
             ApplyStage1ShortRunFixes(chunkName, gMap, pMap, groundTile, platTile);
 
             string prefabPath = $"{roomsDir}/{chunkName}.prefab";
@@ -1155,6 +1218,14 @@ public static class ModuleChunkBuilder
             Object.DestroyImmediate(gridRoot);
         }
         Debug.Log($"<color=green>[ModuleChunkBuilder] 12x12 가변 NxM 룸 청크 11종 재빌드 완료!</color>");
+    }
+
+    private static ChunkGridConfig LargeRoom(params string[][] rows)
+    {
+        var matrix = new string[4, 6];
+        for (int y = 0; y < 4; y++)
+            for (int x = 0; x < 6; x++) matrix[y, x] = rows[y][x];
+        return new ChunkGridConfig { GridWidth = 6, GridHeight = 4, Matrix = matrix };
     }
 
     private static void ApplyStage1ShortRunFixes(string chunkName, Tilemap ground, Tilemap platforms,
@@ -1218,6 +1289,11 @@ public static class ModuleChunkBuilder
         {
             ground.SetTile(new Vector3Int(x, surfaceCellY, 0), groundTile);
             ground.SetTile(new Vector3Int(x, surfaceCellY - 1, 0), groundTile);
+            for (int y = surfaceCellY - 2; y >= 0 && !ground.HasTile(new Vector3Int(x, y, 0)); y--)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
             platforms.SetTile(new Vector3Int(x, surfaceCellY, 0), null);
             platforms.SetTile(new Vector3Int(x, surfaceCellY - 1, 0), null);
             ground.SetTile(new Vector3Int(x, surfaceCellY + 1, 0), null);
@@ -1229,12 +1305,24 @@ public static class ModuleChunkBuilder
         }
 
         int towardCenter = centerX < 0 ? 1 : -1;
-        for (int level = surfaceCellY - 1, step = 1; level > 0; level--, step++)
+        for (int approachSide = -1; approachSide <= 1; approachSide += 2)
         {
-            int stepCenterX = centerX + towardCenter * step * 3;
-            for (int x = stepCenterX - 1; x <= stepCenterX + 1; x++)
-                if (!ground.HasTile(new Vector3Int(x, level, 0)))
-                    platforms.SetTile(new Vector3Int(x, level, 0), platformTile);
+            for (int level = surfaceCellY - 1, step = 1; level > 0; level--, step++)
+            {
+                int stepCenterX = centerX + approachSide * step * 3;
+                for (int x = stepCenterX - 1; x <= stepCenterX + 1; x++)
+                {
+                    Vector3Int support = new Vector3Int(x, level, 0);
+                    if (ground.HasTile(support) || ground.HasTile(support + Vector3Int.down)) continue;
+                    platforms.SetTile(support, platformTile);
+                    ground.SetTile(support + Vector3Int.up, null);
+                    ground.SetTile(support + Vector3Int.up * 2, null);
+                    ground.SetTile(support + Vector3Int.up * 3, null);
+                    platforms.SetTile(support + Vector3Int.up, null);
+                    platforms.SetTile(support + Vector3Int.up * 2, null);
+                    platforms.SetTile(support + Vector3Int.up * 3, null);
+                }
+            }
         }
         RemoveShortAdjacentOneWayRun(platforms, surfaceCellY, centerX - 2, -1);
         RemoveShortAdjacentOneWayRun(platforms, surfaceCellY, centerX + 2, 1);
@@ -1273,11 +1361,20 @@ public static class ModuleChunkBuilder
 
     private static bool RequiresP0TraversalCorridor(string chunkName)
     {
+        if (IsLargeRuntimeRoom(chunkName)) return true;
         return chunkName == "Prefab_1041" || chunkName == "Prefab_1042" ||
             chunkName == "Room_11050" || chunkName == "Room_11051" ||
             chunkName == "Room_11052" || chunkName == "Room_11053" ||
             chunkName == "Room_11056" || chunkName == "Room_11057";
     }
+
+    private static bool IsLargeRuntimeRoom(string name) =>
+        name == "Room_11072" || name == "Room_11073" || name == "Room_11074" || name == "Room_11075" ||
+        name == "Room_11076" || name == "Room_11077" || name == "Room_11078" || name == "Room_11079";
+
+    private static bool IsLargeCombatRoom(string name) =>
+        name == "Room_11072" || name == "Room_11073" || name == "Room_11074" || name == "Room_11075" ||
+        name == "Room_11079";
 
     private static void EnsureP0TraversalCorridor(Tilemap ground, Tilemap platforms, Tile groundTile, int worldWidth, int clearHeight)
     {

@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: Prefabs
   m_GUID: 7e1fc94225183164c823d4d951014df0
   m_SerializeEntries:
+  - m_GUID: 012de00646c720947964270f8590877d
+    m_Address: Room_11072
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 173222196f3e1f0448b383f260df7d44
     m_Address: Sample13_ToDoItem
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21b4789690521e248a43925085a4da87
+    m_Address: Room_11079
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -45,6 +57,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5228e4ee1ecb9de4889895bd258efcfe
+    m_Address: Room_11074
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5b385ea7c9e07d34bb907566200d5178
     m_Address: Room_11056
     m_ReadOnly: 0
@@ -59,6 +77,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 813ae21e14e165949861d0d53b94ddb9
     m_Address: Room_11057
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83568163da3e8db4384228e2558de6be
+    m_Address: Room_11078
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -129,8 +153,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b44d1ad69513f8e4b8b1711a8c8e89ee
+    m_Address: Room_11076
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3f6a85293d7d904a92c805b3c73df98
+    m_Address: Room_11075
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c7b2bb7ba60f4c74bab0ca94e7e80392
     m_Address: Room_11063
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd0371d4c90c63943b4567cb657937c1
+    m_Address: Room_11077
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -203,6 +245,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d4e2698b21b5891438fdca4aefaba5c4
     m_Address: Room_11053
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db3c3b0cee8eba24a8b2d2ca40306881
+    m_Address: Room_11073
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

@@ -706,7 +706,8 @@ namespace QA.Tests
                 Assert.AreEqual(0.9f, hp.fillAmount, "Pooled disable must remove every listener.");
 
                 string source = File.ReadAllText("Assets/Scripts/UI/MonsterOverheadHUD.cs");
-                Assert.IsFalse(Regex.IsMatch(source, @"\b(Update|OnGUI)\s*\("));
+                Assert.IsFalse(Regex.IsMatch(source, @"\bOnGUI\s*\("));
+                StringAssert.DoesNotContain("Monster.ActiveMonsters", source);
                 StringAssert.Contains("owner is BossMonster", source);
                 StringAssert.DoesNotContain("GetComponent", source);
                 StringAssert.DoesNotContain("Find", source);

@@ -23,9 +23,9 @@ namespace QA.Tests
             layout.LoadData(File.ReadAllText("Assets/Datas/StageLayoutData.csv"));
             encounters.LoadData(File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
 
-            Assert.AreEqual(8, chunks.GetDataCount());
+            Assert.AreEqual(16, chunks.GetDataCount());
             Assert.AreEqual(1, layout.GetDataCount());
-            Assert.AreEqual(4, encounters.GetDataCount());
+            Assert.AreEqual(5, encounters.GetDataCount());
             Assert.AreEqual(DataTableType.ChunkResource, Util.GetDataTableType(11050));
             Assert.AreEqual(DataTableType.StageLayout, Util.GetDataTableType(12001));
             Assert.AreEqual(DataTableType.MonsterEncounter, Util.GetDataTableType(13001));

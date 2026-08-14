@@ -9,11 +9,21 @@ public sealed class MonsterOverheadHUD : MonoBehaviour
     [SerializeField] private Image hpFill;
     [SerializeField] private Image postureFill;
     [SerializeField] private TMP_Text nameText;
+    [Header("Attack Telegraph")]
+    [SerializeField] private CanvasGroup attackTelegraphGroup;
+    [SerializeField] private Image attackTelegraphFill;
+    [SerializeField] private Color attackTelegraphWarningColor = Color.white;
+    [SerializeField] private Color attackTelegraphActiveColor = Color.red;
 
     private CombatStats stats;
+    private Monster.AttackTelegraph attackTelegraph;
+    private bool hasAttackTelegraph;
 
     private void OnEnable()
     {
+        Monster.AttackTelegraphStarted += OnAttackTelegraphStarted;
+        Monster.AttackTelegraphEnded += OnAttackTelegraphEnded;
+        SetTelegraphVisible(false);
         if (owner == null || owner is BossMonster)
         {
             SetVisible(false);
@@ -23,7 +33,48 @@ public sealed class MonsterOverheadHUD : MonoBehaviour
         Bind(owner.Stats);
     }
 
-    private void OnDisable() => Bind(null);
+    private void OnDisable()
+    {
+        Monster.AttackTelegraphStarted -= OnAttackTelegraphStarted;
+        Monster.AttackTelegraphEnded -= OnAttackTelegraphEnded;
+        hasAttackTelegraph = false;
+        SetTelegraphVisible(false);
+        Bind(null);
+    }
+
+    private void Update()
+    {
+        if (!hasAttackTelegraph || owner == null || !owner.isActiveAndEnabled ||
+            !owner.IsActionGenerationCurrent(attackTelegraph.Generation) ||
+            Time.time > attackTelegraph.ActiveEndsAt)
+        {
+            hasAttackTelegraph = false;
+            SetTelegraphVisible(false);
+            return;
+        }
+
+        bool visible = Time.time >= attackTelegraph.WarningStartsAt;
+        SetTelegraphVisible(visible);
+        if (!visible || attackTelegraphFill == null) return;
+        attackTelegraphFill.fillAmount = ProductionMainHUD.CalculateAttackTelegraphFill(
+            Time.time, attackTelegraph.WarningStartsAt, attackTelegraph.ImpactAt);
+        attackTelegraphFill.color = Time.time >= attackTelegraph.ImpactAt
+            ? attackTelegraphActiveColor : attackTelegraphWarningColor;
+    }
+
+    private void OnAttackTelegraphStarted(Monster.AttackTelegraph telegraph)
+    {
+        if (telegraph.Source != owner || owner is BossMonster) return;
+        attackTelegraph = telegraph;
+        hasAttackTelegraph = true;
+    }
+
+    private void OnAttackTelegraphEnded(Monster source, uint generation)
+    {
+        if (!hasAttackTelegraph || source != owner || attackTelegraph.Generation != generation) return;
+        hasAttackTelegraph = false;
+        SetTelegraphVisible(false);
+    }
 
     public void Bind(CombatStats target)
     {
@@ -53,6 +104,10 @@ public sealed class MonsterOverheadHUD : MonoBehaviour
     private void SetVisible(bool visible)
     {
         if (group != null) group.alpha = visible ? 1f : 0f;
+    }
+    private void SetTelegraphVisible(bool visible)
+    {
+        if (attackTelegraphGroup != null) attackTelegraphGroup.alpha = visible ? 1f : 0f;
     }
 
     private static void SetFill(Image image, float value)
