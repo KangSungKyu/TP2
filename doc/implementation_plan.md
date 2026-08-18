@@ -54,14 +54,14 @@
 
 | 날짜 | 변경 요약 | 근거 |
 |---:|---|---|
-| 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 구현 완료 (`46d0906`) | `Assets/Docs/SubPlans/plan_hazards_traps.md` 신설, `HazardBase.cs`, `SpikeTrap.cs`, `SawBladeTrap.cs` |
+| 2026-08-10 | 2D 사이드뷰 함정/장애물(가시 함정, 둥근 톱날 함정) 시스템 명세 및 수치/데이터 거버넌스 구현 완료 (`46d0906`) | `doc/SubPlans/plan_hazards_traps.md` 신설, `HazardBase.cs`, `SpikeTrap.cs`, `SawBladeTrap.cs` |
 | 2026-08-10 | `HazardBase.cs` `TakeDamage(damage)` 인자 수선 및 Obsolete `rb.isKinematic` -> `bodyType` 현대화 수선 동기화 (`fb75cee`) | `HazardBase.cs` |
 | 2026-08-10 | 전 스크립트 대상 Modern Unity API 규격(`FindFirstObjectByType`, `FindObjectsByType`, `bodyType`) 적용 및 거버넌스 전면 확립 (`cd73b69`) | `TilemapStageBuilderTests.cs`, `HazardBase.cs`, `implementation_plan.md` |
 | 2026-08-10 | `fix/` 브랜치(`fix/ppu100-regression-gates` 등) 100% 통합 병합(`aa049b6`) 및 `portfolio` 브랜치 원격 Push 최신화 완결 | Git Repository |
-| 2026-08-10 | 플레이어 정밀 물리 이동 스펙 기반 6x6 스테이지 청크 구성 모듈 템플릿 명세서 수립 및 물리 검증 통합 완료 (`e968bb4`) | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` 신설 |
+| 2026-08-10 | 플레이어 정밀 물리 이동 스펙 기반 6x6 스테이지 청크 구성 모듈 템플릿 명세서 수립 및 물리 검증 통합 완료 (`e968bb4`) | `doc/SubPlans/plan_chunk_6x6_modules.md` 신설 |
 | 2026-08-10 | 유저 확정 5대 계약(노크백 제거&안전지형 이송, Down+Jump 발판 통과, 모듈->청크 주입 생명주기) 구현 및 C# 동기화 완결 (`8fa945c`) | `plan_hazards_traps.md`, `plan_chunk_6x6_modules.md`, `HazardBase.cs` |
-| 2026-08-10 | 청크($10 \times 5$ 모듈 배열) 수직/중단 전개용 공용 부유 모듈(Floating Air Modules) 템플릿 6종 추가 명세 수립 | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
-| 2026-08-10 | 높은 지형/절벽/언덕 표현용 고지대 모듈(High Terrain / Elevation Modules) 템플릿 6종 신규 명세 수립 (총 24종 템플릿 완성) | `Assets/Docs/SubPlans/plan_chunk_6x6_modules.md` |
+| 2026-08-10 | 청크($10 \times 5$ 모듈 배열) 수직/중단 전개용 공용 부유 모듈(Floating Air Modules) 템플릿 6종 추가 명세 수립 | `doc/SubPlans/plan_chunk_6x6_modules.md` |
+| 2026-08-10 | 높은 지형/절벽/언덕 표현용 고지대 모듈(High Terrain / Elevation Modules) 템플릿 6종 신규 명세 수립 (총 24종 템플릿 완성) | `doc/SubPlans/plan_chunk_6x6_modules.md` |
 | 2026-08-10 | 24종 6x6 모듈 Prefab 수성 및 10x5 주입 기반 Stage 1 룸 청크 11종 전면 재생성 빌더 구축 완결 (`202f805`) | `Assets/Editor/Stage1ChunkBuilder.cs`, `Assets/Editor/ModuleChunkBuilder.cs` |
 | 2026-08-10 | 24종 6x6 모듈 템플릿의 정밀 6x6 ASCII 파서 연동으로 단층(1x6) 생성 버그 수선 및 10x5 청크 주입 완전재구성 (`1248364`) | `ModuleChunkBuilder.cs` |
 | 2026-08-10 | `ModuleChunkBuilder.cs` 내 인덱싱 구문 `line[cellX]` 보정 수선 (`4d80fb3`) | `ModuleChunkBuilder.cs` |
@@ -89,6 +89,7 @@
 | 2026-08-12 | 3D 모델 애니메이션(.fbx, .gltf) ➔ 2D 스프라이트 시트(.png) 자동 변환 파이프라인(Blender+Pixelizer 셰이더, Unity Sprite Baking Studio, PixelOver) 수립 완료 | `doc/specs/3d_to_2d_sprite_sheet_pipeline.md` 신설 |
 | 2026-08-12 | 유니티 MCP 기반 3D 파츠 조합 ➔ 몬스터 뼈대(Bone Transform) 변환 ➔ 2D Sprite Sheet (.png) 인엔진 자동 추출 파이프라인 검토(100% 구현 가능 확인) 완료 | `doc/specs/unity_mcp_3d_to_2d_baker_evaluation.md` 신설 |
 | 2026-08-12 | 3D 애니메이션 동작(Motion) AI 자동 생성(Plask, DeepMotion, Mixamo Retargeting, C# Procedural Animation) 검토(100% 자동 생성 가능 확인) 완료 | `doc/specs/3d_animation_motion_generation_evaluation.md` 신설 |
+| 2026-08-18 | 로컬 ComfyUI MCP 파이프라인(`http://127.0.0.1:8188`) 구축, Anything V5(`Anything-v5.0-PRT-RE.safetensors`) 설치 및 텍스트-이미지 테스트 생성 완료. 이후 전 이미지 생성 작업을 비주얼 아트 디자이너 세션에 전담 위임 | 비주얼 아트 디자이너 위임 |
 | 2026-08-07 18:57 KST | Portal 착지 geometry, Particle 비동기 완료, DataTable fixture 격리 최종 계약 사후 동기화 | motor/tile/collider 정상, trigger 1m 매몰 직접 원인 수선; Portal center `surface+1` 44/44, Entry `+0.51`, high landing solid 3×2, one-way 단절 0, one-way 42 cells·new solid 124 cells, spawn clearance min 7.8103m, Room_11056 East/Room_11052 교정; Particle completed-null race 및 ResourceData test fixture 복원; 전용 4/4, EditMode 112/112(포커스 의존 2건 별도), PlayMode 1/1, QA 80/80, 제품 Error 0 |
 | 2026-08-07 17:31 KST | target 7 stale portal 생명주기 및 메트로배니아 접근성 계약 사후 동기화 | `OwnerSlotIdx`/`RoomGeneration`/input lock, stale 무로그; 11 rooms, socket 44/44, platforms 98, max step 1m/gap 2m, spawn clearance min 7.75m, 공용 `Portal_Gate`; 전용 3/3, EditMode 112/112, PlayMode 1/1, QA 79/79, target7 warning 0, Console 0 |
 | 2026-08-07 16:53 KST | 방향 비의존 공용 Portal_Gate 이동 계약 및 floor socket 접근성 사후 동기화 | Direction은 graph target/safe entry 메타데이터만 유지; 명시 `TargetSlotIdx`+상호 mask; 11 prefab, floor socket 44/44, EntryMarker null 0, static portal 0, 신규 발판 0, 1041/1042 각 4 sockets; portal 10/10, EditMode 111/111, PlayMode 1/1, QA 78/78, Console 0 |
@@ -104,7 +105,7 @@
 | 2026-08-04 | `Resources.Load` 폴백 제거 | `b4c4612` |
 | 2026-08-04 | InitScene 영속 매니저 7종 일원화 | `bc277b9` |
 | 2026-08-05 | Stage 1 무작위 청크, CSV 타입·0/1 bool·TextData, P0 포탈·몬스터 placeholder 통합 | 미커밋 작업 트리 |
-| 2026-08-05 | `doc/`와 `Assets/Docs/`를 `Assets/Docs/`로 일원화 | `Assets/Docs` |
+| 2026-08-05 | 당시 `doc/`와 `Assets/Docs/`를 `Assets/Docs/`로 일원화(2026-08-11 `doc/` 정책으로 대체됨) | 역사 기록 |
 | 2026-08-06 | Stage 1 청크 4방향 안전 진입 배치 및 South 지면 침투 수선 | `adbb6f5`, 병합 `e97adc3` |
 | 2026-08-06 | 유닛 PPU100·BottomCenter·Visual 구조 통일 및 피격 지면 관통/Death Animator 계약 수선 | EditMode 71/71, PlayMode 1/1, QA 52/52 |
 | 2026-08-06 | Player/Enemy 레이어 분리로 유닛 간 물리 고착 제거 | `ae77a83`, 병합 `49e56ac`; EditMode 72/72, QA 53/53 |
@@ -263,7 +264,7 @@
   - `Object.FindObjectsOfType<T>()` ➔ `Object.FindObjectsByType<T>(FindObjectsSortMode.None)` (`TilemapStageBuilderTests.cs:120`)
   - `Object.FindObjectOfType<T>()` ➔ `Object.FindFirstObjectByType<T>()` (`InitScene.cs:44`)
   - `rb.isKinematic` ➔ `rb.bodyType != RigidbodyType2D.Kinematic` (`HazardBase.cs:78`)
-- **[PM 거버넌스 방어 지침 수립]**: 향후 모든 개발 서브에이전트(메인프로그래머, CI프로그래머, QA프로그래머)는 유니티 엔진 버전, 패키지 및 플러그인의 Deprecated/Obsolete API 사용을 전면 배제하고 최신 Modern Unity API 규격으로만 개발하도록 마스터 명세서 `Assets/Docs/implementation_plan.md` 코어 규칙에 강제 등록 완수.
+- **[PM 거버넌스 방어 지침 수립]**: 향후 모든 개발 서브에이전트(메인프로그래머, CI프로그래머, QA프로그래머)는 유니티 엔진 버전, 패키지 및 플러그인의 Deprecated/Obsolete API 사용을 전면 배제하고 최신 Modern Unity API 규격으로만 개발하도록 마스터 명세서 `doc/implementation_plan.md` 코어 규칙에 강제 등록 완수.
 
 ---
 
@@ -461,3 +462,10 @@
 
 - **100% 모션 자동 생성 검토 완결**: ① AI Video-to-Motion(Plask.ai/DeepMotion)을 통한 비디오 키프레임 10초 내 자동 추출, ② Mixamo 라이브러리 애니메이션 수천 종의 인엔진 자동 리타겟팅, ③ Unity C# 절차적 애니메이션(`AnimationMotionGenerator.cs`)을 연동한 3D 동작 자동 생성 기술 검증 완료.
 - **수작업 애니메이팅 0% 파이프라인 구축**: 수작업 드로잉 및 수작업 애니메이팅 없이 3D 파츠 결합 ➔ 3D 모션 자동 인계 ➔ 2D Sprite Sheet (.png) 출력이 완전 자동화된 기술 보고서([3d_animation_motion_generation_evaluation.md](file:///c:/Users/PC/Projects/TP2/doc/specs/3d_animation_motion_generation_evaluation.md)) 수립 완결.
+
+---
+
+### 2026-08-18 KST — 로컬 ComfyUI 파이프라인 구축 & 비주얼 아트 디자이너 생성 업무 인계 회고
+
+- **로컬 ComfyUI 파이프라인 무결성 확보**: ComfyUI 로컬 서버(`http://127.0.0.1:8188`) 연동, `Anything-v5.0-PRT-RE.safetensors`(2.03 GB) 체크포인트 모델 설치 및 기본 텍스트-이미지 테스트 생성(`TestWarrior_TP2_00001_.png`) 검증 완료.
+- **비주얼 아트 디자이너 업무 전담 인계**: 헌법(`AGENTS.md`) 및 유저 지시사항에 따라 이후 모든 캐릭터/몬스터 스프라이트 시트 및 아트 이미지 생성 작업을 **비주얼 아트 디자이너(`63c3f691-87f9-4235-a4f6-b78479705ddb`, `0625e4e7-91c3-4cca-bf23-c0844cae8319`)** 세션으로 전담 위임 완료.
