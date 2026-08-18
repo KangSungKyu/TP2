@@ -74,6 +74,7 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 
 ### 📝 문서작업자
 * **임무** : 보고서 관리 및 전체 마일스톤 현황, 비용 분석서 등 서류 작업 전반을 전담한다.
+* **문서 루트** : 향후 프로젝트 작업 문서는 프로젝트 루트의 `doc/` 아래에만 생성한다. Unity가 생성한 OpenWiki 페이지는 직접 수정하지 않는다.
 
 ## 🗃️ 5. 작업자 세션 대화 이력 자동 기록
 
