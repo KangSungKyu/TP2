@@ -595,6 +595,472 @@ public static class ModuleChunkBuilder
         "Assets/Prefabs/Development/Tilemap_Room_EmptyFirstAngular_Trial03.prefab";
     internal const string EmptyFirstAngularTrial04PrefabPath =
         "Assets/Prefabs/Development/Tilemap_Room_EmptyFirstAngular_Trial04.prefab";
+    internal const string PhaseA1x1PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x1.prefab";
+    internal const string PhaseA1x2PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x2.prefab";
+    internal const string PhaseA2x1PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_2x1.prefab";
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 1x1")]
+    public static void BuildPhaseAEmptyFirst1x1() => BuildPhaseAEmptyFirstPrototype(84, 60, PhaseA1x1PrefabPath);
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 1x2")]
+    public static void BuildPhaseAEmptyFirst1x2() => BuildPhaseAEmptyFirstPrototype(84, 120, PhaseA1x2PrefabPath);
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 2x1")]
+    public static void BuildPhaseAEmptyFirst2x1() => BuildPhaseAEmptyFirstPrototype(168, 60, PhaseA2x1PrefabPath);
+
+    internal static int GetPhaseAPortalPairCount(int width, int height) => width == 84 && height == 60 ? 1 : 2;
+
+    internal static RectInt[] GetPhaseARooms(int width, int height, int shell = 3)
+    {
+        int roomWidth = Mathf.Max(14, width / 5);
+        int roomHeight = Mathf.Max(10, height / 6);
+        return new[]
+        {
+            new RectInt(shell + 5, shell + 4, roomWidth, roomHeight),
+            new RectInt(width - shell - roomWidth - 5, shell + 4, roomWidth, roomHeight),
+            new RectInt(shell + 5, height - shell - roomHeight - 5, roomWidth, roomHeight),
+            new RectInt(width - shell - roomWidth - 5, height - shell - roomHeight - 5, roomWidth, roomHeight)
+        };
+    }
+
+    internal static float GetPhaseAPlayerGroundClearance()
+    {
+        GameObject player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        CapsuleCollider2D collider = player != null ? player.GetComponent<CapsuleCollider2D>() : null;
+        KinematicMotor2D motor = player != null ? player.GetComponent<KinematicMotor2D>() : null;
+        if (collider == null || motor == null)
+            throw new InvalidDataException("Phase A generation requires Unit_3001 collider and motor.");
+        float scaleY = Mathf.Abs(collider.transform.lossyScale.y);
+        return motor.SkinWidth - (collider.offset.y - collider.size.y * .5f) * scaleY;
+    }
+
+    internal static float GetPhaseAPlayerMaxRise()
+    {
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        Player player = playerPrefab != null ? playerPrefab.GetComponent<Player>() : null;
+        KinematicMotor2D motor = playerPrefab != null ? playerPrefab.GetComponent<KinematicMotor2D>() : null;
+        SerializedProperty jumpForce = player != null
+            ? new SerializedObject(player).FindProperty("jumpForce")
+            : null;
+        if (motor == null || jumpForce == null || jumpForce.floatValue <= 0f || motor.Gravity <= 0f)
+            throw new InvalidDataException("Phase A generation requires Unit_3001 jump values.");
+        return jumpForce.floatValue * jumpForce.floatValue / (2f * motor.Gravity) - motor.SkinWidth * 2f;
+    }
+
+    internal static List<Vector3Int> GetPhaseAVerticalPlatformRuns(RectInt[] rooms, int[] mainRooms)
+    {
+        int rise = Mathf.FloorToInt(GetPhaseAPlayerMaxRise());
+        if (rise < 1) throw new InvalidDataException("Phase A jump envelope cannot place vertical platforms.");
+        var runs = new List<Vector3Int>();
+        var edges = new List<(int from, int to)>();
+        for (int i = 1; i < mainRooms.Length; i++) edges.Add((mainRooms[0], mainRooms[i]));
+        if (mainRooms.Length > 2) edges.Add((mainRooms[1], mainRooms[2]));
+        foreach ((int from, int to) edge in edges)
+        {
+            RectInt from = rooms[edge.from], to = rooms[edge.to];
+            int lowerSurface = Mathf.Min(from.yMin, to.yMin) + 1;
+            int upperSurface = Mathf.Max(from.yMin, to.yMin) + 1;
+            int x = GetPhaseAVerticalCorridorX(to) - 1;
+            for (int surface = lowerSurface + rise; surface < upperSurface; surface += rise)
+            {
+                var run = new Vector3Int(x, surface - 1, 0);
+                if (!runs.Contains(run)) runs.Add(run);
+            }
+        }
+        return runs;
+    }
+
+    internal static int GetPhaseAVerticalCorridorX(RectInt room) =>
+        Mathf.RoundToInt(room.center.x) + Mathf.Min(4, room.width / 2 - 3);
+
+    internal static Vector3 ResolvePhaseALandingPosition(Tilemap ground, float x, float guessY)
+    {
+        GameObject player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        CapsuleCollider2D source = player != null ? player.GetComponent<CapsuleCollider2D>() : null;
+        KinematicMotor2D motor = player != null ? player.GetComponent<KinematicMotor2D>() : null;
+        TilemapCollider2D tilemapCollider = ground != null ? ground.GetComponent<TilemapCollider2D>() : null;
+        CompositeCollider2D composite = ground != null ? ground.GetComponent<CompositeCollider2D>() : null;
+        if (source == null || motor == null || tilemapCollider == null)
+            throw new InvalidDataException("Phase A landing resolution requires Unit_3001 and TilemapCollider2D.");
+
+        for (int bake = 0; bake < 4 && tilemapCollider.hasTilemapChanges; bake++)
+            tilemapCollider.ProcessTilemapChanges();
+        if (tilemapCollider.hasTilemapChanges)
+            throw new InvalidDataException("Phase A TilemapCollider2D still has unprocessed tile changes.");
+        if (composite != null) composite.GenerateGeometry();
+        Collider2D terrain = composite != null ? composite : tilemapCollider;
+        Physics2D.SyncTransforms();
+        if (!terrain.enabled || !terrain.gameObject.activeInHierarchy || terrain.bounds.size.sqrMagnitude <= 0f)
+            throw new InvalidDataException(
+                $"Phase A terrain collider is unavailable: enabled={terrain.enabled}, active={terrain.gameObject.activeInHierarchy}, bounds={terrain.bounds}.");
+        var probeObject = new GameObject("PhaseA_LandingProbe", typeof(CapsuleCollider2D));
+        try
+        {
+            CapsuleCollider2D probe = probeObject.GetComponent<CapsuleCollider2D>();
+            probe.size = source.size;
+            probe.offset = source.offset;
+            probe.direction = source.direction;
+            probeObject.transform.localScale = source.transform.lossyScale;
+            probeObject.transform.position = new Vector3(x, guessY, 0f);
+            if (!probe.enabled || !probe.gameObject.activeInHierarchy ||
+                probe.gameObject.scene.GetPhysicsScene2D() != terrain.gameObject.scene.GetPhysicsScene2D())
+                throw new InvalidDataException("Phase A landing probe is not active in the terrain PhysicsScene2D.");
+            ColliderDistance2D distance = default;
+            for (int iteration = 0; iteration < 8; iteration++)
+            {
+                Physics2D.SyncTransforms();
+                distance = Physics2D.Distance(probe, terrain);
+                if (!distance.isValid)
+                    throw new InvalidDataException(
+                        $"Phase A landing collider distance is invalid: tileChanges={tilemapCollider.hasTilemapChanges}, " +
+                        $"terrainEnabled={terrain.enabled}, probeEnabled={probe.enabled}, terrainBounds={terrain.bounds}, " +
+                        $"probeBounds={probe.bounds}, pointA={distance.pointA}, pointB={distance.pointB}.");
+                if (!distance.isOverlapped && distance.distance >= motor.SkinWidth)
+                    return probeObject.transform.position;
+                float deficit = motor.SkinWidth - distance.distance;
+                if (deficit <= 0f)
+                    throw new InvalidDataException("Phase A landing separation did not progress upward.");
+                float currentY = probeObject.transform.position.y;
+                float nextY = currentY + deficit;
+                nextY = System.BitConverter.Int32BitsToSingle(
+                    System.BitConverter.SingleToInt32Bits(nextY > currentY ? nextY : currentY) + 1);
+                probeObject.transform.position = new Vector3(x, nextY, 0f);
+            }
+            Physics2D.SyncTransforms();
+            distance = Physics2D.Distance(probe, terrain);
+            throw new InvalidDataException(
+                $"Phase A landing separation failed: valid={distance.isValid}, overlap={distance.isOverlapped}, distance={distance.distance}.");
+        }
+        finally { Object.DestroyImmediate(probeObject); }
+    }
+
+    internal static Vector2[] GetPhaseASpawnPositions(RectInt[] rooms, float groundClearance)
+    {
+        var positions = new Vector2[rooms.Length];
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            int x = i % 2 == 0 ? room.xMin + 4 : room.xMax - 5;
+            positions[i] = new Vector2(x, room.yMin + 1f + groundClearance);
+        }
+        return positions;
+    }
+
+    internal static void NormalizePhaseANarrowGaps(bool[,] solid, bool[,] protectedNavigation, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1);
+        for (int y = shell; y < height - shell; y++)
+        {
+            int x = shell;
+            while (x < width - shell)
+            {
+                if (solid[x, y]) { x++; continue; }
+                int start = x;
+                while (x < width - shell && !solid[x, y]) x++;
+                int length = x - start;
+                if (length >= 5 || start <= shell || x >= width - shell ||
+                    !solid[start - 1, y] || !solid[x, y]) continue;
+                bool protectedRun = false;
+                for (int fillX = start; fillX < x; fillX++) protectedRun |= protectedNavigation[fillX, y];
+                if (!protectedRun)
+                    for (int fillX = start; fillX < x; fillX++) solid[fillX, y] = true;
+            }
+        }
+        for (int x = shell; x < width - shell; x++)
+        {
+            int y = shell;
+            while (y < height - shell)
+            {
+                if (solid[x, y]) { y++; continue; }
+                int start = y;
+                while (y < height - shell && !solid[x, y]) y++;
+                int length = y - start;
+                if (length >= 5 || start <= shell || y >= height - shell ||
+                    !solid[x, start - 1] || !solid[x, y]) continue;
+                bool protectedRun = false;
+                for (int fillY = start; fillY < y; fillY++) protectedRun |= protectedNavigation[x, fillY];
+                if (!protectedRun)
+                    for (int fillY = start; fillY < y; fillY++) solid[x, fillY] = true;
+            }
+        }
+    }
+
+    internal static int CountPhaseAEmptyComponents(bool[,] solid, RectInt[] excludedBounds, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1), count = 0;
+        var visited = new bool[width, height];
+        int[] dx = { -1, 1, 0, 0 }, dy = { 0, 0, -1, 1 };
+        bool Excluded(int x, int y)
+        {
+            if (excludedBounds == null) return false;
+            foreach (RectInt bounds in excludedBounds) if (bounds.Contains(new Vector2Int(x, y))) return true;
+            return false;
+        }
+        for (int sy = shell; sy < height - shell; sy++)
+        for (int sx = shell; sx < width - shell; sx++)
+        {
+            if (solid[sx, sy] || visited[sx, sy] || Excluded(sx, sy)) continue;
+            count++;
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(new Vector2Int(sx, sy));
+            visited[sx, sy] = true;
+            while (queue.Count > 0)
+            {
+                Vector2Int cell = queue.Dequeue();
+                for (int i = 0; i < 4; i++)
+                {
+                    int x = cell.x + dx[i], y = cell.y + dy[i];
+                    if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                        solid[x, y] || visited[x, y] || Excluded(x, y)) continue;
+                    visited[x, y] = true;
+                    queue.Enqueue(new Vector2Int(x, y));
+                }
+            }
+        }
+        return count;
+    }
+
+    internal static void ClosePhaseAMainGraph(bool[,] solid, bool[,] protectedNavigation,
+        RectInt[] annexBounds, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1);
+        bool Excluded(int x, int y)
+        {
+            foreach (RectInt bounds in annexBounds) if (bounds.Contains(new Vector2Int(x, y))) return true;
+            return false;
+        }
+        bool HasCorridorClearance(Vector2Int cell)
+        {
+            for (int y = cell.y - 2; y <= cell.y + 2; y++)
+            for (int x = cell.x - 2; x <= cell.x + 2; x++)
+                if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                    solid[x, y] || protectedNavigation[x, y] || Excluded(x, y)) return false;
+            return true;
+        }
+        for (int pass = 0; pass < 4 && CountPhaseAEmptyComponents(solid, annexBounds, shell) > 1; pass++)
+        {
+            var representatives = new List<Vector2Int>();
+            var visited = new bool[width, height];
+            int[] dx = { -1, 1, 0, 0 }, dy = { 0, 0, -1, 1 };
+            for (int sy = shell; sy < height - shell; sy++)
+            for (int sx = shell; sx < width - shell; sx++)
+            {
+                if (solid[sx, sy] || visited[sx, sy] || Excluded(sx, sy)) continue;
+                Vector2Int representative = new Vector2Int(sx, sy);
+                bool hasClearance = false;
+                var queue = new Queue<Vector2Int>();
+                queue.Enqueue(new Vector2Int(sx, sy));
+                visited[sx, sy] = true;
+                while (queue.Count > 0)
+                {
+                    Vector2Int cell = queue.Dequeue();
+                    if (!hasClearance && HasCorridorClearance(cell))
+                    {
+                        representative = cell;
+                        hasClearance = true;
+                    }
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int x = cell.x + dx[i], y = cell.y + dy[i];
+                        if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                            solid[x, y] || visited[x, y] || Excluded(x, y)) continue;
+                        visited[x, y] = true;
+                        queue.Enqueue(new Vector2Int(x, y));
+                    }
+                }
+                representatives.Add(representative);
+            }
+            if (representatives.Count < 2) break;
+            Vector2Int from = representatives[0], to = representatives[1];
+            for (int x = Mathf.Min(from.x, to.x); x <= Mathf.Max(from.x, to.x); x++)
+            for (int y = from.y - 2; y <= from.y + 2; y++)
+                if (x >= shell && x < width - shell && y >= shell && y < height - shell &&
+                    !Excluded(x, y) && !protectedNavigation[x, y])
+                { solid[x, y] = false; protectedNavigation[x, y] = true; }
+            for (int x = to.x - 2; x <= to.x + 2; x++)
+            for (int y = Mathf.Min(from.y, to.y); y <= Mathf.Max(from.y, to.y); y++)
+                if (x >= shell && x < width - shell && y >= shell && y < height - shell &&
+                    !Excluded(x, y) && !protectedNavigation[x, y])
+                { solid[x, y] = false; protectedNavigation[x, y] = true; }
+        }
+        if (CountPhaseAEmptyComponents(solid, annexBounds, shell) != 1)
+            throw new InvalidDataException("Phase A main Empty graph closure failed.");
+    }
+
+    internal static void ProtectPhaseASurface(bool[,] solid, bool[,] protectedEmpty, bool[,] protectedSolid,
+        bool[,] protectedNavigation, int centerX, int floorY)
+    {
+        for (int x = centerX - 1; x <= centerX + 1; x++)
+        {
+            solid[x, floorY] = true;
+            protectedSolid[x, floorY] = true;
+            protectedNavigation[x, floorY] = true;
+            for (int y = floorY + 1; y <= floorY + 4; y++)
+            {
+                solid[x, y] = false;
+                protectedEmpty[x, y] = true;
+                protectedNavigation[x, y] = true;
+            }
+        }
+    }
+
+    private static void BuildPhaseAEmptyFirstPrototype(int width, int height, string outputPath)
+    {
+        const int shell = 3;
+        var solid = new bool[width, height];
+        var protectedEmpty = new bool[width, height];
+        var protectedSolid = new bool[width, height];
+        var protectedNavigation = new bool[width, height];
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++) solid[x, y] = true;
+
+        RectInt[] rooms = GetPhaseARooms(width, height, shell);
+        float playerGroundClearance = GetPhaseAPlayerGroundClearance();
+        var centers = new Vector2Int[rooms.Length];
+        void Carve(int minX, int maxX, int minY, int maxY)
+        {
+            for (int y = Mathf.Max(shell, minY); y <= Mathf.Min(height - shell - 1, maxY); y++)
+            for (int x = Mathf.Max(shell, minX); x <= Mathf.Min(width - shell - 1, maxX); x++)
+            {
+                solid[x, y] = false;
+                protectedEmpty[x, y] = true;
+            }
+        }
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            centers[i] = new Vector2Int(Mathf.RoundToInt(room.center.x), Mathf.RoundToInt(room.center.y));
+            Carve(room.xMin, room.xMax - 1, room.yMin + 1, room.yMax - 1);
+        }
+
+        int pairCount = GetPhaseAPortalPairCount(width, height);
+        int[] mainRooms = pairCount == 1 ? new[] { 0, 1, 2 } : new[] { 0, 1 };
+        var edges = new List<(int from, int to)>();
+        for (int i = 1; i < mainRooms.Length; i++) edges.Add((mainRooms[0], mainRooms[i]));
+        if (mainRooms.Length > 2) edges.Add((mainRooms[1], mainRooms[2]));
+        foreach ((int fromIndex, int toIndex) in edges)
+        {
+            Vector2Int from = centers[fromIndex], to = centers[toIndex];
+            int fromFloor = rooms[fromIndex].yMin + 1;
+            int toFloor = rooms[toIndex].yMin + 1;
+            int verticalX = fromFloor == toFloor ? to.x : GetPhaseAVerticalCorridorX(rooms[toIndex]);
+            Carve(Mathf.Min(from.x, verticalX), Mathf.Max(from.x, verticalX), fromFloor, fromFloor + 4);
+            Carve(verticalX - 2, verticalX + 2, Mathf.Min(fromFloor, toFloor), Mathf.Max(fromFloor, toFloor) + 4);
+        }
+
+        Vector2[] spawnPositions = GetPhaseASpawnPositions(rooms, playerGroundClearance);
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation,
+                Mathf.RoundToInt(spawnPositions[i].x), room.yMin);
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation,
+                Mathf.RoundToInt(room.center.x), room.yMin);
+        }
+
+        int[,] pairRooms = { { 0, 3 }, { 1, 2 } };
+        var portalTriggerPositions = new Vector2[pairCount, 2];
+        var portalLandingPositions = new Vector2[pairCount, 2];
+        for (int pair = 0; pair < pairCount; pair++)
+        for (int side = 0; side < 2; side++)
+        {
+            RectInt room = rooms[pairRooms[pair, side]];
+            int triggerX = room.xMin + 2;
+            int landingX = room.xMin + 7;
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation, triggerX, room.yMin);
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation, landingX, room.yMin);
+            portalTriggerPositions[pair, side] = new Vector2(triggerX, room.yMin + 2f);
+            portalLandingPositions[pair, side] = new Vector2(landingX, room.yMin + 1f + playerGroundClearance);
+        }
+
+        for (int y = shell; y < height - shell; y++)
+        for (int x = shell; x < width - shell; x++)
+            if (!protectedEmpty[x, y] && !protectedSolid[x, y] && !solid[x, y] && solid[x - 1, y] && solid[x + 1, y] &&
+                solid[x, y - 1] && solid[x, y + 1]) solid[x, y] = true;
+        NormalizePhaseANarrowGaps(solid, protectedNavigation, shell);
+        var annexBounds = new RectInt[pairCount];
+        for (int pair = 0; pair < pairCount; pair++) annexBounds[pair] = rooms[pairRooms[pair, 1]];
+        ClosePhaseAMainGraph(solid, protectedNavigation, annexBounds, shell);
+
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+        Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+        if (groundTile == null || platformTile == null)
+            throw new InvalidDataException("Phase A Empty-first prototypes require existing tile assets.");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+        GameObject root = new GameObject(Path.GetFileNameWithoutExtension(outputPath), typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            foreach (Vector3Int run in GetPhaseAVerticalPlatformRuns(rooms, mainRooms))
+                for (int x = run.x; x < run.x + 3; x++)
+                    platforms.SetTile(new Vector3Int(x, run.y, 0), platformTile);
+            ground.GetComponent<TilemapCollider2D>().ProcessTilemapChanges();
+
+            ChunkSocketDirection[] directions = { ChunkSocketDirection.West, ChunkSocketDirection.East,
+                ChunkSocketDirection.South, ChunkSocketDirection.North };
+            for (int i = 0; i < rooms.Length; i++)
+            {
+                RectInt room = rooms[i];
+                Vector3 doorLanding = ResolvePhaseALandingPosition(ground, room.center.x,
+                    room.yMin + 1f + playerGroundClearance);
+                ChunkSocketMarker door = AddSocket(root.transform, directions[i], doorLanding + Vector3.up * .49f);
+                door.EntryMarker.position = doorLanding;
+                SpawnPointMarker spawn = AddGroundedSpawnMarker(root.transform, ground, platforms, $"SpawnZone_{i + 1}",
+                    spawnPositions[i].x, room.yMin, SpawnType.Monster);
+                spawn.transform.position = ResolvePhaseALandingPosition(ground, spawnPositions[i].x,
+                    spawnPositions[i].y);
+            }
+
+            for (int pair = 0; pair < pairCount; pair++)
+            {
+                Transform mainEndpoint = new GameObject($"PortalEndpoint_Main_{pair + 1}").transform;
+                mainEndpoint.SetParent(root.transform, false);
+                mainEndpoint.position = ResolvePhaseALandingPosition(ground, portalLandingPositions[pair, 0].x,
+                    portalLandingPositions[pair, 0].y);
+                Transform annexEndpoint = new GameObject($"PortalEndpoint_Annex_{pair + 1}").transform;
+                annexEndpoint.SetParent(root.transform, false);
+                annexEndpoint.position = ResolvePhaseALandingPosition(ground, portalLandingPositions[pair, 1].x,
+                    portalLandingPositions[pair, 1].y);
+                uint pairIdx = (uint)(pair + 1);
+                uint annexZoneIdx = (uint)(pair + 1);
+                AddPhaseAPortal(root.transform, $"Portal_MainToAnnex_{pair + 1}", pairIdx * 2u - 1u,
+                    0u, annexZoneIdx, pairIdx, portalTriggerPositions[pair, 0], annexEndpoint);
+                AddPhaseAPortal(root.transform, $"Portal_AnnexToMain_{pair + 1}", pairIdx * 2u,
+                    annexZoneIdx, 0u, pairIdx, portalTriggerPositions[pair, 1], mainEndpoint);
+            }
+
+            var boundsObject = new GameObject("CameraBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(width * .5f, height * .5f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(width, height);
+            bounds.isTrigger = true;
+            if (PrefabUtility.SaveAsPrefabAsset(root, outputPath) == null)
+                throw new InvalidDataException($"Phase A prototype save failed: {outputPath}");
+        }
+        finally { Object.DestroyImmediate(root); }
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void AddPhaseAPortal(Transform parent, string name, uint portalIdx, uint sourceZoneIdx,
+        uint destinationZoneIdx, uint pairIdx, Vector3 position, Transform endpoint)
+    {
+        var portal = new GameObject(name, typeof(BoxCollider2D), typeof(IntraRoomPortal));
+        portal.transform.SetParent(parent, false);
+        portal.transform.position = position;
+        BoxCollider2D collider = portal.GetComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        collider.size = new Vector2(1.5f, 2f);
+        portal.GetComponent<IntraRoomPortal>().Configure(portalIdx, 0u, sourceZoneIdx, destinationZoneIdx, pairIdx, endpoint);
+    }
 
     [MenuItem("TP2/Development/Rebuild Candidate 1u From Image")]
     public static void RebuildCandidate1uFromImage()
@@ -1593,7 +2059,7 @@ public static class ModuleChunkBuilder
                 new RectInt(27, 41, 30, 16), new RectInt(24, 26, 36, 8),
                 new RectInt(24, 20, 8, 20)
             };
-            foreach (RectInt room in rooms)
+                foreach (RectInt room in rooms)
             {
                 Carve(room);
                 for (int x = room.xMin; x < room.xMax; x++) solid[x, room.yMin - 1] = true;
@@ -2823,7 +3289,7 @@ public static class ModuleChunkBuilder
         }
     }
 
-    private static void AddGroundedSpawnMarker(Transform parent, Tilemap ground, Tilemap platforms, string name, float desiredX, float desiredY, SpawnType type, uint monsterId = 0)
+    private static SpawnPointMarker AddGroundedSpawnMarker(Transform parent, Tilemap ground, Tilemap platforms, string name, float desiredX, float desiredY, SpawnType type, uint monsterId = 0)
     {
         int cellX = Mathf.RoundToInt(desiredX);
         int startY = Mathf.RoundToInt(desiredY);
@@ -2846,9 +3312,10 @@ public static class ModuleChunkBuilder
         marker.Type = type;
         if (monsterId > 0) marker.MonsterId = monsterId;
         marker.EnableSpawn = true;
+        return marker;
     }
 
-    private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
+    private static ChunkSocketMarker AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
     {
         var socketObj = new GameObject($"Socket_{direction}", typeof(ChunkSocketMarker));
         socketObj.transform.SetParent(parent);
@@ -2862,6 +3329,7 @@ public static class ModuleChunkBuilder
             marker.Direction = direction;
             marker.EntryMarker = entry.transform;
         }
+        return marker;
     }
 
     private static bool ValidateChunkPathways(string[,] grid, int nX, int nY)

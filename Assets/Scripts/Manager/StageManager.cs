@@ -16,6 +16,12 @@ public sealed class ChunkSlotData
     public bool RewardClaimed;
 }
 
+public sealed class IntraRoomZoneState
+{
+    public bool Visited;
+    public bool Cleared;
+}
+
 [Serializable]
 public sealed class StageRunData
 {
@@ -269,6 +275,10 @@ public class StageManager : Singleton<StageManager>
     public int CurrentRoomSequenceIndex { get; private set; } = 0;
     public StageRunData CurrentRun { get; private set; }
     public uint RoomGeneration { get; private set; }
+    public uint CurrentZoneIdx { get; private set; }
+    public uint ZoneGeneration { get; private set; }
+    private readonly Dictionary<byte, Dictionary<uint, IntraRoomZoneState>> zoneStates =
+        new Dictionary<byte, Dictionary<uint, IntraRoomZoneState>>();
     private bool isLoadingRoom;
     private bool completionTransitionInProgress;
     private bool portalTransitionLocked;
@@ -334,6 +344,9 @@ public class StageManager : Singleton<StageManager>
         layoutTable?.TryGetByStage(stageIdx, out layout);
         CurrentRun = Stage1RunGenerator.Generate(seed, layout,
             chunkTable?.GetForStage(stageIdx), encounterTable?.GetForStage(stageIdx));
+        zoneStates.Clear();
+        CurrentZoneIdx = 0;
+        ZoneGeneration = 0;
         if (!Stage1RunGenerator.Validate(CurrentRun))
         {
             Debug.LogError("[StageManager] Stage 1 safe graph validation failed.");
@@ -429,6 +442,7 @@ public class StageManager : Singleton<StageManager>
         Debug.Log($"<color=cyan>[StageManager] 정수 idx 참조 동적 룸 전환: TargetKey='{targetAddressKey}' (ResourceIdx: {roomResourceIdx}, Stage: {CurrentStageIdx})</color>");
 
         RoomGeneration++;
+        CurrentZoneIdx = 0;
         portalTransitionLocked = true;
         var builder = TilemapStageBuilder.Instance;
         if (builder == null)
@@ -449,6 +463,44 @@ public class StageManager : Singleton<StageManager>
 
     public bool IsCurrentPortal(byte ownerSlotIdx, uint roomGeneration) =>
         CurrentRun != null && ownerSlotIdx == CurrentRun.CurrentSlotIdx && roomGeneration == RoomGeneration;
+
+    public bool TryEnterIntraRoomZone(uint chunkResourceIdx, uint sourceZoneIdx, uint destinationZoneIdx,
+        uint portalPairIdx)
+    {
+        if (CurrentRun == null || portalPairIdx == 0 || sourceZoneIdx == destinationZoneIdx ||
+            !CurrentRun.TryGetSlot(CurrentRun.CurrentSlotIdx, out ChunkSlotData slot) ||
+            slot.ChunkResourceIdx != chunkResourceIdx || CurrentZoneIdx != sourceZoneIdx)
+            return false;
+
+        CurrentZoneIdx = destinationZoneIdx;
+        ZoneGeneration++;
+        GetZoneState(CurrentRun.CurrentSlotIdx, destinationZoneIdx).Visited = true;
+        return true;
+    }
+
+    public IntraRoomZoneState GetZoneState(byte slotIdx, uint zoneIdx)
+    {
+        if (!zoneStates.TryGetValue(slotIdx, out Dictionary<uint, IntraRoomZoneState> states))
+        {
+            states = new Dictionary<uint, IntraRoomZoneState>();
+            zoneStates.Add(slotIdx, states);
+        }
+        if (!states.TryGetValue(zoneIdx, out IntraRoomZoneState state))
+        {
+            state = new IntraRoomZoneState();
+            states.Add(zoneIdx, state);
+        }
+        return state;
+    }
+
+    public bool TryClearIntraRoomZone(uint zoneIdx)
+    {
+        if (CurrentRun == null || CurrentZoneIdx != zoneIdx) return false;
+        IntraRoomZoneState state = GetZoneState(CurrentRun.CurrentSlotIdx, zoneIdx);
+        if (state.Cleared) return false;
+        state.Cleared = true;
+        return true;
+    }
 
     public bool TryBeginPortalTransition(byte ownerSlotIdx, uint roomGeneration)
     {
@@ -670,6 +722,9 @@ public class StageManager : Singleton<StageManager>
     {
         CleanupActiveChunksAndEffects();
         RoomGeneration++;
+        CurrentZoneIdx = 0;
+        ZoneGeneration++;
+        zoneStates.Clear();
         CurrentRun = null;
         CurrentRoomSequenceIndex = 0;
         isLoadingRoom = false;

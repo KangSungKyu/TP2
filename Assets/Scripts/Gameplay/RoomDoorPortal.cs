@@ -11,15 +11,22 @@ using UnityEngine.InputSystem;
 public class RoomDoorPortal : MonoBehaviour
 {
     [Header("Portal Settings")]
+    [SerializeField] private uint doorIdx;
+    [SerializeField] private uint sourceChunkResourceIdx;
+    [SerializeField] private uint destinationDoorIdx;
     public uint TargetRoomResourceIdx = 1041; // Default: 1041 (Tilemap_Room_Stage1_Battle)
     public byte TargetSlotIdx = byte.MaxValue;
     public bool AutoTriggerOnTouch = false;
     public bool ShowPrototypeDestination = true;
     public uint DestinationChunkResourceIdx { get; private set; }
+    public uint DoorIdx => doorIdx;
+    public uint SourceChunkResourceIdx => sourceChunkResourceIdx;
+    public uint DestinationDoorIdx => destinationDoorIdx;
     public byte OwnerSlotIdx { get; private set; } = byte.MaxValue;
     public uint RoomGeneration { get; private set; }
 
     private bool isTransitioning = false;
+    private bool requiresTriggerExit;
     private readonly HashSet<Collider2D> playerCandidates = new HashSet<Collider2D>();
     private int lastInteractionFrame = -1;
     [SerializeField] private TextMeshPro destinationLabel;
@@ -60,10 +67,13 @@ public class RoomDoorPortal : MonoBehaviour
 
     private void Update()
     {
+        if (TryConsumeInteraction(WasInteractionPressedThisFrame())) TriggerRoomTransitionAsync().Forget();
+    }
+
+    public static bool WasInteractionPressedThisFrame()
+    {
         Keyboard keyboard = Keyboard.current;
-        bool pressed = keyboard != null &&
-            (keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame);
-        if (TryConsumeInteraction(pressed)) TriggerRoomTransitionAsync().Forget();
+        return keyboard != null && (keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -76,18 +86,20 @@ public class RoomDoorPortal : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         playerCandidates.Remove(collision);
+        if (playerCandidates.Count == 0) requiresTriggerExit = false;
     }
 
     private void OnDisable()
     {
         playerCandidates.Clear();
         isTransitioning = false;
+        requiresTriggerExit = false;
     }
 
     private bool TryConsumeInteraction(bool pressed)
     {
         Player player = Player.Instance;
-        if (!pressed || !isActiveAndEnabled || isTransitioning || playerCandidates.Count == 0 ||
+        if (!pressed || !isActiveAndEnabled || isTransitioning || requiresTriggerExit || playerCandidates.Count == 0 ||
             player == null || player.Motor == null || !player.Motor.IsGrounded ||
             lastInteractionFrame == Time.frameCount) return false;
         lastInteractionFrame = Time.frameCount;
@@ -98,6 +110,8 @@ public class RoomDoorPortal : MonoBehaviour
     {
         if (isTransitioning) return;
         isTransitioning = true;
+        requiresTriggerExit = true;
+        bool transitioned = false;
 
         try
         {
@@ -114,9 +128,9 @@ public class RoomDoorPortal : MonoBehaviour
                 if (stageManager.CurrentRun.CurrentSlotIdx == stageManager.CurrentRun.BossGateSlotIdx &&
                     TargetRoomResourceIdx == 1042)
                 {
-                    await stageManager.LoadNextRoomAsync(1042);
+                    transitioned = await stageManager.LoadNextRoomAsync(1042);
                 }
-                else if (!await stageManager.LoadConnectedRoomAsync(TargetSlotIdx))
+                else if (!(transitioned = await stageManager.LoadConnectedRoomAsync(TargetSlotIdx)))
                 {
                     stageManager.CancelPortalTransition(OwnerSlotIdx, RoomGeneration);
                 }
@@ -128,7 +142,7 @@ public class RoomDoorPortal : MonoBehaviour
                 Debug.LogError("[RoomDoorPortal] Invalid fallback room idx 0.");
                 return;
             }
-            await stageManager.LoadNextRoomAsync(TargetRoomResourceIdx);
+            transitioned = await stageManager.LoadNextRoomAsync(TargetRoomResourceIdx);
         }
         catch (System.Exception exception)
         {
@@ -139,6 +153,7 @@ public class RoomDoorPortal : MonoBehaviour
         finally
         {
             isTransitioning = false;
+            if (!transitioned) requiresTriggerExit = false;
         }
     }
 
@@ -150,6 +165,15 @@ public class RoomDoorPortal : MonoBehaviour
         RoomGeneration = roomGeneration;
         DestinationChunkResourceIdx = destinationChunkResourceIdx;
         RefreshDestinationLabel();
+    }
+
+    public void ConfigureDoor(uint idx, uint sourceChunkIdx, uint destinationChunkIdx, uint targetDoorIdx,
+        byte targetSlotIdx, byte ownerSlotIdx, uint roomGeneration)
+    {
+        doorIdx = idx;
+        sourceChunkResourceIdx = sourceChunkIdx;
+        destinationDoorIdx = targetDoorIdx;
+        Configure(targetSlotIdx, ownerSlotIdx, roomGeneration, destinationChunkIdx);
     }
 
     public void SetDestinationLabelVisible(bool visible)
