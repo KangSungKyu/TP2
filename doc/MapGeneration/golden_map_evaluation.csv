@@ -1,0 +1,3 @@
+candidateidx,status,spatial_rhythm,density,naturalness,exploration,landmark,technical_status,decision,keep_notes,change_notes,reject_notes,reviewed_at_kst
+1u,reviewed,4,4,4,4,4,PENDING,accept,,몬스터가 스폰될 위치가 좁다. 스폰과 전투를 위한 공간을 먼저 확보하는 것도 방법.,,2026-08-18
+2u,reviewed,3,3,3,3,4,UNKNOWN,hold,유닛이 끼일 틈이 전혀 없는 chunk 전반 마감,좌측 상단 끼임 후보 정규화; 중앙 빈 공간에 발판 추가,chunk 곳곳의 작은 타일 조각,2026-08-18

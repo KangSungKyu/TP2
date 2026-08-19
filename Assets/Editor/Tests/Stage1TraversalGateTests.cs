@@ -732,7 +732,7 @@ namespace QA.Tests
             }
         }
 
-        private static List<Vector2> CollectStandableSurfaces(GameObject room)
+        internal static List<Vector2> CollectStandableSurfaces(GameObject room)
         {
             var result = new List<Vector2>();
             foreach (Tilemap tilemap in room.GetComponentsInChildren<Tilemap>(true)
@@ -747,7 +747,7 @@ namespace QA.Tests
             return result;
         }
 
-        private static List<Vector2> FindSurfaceRoute(List<Vector2> nodes, Vector2 start, Vector2 target)
+        internal static List<Vector2> FindSurfaceRoute(List<Vector2> nodes, Vector2 start, Vector2 target)
         {
             if (nodes.Count == 0) return null;
             int startIndex = Enumerable.Range(0, nodes.Count).OrderBy(i => Vector2.SqrMagnitude(nodes[i] - start)).First();
@@ -777,6 +777,8 @@ namespace QA.Tests
                 if (at == startIndex) break;
             }
             route.Reverse();
+            if (Vector2.SqrMagnitude(route[route.Count - 1] - target) > 0.0001f)
+                route.Add(target);
             return route;
         }
 

@@ -53,7 +53,7 @@
 ## QA 변경 파일
 
 - `Assets/Tests/PlayMode/AttackHandlerTests.cs`: Unity가 실행 가능한 NUnit `async Task` 테스트로 정정. 제품 코드는 변경하지 않음.
-- `Assets/Docs/QA/stage1_mvp_qa_report.md`: 실제 실행 결과와 재현 절차 갱신.
+- `doc/QA/stage1_mvp_qa_report.md`: 실제 실행 결과와 재현 절차 갱신.
 
 ## 4방향 진입 배치 후행 QA — 2026-08-06
 
@@ -75,7 +75,7 @@ PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.Play
 
 |상태|검증|변경 파일|커밋|후속 위험|
 |---|---|---|---|---|
-|부분 PASS|실제 1050/1057 4방향 좌표, South 비침투, 첫 step 속도·grounded, 기준 테스트 수|`Assets/Docs/QA/stage1_mvp_qa_report.md`|본 문서 동기화 커밋|실제 포털 연속 왕복/즉시 재트리거는 PlayMode 자동화 부재로 미검증; 기존 공격 PlayMode 1건 FAIL|
+|부분 PASS|실제 1050/1057 4방향 좌표, South 비침투, 첫 step 속도·grounded, 기준 테스트 수|`doc/QA/stage1_mvp_qa_report.md`|본 문서 동기화 커밋|실제 포털 연속 왕복/즉시 재트리거는 PlayMode 자동화 부재로 미검증; 기존 공격 PlayMode 1건 FAIL|
 
 ## Player Unit_3001 uint 라우팅 후행 QA — 2026-08-06
 
@@ -94,7 +94,7 @@ PlayMode 실패 재현: Test Runner에서 PlayMode 전체 실행 → `Tests.Play
 
 |상태|검증|변경 파일|커밋|후속 위험|
 |---|---|---|---|---|
-|부분 FAIL|Unit_3001 생성·FK/GUID·로그 코드·전체 회귀|`Assets/Docs/QA/stage1_mvp_qa_report.md`|미커밋|pool identity, 기존 Instance 무생성, 누락별 null/로그가 자동화되지 않아 회귀 탐지 불가|
+|부분 FAIL|Unit_3001 생성·FK/GUID·로그 코드·전체 회귀|`doc/QA/stage1_mvp_qa_report.md`|미커밋|pool identity, 기존 Instance 무생성, 누락별 null/로그가 자동화되지 않아 회귀 탐지 불가|
 
 ## 사망·카메라·Visual Hitbox 통합 QA — 2026-08-06
 

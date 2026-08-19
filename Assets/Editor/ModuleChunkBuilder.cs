@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -578,6 +579,1826 @@ public static class ModuleChunkBuilder
             AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SpikeTrap.png"),
             AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/Environment/Sprite_SawBladeTrap.png"));
         RebuildStage1RoomChunks();
+    }
+
+    internal const string Candidate1uSourcePath =
+        "Assets/Screenshots/StageChunkV10BlobGraph/StageChunkV10BlobGraph_XLarge_Comparison_MinModuleBlob.png";
+    internal const string Candidate1uPrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_Candidate1u_ImageReconstructed.prefab";
+    internal const string Candidate1uCombatReservedPrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_Candidate1u_CombatReserved.prefab";
+    internal const string GoldenTrialPrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_GoldenDerived_Trial01.prefab";
+    internal const string EmptyFirstTrial02PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_EmptyFirst_Trial02.prefab";
+    internal const string EmptyFirstAngularTrial03PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_EmptyFirstAngular_Trial03.prefab";
+    internal const string EmptyFirstAngularTrial04PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_EmptyFirstAngular_Trial04.prefab";
+    internal const string PhaseA1x1PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x1.prefab";
+    internal const string PhaseA1x2PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x2.prefab";
+    internal const string PhaseA2x1PrefabPath =
+        "Assets/Prefabs/Development/Tilemap_Room_PhaseA_2x1.prefab";
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 1x1")]
+    public static void BuildPhaseAEmptyFirst1x1() => BuildPhaseAEmptyFirstPrototype(84, 60, PhaseA1x1PrefabPath);
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 1x2")]
+    public static void BuildPhaseAEmptyFirst1x2() => BuildPhaseAEmptyFirstPrototype(84, 120, PhaseA1x2PrefabPath);
+
+    [MenuItem("TP2/Development/Build Phase A Empty First 2x1")]
+    public static void BuildPhaseAEmptyFirst2x1() => BuildPhaseAEmptyFirstPrototype(168, 60, PhaseA2x1PrefabPath);
+
+    internal static int GetPhaseAPortalPairCount(int width, int height) => width == 84 && height == 60 ? 1 : 2;
+
+    internal static RectInt[] GetPhaseARooms(int width, int height, int shell = 3)
+    {
+        int roomWidth = Mathf.Max(14, width / 5);
+        int roomHeight = Mathf.Max(10, height / 6);
+        return new[]
+        {
+            new RectInt(shell + 5, shell + 4, roomWidth, roomHeight),
+            new RectInt(width - shell - roomWidth - 5, shell + 4, roomWidth, roomHeight),
+            new RectInt(shell + 5, height - shell - roomHeight - 5, roomWidth, roomHeight),
+            new RectInt(width - shell - roomWidth - 5, height - shell - roomHeight - 5, roomWidth, roomHeight)
+        };
+    }
+
+    internal static float GetPhaseAPlayerGroundClearance()
+    {
+        GameObject player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        CapsuleCollider2D collider = player != null ? player.GetComponent<CapsuleCollider2D>() : null;
+        KinematicMotor2D motor = player != null ? player.GetComponent<KinematicMotor2D>() : null;
+        if (collider == null || motor == null)
+            throw new InvalidDataException("Phase A generation requires Unit_3001 collider and motor.");
+        float scaleY = Mathf.Abs(collider.transform.lossyScale.y);
+        return motor.SkinWidth - (collider.offset.y - collider.size.y * .5f) * scaleY;
+    }
+
+    internal static float GetPhaseAPlayerMaxRise()
+    {
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        Player player = playerPrefab != null ? playerPrefab.GetComponent<Player>() : null;
+        KinematicMotor2D motor = playerPrefab != null ? playerPrefab.GetComponent<KinematicMotor2D>() : null;
+        SerializedProperty jumpForce = player != null
+            ? new SerializedObject(player).FindProperty("jumpForce")
+            : null;
+        if (motor == null || jumpForce == null || jumpForce.floatValue <= 0f || motor.Gravity <= 0f)
+            throw new InvalidDataException("Phase A generation requires Unit_3001 jump values.");
+        return jumpForce.floatValue * jumpForce.floatValue / (2f * motor.Gravity) - motor.SkinWidth * 2f;
+    }
+
+    internal static List<Vector3Int> GetPhaseAVerticalPlatformRuns(RectInt[] rooms, int[] mainRooms)
+    {
+        int rise = Mathf.FloorToInt(GetPhaseAPlayerMaxRise());
+        if (rise < 1) throw new InvalidDataException("Phase A jump envelope cannot place vertical platforms.");
+        var runs = new List<Vector3Int>();
+        var edges = new List<(int from, int to)>();
+        for (int i = 1; i < mainRooms.Length; i++) edges.Add((mainRooms[0], mainRooms[i]));
+        if (mainRooms.Length > 2) edges.Add((mainRooms[1], mainRooms[2]));
+        foreach ((int from, int to) edge in edges)
+        {
+            RectInt from = rooms[edge.from], to = rooms[edge.to];
+            int lowerSurface = Mathf.Min(from.yMin, to.yMin) + 1;
+            int upperSurface = Mathf.Max(from.yMin, to.yMin) + 1;
+            int x = GetPhaseAVerticalCorridorX(to) - 1;
+            for (int surface = lowerSurface + rise; surface < upperSurface; surface += rise)
+            {
+                var run = new Vector3Int(x, surface - 1, 0);
+                if (!runs.Contains(run)) runs.Add(run);
+            }
+        }
+        return runs;
+    }
+
+    internal static int GetPhaseAVerticalCorridorX(RectInt room) =>
+        Mathf.RoundToInt(room.center.x) + Mathf.Min(4, room.width / 2 - 3);
+
+    internal static Vector3 ResolvePhaseALandingPosition(Tilemap ground, float x, float guessY)
+    {
+        GameObject player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        CapsuleCollider2D source = player != null ? player.GetComponent<CapsuleCollider2D>() : null;
+        KinematicMotor2D motor = player != null ? player.GetComponent<KinematicMotor2D>() : null;
+        TilemapCollider2D tilemapCollider = ground != null ? ground.GetComponent<TilemapCollider2D>() : null;
+        CompositeCollider2D composite = ground != null ? ground.GetComponent<CompositeCollider2D>() : null;
+        if (source == null || motor == null || tilemapCollider == null)
+            throw new InvalidDataException("Phase A landing resolution requires Unit_3001 and TilemapCollider2D.");
+
+        for (int bake = 0; bake < 4 && tilemapCollider.hasTilemapChanges; bake++)
+            tilemapCollider.ProcessTilemapChanges();
+        if (tilemapCollider.hasTilemapChanges)
+            throw new InvalidDataException("Phase A TilemapCollider2D still has unprocessed tile changes.");
+        if (composite != null) composite.GenerateGeometry();
+        Collider2D terrain = composite != null ? composite : tilemapCollider;
+        Physics2D.SyncTransforms();
+        if (!terrain.enabled || !terrain.gameObject.activeInHierarchy || terrain.bounds.size.sqrMagnitude <= 0f)
+            throw new InvalidDataException(
+                $"Phase A terrain collider is unavailable: enabled={terrain.enabled}, active={terrain.gameObject.activeInHierarchy}, bounds={terrain.bounds}.");
+        var probeObject = new GameObject("PhaseA_LandingProbe", typeof(CapsuleCollider2D));
+        try
+        {
+            CapsuleCollider2D probe = probeObject.GetComponent<CapsuleCollider2D>();
+            probe.size = source.size;
+            probe.offset = source.offset;
+            probe.direction = source.direction;
+            probeObject.transform.localScale = source.transform.lossyScale;
+            probeObject.transform.position = new Vector3(x, guessY, 0f);
+            if (!probe.enabled || !probe.gameObject.activeInHierarchy ||
+                probe.gameObject.scene.GetPhysicsScene2D() != terrain.gameObject.scene.GetPhysicsScene2D())
+                throw new InvalidDataException("Phase A landing probe is not active in the terrain PhysicsScene2D.");
+            ColliderDistance2D distance = default;
+            for (int iteration = 0; iteration < 8; iteration++)
+            {
+                Physics2D.SyncTransforms();
+                distance = Physics2D.Distance(probe, terrain);
+                if (!distance.isValid)
+                    throw new InvalidDataException(
+                        $"Phase A landing collider distance is invalid: tileChanges={tilemapCollider.hasTilemapChanges}, " +
+                        $"terrainEnabled={terrain.enabled}, probeEnabled={probe.enabled}, terrainBounds={terrain.bounds}, " +
+                        $"probeBounds={probe.bounds}, pointA={distance.pointA}, pointB={distance.pointB}.");
+                if (!distance.isOverlapped && distance.distance >= motor.SkinWidth)
+                    return probeObject.transform.position;
+                float deficit = motor.SkinWidth - distance.distance;
+                if (deficit <= 0f)
+                    throw new InvalidDataException("Phase A landing separation did not progress upward.");
+                float currentY = probeObject.transform.position.y;
+                float nextY = currentY + deficit;
+                nextY = System.BitConverter.Int32BitsToSingle(
+                    System.BitConverter.SingleToInt32Bits(nextY > currentY ? nextY : currentY) + 1);
+                probeObject.transform.position = new Vector3(x, nextY, 0f);
+            }
+            Physics2D.SyncTransforms();
+            distance = Physics2D.Distance(probe, terrain);
+            throw new InvalidDataException(
+                $"Phase A landing separation failed: valid={distance.isValid}, overlap={distance.isOverlapped}, distance={distance.distance}.");
+        }
+        finally { Object.DestroyImmediate(probeObject); }
+    }
+
+    internal static Vector2[] GetPhaseASpawnPositions(RectInt[] rooms, float groundClearance)
+    {
+        var positions = new Vector2[rooms.Length];
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            int x = i % 2 == 0 ? room.xMin + 4 : room.xMax - 5;
+            positions[i] = new Vector2(x, room.yMin + 1f + groundClearance);
+        }
+        return positions;
+    }
+
+    internal static void NormalizePhaseANarrowGaps(bool[,] solid, bool[,] protectedNavigation, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1);
+        for (int y = shell; y < height - shell; y++)
+        {
+            int x = shell;
+            while (x < width - shell)
+            {
+                if (solid[x, y]) { x++; continue; }
+                int start = x;
+                while (x < width - shell && !solid[x, y]) x++;
+                int length = x - start;
+                if (length >= 5 || start <= shell || x >= width - shell ||
+                    !solid[start - 1, y] || !solid[x, y]) continue;
+                bool protectedRun = false;
+                for (int fillX = start; fillX < x; fillX++) protectedRun |= protectedNavigation[fillX, y];
+                if (!protectedRun)
+                    for (int fillX = start; fillX < x; fillX++) solid[fillX, y] = true;
+            }
+        }
+        for (int x = shell; x < width - shell; x++)
+        {
+            int y = shell;
+            while (y < height - shell)
+            {
+                if (solid[x, y]) { y++; continue; }
+                int start = y;
+                while (y < height - shell && !solid[x, y]) y++;
+                int length = y - start;
+                if (length >= 5 || start <= shell || y >= height - shell ||
+                    !solid[x, start - 1] || !solid[x, y]) continue;
+                bool protectedRun = false;
+                for (int fillY = start; fillY < y; fillY++) protectedRun |= protectedNavigation[x, fillY];
+                if (!protectedRun)
+                    for (int fillY = start; fillY < y; fillY++) solid[x, fillY] = true;
+            }
+        }
+    }
+
+    internal static int CountPhaseAEmptyComponents(bool[,] solid, RectInt[] excludedBounds, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1), count = 0;
+        var visited = new bool[width, height];
+        int[] dx = { -1, 1, 0, 0 }, dy = { 0, 0, -1, 1 };
+        bool Excluded(int x, int y)
+        {
+            if (excludedBounds == null) return false;
+            foreach (RectInt bounds in excludedBounds) if (bounds.Contains(new Vector2Int(x, y))) return true;
+            return false;
+        }
+        for (int sy = shell; sy < height - shell; sy++)
+        for (int sx = shell; sx < width - shell; sx++)
+        {
+            if (solid[sx, sy] || visited[sx, sy] || Excluded(sx, sy)) continue;
+            count++;
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(new Vector2Int(sx, sy));
+            visited[sx, sy] = true;
+            while (queue.Count > 0)
+            {
+                Vector2Int cell = queue.Dequeue();
+                for (int i = 0; i < 4; i++)
+                {
+                    int x = cell.x + dx[i], y = cell.y + dy[i];
+                    if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                        solid[x, y] || visited[x, y] || Excluded(x, y)) continue;
+                    visited[x, y] = true;
+                    queue.Enqueue(new Vector2Int(x, y));
+                }
+            }
+        }
+        return count;
+    }
+
+    internal static void ClosePhaseAMainGraph(bool[,] solid, bool[,] protectedNavigation,
+        RectInt[] annexBounds, int shell)
+    {
+        int width = solid.GetLength(0), height = solid.GetLength(1);
+        bool Excluded(int x, int y)
+        {
+            foreach (RectInt bounds in annexBounds) if (bounds.Contains(new Vector2Int(x, y))) return true;
+            return false;
+        }
+        bool HasCorridorClearance(Vector2Int cell)
+        {
+            for (int y = cell.y - 2; y <= cell.y + 2; y++)
+            for (int x = cell.x - 2; x <= cell.x + 2; x++)
+                if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                    solid[x, y] || protectedNavigation[x, y] || Excluded(x, y)) return false;
+            return true;
+        }
+        for (int pass = 0; pass < 4 && CountPhaseAEmptyComponents(solid, annexBounds, shell) > 1; pass++)
+        {
+            var representatives = new List<Vector2Int>();
+            var visited = new bool[width, height];
+            int[] dx = { -1, 1, 0, 0 }, dy = { 0, 0, -1, 1 };
+            for (int sy = shell; sy < height - shell; sy++)
+            for (int sx = shell; sx < width - shell; sx++)
+            {
+                if (solid[sx, sy] || visited[sx, sy] || Excluded(sx, sy)) continue;
+                Vector2Int representative = new Vector2Int(sx, sy);
+                bool hasClearance = false;
+                var queue = new Queue<Vector2Int>();
+                queue.Enqueue(new Vector2Int(sx, sy));
+                visited[sx, sy] = true;
+                while (queue.Count > 0)
+                {
+                    Vector2Int cell = queue.Dequeue();
+                    if (!hasClearance && HasCorridorClearance(cell))
+                    {
+                        representative = cell;
+                        hasClearance = true;
+                    }
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int x = cell.x + dx[i], y = cell.y + dy[i];
+                        if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                            solid[x, y] || visited[x, y] || Excluded(x, y)) continue;
+                        visited[x, y] = true;
+                        queue.Enqueue(new Vector2Int(x, y));
+                    }
+                }
+                representatives.Add(representative);
+            }
+            if (representatives.Count < 2) break;
+            Vector2Int from = representatives[0], to = representatives[1];
+            for (int x = Mathf.Min(from.x, to.x); x <= Mathf.Max(from.x, to.x); x++)
+            for (int y = from.y - 2; y <= from.y + 2; y++)
+                if (x >= shell && x < width - shell && y >= shell && y < height - shell &&
+                    !Excluded(x, y) && !protectedNavigation[x, y])
+                { solid[x, y] = false; protectedNavigation[x, y] = true; }
+            for (int x = to.x - 2; x <= to.x + 2; x++)
+            for (int y = Mathf.Min(from.y, to.y); y <= Mathf.Max(from.y, to.y); y++)
+                if (x >= shell && x < width - shell && y >= shell && y < height - shell &&
+                    !Excluded(x, y) && !protectedNavigation[x, y])
+                { solid[x, y] = false; protectedNavigation[x, y] = true; }
+        }
+        if (CountPhaseAEmptyComponents(solid, annexBounds, shell) != 1)
+            throw new InvalidDataException("Phase A main Empty graph closure failed.");
+    }
+
+    internal static void ProtectPhaseASurface(bool[,] solid, bool[,] protectedEmpty, bool[,] protectedSolid,
+        bool[,] protectedNavigation, int centerX, int floorY)
+    {
+        for (int x = centerX - 1; x <= centerX + 1; x++)
+        {
+            solid[x, floorY] = true;
+            protectedSolid[x, floorY] = true;
+            protectedNavigation[x, floorY] = true;
+            for (int y = floorY + 1; y <= floorY + 4; y++)
+            {
+                solid[x, y] = false;
+                protectedEmpty[x, y] = true;
+                protectedNavigation[x, y] = true;
+            }
+        }
+    }
+
+    private static void BuildPhaseAEmptyFirstPrototype(int width, int height, string outputPath)
+    {
+        const int shell = 3;
+        var solid = new bool[width, height];
+        var protectedEmpty = new bool[width, height];
+        var protectedSolid = new bool[width, height];
+        var protectedNavigation = new bool[width, height];
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++) solid[x, y] = true;
+
+        RectInt[] rooms = GetPhaseARooms(width, height, shell);
+        float playerGroundClearance = GetPhaseAPlayerGroundClearance();
+        var centers = new Vector2Int[rooms.Length];
+        void Carve(int minX, int maxX, int minY, int maxY)
+        {
+            for (int y = Mathf.Max(shell, minY); y <= Mathf.Min(height - shell - 1, maxY); y++)
+            for (int x = Mathf.Max(shell, minX); x <= Mathf.Min(width - shell - 1, maxX); x++)
+            {
+                solid[x, y] = false;
+                protectedEmpty[x, y] = true;
+            }
+        }
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            centers[i] = new Vector2Int(Mathf.RoundToInt(room.center.x), Mathf.RoundToInt(room.center.y));
+            Carve(room.xMin, room.xMax - 1, room.yMin + 1, room.yMax - 1);
+        }
+
+        int pairCount = GetPhaseAPortalPairCount(width, height);
+        int[] mainRooms = pairCount == 1 ? new[] { 0, 1, 2 } : new[] { 0, 1 };
+        var edges = new List<(int from, int to)>();
+        for (int i = 1; i < mainRooms.Length; i++) edges.Add((mainRooms[0], mainRooms[i]));
+        if (mainRooms.Length > 2) edges.Add((mainRooms[1], mainRooms[2]));
+        foreach ((int fromIndex, int toIndex) in edges)
+        {
+            Vector2Int from = centers[fromIndex], to = centers[toIndex];
+            int fromFloor = rooms[fromIndex].yMin + 1;
+            int toFloor = rooms[toIndex].yMin + 1;
+            int verticalX = fromFloor == toFloor ? to.x : GetPhaseAVerticalCorridorX(rooms[toIndex]);
+            Carve(Mathf.Min(from.x, verticalX), Mathf.Max(from.x, verticalX), fromFloor, fromFloor + 4);
+            Carve(verticalX - 2, verticalX + 2, Mathf.Min(fromFloor, toFloor), Mathf.Max(fromFloor, toFloor) + 4);
+        }
+
+        Vector2[] spawnPositions = GetPhaseASpawnPositions(rooms, playerGroundClearance);
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            RectInt room = rooms[i];
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation,
+                Mathf.RoundToInt(spawnPositions[i].x), room.yMin);
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation,
+                Mathf.RoundToInt(room.center.x), room.yMin);
+        }
+
+        int[,] pairRooms = { { 0, 3 }, { 1, 2 } };
+        var portalTriggerPositions = new Vector2[pairCount, 2];
+        var portalLandingPositions = new Vector2[pairCount, 2];
+        for (int pair = 0; pair < pairCount; pair++)
+        for (int side = 0; side < 2; side++)
+        {
+            RectInt room = rooms[pairRooms[pair, side]];
+            int triggerX = room.xMin + 2;
+            int landingX = room.xMin + 7;
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation, triggerX, room.yMin);
+            ProtectPhaseASurface(solid, protectedEmpty, protectedSolid, protectedNavigation, landingX, room.yMin);
+            portalTriggerPositions[pair, side] = new Vector2(triggerX, room.yMin + 2f);
+            portalLandingPositions[pair, side] = new Vector2(landingX, room.yMin + 1f + playerGroundClearance);
+        }
+
+        for (int y = shell; y < height - shell; y++)
+        for (int x = shell; x < width - shell; x++)
+            if (!protectedEmpty[x, y] && !protectedSolid[x, y] && !solid[x, y] && solid[x - 1, y] && solid[x + 1, y] &&
+                solid[x, y - 1] && solid[x, y + 1]) solid[x, y] = true;
+        NormalizePhaseANarrowGaps(solid, protectedNavigation, shell);
+        var annexBounds = new RectInt[pairCount];
+        for (int pair = 0; pair < pairCount; pair++) annexBounds[pair] = rooms[pairRooms[pair, 1]];
+        ClosePhaseAMainGraph(solid, protectedNavigation, annexBounds, shell);
+
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+        Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+        if (groundTile == null || platformTile == null)
+            throw new InvalidDataException("Phase A Empty-first prototypes require existing tile assets.");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+        GameObject root = new GameObject(Path.GetFileNameWithoutExtension(outputPath), typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            foreach (Vector3Int run in GetPhaseAVerticalPlatformRuns(rooms, mainRooms))
+                for (int x = run.x; x < run.x + 3; x++)
+                    platforms.SetTile(new Vector3Int(x, run.y, 0), platformTile);
+            ground.GetComponent<TilemapCollider2D>().ProcessTilemapChanges();
+
+            ChunkSocketDirection[] directions = { ChunkSocketDirection.West, ChunkSocketDirection.East,
+                ChunkSocketDirection.South, ChunkSocketDirection.North };
+            for (int i = 0; i < rooms.Length; i++)
+            {
+                RectInt room = rooms[i];
+                Vector3 doorLanding = ResolvePhaseALandingPosition(ground, room.center.x,
+                    room.yMin + 1f + playerGroundClearance);
+                ChunkSocketMarker door = AddSocket(root.transform, directions[i], doorLanding + Vector3.up * .49f);
+                door.EntryMarker.position = doorLanding;
+                SpawnPointMarker spawn = AddGroundedSpawnMarker(root.transform, ground, platforms, $"SpawnZone_{i + 1}",
+                    spawnPositions[i].x, room.yMin, SpawnType.Monster);
+                spawn.transform.position = ResolvePhaseALandingPosition(ground, spawnPositions[i].x,
+                    spawnPositions[i].y);
+            }
+
+            for (int pair = 0; pair < pairCount; pair++)
+            {
+                Transform mainEndpoint = new GameObject($"PortalEndpoint_Main_{pair + 1}").transform;
+                mainEndpoint.SetParent(root.transform, false);
+                mainEndpoint.position = ResolvePhaseALandingPosition(ground, portalLandingPositions[pair, 0].x,
+                    portalLandingPositions[pair, 0].y);
+                Transform annexEndpoint = new GameObject($"PortalEndpoint_Annex_{pair + 1}").transform;
+                annexEndpoint.SetParent(root.transform, false);
+                annexEndpoint.position = ResolvePhaseALandingPosition(ground, portalLandingPositions[pair, 1].x,
+                    portalLandingPositions[pair, 1].y);
+                uint pairIdx = (uint)(pair + 1);
+                uint annexZoneIdx = (uint)(pair + 1);
+                AddPhaseAPortal(root.transform, $"Portal_MainToAnnex_{pair + 1}", pairIdx * 2u - 1u,
+                    0u, annexZoneIdx, pairIdx, portalTriggerPositions[pair, 0], annexEndpoint);
+                AddPhaseAPortal(root.transform, $"Portal_AnnexToMain_{pair + 1}", pairIdx * 2u,
+                    annexZoneIdx, 0u, pairIdx, portalTriggerPositions[pair, 1], mainEndpoint);
+            }
+
+            var boundsObject = new GameObject("CameraBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(width * .5f, height * .5f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(width, height);
+            bounds.isTrigger = true;
+            if (PrefabUtility.SaveAsPrefabAsset(root, outputPath) == null)
+                throw new InvalidDataException($"Phase A prototype save failed: {outputPath}");
+        }
+        finally { Object.DestroyImmediate(root); }
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void AddPhaseAPortal(Transform parent, string name, uint portalIdx, uint sourceZoneIdx,
+        uint destinationZoneIdx, uint pairIdx, Vector3 position, Transform endpoint)
+    {
+        var portal = new GameObject(name, typeof(BoxCollider2D), typeof(IntraRoomPortal));
+        portal.transform.SetParent(parent, false);
+        portal.transform.position = position;
+        BoxCollider2D collider = portal.GetComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        collider.size = new Vector2(1.5f, 2f);
+        portal.GetComponent<IntraRoomPortal>().Configure(portalIdx, 0u, sourceZoneIdx, destinationZoneIdx, pairIdx, endpoint);
+    }
+
+    [MenuItem("TP2/Development/Rebuild Candidate 1u From Image")]
+    public static void RebuildCandidate1uFromImage()
+    {
+        const int width = 84;
+        const int height = 60;
+        const int roiX = 60;
+        const int roiY = 60;
+        const int pixelsPerCell = 10;
+        byte[] png = File.ReadAllBytes(Candidate1uSourcePath);
+        var source = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        if (!source.LoadImage(png) || source.width < 900 || source.height < 660)
+        {
+            Object.DestroyImmediate(source);
+            throw new InvalidDataException("Candidate 1u source must contain the 84x60 ROI at (60,60)-(899,659).");
+        }
+
+        var solid = new bool[width, height];
+        int extractedSolidCount = 0;
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
+        {
+            Color32 color = source.GetPixel(roiX + x * pixelsPerCell + 5,
+                source.height - 1 - (roiY + y * pixelsPerCell + 5));
+            solid[x, height - 1 - y] = color.r == 94 && color.g == 123 && color.b == 105;
+            if (solid[x, height - 1 - y]) extractedSolidCount++;
+        }
+        Object.DestroyImmediate(source);
+        int silhouetteDiff = CountCandidate1uSilhouetteDiff(png, solid, width, height, roiX, roiY, pixelsPerCell);
+        if (silhouetteDiff != 0) throw new InvalidDataException($"Candidate 1u silhouette diff={silhouetteDiff}.");
+
+        NormalizeCandidate1u(solid, width, height);
+        Directory.CreateDirectory("Assets/Prefabs/Development");
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+        Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+        if (groundTile == null || platformTile == null)
+            throw new InvalidDataException("Candidate 1u requires the existing Ground and OneWay Tile assets.");
+
+        GameObject root = new GameObject("Tilemap_Room_Candidate1u_ImageReconstructed", typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+
+            for (int x = 3; x <= 4; x++)
+            for (int y = 15; y <= 18; y++)
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 81; x <= 83; x++)
+            for (int y = 25; y <= 27; y++)
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+
+            for (int x = 44; x <= 46; x++)
+            for (int y = 2; y <= 3; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 44; x <= 46; x++)
+            for (int y = 4; y <= 7; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 47; x <= 49; x++)
+            for (int y = 2; y <= 5; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 47; x <= 49; x++)
+            for (int y = 6; y <= 9; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 50; x <= 52; x++)
+            for (int y = 2; y <= 7; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 50; x <= 52; x++)
+            for (int y = 8; y <= 11; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 53; x <= 55; x++)
+            for (int y = 2; y <= 9; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 53; x <= 55; x++)
+            for (int y = 10; y <= 13; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 56; x <= 58; x++)
+            for (int y = 2; y <= 11; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 56; x <= 58; x++)
+            for (int y = 12; y <= 15; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 59; x <= 61; x++)
+            for (int y = 2; y <= 13; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 59; x <= 61; x++)
+            for (int y = 14; y <= 17; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 62; x <= 64; x++)
+            for (int y = 2; y <= 15; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 62; x <= 64; x++)
+            for (int y = 16; y <= 19; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 65; x <= 67; x++)
+            for (int y = 2; y <= 17; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 65; x <= 67; x++)
+            for (int y = 18; y <= 21; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 68; x <= 70; x++)
+            for (int y = 2; y <= 19; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 68; x <= 70; x++)
+            for (int y = 20; y <= 23; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+
+            for (int x = 8; x <= 10; x++) ground.SetTile(new Vector3Int(x, 38, 0), groundTile);
+            for (int x = 8; x <= 10; x++)
+            for (int y = 39; y <= 42; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 8; x <= 10; x++) ground.SetTile(new Vector3Int(x, 32, 0), groundTile);
+            for (int x = 8; x <= 10; x++)
+            for (int y = 33; y <= 36; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 8; x <= 10; x++) ground.SetTile(new Vector3Int(x, 26, 0), groundTile);
+            for (int x = 8; x <= 10; x++)
+            for (int y = 27; y <= 30; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 5; x <= 10; x++) ground.SetTile(new Vector3Int(x, 20, 0), groundTile);
+            for (int x = 5; x <= 10; x++)
+            for (int y = 21; y <= 24; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+
+            for (int x = 47; x <= 49; x++)
+            for (int y = 47; y <= 50; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 71; x <= 82; x++)
+            for (int y = 2; y <= 18; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 58; x <= 79; x++)
+            for (int y = 53; y <= 56; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            ground.SetTile(new Vector3Int(57, 53, 0), groundTile);
+            ground.SetTile(new Vector3Int(57, 54, 0), groundTile);
+
+            for (int x = 61; x <= 63; x++)
+            for (int y = 46; y <= 49; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 65; x <= 68; x++)
+            for (int y = 46; y <= 48; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 45; x <= 47; x++)
+            for (int y = 37; y <= 39; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 40; x <= 42; x++)
+            for (int y = 26; y <= 28; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 34; x <= 37; x++)
+            for (int y = 23; y <= 27; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 44; x <= 47; x++)
+            for (int y = 18; y <= 19; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 59; x <= 62; x++) ground.SetTile(new Vector3Int(x, 22, 0), null);
+            for (int x = 64; x <= 66; x++)
+            for (int y = 22; y <= 24; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 41; x <= 45; x++)
+            for (int y = 8; y <= 14; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            ground.SetTile(new Vector3Int(5, 17, 0), null);
+
+            for (int x = 80; x <= 82; x++)
+            for (int y = 20; y <= 34; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 0; x <= 4; x++)
+            for (int y = 13; y <= 34; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 40; x <= 43; x++)
+            for (int y = 57; y <= 59; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 40; x <= 43; x++)
+            for (int y = 0; y <= 2; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+
+            for (int x = 29; x <= 44; x++)
+            for (int y = 51; y <= 56; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            ground.SetTile(new Vector3Int(5, 45, 0), null);
+            ground.SetTile(new Vector3Int(7, 45, 0), null);
+            for (int x = 49; x <= 59; x++)
+            for (int y = 30; y <= 39; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 43; x <= 44; x++)
+            for (int y = 34; y <= 36; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 5; x <= 10; x++)
+            for (int y = 26; y <= 27; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 14; x <= 15; x++)
+            for (int y = 25; y <= 26; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int x = 28; x <= 30; x++)
+            for (int y = 16; y <= 20; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int y = 18; y <= 20; y++) ground.SetTile(new Vector3Int(27, y, 0), groundTile);
+            ground.SetTile(new Vector3Int(71, 19, 0), groundTile);
+            ground.SetTile(new Vector3Int(71, 20, 0), groundTile);
+            ground.SetTile(new Vector3Int(70, 33, 0), null);
+            for (int y = 14; y <= 15; y++) ground.SetTile(new Vector3Int(8, y, 0), null);
+            for (int x = 7; x <= 10; x++) ground.SetTile(new Vector3Int(x, 13, 0), null);
+            for (int x = 12; x <= 13; x++) ground.SetTile(new Vector3Int(x, 13, 0), null);
+
+            AddCandidate1uPlatforms(ground, platforms, platformTile);
+            for (int x = 48; x <= 50; x++) platforms.SetTile(new Vector3Int(x, 39, 0), platformTile);
+            for (int x = 55; x <= 57; x++) platforms.SetTile(new Vector3Int(x, 37, 0), null);
+            for (int x = 62; x <= 64; x++) platforms.SetTile(new Vector3Int(x, 35, 0), null);
+            for (int x = 65; x <= 67; x++) platforms.SetTile(new Vector3Int(x, 33, 0), null);
+            for (int x = 54; x <= 56; x++) platforms.SetTile(new Vector3Int(x, 37, 0), platformTile);
+            for (int x = 60; x <= 62; x++) platforms.SetTile(new Vector3Int(x, 35, 0), platformTile);
+            for (int x = 66; x <= 68; x++) platforms.SetTile(new Vector3Int(x, 33, 0), platformTile);
+            Vector2Int[] portalCells = AddCandidate1uSockets(root.transform, ground, platforms, groundTile);
+
+            for (int y = 0; y < height; y++)
+            {
+                ground.SetTile(new Vector3Int(0, y, 0), groundTile);
+                ground.SetTile(new Vector3Int(width - 1, y, 0), groundTile);
+            }
+            for (int x = 0; x < width; x++)
+            {
+                ground.SetTile(new Vector3Int(x, 0, 0), groundTile);
+                ground.SetTile(new Vector3Int(x, height - 1, 0), groundTile);
+            }
+            for (int x = 1; x <= 4; x++)
+            for (int y = 15; y <= 18; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 80; x <= 82; x++)
+            for (int y = 21; y <= 24; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            for (int x = 41; x <= 43; x++)
+            for (int y = 51; y <= 54; y++) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+
+            Vector2Int[] spawns = AddCandidate1uSpawns(root.transform, ground, platforms, portalCells);
+
+            var boundsObject = new GameObject("CameraBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(width * 0.5f, height * 0.5f, 0f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(width, height);
+            bounds.isTrigger = true;
+
+            PrefabUtility.SaveAsPrefabAsset(root, Candidate1uPrefabPath);
+            Debug.Log($"[ModuleChunkBuilder] Candidate1u image-reconstructed: silhouetteDiff=0, sourceSolid={extractedSolidCount}, normalizedSolid={CountCandidate1uSolid(solid)}, oneWay=7, spawn={spawns.Length}, portal={portalCells.Length}, output={Candidate1uPrefabPath}");
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("TP2/Development/Build Candidate 1u Combat Reserved")]
+    public static void BuildCandidate1uCombatReserved()
+    {
+        GameObject root = PrefabUtility.LoadPrefabContents(Candidate1uPrefabPath);
+        try
+        {
+            Tilemap ground = root.GetComponentsInChildren<Tilemap>(true)
+                .SingleOrDefault(tilemap => tilemap.name == "Tilemap_Ground");
+            Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>(
+                "Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+            SpawnPointMarker[] spawns = root.GetComponentsInChildren<SpawnPointMarker>(true)
+                .Where(marker => marker.Type == SpawnType.Monster)
+                .OrderBy(marker => marker.transform.position.x)
+                .ToArray();
+            if (ground == null || groundTile == null || spawns.Length != 4)
+                throw new InvalidDataException("Candidate 1u source requires Ground and exactly four monster spawn markers.");
+
+            int[] centers = { 12, 32, 52, 72 };
+            for (int i = 0; i < centers.Length; i++)
+            {
+                int center = centers[i];
+                for (int x = center - 2; x <= center + 1; x++)
+                    ground.SetTile(new Vector3Int(x, 49, 0), groundTile);
+                for (int x = center - 3; x <= center + 2; x++)
+                for (int y = 50; y <= 53; y++)
+                    ground.SetTile(new Vector3Int(x, y, 0), null);
+                spawns[i].transform.position = root.transform.TransformPoint(new Vector3(center, 50.51f, 0f));
+            }
+            ground.SetTile(new Vector3Int(54, 53, 0), null);
+            for (int x = 69; x <= 74; x++) ground.SetTile(new Vector3Int(x, 53, 0), null);
+
+            for (int x = 63; x <= 65; x++) ground.SetTile(new Vector3Int(x, 16, 0), groundTile);
+            ground.SetTile(new Vector3Int(68, 20, 0), null);
+
+            root.name = "Tilemap_Room_Candidate1u_CombatReserved";
+            if (PrefabUtility.SaveAsPrefabAsset(root, Candidate1uCombatReservedPrefabPath) == null)
+                throw new InvalidDataException("Candidate 1u combat-reserved prefab save failed.");
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("TP2/Development/Build Golden Modules And Trial 01")]
+    public static void BuildGoldenModulesAndTrial01()
+    {
+        const string moduleDirectory = "Assets/Prefabs/Development/GoldenModules";
+        Directory.CreateDirectory(moduleDirectory);
+        GameObject source = PrefabUtility.LoadPrefabContents(Candidate1uPrefabPath);
+        try
+        {
+            Tilemap sourceGround = source.GetComponentsInChildren<Tilemap>(true)
+                .Single(tilemap => tilemap.name == "Tilemap_Ground");
+            Tilemap sourcePlatforms = source.GetComponentsInChildren<Tilemap>(true)
+                .Single(tilemap => tilemap.name == "Tilemap_Platforms");
+            Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+            Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+            if (groundTile == null || platformTile == null)
+                throw new InvalidDataException("Golden extraction requires the existing Ground and OneWay tiles.");
+
+            RectInt[] regions =
+            {
+                new RectInt(36, 0, 10, 8),
+                new RectInt(66, 0, 18, 24),
+                new RectInt(0, 13, 12, 20),
+                new RectInt(8, 43, 10, 10),
+                new RectInt(46, 32, 14, 12)
+            };
+            for (int i = 0; i < regions.Length; i++)
+                SaveGoldenModule(sourceGround, sourcePlatforms, groundTile, platformTile,
+                    regions[i], i + 1, $"{moduleDirectory}/Module_Golden_{i + 1}u.prefab");
+
+            BuildGoldenTrial(source, groundTile);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(source);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void SaveGoldenModule(Tilemap sourceGround, Tilemap sourcePlatforms, Tile groundTile,
+        Tile platformTile, RectInt region, int phase, string outputPath)
+    {
+        GameObject root = new GameObject($"Module_Golden_{phase}u", typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < region.height; y++)
+            for (int x = 0; x < region.width; x++)
+            {
+                int offset = ((y + phase) & 1) == 0 ? 2 : -2;
+                int sourceX = (x - offset + region.width) % region.width;
+                int sourceY = (y - 6 + region.height) % region.height;
+                if (sourceGround.HasTile(new Vector3Int(region.x + sourceX, region.y + sourceY, 0)))
+                    ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+                if (sourcePlatforms.HasTile(new Vector3Int(region.x + x, region.y + y, 0)))
+                    platforms.SetTile(new Vector3Int(x, y, 0), platformTile);
+            }
+            EnsureGoldenModuleDifference(sourceGround, ground, groundTile, region);
+            var boundsObject = new GameObject("ModuleBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(region.width * .5f, region.height * .5f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(region.width, region.height);
+            bounds.isTrigger = true;
+            if (PrefabUtility.SaveAsPrefabAsset(root, outputPath) == null)
+                throw new InvalidDataException($"Golden module save failed: {outputPath}");
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    private static void EnsureGoldenModuleDifference(Tilemap source, Tilemap module, Tile groundTile, RectInt region)
+    {
+        int area = region.width * region.height;
+        int targetXor = Mathf.CeilToInt(area * .15f);
+        int maxOccupancyDelta = Mathf.FloorToInt(area * .05f);
+        int sourceSolid = 0, moduleSolid = 0, xor = 0;
+        for (int y = 0; y < region.height; y++)
+        for (int x = 0; x < region.width; x++)
+        {
+            bool a = source.HasTile(new Vector3Int(region.x + x, region.y + y, 0));
+            bool b = module.HasTile(new Vector3Int(x, y, 0));
+            if (a) sourceSolid++;
+            if (b) moduleSolid++;
+            if (a != b) xor++;
+        }
+
+        while (xor < targetXor)
+        {
+            bool changed = false;
+            for (int y = 0; y < region.height && !changed; y++)
+            for (int x = 0; x < region.width && !changed; x++)
+            {
+                var cell = new Vector3Int(x, y, 0);
+                bool original = source.HasTile(new Vector3Int(region.x + x, region.y + y, 0));
+                bool current = module.HasTile(cell);
+                if (original != current) continue;
+                int nextSolid = moduleSolid + (current ? -1 : 1);
+                if (Mathf.Abs(nextSolid - sourceSolid) > maxOccupancyDelta) continue;
+                bool touchesDestination = false;
+                Vector3Int[] neighbors = { Vector3Int.left, Vector3Int.right, Vector3Int.up, Vector3Int.down };
+                foreach (Vector3Int neighbor in neighbors)
+                    if (module.HasTile(cell + neighbor) != current) touchesDestination = true;
+                if (!touchesDestination) continue;
+                module.SetTile(cell, current ? null : groundTile);
+                moduleSolid = nextSolid;
+                xor++;
+                changed = true;
+            }
+            if (!changed)
+                throw new InvalidDataException($"Golden module {region.size} cannot reach the 15% XOR contract.");
+        }
+    }
+
+    private static void BuildGoldenTrial(GameObject source, Tile groundTile)
+    {
+        Tilemap ground = source.GetComponentsInChildren<Tilemap>(true)
+            .Single(tilemap => tilemap.name == "Tilemap_Ground");
+        var baseline = new bool[84, 60];
+        for (int y = 0; y < 60; y++)
+        for (int x = 0; x < 84; x++)
+            baseline[x, y] = ground.HasTile(new Vector3Int(x, y, 0));
+        Tilemap platforms = source.GetComponentsInChildren<Tilemap>(true)
+            .Single(tilemap => tilemap.name == "Tilemap_Platforms");
+        void ClearOneWayClearance()
+        {
+            foreach (Vector3Int cell in platforms.cellBounds.allPositionsWithin)
+            {
+                if (!platforms.HasTile(cell)) continue;
+                for (int x = cell.x - 2; x <= cell.x + 2; x++)
+                for (int y = cell.y - 2; y <= cell.y + 4; y++)
+                    ground.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+        ClearOneWayClearance();
+
+        Vector3[] spawnPositions =
+        {
+            new Vector3(12f, 48.51f), new Vector3(32f, 36.51f),
+            new Vector3(52f, 48.51f), new Vector3(72f, 36.51f)
+        };
+        SpawnPointMarker[] spawns = source.GetComponentsInChildren<SpawnPointMarker>(true)
+            .Where(marker => marker.Type == SpawnType.Monster).OrderBy(marker => marker.transform.position.x).ToArray();
+        if (spawns.Length != spawnPositions.Length)
+            throw new InvalidDataException("Golden trial requires exactly four monster spawn markers.");
+        for (int i = 0; i < spawns.Length; i++)
+        {
+            spawns[i].transform.position = source.transform.TransformPoint(spawnPositions[i]);
+            int centerX = Mathf.RoundToInt(spawnPositions[i].x);
+            int floorY = Mathf.FloorToInt(spawnPositions[i].y) - 1;
+            int floorStartX = i == 3 ? centerX - 1 : centerX - 2;
+            for (int x = floorStartX; x < floorStartX + 4; x++)
+                ground.SetTile(new Vector3Int(x, floorY, 0), groundTile);
+            for (int x = centerX - 3; x <= centerX + 2; x++)
+            for (int y = floorY + 1; y <= floorY + 4; y++)
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int y = floorY + 1; y < 59; y++)
+            {
+                ground.SetTile(new Vector3Int(centerX, y, 0), null);
+                ground.SetTile(new Vector3Int(centerX + 1, y, 0), null);
+            }
+        }
+
+        Vector3[] portalPositions =
+        {
+            new Vector3(8.5f, 8f), new Vector3(28.5f, 8f),
+            new Vector3(55.5f, 8f), new Vector3(75.5f, 8f)
+        };
+        ChunkSocketDirection[] directions =
+        {
+            ChunkSocketDirection.West, ChunkSocketDirection.East,
+            ChunkSocketDirection.South, ChunkSocketDirection.North
+        };
+        ChunkSocketMarker[] sockets = source.GetComponentsInChildren<ChunkSocketMarker>(true);
+        if (sockets.Length != directions.Length)
+            throw new InvalidDataException("Golden trial requires exactly four socket markers.");
+        for (int i = 0; i < directions.Length; i++)
+        {
+            ChunkSocketMarker socket = sockets.Single(marker => marker.Direction == directions[i]);
+            Vector3 portal = portalPositions[i];
+            socket.transform.position = source.transform.TransformPoint(portal);
+            socket.EntryMarker.position = source.transform.TransformPoint(new Vector3(portal.x, portal.y - .49f));
+            int floorY = Mathf.FloorToInt(portal.y) - 2;
+            int centerX = Mathf.FloorToInt(portal.x);
+            for (int x = centerX - 1; x <= centerX + 1; x++)
+                ground.SetTile(new Vector3Int(x, floorY, 0), groundTile);
+            for (int x = centerX - 2; x <= centerX + 2; x++)
+            for (int y = floorY + 1; y <= floorY + 4; y++)
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+            for (int y = floorY + 1; y < 59; y++)
+            {
+                ground.SetTile(new Vector3Int(centerX, y, 0), null);
+                ground.SetTile(new Vector3Int(centerX + 1, y, 0), null);
+            }
+        }
+
+        var normalized = new bool[84, 60];
+        for (int y = 0; y < 60; y++)
+        for (int x = 0; x < 84; x++)
+            normalized[x, y] = ground.HasTile(new Vector3Int(x, y, 0));
+        NormalizeCandidate1u(normalized, 84, 60);
+        for (int y = 0; y < 60; y++)
+        for (int x = 0; x < 84; x++)
+            ground.SetTile(new Vector3Int(x, y, 0), normalized[x, y] ? groundTile : null);
+        ClearOneWayClearance();
+        for (int y = 1; y < 59; y++)
+        {
+            ground.SetTile(new Vector3Int(2, y, 0), null);
+            ground.SetTile(new Vector3Int(3, y, 0), null);
+        }
+
+        var protectedCells = new bool[84, 60];
+        for (int y = 1; y < 59; y++)
+        {
+            protectedCells[2, y] = true;
+            protectedCells[3, y] = true;
+        }
+        foreach (Vector3 spawn in spawnPositions)
+        {
+            int cx = Mathf.RoundToInt(spawn.x), fy = Mathf.FloorToInt(spawn.y) - 1;
+            for (int x = cx - 3; x <= cx + 2; x++)
+            for (int y = fy; y <= fy + 4; y++) protectedCells[x, y] = true;
+            for (int y = fy; y <= 58; y++)
+            {
+                protectedCells[cx, y] = true;
+                protectedCells[cx + 1, y] = true;
+            }
+        }
+        foreach (Vector3 portal in portalPositions)
+        {
+            int cx = Mathf.FloorToInt(portal.x), fy = Mathf.FloorToInt(portal.y) - 2;
+            for (int x = cx - 2; x <= cx + 2; x++)
+            for (int y = fy; y <= fy + 4; y++) protectedCells[x, y] = true;
+            for (int y = fy; y <= 58; y++)
+            {
+                protectedCells[cx, y] = true;
+                protectedCells[cx + 1, y] = true;
+            }
+        }
+        foreach (Vector3Int platform in platforms.cellBounds.allPositionsWithin)
+        {
+            if (!platforms.HasTile(platform)) continue;
+            for (int x = platform.x - 2; x <= platform.x + 2; x++)
+            for (int y = platform.y - 2; y <= platform.y + 4; y++)
+                if (x >= 0 && x < 84 && y >= 0 && y < 60) protectedCells[x, y] = true;
+        }
+
+        int baselineSolid = 0, trialSolid = 0, trialXor = 0;
+        for (int y = 0; y < 60; y++)
+        for (int x = 0; x < 84; x++)
+        {
+            bool current = ground.HasTile(new Vector3Int(x, y, 0));
+            if (baseline[x, y]) baselineSolid++;
+            if (current) trialSolid++;
+            if (baseline[x, y] != current) trialXor++;
+        }
+        int targetTrialXor = Mathf.CeilToInt(84 * 60 * .15f);
+        int maxTrialOccupancyDelta = Mathf.FloorToInt(84 * 60 * .05f);
+        while (trialXor < targetTrialXor)
+        {
+            bool preferFill = trialSolid - baselineSolid <= -maxTrialOccupancyDelta || (trialXor & 1) == 0;
+            bool changed = false;
+            for (int pass = 0; pass < 2 && !changed; pass++)
+            {
+                bool fill = pass == 0 ? preferFill : !preferFill;
+                int nextDelta = trialSolid + (fill ? 1 : -1) - baselineSolid;
+                int currentDelta = trialSolid - baselineSolid;
+                if (Mathf.Abs(nextDelta) > maxTrialOccupancyDelta &&
+                    Mathf.Abs(nextDelta) >= Mathf.Abs(currentDelta)) continue;
+                for (int y = 1; y < 59 && !changed; y++)
+                for (int x = 1; x < 83 && !changed; x++)
+                {
+                    var cell = new Vector3Int(x, y, 0);
+                    bool current = ground.HasTile(cell);
+                    if (protectedCells[x, y] || current == fill || baseline[x, y] != current) continue;
+                    int same = 0, opposite = 0;
+                    Vector3Int[] neighbors = { Vector3Int.left, Vector3Int.right, Vector3Int.up, Vector3Int.down };
+                    foreach (Vector3Int neighbor in neighbors)
+                    {
+                        if (ground.HasTile(cell + neighbor) == current) same++;
+                        else opposite++;
+                    }
+                    bool horizontalBridge = !ground.HasTile(cell + Vector3Int.left) &&
+                                            !ground.HasTile(cell + Vector3Int.right);
+                    bool verticalBridge = !ground.HasTile(cell + Vector3Int.up) &&
+                                          !ground.HasTile(cell + Vector3Int.down);
+                    bool safeFill = same == 1 || (same == 2 && !horizontalBridge && !verticalBridge);
+                    if ((fill && !safeFill) || opposite == 0) continue;
+                    ground.SetTile(cell, fill ? groundTile : null);
+                    trialSolid += fill ? 1 : -1;
+                    trialXor++;
+                    changed = true;
+                }
+            }
+            if (!changed)
+                throw new InvalidDataException("Golden trial cannot satisfy XOR and occupancy contracts without touching protected cells.");
+        }
+
+        source.name = "Tilemap_Room_GoldenDerived_Trial01";
+        if (PrefabUtility.SaveAsPrefabAsset(source, GoldenTrialPrefabPath) == null)
+            throw new InvalidDataException("Golden trial prefab save failed.");
+    }
+
+    [MenuItem("TP2/Development/Build Empty First Trial 02")]
+    public static void BuildEmptyFirstTrial02()
+    {
+        const int width = 84, height = 60, shell = 3;
+        var random = new System.Random(20260818);
+        var solid = new bool[width, height];
+        var protectedEmpty = new bool[width, height];
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++) solid[x, y] = true;
+
+        Vector2Int[] sizes =
+        {
+            new Vector2Int(6, 4), new Vector2Int(6, 4), new Vector2Int(6, 4),
+            new Vector2Int(6, 4), new Vector2Int(12, 8), new Vector2Int(8, 16)
+        };
+        Vector2Int[] anchors =
+        {
+            new Vector2Int(10, 10), new Vector2Int(34, 10), new Vector2Int(58, 10),
+            new Vector2Int(10, 38), new Vector2Int(30, 36), new Vector2Int(62, 32)
+        };
+        var rooms = new RectInt[sizes.Length];
+        var centers = new Vector2Int[sizes.Length];
+        void Carve(int fromX, int toX, int fromY, int toY)
+        {
+            for (int y = Mathf.Max(shell, fromY); y <= Mathf.Min(height - shell - 1, toY); y++)
+            for (int x = Mathf.Max(shell, fromX); x <= Mathf.Min(width - shell - 1, toX); x++)
+            {
+                solid[x, y] = false;
+                protectedEmpty[x, y] = true;
+            }
+        }
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            Vector2Int jitter = new Vector2Int(random.Next(-2, 3), random.Next(-2, 3));
+            Vector2Int origin = anchors[i] + jitter;
+            rooms[i] = new RectInt(origin, sizes[i]);
+            centers[i] = new Vector2Int(origin.x + sizes[i].x / 2, origin.y + sizes[i].y / 2);
+            Carve(origin.x, origin.x + sizes[i].x - 1, origin.y, origin.y + sizes[i].y - 1);
+        }
+
+        var edges = new List<(int a, int b, int cost)>();
+        for (int a = 0; a < centers.Length; a++)
+        for (int b = a + 1; b < centers.Length; b++)
+            edges.Add((a, b, Mathf.Abs(centers[a].x - centers[b].x) + Mathf.Abs(centers[a].y - centers[b].y)));
+        edges.Sort((left, right) => left.cost != right.cost ? left.cost.CompareTo(right.cost) :
+            left.a != right.a ? left.a.CompareTo(right.a) : left.b.CompareTo(right.b));
+        int[] parent = { 0, 1, 2, 3, 4, 5 };
+        int Find(int node)
+        {
+            while (parent[node] != node) node = parent[node];
+            return node;
+        }
+        var selected = new List<(int a, int b)>();
+        foreach ((int a, int b, int cost) edge in edges)
+        {
+            int rootA = Find(edge.a), rootB = Find(edge.b);
+            if (rootA == rootB) continue;
+            parent[rootB] = rootA;
+            selected.Add((edge.a, edge.b));
+            if (selected.Count == centers.Length - 1) break;
+        }
+        foreach ((int a, int b, int cost) edge in edges)
+            if (!selected.Contains((edge.a, edge.b)))
+            {
+                selected.Add((edge.a, edge.b));
+                break;
+            }
+
+        var oneWayRuns = new List<(int x, int y)>();
+        foreach ((int a, int b) edge in selected)
+        {
+            Vector2Int from = centers[edge.a], to = centers[edge.b];
+            Carve(Mathf.Min(from.x, to.x), Mathf.Max(from.x, to.x), from.y - 1, from.y + 2);
+            Carve(to.x - 2, to.x + 2, Mathf.Min(from.y, to.y), Mathf.Max(from.y, to.y));
+            int lowY = Mathf.Min(from.y, to.y) + 2, highY = Mathf.Max(from.y, to.y) - 2;
+            for (int y = lowY; y <= highY; y += 2)
+                oneWayRuns.Add((to.x - 1 + ((y / 2) & 1), y));
+        }
+
+        int CountEmptyRegions()
+        {
+            var visited = new bool[width, height];
+            int count = 0;
+            int[] dx = { -1, 1, 0, 0 }, dy = { 0, 0, -1, 1 };
+            for (int sy = shell; sy < height - shell; sy++)
+            for (int sx = shell; sx < width - shell; sx++)
+            {
+                if (solid[sx, sy] || visited[sx, sy]) continue;
+                count++;
+                var queue = new Queue<Vector2Int>();
+                queue.Enqueue(new Vector2Int(sx, sy));
+                visited[sx, sy] = true;
+                while (queue.Count > 0)
+                {
+                    Vector2Int cell = queue.Dequeue();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int x = cell.x + dx[i], y = cell.y + dy[i];
+                        if (x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                            solid[x, y] || visited[x, y]) continue;
+                        visited[x, y] = true;
+                        queue.Enqueue(new Vector2Int(x, y));
+                    }
+                }
+            }
+            return count;
+        }
+        if (selected.Count != 6 || CountEmptyRegions() != 1)
+            throw new InvalidDataException("Empty-first Trial02 graph generation failed.");
+
+        var visitedSolid = new bool[width, height];
+        for (int sy = shell; sy < height - shell; sy++)
+        for (int sx = shell; sx < width - shell; sx++)
+        {
+            if (!solid[sx, sy] || visitedSolid[sx, sy]) continue;
+            var component = new List<Vector2Int>();
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(new Vector2Int(sx, sy));
+            visitedSolid[sx, sy] = true;
+            while (queue.Count > 0)
+            {
+                Vector2Int cell = queue.Dequeue();
+                component.Add(cell);
+                Vector2Int[] neighbors = { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down };
+                foreach (Vector2Int neighbor in neighbors)
+                {
+                    Vector2Int next = cell + neighbor;
+                    if (next.x < shell || next.x >= width - shell || next.y < shell || next.y >= height - shell ||
+                        !solid[next.x, next.y] || visitedSolid[next.x, next.y]) continue;
+                    visitedSolid[next.x, next.y] = true;
+                    queue.Enqueue(next);
+                }
+            }
+            if (component.Count <= 2 && !component.Exists(cell => protectedEmpty[cell.x, cell.y]))
+                foreach (Vector2Int cell in component) solid[cell.x, cell.y] = false;
+        }
+
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+        Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+        if (groundTile == null || platformTile == null)
+            throw new InvalidDataException("Empty-first Trial02 requires existing Ground and OneWay tiles.");
+        GameObject root = new GameObject("Tilemap_Room_EmptyFirst_Trial02", typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            foreach ((int x, int y) run in oneWayRuns)
+                for (int x = run.x; x < run.x + 3; x++)
+                {
+                    platforms.SetTile(new Vector3Int(x, run.y, 0), platformTile);
+                    for (int y = run.y; y <= run.y + 4; y++)
+                        ground.SetTile(new Vector3Int(x, y, 0), null);
+                }
+
+            ChunkSocketDirection[] directions =
+            {
+                ChunkSocketDirection.West, ChunkSocketDirection.East,
+                ChunkSocketDirection.South, ChunkSocketDirection.North
+            };
+            for (int i = 0; i < 4; i++)
+            {
+                RectInt room = rooms[i];
+                float portalX = room.x + 1.5f, surfaceY = room.y;
+                AddSocket(root.transform, directions[i], new Vector3(portalX, surfaceY + 1f));
+                AddGroundedSpawnMarker(root.transform, ground, platforms, $"SpawnZone_{i + 1}",
+                    room.x + room.width - 2f, room.y + room.height - 1f, SpawnType.Monster);
+            }
+            var boundsObject = new GameObject("CameraBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(width * .5f, height * .5f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(width, height);
+            bounds.isTrigger = true;
+            if (PrefabUtility.SaveAsPrefabAsset(root, EmptyFirstTrial02PrefabPath) == null)
+                throw new InvalidDataException("Empty-first Trial02 prefab save failed.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("TP2/Development/Build Empty First Angular Trial 03")]
+    public static void BuildEmptyFirstAngularTrial03()
+    {
+        const int width = 84, height = 60, shell = 3;
+        var solid = new bool[width, height];
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++) solid[x, y] = true;
+        void Carve(RectInt area)
+        {
+            for (int y = Mathf.Max(shell, area.yMin); y < Mathf.Min(height - shell, area.yMax); y++)
+            for (int x = Mathf.Max(shell, area.xMin); x < Mathf.Min(width - shell, area.xMax); x++)
+                solid[x, y] = false;
+        }
+
+        RectInt[] combatRooms =
+        {
+            new RectInt(6, 8, 24, 12), new RectInt(54, 8, 24, 12), new RectInt(30, 40, 24, 12)
+        };
+        foreach (RectInt room in combatRooms) Carve(room);
+        Carve(new RectInt(24, 26, 36, 8));
+        Carve(new RectInt(24, 20, 8, 20));
+        Vector2Int[] centers =
+        {
+            new Vector2Int(18, 14), new Vector2Int(66, 14),
+            new Vector2Int(42, 46), new Vector2Int(42, 30)
+        };
+
+        var edges = new List<(int a, int b, int cost)>();
+        for (int a = 0; a < centers.Length; a++)
+        for (int b = a + 1; b < centers.Length; b++)
+            edges.Add((a, b, Mathf.Abs(centers[a].x - centers[b].x) + Mathf.Abs(centers[a].y - centers[b].y)));
+        edges.Sort((left, right) => left.cost != right.cost ? left.cost.CompareTo(right.cost) :
+            left.a != right.a ? left.a.CompareTo(right.a) : left.b.CompareTo(right.b));
+        int[] parent = { 0, 1, 2, 3 };
+        int Find(int node)
+        {
+            while (parent[node] != node) node = parent[node];
+            return node;
+        }
+        var selected = new List<(int a, int b)>();
+        foreach ((int a, int b, int cost) edge in edges)
+        {
+            int rootA = Find(edge.a), rootB = Find(edge.b);
+            if (rootA == rootB) continue;
+            parent[rootB] = rootA;
+            selected.Add((edge.a, edge.b));
+            if (selected.Count == 3) break;
+        }
+        foreach ((int a, int b, int cost) edge in edges)
+            if (!selected.Contains((edge.a, edge.b)))
+            {
+                selected.Add((edge.a, edge.b));
+                break;
+            }
+
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        Player player = playerPrefab != null ? playerPrefab.GetComponent<Player>() : null;
+        KinematicMotor2D motor = playerPrefab != null ? playerPrefab.GetComponent<KinematicMotor2D>() : null;
+        SerializedProperty jumpForceProperty = player != null
+            ? new SerializedObject(player).FindProperty("jumpForce")
+            : null;
+        TextAsset unitCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Datas/UnitBaseData.csv");
+        var unitTable = new UnitBaseDataTable();
+        if (unitCsv != null) unitTable.LoadData(unitCsv.text);
+        if (!unitTable.TryGetUnitData(3001u, out UnitBaseData playerData) || playerData.MoveSpeed <= 0f ||
+            player == null || motor == null || jumpForceProperty == null ||
+            jumpForceProperty.floatValue <= 0f || motor.Gravity <= 0f || motor.FallGravityMultiplier <= 0f)
+            throw new InvalidDataException("Trial03 requires valid Unit_3001 movement values.");
+        float jumpVelocity = jumpForceProperty.floatValue;
+        float jumpHeight = jumpVelocity * jumpVelocity / (2f * motor.Gravity);
+        float maxRise = jumpHeight - motor.SkinWidth * 2f;
+        float maxHorizontal = playerData.MoveSpeed * (jumpVelocity / motor.Gravity +
+            Mathf.Sqrt(2f * jumpHeight / (motor.Gravity * motor.FallGravityMultiplier))) - motor.SkinWidth * 2f;
+        int platformRise = Mathf.FloorToInt(maxRise);
+        if (platformRise < 1 || maxHorizontal < 1f)
+            throw new InvalidDataException("Unit_3001 jump envelope cannot place Trial03 platforms.");
+
+        var verticalCorridors = new List<(int x, int minY, int maxY)>();
+        foreach ((int a, int b) edge in selected)
+        {
+            Vector2Int from = centers[edge.a], to = centers[edge.b];
+            int combatIndex = edge.a < 3 ? edge.a : edge.b < 3 ? edge.b : -1;
+            int verticalX = combatIndex >= 0 ? combatRooms[combatIndex].xMin : to.x;
+            Carve(new RectInt(Mathf.Min(from.x, verticalX), from.y - 2,
+                Mathf.Abs(from.x - verticalX) + 1, 5));
+            Carve(new RectInt(Mathf.Min(verticalX, to.x), to.y - 2,
+                Mathf.Abs(verticalX - to.x) + 1, 5));
+            Carve(new RectInt(verticalX - 2, Mathf.Min(from.y, to.y), 5,
+                Mathf.Abs(from.y - to.y) + 1));
+            verticalCorridors.Add((verticalX, Mathf.Min(from.y, to.y), Mathf.Max(from.y, to.y)));
+        }
+
+        var oneWayRuns = new List<(int x, int y)>();
+        foreach ((int x, int minY, int maxY) corridor in verticalCorridors)
+        {
+            int predecessorSurfaceY = -1;
+            for (int y = corridor.minY; y >= shell; y--)
+                if (solid[corridor.x, y])
+                {
+                    predecessorSurfaceY = y + 1;
+                    break;
+                }
+            if (predecessorSurfaceY < 0)
+                throw new InvalidDataException("Trial03 vertical corridor has no Ground predecessor.");
+
+            for (int surfaceY = predecessorSurfaceY + platformRise;
+                 surfaceY < corridor.maxY;
+                 surfaceY += platformRise)
+            {
+                var run = (corridor.x - 1, surfaceY - 1);
+                if (!oneWayRuns.Contains(run)) oneWayRuns.Add(run);
+            }
+        }
+
+        int EmptyRegions()
+        {
+            var visited = new bool[width, height];
+            int count = 0;
+            for (int sy = shell; sy < height - shell; sy++)
+            for (int sx = shell; sx < width - shell; sx++)
+            {
+                if (solid[sx, sy] || visited[sx, sy]) continue;
+                count++;
+                var queue = new Queue<Vector2Int>();
+                queue.Enqueue(new Vector2Int(sx, sy));
+                visited[sx, sy] = true;
+                while (queue.Count > 0)
+                {
+                    Vector2Int cell = queue.Dequeue();
+                    foreach (Vector2Int direction in new[] { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down })
+                    {
+                        Vector2Int next = cell + direction;
+                        if (next.x < shell || next.x >= width - shell || next.y < shell || next.y >= height - shell ||
+                            solid[next.x, next.y] || visited[next.x, next.y]) continue;
+                        visited[next.x, next.y] = true;
+                        queue.Enqueue(next);
+                    }
+                }
+            }
+            return count;
+        }
+        if (selected.Count != 4 || EmptyRegions() != 1)
+            throw new InvalidDataException("Empty-first Angular Trial03 graph generation failed.");
+
+        Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+        Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+        if (groundTile == null || platformTile == null)
+            throw new InvalidDataException("Empty-first Angular Trial03 requires existing Ground and OneWay tiles.");
+        GameObject root = new GameObject("Tilemap_Room_EmptyFirstAngular_Trial03", typeof(Grid));
+        try
+        {
+            Tilemap ground = CreateCandidate1uTilemap(root.transform, "Tilemap_Ground", groundTile, false);
+            Tilemap platforms = CreateCandidate1uTilemap(root.transform, "Tilemap_Platforms", platformTile, true);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            foreach ((int x, int y) run in oneWayRuns)
+                for (int x = run.x; x < run.x + 3; x++)
+                {
+                    platforms.SetTile(new Vector3Int(x, run.y, 0), platformTile);
+                    for (int y = run.y; y <= run.y + 4; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+                }
+
+            RectInt[] markerRooms =
+            {
+                combatRooms[0], combatRooms[1], combatRooms[2], new RectInt(24, 26, 36, 8)
+            };
+            ChunkSocketDirection[] directions =
+            {
+                ChunkSocketDirection.West, ChunkSocketDirection.East,
+                ChunkSocketDirection.South, ChunkSocketDirection.North
+            };
+            for (int i = 0; i < markerRooms.Length; i++)
+            {
+                RectInt room = markerRooms[i];
+                AddSocket(root.transform, directions[i], new Vector3(room.x + 2.5f, room.y + 1f));
+                AddGroundedSpawnMarker(root.transform, ground, platforms, $"SpawnZone_{i + 1}",
+                    room.xMax - 3f, room.yMax - 1f, SpawnType.Monster);
+            }
+            var boundsObject = new GameObject("CameraBounds", typeof(BoxCollider2D));
+            boundsObject.transform.SetParent(root.transform, false);
+            boundsObject.transform.localPosition = new Vector3(width * .5f, height * .5f);
+            BoxCollider2D bounds = boundsObject.GetComponent<BoxCollider2D>();
+            bounds.size = new Vector2(width, height);
+            bounds.isTrigger = true;
+            if (PrefabUtility.SaveAsPrefabAsset(root, EmptyFirstAngularTrial03PrefabPath) == null)
+                throw new InvalidDataException("Empty-first Angular Trial03 prefab save failed.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("TP2/Development/Build Empty First Angular Reachable Trial 04")]
+    public static void BuildEmptyFirstAngularTrial04()
+    {
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(EmptyFirstAngularTrial04PrefabPath) != null)
+        {
+            ProjectTrial04SpawnMarkers();
+            return;
+        }
+        const int width = 84, height = 60, shell = 3;
+        GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(EmptyFirstAngularTrial03PrefabPath);
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        if (source == null || playerPrefab == null)
+            throw new InvalidDataException("Trial04 requires Trial03 and Unit_3001 prefabs.");
+
+        Player player = playerPrefab.GetComponent<Player>();
+        KinematicMotor2D motor = playerPrefab.GetComponent<KinematicMotor2D>();
+        SerializedProperty jumpProperty = player != null ? new SerializedObject(player).FindProperty("jumpForce") : null;
+        var unitTable = new UnitBaseDataTable();
+        TextAsset unitCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Datas/UnitBaseData.csv");
+        if (unitCsv != null) unitTable.LoadData(unitCsv.text);
+        if (player == null || motor == null || jumpProperty == null ||
+            !unitTable.TryGetUnitData(3001u, out UnitBaseData playerData) || playerData.MoveSpeed <= 0f ||
+            jumpProperty.floatValue <= 0f || motor.Gravity <= 0f || motor.FallGravityMultiplier <= 0f)
+            throw new InvalidDataException("Trial04 requires valid Unit_3001 movement values.");
+        float jumpHeight = jumpProperty.floatValue * jumpProperty.floatValue / (2f * motor.Gravity);
+        float maxRise = jumpHeight - motor.SkinWidth * 2f;
+        float maxHorizontal = playerData.MoveSpeed * (jumpProperty.floatValue / motor.Gravity +
+            Mathf.Sqrt(2f * jumpHeight / (motor.Gravity * motor.FallGravityMultiplier))) - motor.SkinWidth * 2f;
+        int platformRise = Mathf.FloorToInt(maxRise);
+
+        GameObject root = Object.Instantiate(source);
+        root.name = "Tilemap_Room_EmptyFirstAngular_Trial04";
+        try
+        {
+            Tilemap ground = root.GetComponentsInChildren<Tilemap>(true).Single(x => x.name == "Tilemap_Ground");
+            Tilemap platforms = root.GetComponentsInChildren<Tilemap>(true).Single(x => x.name == "Tilemap_Platforms");
+            Tile groundTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Ground.asset");
+            Tile platformTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Textures/Environment/Tiles/Tile_Platform.asset");
+            if (groundTile == null || platformTile == null || platformRise < 1 || maxHorizontal < 1f)
+                throw new InvalidDataException("Trial04 tiles or jump envelope are invalid.");
+
+            var solid = new bool[width, height];
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                solid[x, y] = x < shell || x >= width - shell || y < shell || y >= height - shell ||
+                    ground.HasTile(new Vector3Int(x, y, 0));
+            void Carve(RectInt area)
+            {
+                for (int y = Mathf.Max(shell, area.yMin); y < Mathf.Min(height - shell, area.yMax); y++)
+                for (int x = Mathf.Max(shell, area.xMin); x < Mathf.Min(width - shell, area.xMax); x++) solid[x, y] = false;
+            }
+
+            RectInt[] rooms =
+            {
+                new RectInt(3, 5, 30, 16), new RectInt(51, 5, 30, 16),
+                new RectInt(27, 41, 30, 16), new RectInt(24, 26, 36, 8),
+                new RectInt(24, 20, 8, 20)
+            };
+                foreach (RectInt room in rooms)
+            {
+                Carve(room);
+                for (int x = room.xMin; x < room.xMax; x++) solid[x, room.yMin - 1] = true;
+            }
+            Vector2Int[] centers = rooms.Select(room => new Vector2Int(
+                Mathf.RoundToInt(room.center.x), Mathf.RoundToInt(room.center.y))).ToArray();
+            var edges = new List<(int a, int b, int cost)>();
+            for (int a = 0; a < centers.Length; a++)
+            for (int b = a + 1; b < centers.Length; b++)
+                edges.Add((a, b, Mathf.Abs(centers[a].x - centers[b].x) + Mathf.Abs(centers[a].y - centers[b].y)));
+            edges.Sort((a, b) => a.cost != b.cost ? a.cost.CompareTo(b.cost) : a.a != b.a ? a.a.CompareTo(b.a) : a.b.CompareTo(b.b));
+            int[] parent = { 0, 1, 2, 3, 4 };
+            int Find(int node) { while (parent[node] != node) node = parent[node]; return node; }
+            var selected = new List<(int a, int b)>();
+            foreach ((int a, int b, int cost) edge in edges)
+            {
+                int rootA = Find(edge.a), rootB = Find(edge.b);
+                if (rootA == rootB) continue;
+                parent[rootB] = rootA;
+                selected.Add((edge.a, edge.b));
+                if (selected.Count == 4) break;
+            }
+            foreach ((int a, int b, int cost) edge in edges)
+                if (!selected.Contains((edge.a, edge.b))) { selected.Add((edge.a, edge.b)); break; }
+
+            var verticalCorridors = new List<(int x, int minY, int maxY)>();
+            foreach ((int a, int b) edge in selected)
+            {
+                Vector2Int from = centers[edge.a], to = centers[edge.b];
+                int combatIndex = edge.a < 3 ? edge.a : edge.b < 3 ? edge.b : -1;
+                int verticalX = combatIndex >= 0 ? rooms[combatIndex].xMin : to.x;
+                Carve(new RectInt(Mathf.Min(from.x, verticalX), from.y - 2, Mathf.Abs(from.x - verticalX) + 1, 5));
+                Carve(new RectInt(Mathf.Min(verticalX, to.x), to.y - 2, Mathf.Abs(verticalX - to.x) + 1, 5));
+                Carve(new RectInt(verticalX - 2, Mathf.Min(from.y, to.y), 5, Mathf.Abs(from.y - to.y) + 1));
+                verticalCorridors.Add((verticalX, Mathf.Min(from.y, to.y), Mathf.Max(from.y, to.y)));
+            }
+
+            WallJumpSurface wallSurface = ground.GetComponent<WallJumpSurface>() ?? ground.gameObject.AddComponent<WallJumpSurface>();
+            wallSurface.CanWallJump = true;
+            const float wallJumpRise = 2.58f;
+            int wallPredecessors = 0;
+            foreach ((int x, int minY, int maxY) corridor in verticalCorridors)
+            {
+                for (int y = corridor.minY; y < corridor.maxY; y += Mathf.FloorToInt(wallJumpRise))
+                    if (solid[corridor.x - 3, y] || solid[corridor.x + 3, y]) wallPredecessors++;
+                    else throw new InvalidDataException("Trial04 vertical corridor has no continuous Wall-jump predecessor.");
+            }
+            if (wallPredecessors < 2)
+                throw new InvalidDataException("Trial04 requires at least two Step or Wall predecessors.");
+
+            ground.ClearAllTiles();
+            platforms.ClearAllTiles();
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (solid[x, y]) ground.SetTile(new Vector3Int(x, y, 0), groundTile);
+            foreach (SpawnPointMarker marker in root.GetComponentsInChildren<SpawnPointMarker>(true))
+            {
+                int centerX = Mathf.RoundToInt(marker.transform.localPosition.x);
+                bool moved = false;
+                for (int y = Mathf.Min(height - shell - 1, Mathf.FloorToInt(marker.transform.localPosition.y)); y >= shell; y--)
+                {
+                    bool supported = true;
+                    for (int x = centerX - 1; x <= centerX + 1; x++)
+                        supported &= ground.HasTile(new Vector3Int(x, y, 0));
+                    for (int x = centerX - 1; supported && x <= centerX + 1; x++)
+                    for (int clearY = y + 1; clearY <= y + 4; clearY++)
+                        supported &= !ground.HasTile(new Vector3Int(x, clearY, 0));
+                    if (!supported) continue;
+                    marker.transform.localPosition = new Vector3(marker.transform.localPosition.x, y + 1.51f, 0f);
+                    moved = true;
+                    break;
+                }
+                if (!moved) throw new InvalidDataException("Trial04 SpawnZone has no continuous Ground support.");
+            }
+
+            if (PrefabUtility.SaveAsPrefabAsset(root, EmptyFirstAngularTrial04PrefabPath) == null)
+                throw new InvalidDataException("Empty-first Angular Trial04 prefab save failed.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void ProjectTrial04SpawnMarkers()
+    {
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3001.prefab");
+        CapsuleCollider2D playerCollider = playerPrefab != null ? playerPrefab.GetComponent<CapsuleCollider2D>() : null;
+        KinematicMotor2D motor = playerPrefab != null ? playerPrefab.GetComponent<KinematicMotor2D>() : null;
+        if (playerCollider == null || motor == null)
+            throw new InvalidDataException("Trial04 Spawn projection requires Unit_3001 collider and motor.");
+        float scaleY = Mathf.Abs(playerCollider.transform.lossyScale.y);
+        float colliderBottomFromPivot = (playerCollider.offset.y - playerCollider.size.y * .5f) * scaleY;
+
+        GameObject root = PrefabUtility.LoadPrefabContents(EmptyFirstAngularTrial04PrefabPath);
+        try
+        {
+            Tilemap ground = root.GetComponentsInChildren<Tilemap>(true).Single(x => x.name == "Tilemap_Ground");
+            Tilemap platforms = root.GetComponentsInChildren<Tilemap>(true).Single(x => x.name == "Tilemap_Platforms");
+            SpawnPointMarker[] markers = root.GetComponentsInChildren<SpawnPointMarker>(true);
+            RectInt[] rooms =
+            {
+                new RectInt(3, 5, 30, 16), new RectInt(51, 5, 30, 16),
+                new RectInt(27, 41, 30, 16), new RectInt(24, 26, 36, 8)
+            };
+            if (markers.Length != rooms.Length)
+                throw new InvalidDataException("Trial04 requires exactly four SpawnZone markers.");
+
+            var unused = new List<SpawnPointMarker>(markers);
+            foreach (RectInt room in rooms)
+            {
+                SpawnPointMarker marker = unused.OrderBy(candidate =>
+                    Vector2.SqrMagnitude((Vector2)candidate.transform.localPosition - room.center)).First();
+                unused.Remove(marker);
+                Vector3 best = default;
+                float bestDistance = float.MaxValue;
+                for (int y = room.yMin - 1; y < room.yMax; y++)
+                for (int startX = room.xMin + 1; startX + 4 < room.xMax; startX++)
+                {
+                    bool valid = true;
+                    for (int x = startX; x < startX + 4; x++)
+                    {
+                        valid &= ground.HasTile(new Vector3Int(x, y, 0)) &&
+                            !platforms.HasTile(new Vector3Int(x, y, 0));
+                        for (int clearY = y + 1; clearY <= y + 4; clearY++)
+                            valid &= !ground.HasTile(new Vector3Int(x, clearY, 0)) &&
+                                !platforms.HasTile(new Vector3Int(x, clearY, 0));
+                    }
+                    for (int clearY = y + 1; valid && clearY <= y + 2; clearY++)
+                        valid &= !ground.HasTile(new Vector3Int(startX - 1, clearY, 0)) &&
+                            !ground.HasTile(new Vector3Int(startX + 4, clearY, 0));
+                    if (!valid) continue;
+                    Vector3 surface = ground.CellToWorld(new Vector3Int(startX + 2, y + 1, 0));
+                    float distance = Mathf.Abs(surface.x - room.center.x) + Mathf.Abs(surface.y - room.center.y);
+                    if (distance >= bestDistance) continue;
+                    bestDistance = distance;
+                    best = new Vector3(surface.x, surface.y + motor.SkinWidth - colliderBottomFromPivot, 0f);
+                }
+                if (bestDistance == float.MaxValue)
+                    throw new InvalidDataException("Trial04 Combat room has no valid Spawn surface.");
+                marker.transform.position = best;
+            }
+            PrefabUtility.SaveAsPrefabAsset(root, EmptyFirstAngularTrial04PrefabPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    private static Tilemap CreateCandidate1uTilemap(Transform parent, string name, Tile tile, bool oneWay)
+    {
+        var child = new GameObject(name, typeof(Tilemap), typeof(TilemapRenderer), typeof(TilemapCollider2D));
+        child.transform.SetParent(parent, false);
+        TilemapRenderer renderer = child.GetComponent<TilemapRenderer>();
+        renderer.sortingLayerName = "Tilemap";
+        renderer.sortingOrder = oneWay ? 5 : 0;
+        if (oneWay)
+        {
+            int layer = LayerMask.NameToLayer("OneWayPlatform");
+            if (layer >= 0) child.layer = layer;
+            TilemapCollider2D collider = child.GetComponent<TilemapCollider2D>();
+            collider.usedByEffector = true;
+            PlatformEffector2D effector = child.AddComponent<PlatformEffector2D>();
+            effector.useOneWay = true;
+            effector.surfaceArc = 180f;
+            child.AddComponent<OneWayPlatformPassThrough>();
+        }
+        else
+        {
+            Rigidbody2D body = child.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Static;
+            CompositeCollider2D composite = child.AddComponent<CompositeCollider2D>();
+            child.GetComponent<TilemapCollider2D>().compositeOperation = Collider2D.CompositeOperation.Merge;
+        }
+        return child.GetComponent<Tilemap>();
+    }
+
+    private static int CountCandidate1uSilhouetteDiff(byte[] png, bool[,] solid, int width, int height,
+        int roiX, int roiY, int pixelsPerCell)
+    {
+        var source = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        source.LoadImage(png);
+        int diff = 0;
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
+        {
+            Color32 color = source.GetPixel(roiX + x * pixelsPerCell + 5,
+                source.height - 1 - (roiY + y * pixelsPerCell + 5));
+            bool sourceSolid = color.r == 94 && color.g == 123 && color.b == 105;
+            if (sourceSolid != solid[x, height - 1 - y]) diff++;
+        }
+        Object.DestroyImmediate(source);
+        return diff;
+    }
+
+    private static void NormalizeCandidate1u(bool[,] solid, int width, int height)
+    {
+        var visited = new bool[width, height];
+        int[] dx = { -1, 1, 0, 0 };
+        int[] dy = { 0, 0, -1, 1 };
+        for (int sy = 1; sy < height - 1; sy++)
+        for (int sx = 1; sx < width - 1; sx++)
+        {
+            if (!solid[sx, sy] || visited[sx, sy]) continue;
+            var cells = new List<Vector2Int>();
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(new Vector2Int(sx, sy));
+            visited[sx, sy] = true;
+            bool touchesBoundary = false;
+            while (queue.Count > 0)
+            {
+                Vector2Int cell = queue.Dequeue();
+                cells.Add(cell);
+                touchesBoundary |= cell.x <= 1 || cell.x >= width - 2 || cell.y <= 1;
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = cell.x + dx[i], ny = cell.y + dy[i];
+                    if (nx < 0 || nx >= width || ny < 0 || ny >= height || visited[nx, ny] || !solid[nx, ny]) continue;
+                    visited[nx, ny] = true;
+                    queue.Enqueue(new Vector2Int(nx, ny));
+                }
+            }
+            if (!touchesBoundary && cells.Count <= 2)
+                foreach (Vector2Int cell in cells) solid[cell.x, cell.y] = false;
+        }
+        var fill = new List<Vector2Int>();
+        for (int y = 1; y < height - 1; y++)
+        for (int x = 1; x < width - 1; x++)
+            if (!solid[x, y] && solid[x - 1, y] && solid[x + 1, y] && solid[x, y - 1] && solid[x, y + 1])
+                fill.Add(new Vector2Int(x, y));
+        foreach (Vector2Int cell in fill) solid[cell.x, cell.y] = true;
+    }
+
+    private static void AddCandidate1uPlatforms(Tilemap ground, Tilemap platforms, Tile tile)
+    {
+        Vector2Int[] starts = { new Vector2Int(46, 10), new Vector2Int(50, 13), new Vector2Int(57, 18) };
+        int[] lengths = { 3, 4, 6 };
+        for (int i = 0; i < starts.Length; i++)
+        for (int x = starts[i].x; x < starts[i].x + lengths[i]; x++)
+        {
+            platforms.SetTile(new Vector3Int(x, starts[i].y, 0), tile);
+            for (int y = starts[i].y; y <= starts[i].y + 4; y++) ground.SetTile(new Vector3Int(x, y, 0), null);
+        }
+    }
+
+    private static Vector2Int[] AddCandidate1uSockets(Transform root, Tilemap ground, Tilemap platforms, Tile groundTile)
+    {
+        for (int x = 40; x <= 43; x++)
+        {
+            ground.SetTile(new Vector3Int(x, 2, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, 3, 0), groundTile);
+            for (int y = 4; y <= 7; y++)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+        for (int x = 44; x <= 46; x++)
+        {
+            ground.SetTile(new Vector3Int(x, 3, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, 4, 0), groundTile);
+            for (int y = 5; y <= 8; y++)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+        for (int x = 68; x <= 70; x++)
+        {
+            ground.SetTile(new Vector3Int(x, 19, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, 20, 0), groundTile);
+            for (int y = 21; y <= 24; y++)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+        for (int x = 65; x <= 67; x++)
+        {
+            ground.SetTile(new Vector3Int(x, 17, 0), groundTile);
+            ground.SetTile(new Vector3Int(x, 18, 0), groundTile);
+            for (int y = 19; y <= 22; y++)
+            {
+                ground.SetTile(new Vector3Int(x, y, 0), null);
+                platforms.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+
+        Vector2Int[] cells = {
+            new Vector2Int(40, 4), new Vector2Int(70, 21),
+            new Vector2Int(44, 5), new Vector2Int(65, 19)
+        };
+        ChunkSocketDirection[] directions = { ChunkSocketDirection.West, ChunkSocketDirection.East, ChunkSocketDirection.South, ChunkSocketDirection.North };
+        Vector3[] positions = {
+            new Vector3(40.5f, 5f, 0f), new Vector3(70.5f, 22f, 0f),
+            new Vector3(44.5f, 6f, 0f), new Vector3(65.5f, 20f, 0f)
+        };
+        for (int i = 0; i < cells.Length; i++) AddSocket(root, directions[i], positions[i]);
+        return cells;
+    }
+
+    private static Vector2Int[] AddCandidate1uSpawns(Transform root, Tilemap ground, Tilemap platforms, Vector2Int[] portals)
+    {
+        Vector2Int[] preferred = { new Vector2Int(12, 50), new Vector2Int(32, 50), new Vector2Int(52, 50), new Vector2Int(72, 50) };
+        var result = new List<Vector2Int>();
+        foreach (Vector2Int origin in preferred)
+        {
+            Vector2Int found = new Vector2Int(-1, -1);
+            for (int radius = 0; radius < 60 && found.x < 0; radius++)
+            for (int y = Mathf.Min(55, origin.y + radius); y >= Mathf.Max(1, origin.y - radius) && found.x < 0; y--)
+            for (int x = Mathf.Max(1, origin.x - radius); x <= Mathf.Min(82, origin.x + radius); x++)
+            {
+                if (Mathf.Abs(x - origin.x) + Mathf.Abs(y - origin.y) != radius ||
+                    !ground.HasTile(new Vector3Int(x - 1, y - 1, 0)) ||
+                    !ground.HasTile(new Vector3Int(x, y - 1, 0)) ||
+                    !ground.HasTile(new Vector3Int(x + 1, y - 1, 0))) continue;
+                bool clear = true;
+                for (int cx = x - 1; cx <= x + 2 && clear; cx++)
+                for (int cy = y; cy <= y + 2; cy++)
+                    if (ground.HasTile(new Vector3Int(cx, cy, 0)) || platforms.HasTile(new Vector3Int(cx, cy, 0))) clear = false;
+                foreach (Vector2Int portal in portals) clear &= Vector2.Distance(new Vector2(x, y), portal) >= 7f;
+                foreach (Vector2Int spawn in result) clear &= Vector2.Distance(new Vector2(x, y), spawn) >= 15f;
+                if (clear) found = new Vector2Int(x, y);
+            }
+            if (found.x < 0) throw new InvalidDataException($"Candidate 1u has no valid SpawnZone near {origin}.");
+            result.Add(found);
+            AddGroundedSpawnMarker(root, ground, platforms, $"SpawnZone_{result.Count}", found.x, found.y, SpawnType.Monster);
+        }
+        return result.ToArray();
+    }
+
+    private static int CountCandidate1uSolid(bool[,] solid)
+    {
+        int count = 0;
+        foreach (bool cell in solid) if (cell) count++;
+        return count;
     }
 
     public static void RebuildStage1ExpansionModules()
@@ -1468,7 +3289,7 @@ public static class ModuleChunkBuilder
         }
     }
 
-    private static void AddGroundedSpawnMarker(Transform parent, Tilemap ground, Tilemap platforms, string name, float desiredX, float desiredY, SpawnType type, uint monsterId = 0)
+    private static SpawnPointMarker AddGroundedSpawnMarker(Transform parent, Tilemap ground, Tilemap platforms, string name, float desiredX, float desiredY, SpawnType type, uint monsterId = 0)
     {
         int cellX = Mathf.RoundToInt(desiredX);
         int startY = Mathf.RoundToInt(desiredY);
@@ -1491,9 +3312,10 @@ public static class ModuleChunkBuilder
         marker.Type = type;
         if (monsterId > 0) marker.MonsterId = monsterId;
         marker.EnableSpawn = true;
+        return marker;
     }
 
-    private static void AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
+    private static ChunkSocketMarker AddSocket(Transform parent, ChunkSocketDirection direction, Vector3 position)
     {
         var socketObj = new GameObject($"Socket_{direction}", typeof(ChunkSocketMarker));
         socketObj.transform.SetParent(parent);
@@ -1507,6 +3329,7 @@ public static class ModuleChunkBuilder
             marker.Direction = direction;
             marker.EntryMarker = entry.transform;
         }
+        return marker;
     }
 
     private static bool ValidateChunkPathways(string[,] grid, int nX, int nY)
