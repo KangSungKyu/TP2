@@ -74,6 +74,7 @@ public class CombatStats : MonoBehaviour
     private const float HitReactionDuration = 0.15f;
     private KinematicMotor2D motor;
     private Collider2D defenseBodyCollider;
+    [SerializeField] private SpriteRenderer debugGuardSprite;
     private bool isFacingRight = true;
     private int lastAttackSourceId;
     private uint lastAttackGeneration;
@@ -97,19 +98,54 @@ public class CombatStats : MonoBehaviour
         CurrentHp = MaxHp;
         CurrentMp = MaxMp;
         CurrentPosture = 0f;
+        IsGuarding = IsDodging = IsParrying = false;
         IsGroggy = false;
         IsDead = false;
         groggyTimer = 0f;
         lastAttackSourceId = parriedAttackSourceId = 0;
         lastAttackGeneration = lastAttackTick = parriedAttackGeneration = 0;
+        SetGuardDebugVisible(false);
     }
 
-    public void SetGuarding(bool state) => IsGuarding = state;
+    public void SetGuarding(bool state)
+    {
+        IsGuarding = state;
+        SetGuardDebugVisible();
+    }
     public void SetDodging(bool state) => IsDodging = state;
-    public void SetParrying(bool state) => IsParrying = state;
+    public void SetParrying(bool state)
+    {
+        IsParrying = state;
+        SetGuardDebugVisible();
+    }
     public void SetJumped(bool state) => IsJumped = state;
-    public void SetFacingRight(bool state) => isFacingRight = state;
+    public void SetFacingRight(bool state)
+    {
+        isFacingRight = state;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (debugGuardSprite != null)
+        {
+            Vector3 position = debugGuardSprite.transform.localPosition;
+            position.x = Mathf.Abs(position.x) * (state ? 1f : -1f);
+            debugGuardSprite.transform.localPosition = position;
+        }
+#endif
+    }
     public void SetDefenseBodyCollider(Collider2D bodyCollider) => defenseBodyCollider = bodyCollider;
+
+    private void OnDisable() => SetGuardDebugVisible(false);
+
+    private void SetGuardDebugVisible(bool stateActive = true)
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (debugGuardSprite == null) return;
+        bool visible = UnitAttackHitbox2D.DebugVisualizationEnabled && stateActive && (IsGuarding || IsParrying);
+        debugGuardSprite.enabled = visible;
+        if (visible) debugGuardSprite.color = IsParrying ? new Color(0f, 1f, 1f, 0.35f) : new Color(0f, 0.5f, 1f, 0.35f);
+#else
+        if (debugGuardSprite != null) debugGuardSprite.enabled = false;
+#endif
+    }
 
     public bool TryGetBodySweepFraction(AttackSweep2D sweep, out float fraction)
     {
@@ -121,6 +157,15 @@ public class CombatStats : MonoBehaviour
         Bounds body = defenseBodyCollider.bounds;
         body.Expand(new Vector3(sweep.HalfExtents.x * 2f, sweep.HalfExtents.y * 2f, 0f));
         return TryGetSweepFraction(sweep.Previous, sweep.Current, body, out fraction);
+    }
+
+    public bool TryGetAttackSweepFraction(AttackSweep2D sweep, out float fraction)
+    {
+        bool bodyHit = TryGetBodySweepFraction(sweep, out float bodyFraction);
+        bool guardHit = TryGetGuardSweepFraction(sweep, out float guardFraction);
+        fraction = bodyHit && guardHit ? Mathf.Min(bodyFraction, guardFraction) :
+            bodyHit ? bodyFraction : guardFraction;
+        return bodyHit || guardHit;
     }
 
     public bool ConsumeMp(float amount)
@@ -230,21 +275,26 @@ public class CombatStats : MonoBehaviour
 
     private bool DoesGuardIntersectFirst(AttackSweep2D sweep)
     {
-        if ((!IsGuarding && !IsParrying) || defenseBodyCollider == null || !defenseBodyCollider.enabled) return false;
-
-        Bounds body = defenseBodyCollider.bounds;
-        Bounds guard = body;
-        guard.center += Vector3.right * (isFacingRight ? body.size.x : -body.size.x);
-        Vector3 expansion = new Vector3(Mathf.Max(0f, sweep.HalfExtents.x), Mathf.Max(0f, sweep.HalfExtents.y), 0f);
-        body.Expand(expansion * 2f);
-        guard.Expand(expansion * 2f);
-
-        if (!TryGetSweepFraction(sweep.Previous, sweep.Current, guard, out float guardFraction) ||
-            !TryGetSweepFraction(sweep.Previous, sweep.Current, body, out float bodyFraction)) return false;
+        if (!TryGetGuardSweepFraction(sweep, out float guardFraction)) return false;
+        if (!TryGetBodySweepFraction(sweep, out float bodyFraction)) return true;
 
         float epsilon = motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
         float sweepLength = Vector2.Distance(sweep.Previous, sweep.Current);
         return sweepLength > 0f && guardFraction + epsilon / sweepLength < bodyFraction;
+    }
+
+    private bool TryGetGuardSweepFraction(AttackSweep2D sweep, out float fraction)
+    {
+        if ((!IsGuarding && !IsParrying) || defenseBodyCollider == null || !defenseBodyCollider.enabled)
+        {
+            fraction = 0f;
+            return false;
+        }
+        Bounds guard = defenseBodyCollider.bounds;
+        guard.center += Vector3.right * (isFacingRight ? guard.size.x : -guard.size.x);
+        guard.Expand(new Vector3(Mathf.Max(0f, sweep.HalfExtents.x) * 2f,
+            Mathf.Max(0f, sweep.HalfExtents.y) * 2f, 0f));
+        return TryGetSweepFraction(sweep.Previous, sweep.Current, guard, out fraction);
     }
 
     private static bool TryGetSweepFraction(Vector2 start, Vector2 end, Bounds bounds, out float fraction)

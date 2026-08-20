@@ -18,9 +18,10 @@ public class UnitBase : MonoBehaviour
     public uint UnitIdx { get; protected set; }
     public uint UnitId => UnitIdx;
     public CombatStats Stats => stats;
+    public Animator Animator => animator;
     public FactionType Faction => UnitData != null ? (FactionType)UnitData.Faction :
         (this is Player ? FactionType.PlayerAlly : this is Monster ? FactionType.Enemy : FactionType.None);
-    public virtual uint ActionGeneration => 0;
+    public virtual uint ActionGeneration => sharedActionGeneration;
 
 
     // =========================================================================
@@ -35,6 +36,8 @@ public class UnitBase : MonoBehaviour
     protected CapsuleCollider2D hitCollider;
     protected Rigidbody2D rb2d;
     protected KinematicMotor2D motor;
+    [SerializeField] private UnitAttackHitbox2D attackHitbox;
+    private uint sharedActionGeneration;
 
     protected bool isGrounded => motor != null ? motor.IsGrounded : false;
 
@@ -74,6 +77,7 @@ public class UnitBase : MonoBehaviour
     public virtual void SetFacingRight(bool isRight)
     {
         if (stats != null) stats.SetFacingRight(isRight);
+        attackHitbox?.SetFacingRight(isRight);
         if (spriteRenderer != null)
         {
             spriteRenderer.flipX = isRight;
@@ -90,7 +94,24 @@ public class UnitBase : MonoBehaviour
     public void SetGuarding(bool state) => stats?.SetGuarding(state);
     public void SetParrying(bool state) => stats?.SetParrying(state);
     public void SetDodging(bool state) => stats?.SetDodging(state);
-    public virtual bool IsActionGenerationCurrent(uint generation) => generation == 0 && isActiveAndEnabled;
+    public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
+
+    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick,
+        out CombatStats.AttackSweep2D sweep)
+    {
+        if (attackHitbox != null) return attackHitbox.TryOpen(sourceId, generation, tick, out sweep);
+        sweep = default;
+        Debug.LogError($"[UnitBase] Unit idx {UnitIdx} has no serialized attack hitbox; attack cancelled.");
+        return false;
+    }
+
+    public void CloseAttackHitbox() => attackHitbox?.Close();
+
+    public virtual void CancelAttackHitbox()
+    {
+        sharedActionGeneration++;
+        attackHitbox?.Close();
+    }
 
     /// <summary>
     /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
@@ -148,6 +169,7 @@ public class UnitBase : MonoBehaviour
         {
             animator = visualTransform.gameObject.AddComponent<Animator>();
         }
+        attackHitbox?.Bind(this);
     }
 
     protected virtual void updateGroundCheck()

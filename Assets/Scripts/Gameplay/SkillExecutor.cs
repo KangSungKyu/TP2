@@ -28,7 +28,7 @@ public class SkillExecutor : MonoBehaviour
     // 2. PUBLIC METHODS (PascalCase)
     // =========================================================================
 
-    public void ExecuteSkill(int skillId, Transform caster, Transform target)
+    public void ExecuteSkill(int skillId, UnitBase caster, UnitBase target)
     {
         var skillTable = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
         if (skillTable == null || !skillTable.TryGetSkill(skillId, out var skill))
@@ -48,7 +48,7 @@ public class SkillExecutor : MonoBehaviour
             return;
         }
 
-        if (Vector2.Distance(caster.position, target.position) > skill.Range)
+        if (caster == null || target == null || Vector2.Distance(caster.transform.position, target.transform.position) > skill.Range)
         {
             Debug.Log("SkillExecutor: 사거리를 벗어났습니다.");
             return;
@@ -126,29 +126,64 @@ public class SkillExecutor : MonoBehaviour
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
-        if (owner == null || target == null || table == null ||
+        if (owner == null || table == null ||
             !table.TryGetSkillData(skillId, out var skill) || skill.HitTimings == null || skill.HitTimings.Length == 0)
             return false;
 
         uint generation = owner.ActionGeneration;
-        int sourceId = GetInstanceID() ^ (int)skillId;
-        float previous = 0f;
-        for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
+        int sourceId = owner.GetInstanceID() ^ (int)skillId;
+        float elapsed = 0f;
+        try
         {
-            float timing = skill.HitTimings[(int)tick];
-            if (skill.ActiveDuration > 0f && timing > skill.ActiveDuration) break;
-            float delay = timing - previous;
-            previous = timing;
-            if (delay > 0f)
-                await UniTask.Delay(Mathf.RoundToInt(delay * 1000f), cancellationToken: cancellationToken);
-            if (!owner.IsActionGenerationCurrent(generation) || target == null || !target.isActiveAndEnabled) return true;
+            for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
+            {
+                float timing = Mathf.Max(0f, skill.HitTimings[(int)tick]);
+                if (skill.ActiveDuration > 0f && timing > skill.ActiveDuration) break;
+                while (elapsed + Mathf.Epsilon < timing)
+                {
+                    await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                    elapsed += Time.fixedDeltaTime;
+                }
+                if (!owner.IsActionGenerationCurrent(generation)) return true;
+                if (!owner.TryOpenAttackHitbox(sourceId, generation, tick, out CombatStats.AttackSweep2D sweep))
+                    return false;
+                ApplyAttackSweep(owner, target, patternDamage, sweep);
+            }
 
-            Vector2 start = owner.transform.position;
-            Vector2 end = target.transform.position;
-            var sweep = new CombatStats.AttackSweep2D(start, end, Vector2.zero, sourceId, generation, tick);
-            target.Stats?.TakeDamage(patternDamage, attacker: owner.Stats, attackOrigin: start, attackSweep: sweep);
+            while (elapsed + Mathf.Epsilon < skill.ActiveDuration)
+            {
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                elapsed += Time.fixedDeltaTime;
+                if (!owner.IsActionGenerationCurrent(generation)) return true;
+            }
+            return true;
         }
-        return true;
+        finally
+        {
+            owner.CloseAttackHitbox();
+        }
+    }
+
+    private static void ApplyAttackSweep(UnitBase owner, UnitBase target, float damage,
+        CombatStats.AttackSweep2D sweep)
+    {
+        if (target != null)
+        {
+            ApplyAttackSweepToTarget(owner, target, damage, sweep);
+            return;
+        }
+        if (!(owner is Player)) return;
+
+        var targets = new List<Monster>(Monster.ActiveMonsters);
+        foreach (Monster candidate in targets) ApplyAttackSweepToTarget(owner, candidate, damage, sweep);
+    }
+
+    private static void ApplyAttackSweepToTarget(UnitBase owner, UnitBase target, float damage,
+        CombatStats.AttackSweep2D sweep)
+    {
+        if (target == null || !target.isActiveAndEnabled || target.Stats == null || owner.Faction == target.Faction ||
+            !target.Stats.TryGetAttackSweepFraction(sweep, out _)) return;
+        target.Stats.TakeDamage(damage, attacker: owner.Stats, attackOrigin: sweep.Previous, attackSweep: sweep);
     }
 
     public bool TryPlaySkillAnimation(Animator animator, uint skillId)
@@ -291,7 +326,7 @@ public class SkillExecutor : MonoBehaviour
         activeSkillEffects.Clear();
     }
 
-    private async UniTaskVoid CastAsync(SkillInfo skill, Transform caster, Transform target, CancellationToken cancellationToken)
+    private async UniTaskVoid CastAsync(SkillInfo skill, UnitBase caster, UnitBase target, CancellationToken cancellationToken)
     {
         if (skill.CastTime > 0f)
         {
@@ -299,24 +334,15 @@ public class SkillExecutor : MonoBehaviour
             await UniTask.Delay(castMs, cancellationToken: cancellationToken);
         }
 
-        var anim = caster.GetComponent<Animator>();
+        var anim = caster.Animator;
         if (anim != null)
         {
             anim.Play(skill.AnimationClip);
         }
 
-        if (particlePrefab != null)
-        {
-            var particle = Instantiate(particlePrefab, caster.position, Quaternion.identity);
-            Destroy(particle, 1.5f);
-        }
-
-        var targetStats = target.GetComponent<CombatStats>();
-        if (targetStats != null)
-        {
-            float dmg = BaseDamage * skill.DamageMultiplier;
-            targetStats.TakeDamage(dmg, isGroundAttack: false, isJumped: false, attacker: stats);
-        }
+        SpawnSkillEffectFromDataAsync((uint)skill.Id, caster.transform.position).Forget();
+        await ExecuteSkillHitsAsync((uint)skill.Id, caster, target,
+            BaseDamage * skill.DamageMultiplier, cancellationToken);
 
         nextAvailable[skill.Id] = Time.time + skill.Cooldown;
     }

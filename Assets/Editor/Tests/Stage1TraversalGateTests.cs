@@ -13,6 +13,8 @@ namespace QA.Tests
 {
     public class Stage1TraversalGateTests
     {
+        private const string Room11080Path = "Assets/Prefabs/Rooms/Room_11080.prefab";
+
         private static readonly string[] RoomPaths =
         {
             "Assets/Prefabs/Rooms/Prefab_1040.prefab", "Assets/Prefabs/Rooms/Prefab_1041.prefab",
@@ -24,7 +26,7 @@ namespace QA.Tests
             "Assets/Prefabs/Rooms/Room_11073.prefab", "Assets/Prefabs/Rooms/Room_11074.prefab",
             "Assets/Prefabs/Rooms/Room_11075.prefab", "Assets/Prefabs/Rooms/Room_11076.prefab",
             "Assets/Prefabs/Rooms/Room_11077.prefab", "Assets/Prefabs/Rooms/Room_11078.prefab",
-            "Assets/Prefabs/Rooms/Room_11079.prefab"
+            "Assets/Prefabs/Rooms/Room_11079.prefab", Room11080Path
         };
 
         [UnityTest]
@@ -661,6 +663,66 @@ namespace QA.Tests
             }
         }
 
+        [Test]
+        public void Room11080_200Seeds_IsSelectableAndRespectsMaxUseTwo()
+        {
+            var chunks = new ChunkResourceDataTable();
+            var layout = new StageLayoutDataTable();
+            var encounters = new MonsterEncounterDataTable();
+            chunks.LoadData(System.IO.File.ReadAllText("Assets/Datas/ChunkResourceData.csv"));
+            layout.LoadData(System.IO.File.ReadAllText("Assets/Datas/StageLayoutData.csv"));
+            encounters.LoadData(System.IO.File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
+            Assert.IsTrue(layout.TryGetByStage(9001, out StageLayoutData stageLayout));
+            ChunkResourceData room = chunks.GetForStage(9001).Single(candidate => candidate.ResourceIdx == 1080u);
+            Assert.AreEqual(2, room.MaxUsePerRun);
+
+            int selected = 0;
+            for (uint seed = 0; seed < 200; seed++)
+            {
+                StageRunData run = Stage1RunGenerator.Generate(seed, stageLayout,
+                    chunks.GetForStage(9001), encounters.GetForStage(9001));
+                Assert.IsTrue(Stage1RunGenerator.Validate(run), $"seed {seed}");
+                int count = run.Slots.Count(slot => slot.ChunkResourceIdx == 1080u);
+                Assert.LessOrEqual(count, room.MaxUsePerRun, $"seed {seed}");
+                selected += count;
+            }
+            Assert.Greater(selected, 0, "ResourceIdx 1080 was never selected across 200 seeds.");
+        }
+
+        [Test]
+        public async System.Threading.Tasks.Task Room11080_LoadsThroughResourceManagerByUintFk()
+        {
+            var resources = new ResourceDataTable();
+            resources.LoadData(System.IO.File.ReadAllText("Assets/Datas/ResourceData.csv"));
+            Assert.IsTrue(resources.TryGetResource(1080u, out ResourceData resource));
+            Assert.AreEqual("Room_11080", resource.Path);
+            var managerObject = new GameObject("Room11080ResourceManager_QA");
+            var manager = managerObject.AddComponent<ResourceManager>();
+            GameObject loaded = null;
+            try
+            {
+                loaded = await manager.InstantiateAsyncTask(resource.Path);
+                Assert.NotNull(loaded, "uint FK 1080 -> Room_11080");
+            }
+            finally
+            {
+                if (loaded != null) manager.ReleaseInstance(loaded);
+                Object.DestroyImmediate(managerObject);
+            }
+        }
+
+        [Test]
+        public void Room11080_AllOrderedSocketPairs_ReplayWithActualUnit3001Motor()
+        {
+            Room_AllOrderedSocketPairs_ReplayWithActualUnit3001Motor(Room11080Path);
+        }
+
+        [Test]
+        public void Room11080_MonsterMotor_LongRunStaysInsideAuthoritativeBounds()
+        {
+            Room_MonsterMotor_LongRunStaysInsideAuthoritativeBounds(Room11080Path);
+        }
+
         [TestCaseSource(nameof(RoomPaths))]
         public void Room_AllOrderedSocketPairs_ReplayWithActualUnit3001Motor(string roomPath)
         {
@@ -720,6 +782,17 @@ namespace QA.Tests
                         $"{roomPath} {from.Direction}->{to.Direction}; last={player.transform.position}");
                     Assert.GreaterOrEqual(playerCollider.bounds.min.y, -0.05f,
                         $"{roomPath} {from.Direction}->{to.Direction}; fell out at {player.transform.position}");
+                    Physics2D.SyncTransforms();
+                    foreach (Collider2D obstacle in room.GetComponentsInChildren<Collider2D>(true)
+                        .Where(candidate => !candidate.isTrigger))
+                        Assert.IsFalse(Physics2D.Distance(playerCollider, obstacle).isOverlapped,
+                            $"{roomPath} {from.Direction}->{to.Direction}; arrival penetration with {obstacle.name}");
+                    var cameraBounds = room.transform.Find("CameraBounds")?.GetComponent<BoxCollider2D>();
+                    Assert.NotNull(cameraBounds, roomPath);
+                    Assert.GreaterOrEqual(playerCollider.bounds.min.x, cameraBounds.bounds.min.x - 0.01f, roomPath);
+                    Assert.LessOrEqual(playerCollider.bounds.max.x, cameraBounds.bounds.max.x + 0.01f, roomPath);
+                    Assert.GreaterOrEqual(playerCollider.bounds.min.y, cameraBounds.bounds.min.y - 0.01f, roomPath);
+                    Assert.LessOrEqual(playerCollider.bounds.max.y, cameraBounds.bounds.max.y + 0.01f, roomPath);
                     directedAssertions++;
                 }
                 Assert.AreEqual(12, directedAssertions, roomPath);
@@ -764,7 +837,7 @@ namespace QA.Tests
                     if (previous[i] >= 0) continue;
                     float dx = Mathf.Abs(nodes[i].x - nodes[current].x);
                     float dy = nodes[i].y - nodes[current].y;
-                    if (dx > 4f || dy > 2.25f || dy < -6f) continue;
+                    if (dx > 4f || dy > ModuleChunkBuilder.GetPhaseAPlayerMaxRise() || dy < -6f) continue;
                     previous[i] = current;
                     queue.Enqueue(i);
                 }

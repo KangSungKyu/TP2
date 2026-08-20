@@ -114,7 +114,7 @@ public static class Stage1RunGenerator
             slots.Add(new ChunkSlotData
             {
                 SlotIdx = (byte)i,
-                ChunkResourceIdx = i == 0 ? 1040u : 1041u,
+                ChunkResourceIdx = i == 0 ? 1040u : i == bossSlot ? 1063u : 1041u,
                 ConnectionMask = mask,
                 MonsterUnitIdxList = CreateMonsterAssignment(seed, (byte)i, i == 0 || i == bossSlot),
                 Visited = i == 0
@@ -155,7 +155,7 @@ public static class Stage1RunGenerator
                 foreach (ChunkResourceData chunk in chunks)
                 {
                     resourceUseCounts.TryGetValue(chunk.ResourceIdx, out int used);
-                    if (chunk.MaxUsePerRun > 0 && used < chunk.MaxUsePerRun &&
+                    if (chunk.ResourceIdx != 1063u && chunk.MaxUsePerRun > 0 && used < chunk.MaxUsePerRun &&
                         (chunk.SupportedConnectionMask & slot.ConnectionMask) == slot.ConnectionMask)
                         validChunks.Add(chunk);
                 }
@@ -668,6 +668,7 @@ public class StageManager : Singleton<StageManager>
 
     public void CleanupActiveChunksAndEffects()
     {
+        Player.Instance?.CancelAttackHitbox();
         for (int i = ActiveChunkInstances.Count - 1; i >= 0; i--)
         {
             var chunk = ActiveChunkInstances[i];

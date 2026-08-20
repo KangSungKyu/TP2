@@ -84,8 +84,10 @@ public sealed class IntraRoomPortal : MonoBehaviour
 
             UnitPoolManager.Instance?.DespawnAllProjectiles();
             EffectPoolManager.Instance?.ClearAllActiveEffects();
+            player.CancelAttackHitbox();
             player.Motor.Teleport(destinationEndpoint.position);
             player.Motor.SetGroundNormal(Vector2.up);
+            MetroidvaniaCamera2D.Active?.BindAndSnap(player.transform);
             return true;
         }
         finally

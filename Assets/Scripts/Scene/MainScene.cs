@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class MainScene : MonoBehaviour
 {
+#if UNITY_EDITOR
+    private const bool UsePhaseA1x1Playtest = true;
+#endif
     [SerializeField] private ProductionMainHUD productionHud;
     [SerializeField] private uint warningTextIdx;
 
@@ -16,6 +19,16 @@ public class MainScene : MonoBehaviour
         await this.ensureManagersReadyAsync();
 
         // 1. 1스테이지(9001) 첫 룸 청크(Tilemap_Room_Stage1_Entry) 자동 비동기 전개 및 빌드
+#if UNITY_EDITOR
+        if (UsePhaseA1x1Playtest)
+        {
+            TilemapStageBuilder builder = TilemapStageBuilder.Instance;
+            if (builder == null) builder = new GameObject("TilemapStageBuilder").AddComponent<TilemapStageBuilder>();
+            builder.DevelopmentPrefabOverride = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x1.prefab");
+            builder.DevelopmentMonsterUnitIdx = 3104u;
+        }
+#endif
         if (StageManager.Instance != null)
         {
             Debug.Log("<color=cyan><b>[MainScene] StageManager를 통해 1스테이지(9001) 룸 청크 자동 로딩 시작...</b></color>");

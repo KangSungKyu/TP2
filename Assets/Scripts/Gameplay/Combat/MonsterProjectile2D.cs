@@ -69,7 +69,7 @@ namespace Gameplay.Combat
                 float sweptFraction = float.MaxValue;
                 Player player = Player.Instance;
                 if (player != null && player.Stats != null && IsHostile(Owner, player) &&
-                    player.Stats.TryGetBodySweepFraction(intendedSweep, out float playerFraction))
+                    player.Stats.TryGetAttackSweepFraction(intendedSweep, out float playerFraction))
                 {
                     sweptTarget = player;
                     sweptFraction = playerFraction;
@@ -77,7 +77,7 @@ namespace Gameplay.Combat
                 foreach (Monster monster in Monster.ActiveMonsters)
                 {
                     if (monster == null || monster.Stats == null || !IsHostile(Owner, monster) ||
-                        !monster.Stats.TryGetBodySweepFraction(intendedSweep, out float monsterFraction) ||
+                        !monster.Stats.TryGetAttackSweepFraction(intendedSweep, out float monsterFraction) ||
                         monsterFraction >= sweptFraction) continue;
                     sweptTarget = monster;
                     sweptFraction = monsterFraction;

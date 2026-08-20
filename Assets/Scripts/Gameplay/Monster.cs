@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class Monster : UnitBase
 {
+    public enum LeashState { Idle, Combat, Returning }
     public readonly struct AttackTelegraph
     {
         public readonly Monster Source;
@@ -57,8 +58,18 @@ public class Monster : UnitBase
     private uint actionGeneration;
     private uint telegraphGeneration;
     private bool telegraphActive;
+    private Vector3 spawnOrigin;
+    private Bounds movementBounds;
+    private bool hasSpawnArea;
+    private bool arenaOnly;
+    private bool returnTeleported;
+    private float returnStartedAt;
+    private uint spawnRoomGeneration;
+    private uint spawnZoneGeneration;
     public static int ActiveAttackTokens => activeAttackTokens;
     public override uint ActionGeneration => actionGeneration;
+    public LeashState CurrentLeashState { get; private set; }
+    public Vector3 SpawnOrigin => spawnOrigin;
 
 
     // =========================================================================
@@ -83,6 +94,22 @@ public class Monster : UnitBase
         if (motor != null) motor.SetHorizontalMovementBounds(bounds);
     }
 
+    public bool ConfigureSpawnArea(Vector3 origin, Bounds bounds, bool bossArena)
+    {
+        if (!bounds.Contains(origin)) return false;
+        spawnOrigin = origin;
+        movementBounds = bounds;
+        hasSpawnArea = true;
+        arenaOnly = bossArena;
+        returnTeleported = false;
+        CurrentLeashState = LeashState.Idle;
+        StageManager stage = StageManager.Instance;
+        spawnRoomGeneration = stage != null ? stage.RoomGeneration : 0u;
+        spawnZoneGeneration = stage != null ? stage.ZoneGeneration : 0u;
+        SetHorizontalMovementBounds(bounds);
+        return true;
+    }
+
 
     // =========================================================================
     // 4. PROTECTED & PRIVATE METHODS
@@ -100,6 +127,7 @@ public class Monster : UnitBase
 
     protected virtual void OnDisable()
     {
+        CancelAttackHitbox();
         EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
@@ -139,6 +167,21 @@ public class Monster : UnitBase
         }
     }
 
+    protected virtual void FixedUpdate()
+    {
+        if (!hasSpawnArea || deathSequenceActive || stats == null || stats.IsDead) return;
+        StageManager stage = StageManager.Instance;
+        Player player = Player.Instance;
+        bool lifecycleChanged = stage != null &&
+            (stage.RoomGeneration != spawnRoomGeneration || stage.ZoneGeneration != spawnZoneGeneration);
+        bool playerUnavailable = player == null || !player.isActiveAndEnabled || player.Stats == null ||
+            player.Stats.IsDead || !movementBounds.Contains(player.transform.position);
+        bool outsideSpawnArea = !movementBounds.Contains(transform.position);
+        if (outsideSpawnArea || CurrentLeashState == LeashState.Combat && (lifecycleChanged || playerUnavailable))
+            BeginReturn();
+        if (CurrentLeashState == LeashState.Returning) UpdateReturn();
+    }
+
     public virtual void OnDeath()
     {
         Die();
@@ -148,6 +191,7 @@ public class Monster : UnitBase
     {
         if (deathSequenceActive) return;
         deathSequenceActive = true;
+        CancelAttackHitbox();
         EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
@@ -196,7 +240,10 @@ public class Monster : UnitBase
     public void ResetAfterDeath(Vector3 position)
     {
         actionGeneration++;
+        CloseAttackHitbox();
         deathSequenceActive = false;
+        hasSpawnArea = false;
+        CurrentLeashState = LeashState.Idle;
         if (spriteRenderer != null)
         {
             Color color = spriteRenderer.color;
@@ -255,6 +302,15 @@ public class Monster : UnitBase
             }
 
             if (playerTarget == null) continue;
+
+            if (hasSpawnArea)
+            {
+                Player player = Player.Instance;
+                if (CurrentLeashState == LeashState.Returning || player == null ||
+                    !player.isActiveAndEnabled || player.Stats == null || player.Stats.IsDead ||
+                    !movementBounds.Contains(player.transform.position)) continue;
+                CurrentLeashState = LeashState.Combat;
+            }
 
             if (Patterns == null || Patterns.Count == 0)
             {
@@ -459,8 +515,7 @@ public class Monster : UnitBase
         }
         else if (skillExecutor != null)
         {
-            Color effectColor = new Color(1f, 0f, 0f, 0.4f);
-            skillExecutor.SpawnSkillEffect(pattern.AnimClipName, spawnPos, new Vector2(2.0f, 2.5f), pattern.Damage, FallbackAttackEffectDuration, FactionType.Enemy, effectColor);
+            skillExecutor.SpawnSkillEffectFromDataAsync(patternSkillId, spawnPos).Forget();
             timedAttack = await skillExecutor.ExecuteSkillHitsAsync(
                 patternSkillId, this, playerTarget != null ? playerTarget.GetComponent<UnitBase>() : null,
                 pattern.Damage, cancellationToken);
@@ -472,15 +527,8 @@ public class Monster : UnitBase
             }
         }
 
-        if (!timedAttack && pattern.ProjectileResourceIdx == 0 && playerTarget != null && CanAct(generation))
-        {
-            var pStats = playerTarget.GetComponent<CombatStats>();
-            if (pStats != null && Vector3.Distance(transform.position, playerTarget.position) <= (attackRange + 0.5f))
-            {
-                pStats.TakeDamage(pattern.Damage, isGroundAttack: false, isJumped: false, attacker: stats);
-            }
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-        }
+        if (!timedAttack && pattern.ProjectileResourceIdx == 0)
+            Debug.LogError($"[Monster] Unit idx {UnitIdx} has no valid attack hitbox window; attack cancelled.");
 
         EndAttackTelegraph(generation);
 
@@ -525,12 +573,12 @@ public class Monster : UnitBase
             await UniTask.Delay(Mathf.RoundToInt(AttackTelegraphLeadSeconds * 1000f),
                 cancellationToken: cancellationToken);
             if (!CanAct(generation)) return;
-            var pStats = playerTarget.GetComponent<CombatStats>();
-            if (pStats != null && CanAct(generation))
-            {
-                pStats.TakeDamage(10f, isGroundAttack: false, isJumped: false, attacker: stats);
-            }
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            if (skillExecutor == null)
+                Debug.LogError($"[Monster] Unit idx {UnitIdx} has no SkillExecutor; attack cancelled.");
+            else
+                await skillExecutor.ExecuteSkillHitsAsync(
+                    Util.CreateDataIdx(DataTableType.Skill, 1), this,
+                    playerTarget != null ? playerTarget.GetComponent<UnitBase>() : null, 10f, cancellationToken);
             EndAttackTelegraph(generation);
             await UniTask.Delay(1500, cancellationToken: cancellationToken);
             }
@@ -579,10 +627,68 @@ public class Monster : UnitBase
     }
 
     private bool CanAct(uint generation) => generation == actionGeneration && !deathSequenceActive &&
-        stats != null && !stats.IsDead && !stats.IsGroggy && isActiveAndEnabled;
+        CurrentLeashState != LeashState.Returning && stats != null && !stats.IsDead &&
+        !stats.IsGroggy && isActiveAndEnabled;
+
+    private void BeginReturn()
+    {
+        if (CurrentLeashState == LeashState.Returning) return;
+        CancelAttackHitbox();
+        EndAttackTelegraph(actionGeneration);
+        actionGeneration++;
+        ReleaseAttackToken();
+        if (skillExecutor != null) skillExecutor.CancelActiveEffects();
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
+        if (motor != null)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            motor.SetTargetVelocityX(0f);
+        }
+        CurrentLeashState = LeashState.Returning;
+        returnTeleported = false;
+        returnStartedAt = Time.time;
+        SetAnimState(1);
+    }
+
+    private void UpdateReturn()
+    {
+        if (!hasSpawnArea || !movementBounds.Contains(spawnOrigin))
+        {
+            if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnUnit(this);
+            else gameObject.SetActive(false);
+            return;
+        }
+        float moveSpeed = UnitData != null && UnitData.MoveSpeed > 0f ? UnitData.MoveSpeed : 0f;
+        float stopDistance = (motor != null ? motor.SkinWidth : 0f) + moveSpeed * Time.fixedDeltaTime;
+        float deltaX = spawnOrigin.x - transform.position.x;
+        bool reached = Mathf.Abs(deltaX) <= stopDistance &&
+            Mathf.Abs(spawnOrigin.y - transform.position.y) <= stopDistance;
+        bool blocked = motor == null || !movementBounds.Contains(transform.position) ||
+            (deltaX < 0f && motor.IsWalledLeft) || (deltaX > 0f && motor.IsWalledRight);
+        float returnTimeout = moveSpeed > 0f ? movementBounds.size.x / moveSpeed : 0f;
+        if (!reached && (blocked || returnTimeout <= 0f || Time.time - returnStartedAt >= returnTimeout) && !returnTeleported)
+        {
+            motor?.Teleport(spawnOrigin);
+            returnTeleported = true;
+            reached = true;
+        }
+        if (!reached)
+        {
+            motor.SetTargetVelocityX(Mathf.Sign(deltaX) * moveSpeed);
+            SetFacingRight(deltaX >= 0f);
+            SetAnimState(2);
+            return;
+        }
+        motor?.SetTargetVelocityX(0f);
+        if (!arenaOnly) stats.InitStats();
+        CurrentLeashState = LeashState.Idle;
+        returnTeleported = false;
+        SetAnimState(1);
+    }
 
     private void OnGroggyStarted()
     {
+        CancelAttackHitbox();
         EndAttackTelegraph(actionGeneration);
         actionGeneration++;
         ReleaseAttackToken();

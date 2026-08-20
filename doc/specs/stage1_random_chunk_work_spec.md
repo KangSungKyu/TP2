@@ -25,7 +25,7 @@
 
 | 필드 | 형식 | Stage 1 값 |
 |---|---|---:|
-| `idx` | `uint` | `9101` |
+| `idx` | `uint` | `12001` |
 | `stagedataidx` | `uint` | `9001` |
 | `minrows` | `byte` | `3` |
 | `maxrows` | `byte` | `4` |
@@ -106,7 +106,7 @@ ChunkSlotData
 
 ### 3.3 생성기
 
-1. `StageData.idx 9001`과 `StageLayoutData.idx 9101`을 검증한다.
+1. `StageData.idx 9001`과 `StageLayoutData.idx 12001`을 검증한다.
 2. 시드로 `3×4` 또는 `4×3`을 결정한다.
 3. 외곽 Start와 거리 `3–4`의 Boss Gate를 배치한다.
 4. 두 셀 사이 직행 경로를 만든다.
@@ -262,9 +262,87 @@ P0 8종으로 1차 플레이 테스트가 가능하다. P1은 경로 다양성 �
 - `BossPatternData.csv`가 런타임 데이터 목록에 포함되지 않는다.
 - 중복 패턴 `idx`가 발견되면 오류를 기록하고 중복 레코드를 사용하지 않는다.
 - 청크 재방문 시 몬스터와 보상이 중복 생성되지 않는다.
-- Boss 승리 보상과 다음 Stage 전환이 중복 실행되지 않는다.
+- Boss 승리 보상과 HubScene 복귀가 중복 실행되지 않는다.
 - 15 FPS에서 패링 `0.134초`, 회피 무적 `0.30초`가 유지된다.
 
+## 8. Stage 1 구성 마감 감사 (2026-08-19)
+
+### 8.1 실제 사용 수량·역할
+
+- 생성기는 `3×4/4×3`에서 항상 활성 슬롯 `10개`를 만들며 계약 범위 `9–11` 안이다.
+- 한 런은 그래프 슬롯 `10개`(`Entry 1 + BossGate 1 + 중간 8`)와 그래프 외 Boss Room `1042` 1개를 사용한다.
+- CSV 후보 풀은 현재 `17개`: Combat `9`, Elite `1`, Reward `2`, Rest `2`, Treasure `2`, BossGate `1`; 현 생성기는 역할 필터 없이 중간 `8개`를 추첨하므로 BossGate `1063`이 중간 슬롯에 잘못 선택될 수 있다.
+- `1×1/1×2/2×1` Phase A 비교 Prefab은 Development 전용이며 이번 마감에서 신규 런타임 idx·module 재생성을 요구하지 않는다.
+
+### 8.2 완료·누락·불필요 판정
+
+| 판정 | 항목 | 근거·마감 조건 |
+|---|---|---|
+| 완료(정적) | `uint` Stage/Chunk/Encounter 테이블 | `9001 → 12001`, `11050–11080`, `13001–13005` 파싱 경로 존재 |
+| 완료(정적) | 일반 Door 그래프 이동·Boss 사망 후 Hub 복귀 | slot/mask 이동과 `3201 → CompleteStage1Async → HubScene` 경로 존재 |
+| 부분 | Camera·SpawnArea·same-room Portal cleanup | dirty 구현과 단위 테스트는 존재하나 현재 turn 실행 증거 없음 |
+| 부분 | Production HUD | 이벤트 기반 Player/Monster/Boss/진행 바인딩은 존재하나 종단 전환 후 listener·Boss HUD 정리 실행 증거 없음 |
+| 부분 | `1080 → Room_11080` | ResourceData·ChunkResourceData·Addressables가 dirty 상태이며 CI 통합 전 |
+| 누락(P0) | BossGate 리소스 배정 | 생성기의 BossGate 슬롯이 `1063`이 아니라 초기 fallback `1041`로 유지됨 |
+| 누락(P0) | Boss 전용 Door | BossGate 슬롯에서 `1042`를 대상으로 하는 Door 구성 경로가 없음 |
+| 누락(P0) | 실제 종단 PlayMode | Entry→중간 Door→BossGate→`1042`→`3201` 처치→Hub 및 cleanup 단일 증거 없음 |
+| 불필요 | Stage 1 함정·Stage 2/P1·신규 module·신규 manager | Stage 1 `hazardCount=0`; 현재 완주 경로와 무관 |
+| 별도 공정 | 공격 주체별 animated hitbox | 이번 마감 승인 게이트에서 제외 |
+
+### 8.3 필수 `uint idx` 연결
+
+| 테이블 | PK/값 | 필수 연결 |
+|---|---|---|
+| StageData | `9001` | Entry `1040`, Boss `1042` |
+| StageLayoutData | `12001` | Stage `9001`, Boss Room `1042`, 활성 `9–11` |
+| ResourceData | `1040/1041/1042` | Entry/Fallback/Boss Prefab |
+| ResourceData | `1050/1051/1052/1053/1056/1057/1061/1063` | 승인 P0 Combat/Reward/Rest/Treasure/BossGate |
+| ResourceData | `1072–1080` | 현행 확장 후보; `1080`은 CI 통합 전 dirty |
+| ChunkResourceData | `11050–11080` | 각 `resourceidx 1050–1080`의 존재 행만 사용 |
+| MonsterEncounterData | `13001–13005` | Stage `9001`, Unit `3101–3106`; Combat/Elite에만 배정 |
+| Unit/Monster | `3201`, `5201`, `6100–6103` | Boss Unit→MonsterBase→MonsterPattern 연결 |
+| Door/Portal Prefab | 미할당 | 직접 문자열 `Portal_Gate` 로드를 제거하려면 충돌 없는 `ResourceData.idx` 1개를 데이터 담당자가 선할당해야 하며 임의 번호 지정 금지 |
+
+### 8.4 상태 전이 승인선
+
+```text
+Hub → Stage 9001 → Entry 1040 → connected slot Door → BossGate slot/resource 1063
+→ grounded Up/W → Boss Room 1042 → Boss 3201 spawn → death
+→ effects/projectiles/monsters/chunk/camera listener cleanup → HubScene → completion lock
+```
+
+### 8.5 리소스작업자 순차 발주서(30줄 이하)
+
+1. 기존 `1040`, `1042`, `1050–1080` Prefab·meta·Addressables 참조를 감사하고 원본을 재생성하지 않는다.
+2. BossGate 후보 `ChunkResourceData.idx 11063 → ResourceData.idx 1063`의 Prefab·socket·CameraBounds를 검증한다.
+3. BossGate 내부에 `1042` 목적 전용 Door 배치가 가능한 authored landing/headroom을 확인한다.
+4. `Room_11080`의 `1080/11080/Addressables` 3중 연결을 검증하되 CI 승인 전 추가 후보를 만들지 않는다.
+5. Phase A 3규격은 Development 비교 자산으로 유지하고 Stage 1 후보 풀에 신규 idx를 추가하지 않는다.
+6. 신규 module 의존·함정·Stage 2 리소스·animated hitbox 제작은 수행하지 않는다.
+7. Portal_Gate의 ResourceData 등록이 필요하면 중앙 idx 현황 확인 후 충돌 없는 `uint` 1개만 PM 승인 요청한다.
+8. 산출은 참조 유효/누락표이며 CSV·Prefab 변경은 메인 계약 확정 후 별도 작업으로 넘긴다.
+
+### 8.6 메인프로그래머 순차 발주서(30줄 이하)
+
+1. `Stage1RunGenerator`가 BossGate 슬롯에 기존 `ResourceData.idx 1063`을 고정 배정하고 encounter를 빈 배열로 유지하며, 일반 중간 추첨에서 `ChunkType BossGate`를 제외한다.
+2. BossGate의 전용 Door만 `TargetRoomResourceIdx=1042`로 구성하며 일반 연결 Door와 혼용하지 않는다.
+3. BossGate 입장은 방문·처치·BuildPower로 잠그지 않고 현재 슬롯 일치와 grounded Up/W만 검증한다.
+4. 청크 전환은 Door, 같은 청크 zone 전환은 `IntraRoomPortal`로 유지하고 모두 `uint` FK로 라우팅한다.
+5. 전환 시작 시 Monster action generation·공격 토큰·effect/projectile을 정리하고 다음 room CameraBounds를 fade-in 전에 bind/snap한다.
+6. SpawnArea 이탈·Portal zone generation 변경·Door room generation 변경의 cleanup을 동일 전환에서 중복 없이 검증한다.
+7. Boss `3201` 사망 후 Hub 성공 시에만 completion lock을 소비하고 실패 시 재시도 가능 상태를 보존한다.
+8. `ResolveAddressableKey`·`Portal_Gate` 직접 문자열 fallback은 ResourceData uint 경로로 축소하되 신규 manager를 만들지 않는다.
+9. Entry→중간→BossGate→Boss→Hub PlayMode 1개를 최종 게이트로 만들고 15/60 FPS에서 각각 실행한다.
+10. Assert: active slots `10`, BossGate resource `1063`, Boss `1042/3201`, Stage 1 hazard `0`, 전환 후 잔존 객체·listener·token `0`.
+
+### 8.7 결합 QA 게이트
+
+- Door 전환마다 Camera target·bounds·Player safe landing이 fade-in 전에 일치한다.
+- same-room Portal 전환은 room bounds를 유지하고 ZoneGeneration만 증가하며 effect/projectile 잔존이 `0`이다.
+- SpawnArea의 RoomGeneration/ZoneGeneration 변경 시 일반 Monster가 공격을 중단하고 이전 공간에 잔존하지 않는다.
+- BossGate `1063` 도착 전 `1042` 로드는 거부되고, 도착 후 전용 Door에서는 승인된다.
+- 테스트 미실행·timeout·`0/0`은 PASS로 기록하지 않는다.
+
 ### 🧠 [GameDesigner 자율 회고]
-- 기획 무결성 비판: 패턴 테이블을 통합해 중복 로더 문제는 제거하지만, 보스 전용 조건과 선택 로직이 공용 패턴 스키마로 표현 가능한지 구현 검증이 필요하다.
-- 차기 방어 지침: 가론 `6100–6103`을 공용 로더로 먼저 검증하고, 공용 필드로 표현할 수 없는 보스 조건이 확인될 때만 `MonsterPatternData`에 최소 필드를 추가한다.
+- 기획 무결성 비판: 단위 계약은 다수 존재하지만 BossGate `1063` 배정과 `1042` 전용 Door가 분리되어 있어 정적 테스트만 통과하고 종단 흐름이 끊길 수 있다.
+- 차기 방어 지침: 신규 기능을 추가하기 전에 BossGate resource·Door target·Boss death·Hub cleanup을 하나의 PlayMode 경로로 묶고, 미실행 결과는 승인하지 않는다.

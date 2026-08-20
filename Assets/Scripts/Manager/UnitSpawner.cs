@@ -56,6 +56,15 @@ public class UnitSpawner : Singleton<UnitSpawner>
             return;
         }
 
+#if UNITY_EDITOR
+        if (zones.Count == 1 && zones[0].MonsterId != 0u)
+        {
+            SpawnPointMarker playtestMarker = zones[0];
+            playtestMarker.EnableSpawn = false;
+            SpawnMonsterUnit(playtestMarker.MonsterId, playtestMarker.transform.position, false, movementBounds);
+            return;
+        }
+#endif
         uint[] encounter = GetCurrentEncounter(zones);
         if (encounter.Length == 0) return;
         if (!ValidateSpawnZones(roomInstance, zones, playerMarker != null ? playerMarker.transform : null, out string error))
@@ -194,12 +203,22 @@ public class UnitSpawner : Singleton<UnitSpawner>
             Debug.LogError("[UnitSpawner] Spawn marker has no validated uint unit idx.");
             return;
         }
+        if (!movementBounds.HasValue || !movementBounds.Value.Contains(position))
+        {
+            Debug.LogError($"[UnitSpawner] Spawn idx {unitIdx} has no valid CameraBounds containing its origin.");
+            return;
+        }
         if (UnitPoolManager.Instance == null) return;
         UnitPoolManager.Instance.SpawnMonsterAsync(unitIdx, position).ContinueWith(monster =>
         {
             if (monster != null)
             {
-                if (movementBounds.HasValue) monster.SetHorizontalMovementBounds(movementBounds.Value);
+                if (!monster.ConfigureSpawnArea(position, movementBounds.Value, isBoss))
+                {
+                    Debug.LogError($"[UnitSpawner] SpawnArea rejected unit idx {unitIdx}.");
+                    UnitPoolManager.Instance.DespawnUnit(monster);
+                    return;
+                }
                 ConfigureMonsterUIAndRewards(monster, isBoss);
             }
         }).Forget();

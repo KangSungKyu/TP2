@@ -48,6 +48,237 @@ namespace QA.Tests
             Object.DestroyImmediate(attackerObj);
         }
 
+        [Test]
+        public void Test_CommonAttackHitbox_WindowFacingAndCancellation()
+        {
+            GameObject ownerObject = new GameObject("AttackHitboxOwner_QA");
+            GameObject hitboxObject = new GameObject("WeaponHitbox_QA");
+            hitboxObject.transform.SetParent(ownerObject.transform, false);
+            try
+            {
+                UnitBase owner = ownerObject.AddComponent<UnitBase>();
+                BoxCollider2D collider = hitboxObject.AddComponent<BoxCollider2D>();
+                collider.isTrigger = true;
+                collider.size = new Vector2(2f, 1f);
+                SpriteRenderer debugSprite = hitboxObject.AddComponent<SpriteRenderer>();
+                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
+                typeof(UnitAttackHitbox2D).GetField("attackCollider", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.SetValue(hitbox, collider);
+                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.SetValue(hitbox, hitboxObject.transform);
+                typeof(UnitAttackHitbox2D).GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.SetValue(hitbox, debugSprite);
+                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.SetValue(owner, hitbox);
+                hitbox.Bind(owner);
+
+                owner.SetFacingRight(false);
+                Assert.Less(hitboxObject.transform.localScale.x, 0f);
+                Assert.IsTrue(owner.TryOpenAttackHitbox(11, owner.ActionGeneration, 0, out var sweep));
+                Assert.IsTrue(hitbox.IsWindowActive);
+                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
+                Assert.IsTrue(debugSprite.enabled);
+                Assert.AreEqual(new Vector2(1f, 0.5f), sweep.HalfExtents);
+
+                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
+                owner.CloseAttackHitbox();
+                Assert.IsTrue(owner.TryOpenAttackHitbox(12, owner.ActionGeneration, 0, out _));
+                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Global OFF must suppress the active debug state.");
+                Assert.IsFalse(debugSprite.enabled, "Global OFF must keep the sprite renderer disabled when the window reopens.");
+                Assert.IsTrue(hitbox.IsWindowActive);
+
+                uint generation = owner.ActionGeneration;
+                owner.CancelAttackHitbox();
+                Assert.IsFalse(hitbox.IsWindowActive, "Cancel must close the attack window.");
+                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Cancel must clear the debug state.");
+                Assert.IsFalse(debugSprite.enabled, "Cancel must disable the sprite renderer.");
+                Assert.IsFalse(owner.IsActionGenerationCurrent(generation));
+
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                Assert.IsTrue(owner.TryOpenAttackHitbox(13, owner.ActionGeneration, 0, out _));
+                Assert.IsTrue(debugSprite.enabled);
+                typeof(UnitAttackHitbox2D).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.Invoke(hitbox, null);
+                Assert.IsFalse(debugSprite.enabled, "Disable must not leave a pooled sprite renderer enabled.");
+                Assert.IsFalse(collider.enabled, "Disable must close the attack collider.");
+                owner.CloseAttackHitbox();
+                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Re-enable must not restore a closed window.");
+                Assert.IsFalse(debugSprite.enabled, "Re-enable must not restore stale visualization.");
+            }
+            finally
+            {
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                Object.DestroyImmediate(ownerObject);
+            }
+        }
+
+        [Test]
+        public void Test_RepeatedAttackGenerationAndGuardSpriteContracts()
+        {
+            GameObject attackerObject = new GameObject("RepeatedAttack_Attacker_QA");
+            GameObject hitboxObject = new GameObject("RepeatedAttack_Hitbox_QA");
+            GameObject targetObject = new GameObject("RepeatedAttack_Target_QA");
+            hitboxObject.transform.SetParent(attackerObject.transform, false);
+            try
+            {
+                UnitBase attacker = attackerObject.AddComponent<UnitBase>();
+                BoxCollider2D attackCollider = hitboxObject.AddComponent<BoxCollider2D>();
+                attackCollider.isTrigger = true;
+                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
+                typeof(UnitAttackHitbox2D).GetField("attackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, attackCollider);
+                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, hitboxObject.transform);
+                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(attacker, hitbox);
+                hitbox.Bind(attacker);
+
+                CombatStats target = targetObject.AddComponent<CombatStats>();
+                target.InitStats();
+                BoxCollider2D body = targetObject.AddComponent<BoxCollider2D>();
+                target.SetDefenseBodyCollider(body);
+                SpriteRenderer guardSprite = targetObject.AddComponent<SpriteRenderer>();
+                guardSprite.transform.localPosition = Vector3.right;
+                typeof(CombatStats).GetField("debugGuardSprite", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(target, guardSprite);
+                target.SetGuarding(false);
+
+                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack1));
+                Assert.IsFalse(target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack1));
+                Assert.AreEqual(90f, target.CurrentHp);
+                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack1);
+                Assert.AreEqual(90f, target.CurrentHp, "One attack tick must damage the same target once.");
+
+                attacker.CloseAttackHitbox();
+                attacker.CancelAttackHitbox();
+                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack2));
+                Assert.AreNotEqual(attack1.Generation, attack2.Generation);
+                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack2);
+                Assert.AreEqual(80f, target.CurrentHp, "A new generation must damage the target again.");
+
+                attacker.CancelAttackHitbox();
+                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack3));
+                Assert.AreNotEqual(attack2.Generation, attack3.Generation);
+                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack3);
+                Assert.AreEqual(70f, target.CurrentHp, "Cancel must not poison the following generation.");
+
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                target.SetFacingRight(false);
+                target.SetGuarding(true);
+                Assert.IsTrue(guardSprite.enabled);
+                Assert.Less(guardSprite.transform.localPosition.x, 0f);
+                target.SetParrying(true);
+                Assert.Greater(guardSprite.color.g, guardSprite.color.b * 0.9f);
+                target.SetParrying(false);
+                target.SetGuarding(false);
+                Assert.IsFalse(guardSprite.enabled);
+                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
+                target.SetGuarding(true);
+                Assert.IsFalse(guardSprite.enabled, "Global OFF must not change the actual guarding state.");
+                Assert.IsTrue(target.IsGuarding);
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                target.SetGuarding(false);
+                target.SetGuarding(true);
+                typeof(CombatStats).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(target, null);
+                Assert.IsFalse(guardSprite.enabled, "Pool/disable must hide the guard sprite.");
+            }
+            finally
+            {
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                Object.DestroyImmediate(attackerObject);
+                Object.DestroyImmediate(targetObject);
+            }
+        }
+
+        [Test]
+        public void Test_PlayerGuardDebugPrefab_GameViewContract()
+        {
+            GameObject playerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Unit_3001.prefab"));
+            try
+            {
+                Player player = playerObject.GetComponent<Player>();
+                CombatStats stats = playerObject.GetComponent<CombatStats>();
+                Transform guardRoot = playerObject.transform.Find("DebugGuardVisual");
+                SpriteRenderer guard = guardRoot.GetComponent<SpriteRenderer>();
+                UnitAttackHitbox2D hitbox = playerObject.GetComponentInChildren<UnitAttackHitbox2D>(true);
+                SpriteRenderer attackDebug = hitbox.GetComponentInChildren<SpriteRenderer>(true);
+                hitbox.Bind(player);
+                Assert.NotNull(stats);
+                Assert.NotNull(guard);
+                Assert.NotNull(hitbox);
+                Assert.IsFalse(guard.enabled);
+                Assert.AreEqual(new Vector3(1f, 0f, 0f), guardRoot.localPosition);
+                Vector2 guardSize = Vector2.Scale(guard.sprite.bounds.size, guardRoot.lossyScale);
+                Assert.AreEqual(1f, guardSize.x, .001f);
+                Assert.AreEqual(2f, guardSize.y, .001f);
+
+                Collider2D defenseBody = playerObject.GetComponent<Collider2D>();
+                Bounds expectedGuardBounds = defenseBody.bounds;
+                expectedGuardBounds.center += Vector3.right * expectedGuardBounds.size.x;
+                Assert.AreEqual(expectedGuardBounds.center.x, guard.bounds.center.x, .001f);
+                Assert.AreEqual(expectedGuardBounds.center.y, guard.bounds.center.y, .001f);
+                Assert.AreEqual(expectedGuardBounds.size.x, guard.bounds.size.x, .001f);
+                Assert.AreEqual(expectedGuardBounds.size.y, guard.bounds.size.y, .001f);
+
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                stats.SetFacingRight(true);
+                stats.SetGuarding(true);
+                Assert.IsTrue(guard.enabled);
+                Assert.AreEqual(new Color(0f, .5f, 1f, .35f), guard.color);
+                stats.SetFacingRight(false);
+                Assert.AreEqual(-.5f, guardRoot.localPosition.x, .001f);
+                stats.SetParrying(true);
+                Assert.AreEqual(new Color(0f, 1f, 1f, .35f), guard.color);
+
+                Assert.IsTrue(player.TryOpenAttackHitbox(71, player.ActionGeneration, 0, out _));
+                stats.SetGuarding(false);
+                stats.SetParrying(false);
+                Assert.IsFalse(guard.enabled);
+                Assert.IsTrue(attackDebug.enabled, "Attack debug must follow its own active window.");
+
+                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
+                stats.SetGuarding(true);
+                Assert.IsTrue(stats.IsGuarding);
+                Assert.IsFalse(guard.enabled);
+                player.CloseAttackHitbox();
+                Assert.IsTrue(player.TryOpenAttackHitbox(72, player.ActionGeneration, 0, out _));
+                Assert.IsFalse(attackDebug.enabled);
+                playerObject.SetActive(false);
+                Assert.IsFalse(guard.enabled);
+                Assert.IsFalse(attackDebug.enabled);
+            }
+            finally
+            {
+                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [Test]
+        public void Test_CommonAttackHitbox_FixedStepAndLifecycleContracts()
+        {
+            string executor = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            string unit = File.ReadAllText("Assets/Scripts/Gameplay/UnitBase.cs");
+            string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            string player = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+            string portal = File.ReadAllText("Assets/Scripts/Gameplay/IntraRoomPortal.cs");
+            string hitbox = File.ReadAllText("Assets/Scripts/Gameplay/Combat/UnitAttackHitbox2D.cs");
+
+            StringAssert.Contains("PlayerLoopTiming.FixedUpdate", executor);
+            StringAssert.Contains("TryGetAttackSweepFraction(sweep", executor);
+            StringAssert.Contains("attackSweep: sweep", executor);
+            StringAssert.Contains("finally", executor);
+            StringAssert.Contains("owner.CloseAttackHitbox()", executor);
+            StringAssert.Contains("has no serialized attack hitbox; attack cancelled", unit);
+            StringAssert.Contains("CancelAttackHitbox()", monster);
+            StringAssert.Contains("CancelAttackHitbox()", player);
+            StringAssert.Contains("player.CancelAttackHitbox()", portal);
+            StringAssert.Contains("#if UNITY_EDITOR || DEVELOPMENT_BUILD", hitbox);
+            StringAssert.Contains("DebugVisualizationEnabled", hitbox);
+            StringAssert.Contains("Debug.DrawLine", hitbox);
+            StringAssert.DoesNotContain("new Material", hitbox);
+            StringAssert.DoesNotContain("new GameObject", hitbox);
+            StringAssert.DoesNotContain("pStats.TakeDamage(pattern.Damage", monster);
+            StringAssert.DoesNotContain("SpawnSkillEffect($\"Player_Hit", player);
+        }
+
         [TestCase(true, 2f, false, true)]
         [TestCase(false, -2f, false, true)]
         [TestCase(true, 2f, true, true)]
@@ -122,6 +353,8 @@ namespace QA.Tests
         [TestCase(true, 0.5f, 0f, false)]
         [TestCase(true, 0f, 0.25f, false)]
         [TestCase(true, 100f, 0.5f, true)]
+        [TestCase(true, 3f, 1.25f, true)]
+        [TestCase(false, -3f, -1.25f, true)]
         public void Test_GuardSweep_FirstIntersectionWins(
             bool facingRight, float startX, float endX, bool expectedDefended)
         {
@@ -139,10 +372,58 @@ namespace QA.Tests
                 var sweep = new CombatStats.AttackSweep2D(
                     new Vector2(startX, 0f), new Vector2(endX, 0f), Vector2.zero, 101, 1, 0);
 
+                if (Mathf.Abs(endX) > .5f)
+                {
+                    Assert.IsFalse(defender.TryGetBodySweepFraction(sweep, out _));
+                    Assert.IsTrue(defender.TryGetAttackSweepFraction(sweep, out _),
+                        "A front guard-only intersection must reach defense resolution before the body.");
+                }
+
                 Assert.AreEqual(expectedDefended, defender.TakeDamage(20f, attackSweep: sweep));
                 Assert.AreEqual(expectedDefended ? 100f : 80f, defender.CurrentHp);
             }
             finally { Object.DestroyImmediate(defenderObject); }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Test_GuardOnly_FirstContact_ParriesForMeleeAndProjectile(bool projectile)
+        {
+            var defenderObject = new GameObject($"GuardOnly_{(projectile ? "Projectile" : "Melee")}_QA");
+            var attackerObject = new GameObject("GuardOnly_Attacker_QA");
+            try
+            {
+                var body = defenderObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(1f, 2f);
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.SetDefenseBodyCollider(body);
+                defender.SetFacingRight(true);
+                defender.SetParrying(true);
+                var sweep = new CombatStats.AttackSweep2D(
+                    Vector2.right * 3f, Vector2.right * 1.25f, Vector2.zero,
+                    projectile ? 402 : 401, 1, 0);
+
+                Assert.IsFalse(defender.TryGetBodySweepFraction(sweep, out _));
+                Assert.IsTrue(defender.TryGetAttackSweepFraction(sweep, out _));
+                Assert.IsTrue(defender.TakeDamage(20f, attacker: attacker, attackSweep: sweep));
+                Assert.AreEqual(100f, defender.CurrentHp);
+                Assert.AreEqual(40f, attacker.CurrentPosture);
+
+                string source = File.ReadAllText(projectile
+                    ? "Assets/Scripts/Gameplay/Combat/MonsterProjectile2D.cs"
+                    : "Assets/Scripts/Gameplay/SkillExecutor.cs");
+                StringAssert.Contains("TryGetAttackSweepFraction", source);
+                StringAssert.Contains("attackSweep:", source);
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
         }
 
         [Test]
@@ -160,7 +441,7 @@ namespace QA.Tests
                 defender.SetFacingRight(true);
                 defender.SetParrying(true);
 
-                var first = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 7, 0);
+                var first = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.right * 1.25f, Vector2.zero, 202, 7, 0);
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep: first));
                 defender.SetParrying(false);
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep:
@@ -1337,6 +1618,70 @@ namespace QA.Tests
                 Object.DestroyImmediate(hpObject);
                 Object.DestroyImmediate(hudObject);
             }
+        }
+
+        [Test]
+        public void PhaseA1x1_PlaytestUsesEntryAndSingleMonster3104()
+        {
+            string builder = File.ReadAllText("Assets/Scripts/Scene/TilemapStageBuilder.cs");
+            string main = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
+            string spawner = File.ReadAllText("Assets/Scripts/Manager/UnitSpawner.cs");
+            GameObject room = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x1.prefab");
+
+            Assert.NotNull(room);
+            Assert.NotNull(room.GetComponentInChildren<UnityEngine.Tilemaps.TilemapCollider2D>(true));
+            Assert.IsTrue(System.Array.Exists(room.GetComponentsInChildren<BoxCollider2D>(true),
+                collider => collider.isTrigger && collider.gameObject.name == "CameraBounds"));
+            Assert.IsTrue(System.Array.Exists(room.GetComponentsInChildren<ChunkSocketMarker>(true),
+                socket => socket.EntryMarker != null));
+            Assert.GreaterOrEqual(room.GetComponentsInChildren<SpawnPointMarker>(true).Length, 2);
+            StringAssert.Contains("UsePhaseA1x1Playtest = true", main);
+            StringAssert.Contains("DevelopmentMonsterUnitIdx = 3104u", main);
+            StringAssert.Contains("ConfigureDevelopmentPlaytestMarkers", builder);
+            Assert.Less(spawner.IndexOf("if (zones.Count == 1 && zones[0].MonsterId != 0u)"),
+                spawner.IndexOf("uint[] encounter = GetCurrentEncounter(zones)"));
+            StringAssert.Contains("playtestMarker.EnableSpawn = false", spawner);
+            Assert.NotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3104.prefab")
+                .GetComponent<SkillExecutor>(), "Unit_3104 must keep its prefab-bound SkillExecutor.");
+        }
+
+        [Test]
+        public void AttackAttach_StaysActiveWhileOnlyColliderTracksWindow()
+        {
+            foreach (uint unitIdx in new uint[] { 3001u, 3101u, 3102u, 3103u, 3104u, 3105u, 3106u, 3201u })
+            {
+                GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Unit_{unitIdx}.prefab");
+                GameObject instance = Object.Instantiate(prefab);
+                try
+                {
+                    UnitBase unit = instance.GetComponent<UnitBase>();
+                    UnitAttackHitbox2D hitbox = instance.GetComponentInChildren<UnitAttackHitbox2D>(true);
+                    Collider2D collider = (Collider2D)typeof(UnitAttackHitbox2D)
+                        .GetField("attackCollider", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hitbox);
+                    SpriteRenderer debugSprite = (SpriteRenderer)typeof(UnitAttackHitbox2D)
+                        .GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hitbox);
+
+                    hitbox.Bind(unit);
+                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach after Bind");
+                    Assert.IsFalse(collider.enabled, $"Unit_{unitIdx} collider after Bind");
+                    Assert.IsTrue(hitbox.TryOpen(1, unit.ActionGeneration, 0, out _));
+                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach during window");
+                    Assert.IsTrue(collider.enabled, $"Unit_{unitIdx} collider during window");
+                    Assert.AreEqual(collider.bounds.size.x, debugSprite.bounds.size.x, .001f, $"Unit_{unitIdx} debug width");
+                    Assert.AreEqual(collider.bounds.size.y, debugSprite.bounds.size.y, .001f, $"Unit_{unitIdx} debug height");
+                    hitbox.Close();
+                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach after Close");
+                    Assert.IsFalse(collider.enabled, $"Unit_{unitIdx} collider after Close");
+                }
+                finally
+                {
+                    Object.DestroyImmediate(instance);
+                }
+            }
+
+            StringAssert.DoesNotContain("gameObject.SetActive", File.ReadAllText(
+                "Assets/Scripts/Gameplay/Combat/UnitAttackHitbox2D.cs"));
         }
     }
 }

@@ -99,6 +99,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d240c9de2c00ac459199248d4cfd126
+    m_Address: Room_11080
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a000000000000000190b16dbfcc3cfb8
     m_Address: Prefab_1040
     m_ReadOnly: 0

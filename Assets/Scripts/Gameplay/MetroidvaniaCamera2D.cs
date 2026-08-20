@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class MetroidvaniaCamera2D : MonoBehaviour
 {
+    public static MetroidvaniaCamera2D Active { get; private set; }
+
     [Header("Target Tracking")]
     public Transform Target;
     public Vector3 Offset = new Vector3(0f, 1.2f, -10f);
@@ -22,8 +24,27 @@ public class MetroidvaniaCamera2D : MonoBehaviour
 
     private void Awake()
     {
+        Active = this;
         cam = GetComponent<Camera>();
         if (cam == null) cam = Camera.main;
+    }
+
+    private void OnEnable()
+    {
+        Active = this;
+        Player.Activated += OnPlayerActivated;
+        Player.Deactivated += OnPlayerDeactivated;
+        if (Player.Instance != null && Player.Instance.isActiveAndEnabled)
+            BindAndSnap(Player.Instance.transform);
+    }
+
+    private void OnDisable()
+    {
+        Player.Activated -= OnPlayerActivated;
+        Player.Deactivated -= OnPlayerDeactivated;
+        Target = null;
+        currentVelocity = Vector3.zero;
+        if (Active == this) Active = null;
     }
 
     private void LateUpdate()
@@ -37,11 +58,37 @@ public class MetroidvaniaCamera2D : MonoBehaviour
         UpdatePosition(true);
     }
 
+    public void BindAndSnap(Transform target)
+    {
+        Target = target;
+        SnapToTarget();
+    }
+
+    public void BindAndSnap(Transform target, Bounds bounds)
+    {
+        SetBounds(bounds.min, bounds.max);
+        BindAndSnap(target);
+    }
+
+    private void OnPlayerActivated(Player player)
+    {
+        if (player != null) BindAndSnap(player.transform);
+    }
+
+    private void OnPlayerDeactivated(Player player)
+    {
+        if (player != null && Target == player.transform)
+        {
+            Target = null;
+            currentVelocity = Vector3.zero;
+        }
+    }
+
     private void UpdatePosition(bool snap)
     {
         if (Target == null)
         {
-            if (Player.Instance != null)
+            if (Player.Instance != null && Player.Instance.isActiveAndEnabled)
             {
                 Target = Player.Instance.transform;
             }

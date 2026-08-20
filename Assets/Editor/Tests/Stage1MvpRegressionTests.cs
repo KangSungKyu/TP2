@@ -734,6 +734,57 @@ namespace QA.Tests
                 .GetSetMethod(true).Invoke(manager, new object[] { generation });
         }
 
+        [Test]
+        public void Test_BossGate1063_IsExclusiveAcross200Seeds()
+        {
+            var layout = new StageLayoutData { StageDataIdx = 9001, MinActiveChunks = 9, MaxActiveChunks = 11 };
+            var chunks = new[]
+            {
+                new ChunkResourceData { ResourceIdx = 1050, ChunkType = 1, SupportedConnectionMask = 15, MaxUsePerRun = 20 },
+                new ChunkResourceData { ResourceIdx = 1063, ChunkType = 1, SupportedConnectionMask = 15, MaxUsePerRun = 20 }
+            };
+            for (uint seed = 0; seed < 200; seed++)
+            {
+                StageRunData run = Stage1RunGenerator.Generate(seed, layout, chunks, null);
+                Assert.IsTrue(run.TryGetSlot(run.BossGateSlotIdx, out ChunkSlotData bossGate));
+                Assert.AreEqual(1063u, bossGate.ChunkResourceIdx, $"seed {seed}");
+                Assert.AreEqual(1, run.Slots.Count(slot => slot.ChunkResourceIdx == 1063u), $"seed {seed}");
+            }
+        }
+
+        [Test]
+        public void Test_BossGateDoor_ReceivesOwnerGenerationAndSentinelRoute()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Rooms/Room_11063.prefab");
+            GameObject room = UnityEngine.Object.Instantiate(prefab);
+            StageManager manager = CreateManager();
+            try
+            {
+                StageRunData run = Stage1RunGenerator.Generate(7);
+                run.CurrentSlotIdx = run.BossGateSlotIdx;
+                typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))?.SetValue(manager, run);
+                typeof(StageManager).GetProperty(nameof(StageManager.RoomGeneration))?.SetValue(manager, 9u);
+                typeof(TilemapStageBuilder).GetMethod("ConfigureBossGateDoor", BindingFlags.Static | BindingFlags.NonPublic)
+                    ?.Invoke(null, new object[] { room, manager });
+
+                RoomDoorPortal door = room.GetComponentsInChildren<RoomDoorPortal>(true)
+                    .Single(candidate => candidate.TargetRoomResourceIdx == 1042u);
+                Assert.AreEqual(byte.MaxValue, door.TargetSlotIdx);
+                Assert.AreEqual(run.BossGateSlotIdx, door.OwnerSlotIdx);
+                Assert.AreEqual(9u, door.RoomGeneration);
+                Assert.IsTrue(door.TryAcquireTransition(manager));
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/RoomDoorPortal.cs");
+                StringAssert.Contains("CurrentRun.CurrentSlotIdx == stageManager.CurrentRun.BossGateSlotIdx", source);
+                StringAssert.Contains("await stageManager.LoadNextRoomAsync(1042)", source);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(room);
+                UnityEngine.Object.DestroyImmediate(manager.gameObject);
+            }
+        }
+
         private static StageManager CreateManager()
         {
             return new GameObject("Stage1_CodeGate_QA").AddComponent<StageManager>();

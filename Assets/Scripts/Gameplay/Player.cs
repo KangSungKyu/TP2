@@ -79,7 +79,11 @@ public class Player : UnitBase
     }
 
     private void OnEnable() => Activated?.Invoke(this);
-    private void OnDisable() => Deactivated?.Invoke(this);
+    private void OnDisable()
+    {
+        CancelAttackHitbox();
+        Deactivated?.Invoke(this);
+    }
 
     public void SetState(PlayerState newState, bool forceUpdate = false)
     {
@@ -148,6 +152,7 @@ public class Player : UnitBase
     {
         if (deathSequenceActive) return;
         deathSequenceActive = true;
+        CancelAttackHitbox();
         SetState(PlayerState.Hit, true);
         if (motor != null)
         {
@@ -164,6 +169,7 @@ public class Player : UnitBase
     public void ResetAfterDeath(Vector3 position)
     {
         deathGeneration++;
+        CloseAttackHitbox();
         deathSequenceActive = false;
         if (spriteRenderer != null)
         {
@@ -498,19 +504,17 @@ public class Player : UnitBase
             skillExecutor.TryPlaySkillAnimation(animator, currentSkillId);
         }
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(0.12f), cancellationToken: cancellationToken);
-
         if (skillExecutor != null)
         {
             Vector3 spawnOffset = (spriteRenderer != null && spriteRenderer.flipX) ? Vector3.right * 1.0f : Vector3.left * 1.0f;
             Vector3 spawnPos = transform.position + spawnOffset + Vector3.up * 0.8f;
-            Color effectColor = new Color(0f, 1f, 0.4f, 0.4f);
-
-            skillExecutor.SpawnSkillEffect($"Player_Hit{comboStep}", spawnPos, new Vector2(1.2f, 1.5f), 15f * comboStep, 0.15f, FactionType.PlayerAlly, effectColor);
             skillExecutor.SpawnSkillEffectFromDataAsync(currentSkillId, spawnPos).Forget();
+            await skillExecutor.ExecuteSkillHitsAsync(currentSkillId, this, null, 15f * comboStep, cancellationToken);
         }
-
-        await UniTask.Delay(System.TimeSpan.FromSeconds(0.28f), cancellationToken: cancellationToken);
+        else
+        {
+            Debug.LogError($"[Player] Unit idx {UnitIdx} has no SkillExecutor; attack cancelled.");
+        }
 
         float windowElapsed = 0f;
         bool nextComboTriggered = false;
@@ -638,7 +642,7 @@ public class Player : UnitBase
             }
             if (monsterTarget != null && skillExecutor != null)
             {
-                skillExecutor.ExecuteSkill((int)skillNum, transform, monsterTarget.transform);
+                skillExecutor.ExecuteSkill((int)skillNum, this, monsterTarget);
             }
         }
     }

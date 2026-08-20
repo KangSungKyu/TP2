@@ -15,3 +15,4 @@ idx,resourceidx,chunktype,supportedconnectionmask,minstageidx,maxuseperrun,weigh
 11077,1077,8,15,9001,1,60
 11078,1078,3,15,9001,2,80
 11079,1079,2,15,9001,1,80
+11080,1080,1,15,9001,2,100

@@ -18,6 +18,11 @@ public class TilemapStageBuilder : MonoBehaviour
     public float BufferTimeSec = 0.5f;
     public float FadeDurationSec = 0.4f;
 
+#if UNITY_EDITOR
+    public GameObject DevelopmentPrefabOverride;
+    public uint DevelopmentMonsterUnitIdx;
+#endif
+
     private CanvasGroup fadeOverlayCanvasGroup;
 
     public static TilemapStageBuilder Instance { get; private set; }
@@ -83,8 +88,12 @@ public class TilemapStageBuilder : MonoBehaviour
         GameObject chunkPrefab = null;
 
 #if UNITY_EDITOR
-        string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Prefab_1040";
-        chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/{targetKey}.prefab");
+        chunkPrefab = DevelopmentPrefabOverride;
+        if (chunkPrefab == null)
+        {
+            string targetKey = !string.IsNullOrEmpty(this.TilemapAddressableKey) ? this.TilemapAddressableKey : "Prefab_1040";
+            chunkPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Rooms/{targetKey}.prefab");
+        }
 #endif
 
         if (chunkPrefab == null && ResourceManager.Instance != null)
@@ -110,6 +119,9 @@ public class TilemapStageBuilder : MonoBehaviour
             GameObject spawnedChunk = Instantiate(chunkPrefab, rootObj.transform);
             spawnedChunk.name = "Tilemap_Room_Chunk_Instance";
             loadedFromPrefab = true;
+#if UNITY_EDITOR
+            ConfigureDevelopmentPlaytestMarkers(spawnedChunk);
+#endif
             if (StageManager.Instance != null)
             {
                 StageManager.Instance.RegisterRoomInstance(spawnedChunk);
@@ -138,7 +150,7 @@ public class TilemapStageBuilder : MonoBehaviour
             }
         }
 
-        SetupMetroidvaniaCamera();
+        SetupMetroidvaniaCamera(rootObj);
         Debug.Log("<color=cyan>[TilemapStageBuilder] 메트로배니아 2D 카메라 바인딩 & 대형 테스트 스테이지 전개 완료! 0.5s 버퍼 대기 개시...</color>");
 
         if (BufferTimeSec > 0f)
@@ -190,6 +202,24 @@ public class TilemapStageBuilder : MonoBehaviour
         }
 
         foreach (GameObject portal in portals) portal.SetActive(true);
+        ConfigureBossGateDoor(chunk, stageManager);
+    }
+
+    private static void ConfigureBossGateDoor(GameObject chunk, StageManager stageManager)
+    {
+        StageRunData run = stageManager.CurrentRun;
+        if (run == null || run.CurrentSlotIdx != run.BossGateSlotIdx ||
+            !run.TryGetSlot(run.CurrentSlotIdx, out ChunkSlotData slot) || slot.ChunkResourceIdx != 1063u)
+            return;
+
+        foreach (RoomDoorPortal door in chunk.GetComponentsInChildren<RoomDoorPortal>(true))
+        {
+            if (door.TargetSlotIdx != byte.MaxValue || door.TargetRoomResourceIdx != 1042u) continue;
+            door.Configure(byte.MaxValue, run.CurrentSlotIdx, stageManager.RoomGeneration, 1042u);
+            return;
+        }
+
+        Debug.LogError("[TilemapStageBuilder] BossGate chunk idx 1063 has no Boss room door idx 1042.");
     }
 
     public static Vector3 CalculateSafeEntryPosition(ChunkSocketMarker socket, Vector3 playerExtents, float skinWidth)
@@ -246,7 +276,7 @@ public class TilemapStageBuilder : MonoBehaviour
         }
     }
 
-    private void SetupMetroidvaniaCamera()
+    private void SetupMetroidvaniaCamera(GameObject roomRoot)
     {
         Camera mainCam = Camera.main;
         if (mainCam == null)
@@ -262,12 +292,26 @@ public class TilemapStageBuilder : MonoBehaviour
             metroCam = mainCam.gameObject.AddComponent<MetroidvaniaCamera2D>();
         }
 
-        metroCam.SetBounds(new Vector2(-29f, -1f), new Vector2(29f, 17f));
+        Bounds? roomBounds = ResolveCameraBounds(roomRoot);
         if (Player.Instance != null)
         {
-            metroCam.Target = Player.Instance.transform;
-            metroCam.SnapToTarget();
+            if (roomBounds.HasValue) metroCam.BindAndSnap(Player.Instance.transform, roomBounds.Value);
+            else metroCam.BindAndSnap(Player.Instance.transform);
         }
+        else if (roomBounds.HasValue) metroCam.SetBounds(roomBounds.Value.min, roomBounds.Value.max);
+    }
+
+    private static Bounds? ResolveCameraBounds(GameObject roomRoot)
+    {
+        if (roomRoot == null) return null;
+        BoxCollider2D selected = null;
+        foreach (BoxCollider2D candidate in roomRoot.GetComponentsInChildren<BoxCollider2D>(true))
+        {
+            if (!candidate.isTrigger) continue;
+            if (selected == null || candidate.bounds.size.sqrMagnitude > selected.bounds.size.sqrMagnitude)
+                selected = candidate;
+        }
+        return selected != null ? selected.bounds : (Bounds?)null;
     }
 
     private void buildExpandedDummyStage(Transform parent)
@@ -336,6 +380,32 @@ public class TilemapStageBuilder : MonoBehaviour
         hazardSprite.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 16f);
         hazardSprite.color = new Color(0.9f, 0.2f, 0.2f, 0.8f);
     }
+
+#if UNITY_EDITOR
+    private void ConfigureDevelopmentPlaytestMarkers(GameObject chunk)
+    {
+        if (DevelopmentPrefabOverride == null || DevelopmentMonsterUnitIdx == 0u || chunk == null) return;
+        SpawnPointMarker[] markers = chunk.GetComponentsInChildren<SpawnPointMarker>(true);
+        ChunkSocketMarker[] sockets = chunk.GetComponentsInChildren<ChunkSocketMarker>(true);
+        Transform entry = null;
+        foreach (ChunkSocketMarker socket in sockets)
+            if (socket != null && socket.EntryMarker != null) { entry = socket.EntryMarker; break; }
+        if (markers.Length < 2 || entry == null)
+        {
+            Debug.LogError("[TilemapStageBuilder] PhaseA1x1 playtest requires two spawn markers and one EntryMarker.");
+            return;
+        }
+
+        foreach (SpawnPointMarker marker in markers) marker.EnableSpawn = false;
+        markers[0].transform.position = entry.position;
+        markers[0].Type = SpawnType.Player;
+        markers[0].MonsterId = 0u;
+        markers[0].EnableSpawn = true;
+        markers[1].Type = SpawnType.Monster;
+        markers[1].MonsterId = DevelopmentMonsterUnitIdx;
+        markers[1].EnableSpawn = true;
+    }
+#endif
 
     private GameObject createWallObject(string name, Transform parent, Vector3 pos, Vector2 size, bool canWallJump, bool allowSameWall, float slideMult, Color color)
     {
