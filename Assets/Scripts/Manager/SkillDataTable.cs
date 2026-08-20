@@ -49,13 +49,15 @@ public class SkillDataTable : IDataLoad
             {
                 Id = (int)data.SkillId,
                 Name = ResolveDisplayName(data.NameTextIdx, data.Idx),
-                AnimationClip = data.AnimationClip,
                 Range = data.Range,
                 CastTime = data.CastTime,
                 Cooldown = data.CooldownSec,
                 MpCost = data.MpCost,
                 DamageMultiplier = data.DamageMultiplier,
-                IsBasicAttack = data.IsBasicAttack
+                IsBasicAttack = data.IsBasicAttack,
+                HitWindowPre = data.HitWindowPre,
+                HitWindowPost = data.HitWindowPost,
+                AnimState = data.AnimState
             };
             return true;
         }

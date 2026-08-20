@@ -728,7 +728,8 @@ public class Monster : UnitBase
             skill.HitTimings == null || skill.HitTimings.Length == 0) return;
 
         firstHitTiming = Mathf.Max(0f, skill.HitTimings[0]);
-        activeDuration = Mathf.Max(firstHitTiming, skill.ActiveDuration);
+        float lastHitTiming = Mathf.Max(0f, skill.HitTimings[skill.HitTimings.Length - 1]);
+        activeDuration = lastHitTiming + skill.HitWindowPost;
     }
 
     private void BeginAttackTelegraph(uint generation, float warningStartsAt, float impactAt,

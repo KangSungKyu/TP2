@@ -107,7 +107,8 @@ namespace QA.Tests
             skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
             Assert.IsTrue(skills.TryGetSkillData(7003, out var skill7003));
             CollectionAssert.AreEqual(new[] { 0.10f, 0.25f }, skill7003.HitTimings);
-            Assert.AreEqual(0.40f, skill7003.ActiveDuration);
+            Assert.AreEqual(0.04f, skill7003.HitWindowPre);
+            Assert.AreEqual(0.06f, skill7003.HitWindowPost);
 
             var encounters = new MonsterEncounterDataTable();
             encounters.LoadData(File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));

@@ -132,13 +132,15 @@ public struct SkillInfo
 {
     public int Id;
     public string Name;
-    public string AnimationClip;
     public float Range;
     public float CastTime;
     public float Cooldown;
     public float MpCost;
     public float DamageMultiplier;
     public bool IsBasicAttack;
+    public float HitWindowPre;
+    public float HitWindowPost;
+    public int AnimState;
 }
 
 
@@ -349,9 +351,6 @@ public class SkillData
     [Name("nametextidx")]
     public uint NameTextIdx { get; set; }
 
-    [Name("animationclip")]
-    public string AnimationClip { get; set; }
-
     [Name("range")]
     public float Range { get; set; }
 
@@ -376,8 +375,11 @@ public class SkillData
     [Name("hittimings"), TypeConverter(typeof(FloatArrayConverter))]
     public float[] HitTimings { get; set; } // _ 구분자 float 배열
 
-    [Name("activeduration")]
-    public float ActiveDuration { get; set; }
+    [Name("hitwindowpre")]
+    public float HitWindowPre { get; set; }
+
+    [Name("hitwindowpost")]
+    public float HitWindowPost { get; set; }
 
     [Name("effectidx")]
     public uint EffectIdx { get; set; } // EffectData.csv Idx 참조 (Type 8: 8001~)

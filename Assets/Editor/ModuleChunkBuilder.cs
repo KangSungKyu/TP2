@@ -3019,6 +3019,16 @@ public static class ModuleChunkBuilder
             {
                 AddGroundedSpawnMarker(gridRoot.transform, gMap, pMap, "SpawnPoint_Boss", 0f, 6f, SpawnType.Boss, 3201);
             }
+            else if (chunkName == "Room_11063")
+            {
+                var doorObj = new GameObject("BossGateDoor");
+                doorObj.transform.SetParent(gridRoot.transform);
+                doorObj.transform.localPosition = new Vector3(20f, 1.51f, 0f);
+                var door = doorObj.AddComponent<RoomDoorPortal>();
+                door.TargetSlotIdx = byte.MaxValue;
+                door.TargetRoomResourceIdx = 1042u;
+                door.AutoTriggerOnTouch = false;
+            }
 
             if (chunkName == "Room_11050" || chunkName == "Room_11051" ||
                 chunkName == "Room_11052" || chunkName == "Room_11053")

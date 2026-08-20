@@ -102,9 +102,9 @@ namespace QA.Tests
         [Test]
         public void Test06_SkillDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate\n" +
-                               "7001,2101,Skill_01,1.5,0.0,0.5,5,1.0,1,1,0.15,0.3,8001,7\n" +
-                               "7002,2102,Skill_Fireball,5.0,0.2,3.0,20,2.5,0,1,0.12,0.8,8002,7";
+            string csvContent = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate\n" +
+                               "7001,2101,Skill_01,1.5,0.0,0.5,5,1.0,1,1,0.15,0.05,0.1,8001,7\n" +
+                               "7002,2102,Skill_Fireball,5.0,0.2,3.0,20,2.5,0,1,0.12,0.08,0.15,8002,7";
 
             SkillDataTable table = new SkillDataTable();
             table.LoadData(csvContent);
@@ -117,6 +117,9 @@ namespace QA.Tests
             Assert.AreEqual(7001, skillInfo.Id, "SkillInfo Id = 7001 검증");
             Assert.AreEqual(string.Empty, skillInfo.Name, "누락 TextData idx는 빈 문자열로 격리해야 합니다.");
             Assert.IsTrue(skill7001.IsBasicAttack);
+            Assert.AreEqual(0.05f, skill7001.HitWindowPre, 0.001f, "HitWindowPre 0.05s 검증");
+            Assert.AreEqual(0.1f, skill7001.HitWindowPost, 0.001f, "HitWindowPost 0.1s 검증");
+            Assert.AreEqual(7, skill7001.AnimState, "AnimState 7 검증");
             Assert.IsFalse(table.GetById(7002).IsBasicAttack);
         }
 
@@ -127,8 +130,8 @@ namespace QA.Tests
         public void Test_SkillData_BooleanRejectsNonZeroOne(string value)
         {
             var table = new SkillDataTable();
-            string csv = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,activeduration,effectidx,animstate\n" +
-                         $"7001,2101,Skill_01,1.5,0,0.5,5,1,{value},1,0.15,0.3,8001,7";
+            string csv = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate\n" +
+                         $"7001,2101,Skill_01,1.5,0,0.5,5,1,{value},1,0.15,0.05,0.1,8001,7";
             Assert.Catch<System.Exception>(() => table.LoadData(csv));
         }
 

@@ -137,24 +137,30 @@ public class SkillExecutor : MonoBehaviour
         {
             for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
             {
-                float timing = Mathf.Max(0f, skill.HitTimings[(int)tick]);
-                if (skill.ActiveDuration > 0f && timing > skill.ActiveDuration) break;
-                while (elapsed + Mathf.Epsilon < timing)
+                float t = Mathf.Max(0f, skill.HitTimings[(int)tick]);
+                float windowStart = Mathf.Max(0f, t - skill.HitWindowPre);
+                float windowEnd = t + skill.HitWindowPost;
+
+                while (elapsed + Mathf.Epsilon < windowStart)
                 {
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
                 }
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
+
                 if (!owner.TryOpenAttackHitbox(sourceId, generation, tick, out CombatStats.AttackSweep2D sweep))
                     return false;
-                ApplyAttackSweep(owner, target, patternDamage, sweep);
-            }
 
-            while (elapsed + Mathf.Epsilon < skill.ActiveDuration)
-            {
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
-                elapsed += Time.fixedDeltaTime;
-                if (!owner.IsActionGenerationCurrent(generation)) return true;
+                ApplyAttackSweep(owner, target, patternDamage, sweep);
+
+                while (elapsed + Mathf.Epsilon < windowEnd)
+                {
+                    await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                    elapsed += Time.fixedDeltaTime;
+                    if (!owner.IsActionGenerationCurrent(generation)) return true;
+                }
+
+                owner.CloseAttackHitbox();
             }
             return true;
         }
@@ -337,7 +343,7 @@ public class SkillExecutor : MonoBehaviour
         var anim = caster.Animator;
         if (anim != null)
         {
-            anim.Play(skill.AnimationClip);
+            anim.SetInteger("State", skill.AnimState);
         }
 
         SpawnSkillEffectFromDataAsync((uint)skill.Id, caster.transform.position).Forget();

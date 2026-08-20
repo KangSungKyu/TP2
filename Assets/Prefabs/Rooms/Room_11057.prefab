@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12584d047b87bde479ed8639b4e6e029, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 1
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 2
   EntryMarker: {fileID: 2813469455838890859}
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 1
   EntryMarker: {fileID: 6329145892023721799}
@@ -2820,7 +2820,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 3
   EntryMarker: {fileID: 8065250971529702355}
@@ -2867,7 +2867,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 0
   EntryMarker: {fileID: 8851917362389172292}
@@ -3644,5 +3644,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1eccb7ad878e3c45a440d07cb4c3617, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneWayPlatformPassThrough

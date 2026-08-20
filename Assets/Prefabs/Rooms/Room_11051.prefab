@@ -576,6 +576,36 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -3, y: 1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: -2, y: 1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: -1, y: 1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: 1, y: 1, z: 0}
     second:
       serializedVersion: 2
@@ -2319,15 +2349,15 @@ Tilemap:
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - serializedVersion: 2
-    m_RefCount: 224
+    m_RefCount: 227
     m_Data: {fileID: 11400000, guid: 35c4a4bbdf043e64384e74ba71a9830c, type: 2}
   m_TileSpriteArray:
   - serializedVersion: 2
-    m_RefCount: 224
+    m_RefCount: 227
     m_Data: {fileID: 255847209, guid: bb20b61c80aa95c4396f7d3ec64e62e0, type: 3}
   m_TileMatrixArray:
   - serializedVersion: 2
-    m_RefCount: 224
+    m_RefCount: 227
     m_Data:
       e00: 1
       e01: 0
@@ -2347,7 +2377,7 @@ Tilemap:
       e33: 1
   m_TileColorArray:
   - serializedVersion: 2
-    m_RefCount: 224
+    m_RefCount: 227
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -2638,7 +2668,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12584d047b87bde479ed8639b4e6e029, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 1
@@ -2795,7 +2825,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 0
   EntryMarker: {fileID: 5675932667656231434}
@@ -2841,7 +2871,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12584d047b87bde479ed8639b4e6e029, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 2
@@ -2889,7 +2919,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 1
   EntryMarker: {fileID: 4784068840052111450}
@@ -3759,7 +3789,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1eccb7ad878e3c45a440d07cb4c3617, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneWayPlatformPassThrough
 --- !u!1 &5785241845867094431
 GameObject:
@@ -3803,7 +3833,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12584d047b87bde479ed8639b4e6e029, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 2
@@ -3851,7 +3881,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 2
   EntryMarker: {fileID: 854665595136928407}
@@ -3897,7 +3927,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12584d047b87bde479ed8639b4e6e029, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 2
@@ -3945,7 +3975,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf75a2a7b0f0bc4f87faebfe6349d3f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChunkSocketMarker
   Direction: 3
   EntryMarker: {fileID: 9129977579172033915}
