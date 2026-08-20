@@ -4411,6 +4411,7 @@ Transform:
   - {fileID: 1556785494995215482}
   - {fileID: 248912065523744805}
   - {fileID: 8938955306063376928}
+  - {fileID: 8700987373644034541}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &7600693262859121108
@@ -4487,6 +4488,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7784228264978016754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7493487043694433047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8700987373644034541}
+  - component: {fileID: 3992514900675919991}
+  m_Layer: 0
+  m_Name: BossGateDoor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8700987373644034541
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493487043694433047}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 20, y: 1.51, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7538981745855189284}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3992514900675919991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493487043694433047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c20b11b27aa2574cb2ba883c8f447fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomDoorPortal
+  doorIdx: 0
+  sourceChunkResourceIdx: 0
+  destinationDoorIdx: 0
+  TargetRoomResourceIdx: 1042
+  TargetSlotIdx: 255
+  AutoTriggerOnTouch: 0
+  ShowPrototypeDestination: 1
+  destinationLabel: {fileID: 0}
 --- !u!1 &7681117062598947806
 GameObject:
   m_ObjectHideFlags: 0
