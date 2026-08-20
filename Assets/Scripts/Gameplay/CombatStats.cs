@@ -195,17 +195,42 @@ public class CombatStats : MonoBehaviour
             amount *= 1.5f;
         }
 
+        Collider2D targetCollider = defenseBodyCollider != null ? defenseBodyCollider : GetComponent<Collider2D>();
+        Vector3 contactPoint;
+        if (attackSweep.HasValue)
+        {
+            contactPoint = targetCollider != null
+                ? (Vector3)targetCollider.ClosestPoint(attackSweep.Value.Current)
+                : (transform.position + Vector3.up * 1.0f);
+        }
+        else if (attackOrigin.HasValue)
+        {
+            contactPoint = targetCollider != null
+                ? (Vector3)targetCollider.ClosestPoint(attackOrigin.Value)
+                : (transform.position + Vector3.up * 1.0f);
+        }
+        else if (attacker != null)
+        {
+            contactPoint = targetCollider != null
+                ? (Vector3)targetCollider.ClosestPoint(attacker.transform.position)
+                : (transform.position + Vector3.up * 1.0f);
+        }
+        else
+        {
+            contactPoint = transform.position + Vector3.up * 1.0f;
+        }
+
         if (IsDodging)
         {
             Debug.Log($"[{gameObject.name}] 공격 회피(Dodge) 성공!");
-            SpawnResponseEffect(8012);
+            SpawnResponseEffect(8012, contactPoint);
             return true;
         }
 
         if (isGroundAttack && isJumped)
         {
             Debug.Log($"[{gameObject.name}] 지면 공격 점프(Jump) 회피 성공!");
-            SpawnResponseEffect(8012);
+            SpawnResponseEffect(8012, contactPoint);
             return true;
         }
 
@@ -221,7 +246,7 @@ public class CombatStats : MonoBehaviour
             }
             Debug.Log($"[{gameObject.name}] 패링(Parry) 성공!");
             OnParrySuccess?.Invoke();
-            SpawnResponseEffect(8010);
+            SpawnResponseEffect(8010, contactPoint);
 
             if (attacker != null)
             {
@@ -234,7 +259,7 @@ public class CombatStats : MonoBehaviour
         {
             float guardCost = amount * Mathf.Max(0f, guardAmountMultiplier) * 0.5f;
             AddPosture(guardCost);
-            SpawnResponseEffect(8011);
+            SpawnResponseEffect(8011, contactPoint);
 
             if (attacker != null)
             {
@@ -248,10 +273,8 @@ public class CombatStats : MonoBehaviour
 
         if (amount <= 0f) return false;
 
-        SpawnResponseEffect(8013);
+        SpawnResponseEffect(8013, contactPoint);
         ApplyHpDamage(amount, attacker);
-
-        // 몬스터 / 유닛 피격 반응 연출 (스프라이트 적색 플래시 & 넉백)
 
         if (CurrentHp <= 0f && !IsDead)
         {
