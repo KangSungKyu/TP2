@@ -204,7 +204,7 @@ namespace QA.Tests
                 Assert.NotNull(guard);
                 Assert.NotNull(hitbox);
                 Assert.IsFalse(guard.enabled);
-                Assert.AreEqual(new Vector3(1f, 0f, 0f), guardRoot.localPosition);
+                Assert.AreEqual(new Vector3(1f, 1f, 0f), guardRoot.localPosition);
                 Vector2 guardSize = Vector2.Scale(guard.sprite.bounds.size, guardRoot.lossyScale);
                 Assert.AreEqual(1f, guardSize.x, .001f);
                 Assert.AreEqual(2f, guardSize.y, .001f);
@@ -223,7 +223,7 @@ namespace QA.Tests
                 Assert.IsTrue(guard.enabled);
                 Assert.AreEqual(new Color(0f, .5f, 1f, .35f), guard.color);
                 stats.SetFacingRight(false);
-                Assert.AreEqual(-.5f, guardRoot.localPosition.x, .001f);
+                Assert.AreEqual(-1f, guardRoot.localPosition.x, .001f);
                 stats.SetParrying(true);
                 Assert.AreEqual(new Color(0f, 1f, 1f, .35f), guard.color);
 
