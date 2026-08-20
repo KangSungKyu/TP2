@@ -135,6 +135,8 @@ public class SkillExecutor : MonoBehaviour
         float elapsed = 0f;
         try
         {
+            owner.SetTelegraphedAttackHitbox(true);
+
             for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
             {
                 float t = Mathf.Max(0f, skill.HitTimings[(int)tick]);
@@ -161,12 +163,14 @@ public class SkillExecutor : MonoBehaviour
                 }
 
                 owner.CloseAttackHitbox();
+                owner.SetTelegraphedAttackHitbox(true);
             }
             return true;
         }
         finally
         {
             owner.CloseAttackHitbox();
+            owner.SetTelegraphedAttackHitbox(false);
         }
     }
 

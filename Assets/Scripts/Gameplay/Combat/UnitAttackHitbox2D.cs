@@ -55,6 +55,10 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     public void SetTelegraphed(bool telegraphed)
     {
         telegraphedActive = telegraphed;
+        if (telegraphed && !windowActive && attackCollider != null)
+        {
+            attackCollider.enabled = false;
+        }
         UpdateDebugVisualization();
     }
 

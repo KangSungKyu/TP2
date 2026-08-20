@@ -105,7 +105,9 @@ public class UnitBase : MonoBehaviour
         return false;
     }
 
+    public UnitAttackHitbox2D AttackHitbox => attackHitbox;
     public void CloseAttackHitbox() => attackHitbox?.Close();
+    public void SetTelegraphedAttackHitbox(bool telegraphed) => attackHitbox?.SetTelegraphed(telegraphed);
 
     public virtual void CancelAttackHitbox()
     {

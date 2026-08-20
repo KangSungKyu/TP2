@@ -125,6 +125,59 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_HitboxLifecycle_YellowToRedToYellowToOff_Transition()
+        {
+            GameObject ownerObject = new GameObject("HitboxLifecycle_Owner_QA");
+            GameObject hitboxObject = new GameObject("HitboxLifecycle_Hitbox_QA");
+            hitboxObject.transform.SetParent(ownerObject.transform, false);
+            try
+            {
+                UnitBase owner = ownerObject.AddComponent<UnitBase>();
+                BoxCollider2D collider = hitboxObject.AddComponent<BoxCollider2D>();
+                collider.isTrigger = true;
+                SpriteRenderer debugSprite = hitboxObject.AddComponent<SpriteRenderer>();
+                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
+                typeof(UnitAttackHitbox2D).GetField("attackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, collider);
+                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, hitboxObject.transform);
+                typeof(UnitAttackHitbox2D).GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, debugSprite);
+                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(owner, hitbox);
+                hitbox.Bind(owner);
+
+                // 1. 선딜 (Pre-delay): 🟡 Yellow, Collider disabled
+                owner.SetTelegraphedAttackHitbox(true);
+                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
+                Assert.IsFalse(hitbox.IsWindowActive);
+                Assert.IsFalse(collider.enabled, "Telegraphed state must keep attack collider disabled to prevent pre-damage.");
+                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Pre-delay must display yellow inactive color.");
+
+                // 2. 타격 순간 (Active Window): 🔴 Red, Collider enabled
+                Assert.IsTrue(owner.TryOpenAttackHitbox(101, owner.ActionGeneration, 0, out _));
+                Assert.IsTrue(hitbox.IsWindowActive);
+                Assert.IsTrue(collider.enabled, "Active hit window must enable attack collider.");
+                Assert.AreEqual(hitbox.ActiveColor, debugSprite.color, "Active hit window must display red active color.");
+
+                // 3. 후딜 (Post-delay): 🟡 Yellow, Collider disabled
+                owner.CloseAttackHitbox();
+                owner.SetTelegraphedAttackHitbox(true);
+                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
+                Assert.IsFalse(hitbox.IsWindowActive);
+                Assert.IsFalse(collider.enabled, "Post-delay must keep attack collider disabled.");
+                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Post-delay must display yellow inactive color.");
+
+                // 4. 모션 완전 종료 (OFF): Visual disabled, Collider disabled
+                owner.CloseAttackHitbox();
+                owner.SetTelegraphedAttackHitbox(false);
+                Assert.IsFalse(hitbox.IsDebugVisualizationActive);
+                Assert.IsFalse(debugSprite.enabled, "Complete motion end must turn off debug visualization.");
+                Assert.IsFalse(collider.enabled);
+            }
+            finally
+            {
+                Object.DestroyImmediate(ownerObject);
+            }
+        }
+
+        [Test]
         public void Test_RepeatedAttackGenerationAndGuardSpriteContracts()
         {
             GameObject attackerObject = new GameObject("RepeatedAttack_Attacker_QA");
