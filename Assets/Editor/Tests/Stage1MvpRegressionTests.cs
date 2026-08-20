@@ -762,6 +762,7 @@ namespace QA.Tests
             {
                 StageRunData run = Stage1RunGenerator.Generate(7);
                 run.CurrentSlotIdx = run.BossGateSlotIdx;
+                run.Slots[run.BossGateSlotIdx].ChunkResourceIdx = 1063u;
                 typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))?.SetValue(manager, run);
                 typeof(StageManager).GetProperty(nameof(StageManager.RoomGeneration))?.SetValue(manager, 9u);
                 typeof(TilemapStageBuilder).GetMethod("ConfigureBossGateDoor", BindingFlags.Static | BindingFlags.NonPublic)

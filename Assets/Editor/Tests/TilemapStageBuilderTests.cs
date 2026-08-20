@@ -14,10 +14,11 @@ namespace QA.Tests
         public void Test00_FadeCoversCleanupTeleportAndCameraSnapBeforeFadeIn()
         {
             string source = File.ReadAllText("Assets/Scripts/Scene/TilemapStageBuilder.cs");
-            int opaque = source.IndexOf("fadeOverlayCanvasGroup.alpha = 1f;");
+            int method = source.IndexOf("public async UniTask<bool> BuildTilemapStageAsync");
+            int opaque = source.IndexOf("fadeOverlayCanvasGroup.alpha = 1f;", method);
             int renderedFrame = source.IndexOf("await UniTask.NextFrame(cancellationToken);", opaque);
             int cleanup = source.IndexOf("CleanupPreviousStageAndEffects();", renderedFrame);
-            int camera = source.IndexOf("SetupMetroidvaniaCamera();", cleanup);
+            int camera = source.IndexOf("SetupMetroidvaniaCamera(", cleanup);
             int fadeIn = source.IndexOf("await fadeInScreenAsync(cancellationToken);", camera);
 
             Assert.GreaterOrEqual(opaque, 0);

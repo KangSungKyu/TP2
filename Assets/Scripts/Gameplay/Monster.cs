@@ -194,8 +194,8 @@ public class Monster : UnitBase
         CancelAttackHitbox();
         EndAttackTelegraph(actionGeneration);
         actionGeneration++;
-        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         ReleaseAttackToken();
+        if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
         if (skillExecutor != null) skillExecutor.CancelActiveEffects();
         SetAnimState(8);
 
@@ -400,6 +400,7 @@ public class Monster : UnitBase
     {
         uint generation = actionGeneration;
         if (playerTarget == null || !CanAct(generation)) return;
+        if (playerTarget != null && CanAct(generation)) { }
 
         bool isDistanceOverPattern = (PatternTriggerType)pattern.TriggerType == PatternTriggerType.DistanceOver;
         float attackRange = pattern.TriggerValue > 0f ? pattern.TriggerValue : 1.8f;
