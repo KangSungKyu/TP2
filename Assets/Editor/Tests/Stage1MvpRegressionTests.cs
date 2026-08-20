@@ -168,7 +168,7 @@ namespace QA.Tests
             {
                 StageRunData run = Stage1RunGenerator.Generate(seed);
                 Assert.IsTrue(Stage1RunGenerator.Validate(run), $"Seed {seed} must produce a valid Stage 1 graph.");
-                Assert.That(run.Slots.Length, Is.InRange(9, 11));
+                Assert.That(run.Slots.Count(slot => slot != null), Is.InRange(9, 11));
                 if (run.Rows == 3 && run.Columns == 4) wideCount++;
                 if (run.Rows == 4 && run.Columns == 3) tallCount++;
             }

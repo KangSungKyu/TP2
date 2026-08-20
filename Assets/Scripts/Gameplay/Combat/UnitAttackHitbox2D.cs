@@ -85,7 +85,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     {
         windowActive = false;
         if (attackCollider != null) attackCollider.enabled = false;
-        telegraphedActive = false;
         UpdateDebugVisualization();
         previousCenter = default;
     }
