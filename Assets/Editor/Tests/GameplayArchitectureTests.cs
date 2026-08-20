@@ -191,6 +191,42 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_ContactPoint_SpawnsEffectsAtHitSurfaceNotRoot()
+        {
+            GameObject targetObject = new GameObject("ContactPoint_Target_QA");
+            try
+            {
+                targetObject.transform.position = new Vector3(10f, 0f, 0f);
+                CombatStats target = targetObject.AddComponent<CombatStats>();
+                target.InitStats();
+                BoxCollider2D body = targetObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(2f, 2f);
+                body.offset = new Vector2(0f, 1f);
+                target.SetDefenseBodyCollider(body);
+
+                CombatStats.AttackSweep2D sweep = new CombatStats.AttackSweep2D(
+                    new Vector2(8f, 1.5f),
+                    new Vector2(9.5f, 1.5f),
+                    new Vector2(0.5f, 0.5f),
+                    999,
+                    1,
+                    0
+                );
+
+                Collider2D col = target.DefenseBodyCollider;
+                Vector3 contactPoint = col.ClosestPoint(sweep.Current);
+
+                Assert.AreNotEqual(targetObject.transform.position, contactPoint, "Contact point must be on collider surface/inside, not root pivot.");
+                Assert.AreEqual(9.5f, contactPoint.x, 0.05f, "Contact point X matching sweep current.");
+                Assert.AreEqual(1.5f, contactPoint.y, 0.05f, "Contact point Y matching sweep height.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(targetObject);
+            }
+        }
+
+        [Test]
         public void Test_RepeatedAttackGenerationAndGuardSpriteContracts()
         {
             GameObject attackerObject = new GameObject("RepeatedAttack_Attacker_QA");

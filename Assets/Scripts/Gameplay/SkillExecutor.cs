@@ -153,6 +153,14 @@ public class SkillExecutor : MonoBehaviour
                 if (!owner.TryOpenAttackHitbox(sourceId, generation, tick, out CombatStats.AttackSweep2D sweep))
                     return false;
 
+                Vector3 attackEffectPos = sweep.Current;
+                if (target != null && target.Stats != null)
+                {
+                    Collider2D targetCol = target.Stats.DefenseBodyCollider != null ? target.Stats.DefenseBodyCollider : target.GetComponent<Collider2D>();
+                    if (targetCol != null) attackEffectPos = targetCol.ClosestPoint(sweep.Current);
+                }
+                SpawnSkillEffectFromDataAsync(skillId, attackEffectPos).Forget();
+
                 ApplyAttackSweep(owner, target, patternDamage, sweep);
 
                 while (elapsed + Mathf.Epsilon < windowEnd)
@@ -350,7 +358,6 @@ public class SkillExecutor : MonoBehaviour
             anim.SetInteger("State", skill.AnimState);
         }
 
-        SpawnSkillEffectFromDataAsync((uint)skill.Id, caster.transform.position).Forget();
         await ExecuteSkillHitsAsync((uint)skill.Id, caster, target,
             BaseDamage * skill.DamageMultiplier, cancellationToken);
 

@@ -54,6 +54,7 @@ public class CombatStats : MonoBehaviour
     public bool IsJumped { get; private set; }
     public bool IsGroggy { get; private set; }
     public bool IsDead { get; private set; }
+    public Collider2D DefenseBodyCollider => defenseBodyCollider;
 
     public UnityEvent<float> OnHpChanged;
     public UnityEvent<float> OnMpChanged;
@@ -448,11 +449,11 @@ public class CombatStats : MonoBehaviour
         if (rend != null) rend.color = original;
     }
 
-    private void SpawnResponseEffect(uint effectIdx)
+    private void SpawnResponseEffect(uint effectIdx, Vector3 spawnPos)
     {
         if (SkillExecutor.Instance != null)
         {
-            SkillExecutor.Instance.SpawnEffectByEffectIdxAsync(effectIdx, transform.position).Forget();
+            SkillExecutor.Instance.SpawnEffectByEffectIdxAsync(effectIdx, spawnPos).Forget();
         }
     }
 }
