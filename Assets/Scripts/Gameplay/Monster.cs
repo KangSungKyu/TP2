@@ -469,10 +469,11 @@ public class Monster : UnitBase
         SetFacingRight(playerTarget.position.x >= transform.position.x);
         uint patternSkillId = pattern.SkillIdx > 0 ? pattern.SkillIdx : Util.CreateDataIdx(DataTableType.Skill, pattern.Idx % 1000);
         GetAttackTiming(patternSkillId, pattern.ProjectileResourceIdx != 0,
-            out float firstHitTiming, out float activeDuration);
-        float effectivePreDelay = CalculateEffectivePreDelay(pattern.PreDelay, firstHitTiming);
+            out float firstHitTiming, out float activeDuration, out float hitWindowPre);
+        float windowStart = Mathf.Max(0f, firstHitTiming - hitWindowPre);
+        float effectivePreDelay = CalculateEffectivePreDelay(pattern.PreDelay, windowStart);
         float attackSequenceStartedAt = Time.time;
-        float impactAt = attackSequenceStartedAt + effectivePreDelay + firstHitTiming;
+        float impactAt = attackSequenceStartedAt + effectivePreDelay + windowStart;
         BeginAttackTelegraph(generation, impactAt - AttackTelegraphLeadSeconds,
             impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration);
 
@@ -717,10 +718,11 @@ public class Monster : UnitBase
         Mathf.Max(Mathf.Max(0f, configuredPreDelay), AttackTelegraphLeadSeconds - Mathf.Max(0f, firstHitTiming));
 
     private static void GetAttackTiming(uint skillId, bool projectile, out float firstHitTiming,
-        out float activeDuration)
+        out float activeDuration, out float hitWindowPre)
     {
         firstHitTiming = 0f;
         activeDuration = projectile ? Time.fixedDeltaTime : FallbackAttackEffectDuration;
+        hitWindowPre = 0f;
         if (projectile) return;
 
         SkillDataTable table = DataTableManager.Instance != null
@@ -729,6 +731,7 @@ public class Monster : UnitBase
             skill.HitTimings == null || skill.HitTimings.Length == 0) return;
 
         firstHitTiming = Mathf.Max(0f, skill.HitTimings[0]);
+        hitWindowPre = skill.HitWindowPre;
         float lastHitTiming = Mathf.Max(0f, skill.HitTimings[skill.HitTimings.Length - 1]);
         activeDuration = lastHitTiming + skill.HitWindowPost;
     }
@@ -739,6 +742,7 @@ public class Monster : UnitBase
         if (!CanAct(generation)) return;
         telegraphGeneration = generation;
         telegraphActive = true;
+        SetTelegraphedAttackHitbox(true);
         AttackTelegraphStarted?.Invoke(new AttackTelegraph(this, generation, warningStartsAt,
             impactAt, Mathf.Max(impactAt, activeEndsAt)));
     }
@@ -747,6 +751,7 @@ public class Monster : UnitBase
     {
         if (!telegraphActive || telegraphGeneration != generation) return;
         telegraphActive = false;
+        SetTelegraphedAttackHitbox(false);
         AttackTelegraphEnded?.Invoke(this, generation);
     }
 }

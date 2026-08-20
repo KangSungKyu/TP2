@@ -178,6 +178,44 @@ namespace QA.Tests
         }
 
         [Test]
+        public void Test_TelegraphTimer_SyncsWithWindowStart_AndPreRendersYellowHitbox()
+        {
+            GameObject monsterObject = new GameObject("TelegraphSync_Monster_QA");
+            try
+            {
+                Monster monster = monsterObject.AddComponent<Monster>();
+                Monster.AttackTelegraph capturedTelegraph = default;
+                bool telegraphReceived = false;
+                Action<Monster.AttackTelegraph> handler = t =>
+                {
+                    if (t.Source == monster)
+                    {
+                        capturedTelegraph = t;
+                        telegraphReceived = true;
+                    }
+                };
+
+                Monster.AttackTelegraphStarted += handler;
+                try
+                {
+                    typeof(Monster).GetMethod("BeginAttackTelegraph", BindingFlags.Instance | BindingFlags.NonPublic)
+                        ?.Invoke(monster, new object[] { 1u, 10f, 11.5f, 12.0f });
+
+                    Assert.IsTrue(telegraphReceived, "BeginAttackTelegraph must fire AttackTelegraphStarted.");
+                    Assert.AreEqual(11.5f, capturedTelegraph.ImpactAt, 0.001f, "ImpactAt baseline must match windowStart.");
+                }
+                finally
+                {
+                    Monster.AttackTelegraphStarted -= handler;
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(monsterObject);
+            }
+        }
+
+        [Test]
         public void Test_RepeatedAttackGenerationAndGuardSpriteContracts()
         {
             GameObject attackerObject = new GameObject("RepeatedAttack_Attacker_QA");
