@@ -78,7 +78,19 @@ namespace QA.Tests
                 Assert.IsTrue(hitbox.IsWindowActive);
                 Assert.IsTrue(hitbox.IsDebugVisualizationActive);
                 Assert.IsTrue(debugSprite.enabled);
+                Assert.AreEqual(hitbox.ActiveColor, debugSprite.color, "Active hit window must render active color.");
                 Assert.AreEqual(new Vector2(1f, 0.5f), sweep.HalfExtents);
+
+                hitbox.SetTelegraphed(true);
+                owner.CloseAttackHitbox();
+                Assert.IsFalse(hitbox.IsWindowActive);
+                Assert.IsTrue(hitbox.IsDebugVisualizationActive, "Telegraphed state must keep visualization active.");
+                Assert.IsTrue(debugSprite.enabled);
+                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Telegraphed/inactive window must render inactive color.");
+
+                hitbox.SetTelegraphed(false);
+                Assert.IsFalse(hitbox.IsDebugVisualizationActive);
+                Assert.IsFalse(debugSprite.enabled);
 
                 UnitAttackHitbox2D.DebugVisualizationEnabled = false;
                 owner.CloseAttackHitbox();

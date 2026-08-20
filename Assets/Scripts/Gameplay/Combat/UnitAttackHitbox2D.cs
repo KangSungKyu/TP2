@@ -12,19 +12,26 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     [SerializeField] private Transform attachRoot;
     [SerializeField] private SpriteRenderer debugHitboxSprite;
     [SerializeField] private LineRenderer debugHitboxLine;
+    [SerializeField] private Color activeColor = new Color(1f, 0.2f, 0.2f, 0.5f);
+    [SerializeField] private Color inactiveColor = new Color(1f, 0.8f, 0.1f, 0.25f);
 
     private UnitBase owner;
     private Vector2 previousCenter;
     private bool windowActive;
+    private bool telegraphedActive;
     private uint hitGeneration;
 
+    public Color ActiveColor => activeColor;
+    public Color InactiveColor => inactiveColor;
+    public Color CurrentDebugColor => debugHitboxSprite != null ? debugHitboxSprite.color : (windowActive ? activeColor : inactiveColor);
     public bool IsWindowActive => windowActive && attackCollider != null && attackCollider.enabled;
+    public bool IsTelegraphedActive => telegraphedActive;
     public bool IsDebugVisualizationActive
     {
         get
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            return DebugVisualizationEnabled && IsWindowActive;
+            return DebugVisualizationEnabled && (IsWindowActive || telegraphedActive);
 #else
             return false;
 #endif
@@ -43,6 +50,12 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         Vector3 scale = attachRoot.localScale;
         scale.x = Mathf.Abs(scale.x) * (facingRight ? 1f : -1f);
         attachRoot.localScale = scale;
+    }
+
+    public void SetTelegraphed(bool telegraphed)
+    {
+        telegraphedActive = telegraphed;
+        UpdateDebugVisualization();
     }
 
     public bool TryOpen(int sourceId, uint generation, uint tick, out CombatStats.AttackSweep2D sweep)
@@ -64,21 +77,25 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         if (previousCenter == default) previousCenter = owner.transform.position;
         sweep = new CombatStats.AttackSweep2D(previousCenter, current, bounds.extents, sourceId, hitGeneration, tick);
         previousCenter = current;
-        SetDebugVisible(true);
+        UpdateDebugVisualization();
         return true;
     }
 
     public void Close()
     {
-        SetWindowActive(false);
+        windowActive = false;
+        if (attackCollider != null) attackCollider.enabled = false;
+        telegraphedActive = false;
+        UpdateDebugVisualization();
         previousCenter = default;
     }
 
     private void OnDisable()
     {
         windowActive = false;
+        telegraphedActive = false;
         if (attackCollider != null) attackCollider.enabled = false;
-        SetDebugVisible(false);
+        UpdateDebugVisualization();
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -91,26 +108,38 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         Vector3 topLeft = new Vector3(bounds.min.x, bounds.max.y, transform.position.z);
         Vector3 topRight = new Vector3(bounds.max.x, bounds.max.y, transform.position.z);
         Vector3 bottomRight = new Vector3(bounds.max.x, bounds.min.y, transform.position.z);
-        Debug.DrawLine(bottomLeft, topLeft, Color.red);
-        Debug.DrawLine(topLeft, topRight, Color.red);
-        Debug.DrawLine(topRight, bottomRight, Color.red);
-        Debug.DrawLine(bottomRight, bottomLeft, Color.red);
+        Color drawColor = windowActive ? activeColor : inactiveColor;
+        Debug.DrawLine(bottomLeft, topLeft, drawColor);
+        Debug.DrawLine(topLeft, topRight, drawColor);
+        Debug.DrawLine(topRight, bottomRight, drawColor);
+        Debug.DrawLine(bottomRight, bottomLeft, drawColor);
     }
 #endif
 
     private void SetWindowActive(bool active)
     {
         windowActive = active;
+        if (!active) telegraphedActive = false;
         if (attackCollider != null) attackCollider.enabled = active;
-        SetDebugVisible(active);
+        UpdateDebugVisualization();
     }
 
-    private void SetDebugVisible(bool windowVisible)
+    private void UpdateDebugVisualization()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        bool visible = DebugVisualizationEnabled && windowVisible;
-        if (debugHitboxSprite != null) debugHitboxSprite.enabled = visible;
-        if (debugHitboxLine != null) debugHitboxLine.enabled = debugHitboxSprite == null && visible;
+        bool visible = DebugVisualizationEnabled && (windowActive || telegraphedActive);
+        Color currentColor = windowActive ? activeColor : inactiveColor;
+        if (debugHitboxSprite != null)
+        {
+            debugHitboxSprite.color = currentColor;
+            debugHitboxSprite.enabled = visible;
+        }
+        if (debugHitboxLine != null)
+        {
+            debugHitboxLine.startColor = currentColor;
+            debugHitboxLine.endColor = currentColor;
+            debugHitboxLine.enabled = debugHitboxSprite == null && visible;
+        }
 #else
         if (debugHitboxSprite != null) debugHitboxSprite.enabled = false;
         if (debugHitboxLine != null) debugHitboxLine.enabled = false;

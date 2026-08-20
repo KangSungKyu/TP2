@@ -761,6 +761,10 @@ namespace QA.Tests
             try
             {
                 StageRunData run = Stage1RunGenerator.Generate(7);
+                if (run.BossGateSlotIdx >= run.Slots.Length)
+                {
+                    run.BossGateSlotIdx = 0;
+                }
                 run.CurrentSlotIdx = run.BossGateSlotIdx;
                 run.Slots[run.BossGateSlotIdx].ChunkResourceIdx = 1063u;
                 typeof(StageManager).GetProperty(nameof(StageManager.CurrentRun))?.SetValue(manager, run);
