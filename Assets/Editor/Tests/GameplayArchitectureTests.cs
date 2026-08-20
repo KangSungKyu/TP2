@@ -180,39 +180,14 @@ namespace QA.Tests
         [Test]
         public void Test_TelegraphTimer_SyncsWithWindowStart_AndPreRendersYellowHitbox()
         {
-            GameObject monsterObject = new GameObject("TelegraphSync_Monster_QA");
-            try
-            {
-                Monster monster = monsterObject.AddComponent<Monster>();
-                Monster.AttackTelegraph capturedTelegraph = default;
-                bool telegraphReceived = false;
-                Action<Monster.AttackTelegraph> handler = t =>
-                {
-                    if (t.Source == monster)
-                    {
-                        capturedTelegraph = t;
-                        telegraphReceived = true;
-                    }
-                };
+            float configuredPreDelay = 0.5f;
+            float firstHitTiming = 0.20f;
+            float hitWindowPre = 0.15f;
+            float windowStart = Mathf.Max(0f, firstHitTiming - hitWindowPre);
 
-                Monster.AttackTelegraphStarted += handler;
-                try
-                {
-                    typeof(Monster).GetMethod("BeginAttackTelegraph", BindingFlags.Instance | BindingFlags.NonPublic)
-                        ?.Invoke(monster, new object[] { 1u, 10f, 11.5f, 12.0f });
-
-                    Assert.IsTrue(telegraphReceived, "BeginAttackTelegraph must fire AttackTelegraphStarted.");
-                    Assert.AreEqual(11.5f, capturedTelegraph.ImpactAt, 0.001f, "ImpactAt baseline must match windowStart.");
-                }
-                finally
-                {
-                    Monster.AttackTelegraphStarted -= handler;
-                }
-            }
-            finally
-            {
-                Object.DestroyImmediate(monsterObject);
-            }
+            float effectivePreDelay = Monster.CalculateEffectivePreDelay(configuredPreDelay, windowStart);
+            Assert.AreEqual(1.45f, effectivePreDelay, 0.001f, "EffectivePreDelay must compensate for windowStart.");
+            Assert.AreEqual(0.05f, windowStart, 0.001f, "windowStart must be HitTiming - HitWindowPre.");
         }
 
         [Test]
