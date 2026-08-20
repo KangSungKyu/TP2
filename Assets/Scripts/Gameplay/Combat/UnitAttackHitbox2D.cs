@@ -52,6 +52,25 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         attachRoot.localScale = scale;
     }
 
+    public bool TryGetForwardReach(bool facingRight, out float reach)
+    {
+        reach = 0f;
+        if (owner == null || attackCollider == null || attachRoot == null) return false;
+        bool wasEnabled = attackCollider.enabled;
+        try
+        {
+            if (!wasEnabled) attackCollider.enabled = true;
+            Physics2D.SyncTransforms();
+            Bounds bounds = attackCollider.bounds;
+            reach = facingRight ? bounds.max.x - owner.transform.position.x : owner.transform.position.x - bounds.min.x;
+            return float.IsFinite(reach) && reach >= 0f;
+        }
+        finally
+        {
+            if (!wasEnabled) attackCollider.enabled = false;
+        }
+    }
+
     public void SetTelegraphed(bool telegraphed)
     {
         telegraphedActive = telegraphed;

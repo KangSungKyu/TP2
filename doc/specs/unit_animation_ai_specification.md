@@ -95,11 +95,15 @@ projectile, attack trail, background, text, UI, watermark
 |---|---:|:---:|---|
 | `Attack_01` | 6 | N | 낮게 접근해 앞손 단검으로 아래에서 위로 짧게 벤다. 접촉 후 몸을 지나치게 회전하지 않는다. |
 | `Attack_02` | 8 | N | 첫 베기 반대쪽 단검으로 상단에서 하단을 교차해 베고 즉시 뒤로 빠질 자세를 만든다. 두 접촉 프레임은 분리한다. |
+| `PrototypeDummy_ChargingThrust` | 기존 sprite 재사용 | N | `6008→7005→State 14→Motion 10002`; 이동과 모션을 동시에 실행하고 대상 앞에서 정지한다. |
+| `PrototypeDummy_Barrage` | 기존 sprite 재사용 | N | `6009→7006→State 15→Motion 10001`; 제자리에서 공격 window를 2회 실행한다. |
 | `Dodge` | 6 | N | 상체를 낮춘 채 후방으로 빠르게 미끄러지며 두 단검을 몸 앞에 유지한다. 구르지 않는다. |
 | `Dash` | 6 | N | 날개형 와이어 장치가 접히고 지면 가까이 순간 가속해 대상 바로 앞에서 정지한다. |
 | `Hit` | 4 | N | 가벼운 몸체가 크게 흔들리지만 한 발을 뒤로 짚어 즉시 균형을 회복한다. |
 | `Groggy` | 8 | Y | 양팔과 날개 장치가 처지고 낮은 자세에서 좌우로 불규칙하게 흔들린다. |
 | `Death` | 8 | N | 와이어 장력이 끊기며 몸이 접히듯 앞으로 무너지고 단검이 지면에 닿는다. |
+
+PrototypeDummy 2개 clip은 기존 sprite, `FX 8001`, hitbox placeholder를 재사용한다. 전용 sprite sheet·VFX, hitbox 궤적 계측, damage/cooldown 밸런싱은 프로덕션 교체 공정으로 남긴다. 기존 공유 `6001/6002/7001`은 변경하지 않는다. QA는 compile·제품 Error 0과 CSV/Animator 정적 확인만 완료했으며 Unity runner `0/0 timeout`으로 `BLOCKED`다.
 
 ## 6. Unit_3103 — WaveHeavy
 

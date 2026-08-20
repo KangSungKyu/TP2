@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Datas
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 864e09d1f45cab9419b16b9b3f70e772
+    m_Address: AttackMotionProfileData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Datas
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a30088b38b7e7e44f940b9b1c2b4bccb
     m_Address: MonsterEncounterData
     m_ReadOnly: 0

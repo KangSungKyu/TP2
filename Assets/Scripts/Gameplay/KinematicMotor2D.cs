@@ -62,6 +62,8 @@ public class KinematicMotor2D : MonoBehaviour
     private bool hasHorizontalMovementBounds;
     private Bounds horizontalMovementBounds;
     private bool isJumpHeld;
+    private bool hasHorizontalStopPosition;
+    private float horizontalStopPositionX;
 
     public void InitMotor()
     {
@@ -126,6 +128,19 @@ public class KinematicMotor2D : MonoBehaviour
     public void SetTargetVelocityX(float vx)
     {
         targetVelocityX = vx;
+    }
+
+    public void SetHorizontalStopPosition(float worldX)
+    {
+        horizontalStopPositionX = worldX;
+        hasHorizontalStopPosition = float.IsFinite(worldX);
+    }
+
+    public void StopHorizontalImmediately()
+    {
+        targetVelocityX = 0f;
+        Velocity = new Vector2(0f, Velocity.y);
+        hasHorizontalStopPosition = false;
     }
 
     public void SetVelocityY(float vy)
@@ -236,6 +251,7 @@ public class KinematicMotor2D : MonoBehaviour
         ignoredPlatformTopY = float.MinValue;
         groundCollider = null;
         hasHorizontalMovementBounds = false;
+        hasHorizontalStopPosition = false;
     }
 
     public void SetHorizontalMovementBounds(Bounds bounds)
@@ -287,10 +303,23 @@ public class KinematicMotor2D : MonoBehaviour
         Velocity = new Vector2(knockbackStepsRemaining > 0 ? knockbackVelocityX : targetVelocityX, Velocity.y);
 
         var deltaPosition = Velocity * dt;
+        bool reachedHorizontalStop = false;
+        if (hasHorizontalStopPosition)
+        {
+            float remainingX = horizontalStopPositionX - body.position.x;
+            bool movingTowardStop = Mathf.Approximately(remainingX, 0f) ||
+                Mathf.Sign(deltaPosition.x) == Mathf.Sign(remainingX);
+            if (movingTowardStop && Mathf.Abs(deltaPosition.x) >= Mathf.Abs(remainingX))
+            {
+                deltaPosition.x = remainingX;
+                reachedHorizontalStop = true;
+            }
+        }
 
         var moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
         var horizontalMove = moveAlongGround * deltaPosition.x;
         PerformMovement(horizontalMove, false);
+        if (reachedHorizontalStop) StopHorizontalImmediately();
 
         if (IsGrounded && deltaPosition.y < 0f)
         {

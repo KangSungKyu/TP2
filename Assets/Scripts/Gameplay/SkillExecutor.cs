@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -122,7 +123,9 @@ public class SkillExecutor : MonoBehaviour
     }
 
     public async UniTask<bool> ExecuteSkillHitsAsync(uint skillId, UnitBase owner, UnitBase target,
-        float patternDamage, CancellationToken cancellationToken = default)
+        float patternDamage, CancellationToken cancellationToken = default,
+        uint attackMotionProfileOverrideIdx = 0, Func<bool> canStartWindow = null,
+        Action onFirstSuccessfulHit = null)
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -131,6 +134,12 @@ public class SkillExecutor : MonoBehaviour
             return false;
 
         uint generation = owner.ActionGeneration;
+        AttackMotionProfileData motion = ResolveAttackMotionProfile(skill, attackMotionProfileOverrideIdx);
+        float motionStartX = owner.transform.position.x;
+        Collider2D targetBody = target != null && target.Stats != null ? target.Stats.DefenseBodyCollider : null;
+        float targetSnapshotX = targetBody != null ? targetBody.bounds.center.x : target != null ? target.transform.position.x : motionStartX;
+        float targetSnapshotHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
+        float motionVelocityX = 0f;
         int sourceId = owner.GetInstanceID() ^ (int)skillId;
         float elapsed = 0f;
         try
@@ -145,10 +154,29 @@ public class SkillExecutor : MonoBehaviour
 
                 while (elapsed + Mathf.Epsilon < windowStart)
                 {
+                    float remaining = windowStart - elapsed;
+                    bool tracking = motion.TargetPolicy == AttackTargetPolicy.TrackUntilActive && target != null;
+                    targetBody = tracking && target.Stats != null ? target.Stats.DefenseBodyCollider : targetBody;
+                    float targetX = tracking
+                        ? (targetBody != null ? targetBody.bounds.center.x : target.transform.position.x) : targetSnapshotX;
+                    float targetHalfWidth = tracking && targetBody != null ? targetBody.bounds.extents.x : targetSnapshotHalfWidth;
+                    float targetVelocityX = tracking ? target.AttackMotionVelocityX : 0f;
+                    bool facingRight = targetX >= owner.transform.position.x;
+                    float attackReach = owner.TryGetAttackForwardReach(facingRight, out float reach) ? reach : 0f;
+                    float clampedTargetX = CalculateAttackAlignmentTargetX(motionStartX, owner.transform.position.x,
+                        targetX, targetVelocityX, remaining, targetHalfWidth, attackReach,
+                        owner.AttackMotionSkinWidth, motion.MaxDistance, tracking);
+                    motionVelocityX = CalculateAttackMotionVelocity(motion, owner.transform.position.x,
+                        clampedTargetX, remaining, motionVelocityX, Time.fixedDeltaTime);
+                    if (!owner.IsActionGenerationCurrent(generation)) return true;
+                    owner.SetAttackMotionStopPosition(clampedTargetX);
+                    owner.SetAttackMotionVelocityX(motionVelocityX);
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
                 }
+                owner.StopAttackMotionImmediately();
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
+                if (canStartWindow != null && !canStartWindow()) return false;
 
                 if (!owner.TryOpenAttackHitbox(sourceId, generation, tick, out CombatStats.AttackSweep2D sweep))
                     return false;
@@ -161,7 +189,7 @@ public class SkillExecutor : MonoBehaviour
                 }
                 SpawnSkillEffectFromDataAsync(skillId, attackEffectPos).Forget();
 
-                ApplyAttackSweep(owner, target, patternDamage, sweep);
+                if (ApplyAttackSweep(owner, target, patternDamage, sweep)) onFirstSuccessfulHit?.Invoke();
 
                 while (elapsed + Mathf.Epsilon < windowEnd)
                 {
@@ -177,31 +205,34 @@ public class SkillExecutor : MonoBehaviour
         }
         finally
         {
+            owner.StopAttackMotionImmediately();
             owner.CloseAttackHitbox();
             owner.SetTelegraphedAttackHitbox(false);
         }
     }
 
-    private static void ApplyAttackSweep(UnitBase owner, UnitBase target, float damage,
+    private static bool ApplyAttackSweep(UnitBase owner, UnitBase target, float damage,
         CombatStats.AttackSweep2D sweep)
     {
         if (target != null)
         {
-            ApplyAttackSweepToTarget(owner, target, damage, sweep);
-            return;
+            return ApplyAttackSweepToTarget(owner, target, damage, sweep);
         }
-        if (!(owner is Player)) return;
+        if (!(owner is Player)) return false;
 
+        bool hit = false;
         var targets = new List<Monster>(Monster.ActiveMonsters);
-        foreach (Monster candidate in targets) ApplyAttackSweepToTarget(owner, candidate, damage, sweep);
+        foreach (Monster candidate in targets) hit |= ApplyAttackSweepToTarget(owner, candidate, damage, sweep);
+        return hit;
     }
 
-    private static void ApplyAttackSweepToTarget(UnitBase owner, UnitBase target, float damage,
+    private static bool ApplyAttackSweepToTarget(UnitBase owner, UnitBase target, float damage,
         CombatStats.AttackSweep2D sweep)
     {
         if (target == null || !target.isActiveAndEnabled || target.Stats == null || owner.Faction == target.Faction ||
-            !target.Stats.TryGetAttackSweepFraction(sweep, out _)) return;
+            !target.Stats.TryGetAttackSweepFraction(sweep, out _)) return false;
         target.Stats.TakeDamage(damage, attacker: owner.Stats, attackOrigin: sweep.Previous, attackSweep: sweep);
+        return true;
     }
 
     public bool TryPlaySkillAnimation(Animator animator, uint skillId)
@@ -240,6 +271,64 @@ public class SkillExecutor : MonoBehaviour
         animator.SetInteger("State", targetState);
         return true;
     }
+
+    public static AttackMotionProfileData ResolveAttackMotionProfile(SkillData skill, uint patternOverrideIdx = 0)
+    {
+        uint requestedIdx = ResolveAttackMotionProfileIdx(skill, patternOverrideIdx);
+        var table = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<AttackMotionProfileDataTable>(DataTableType.AttackMotionProfile) : null;
+        if (table != null && table.TryGetValid(requestedIdx, out AttackMotionProfileData profile)) return profile;
+        if (requestedIdx != AttackMotionProfileDataTable.StationaryProfileIdx)
+            Debug.LogWarning($"[SkillExecutor] Invalid AttackMotionProfile idx {requestedIdx}; Stationary fallback applied.");
+        return new AttackMotionProfileData
+        {
+            Idx = AttackMotionProfileDataTable.StationaryProfileIdx,
+            MotionType = AttackMotionType.Stationary,
+            TargetPolicy = AttackTargetPolicy.SnapshotAtStartup,
+            MaxDistance = 0f,
+            MaxSpeed = 0f,
+            Acceleration = 0f,
+            Enabled = true
+        };
+    }
+
+    public static uint ResolveAttackMotionProfileIdx(SkillData skill, uint patternOverrideIdx = 0) =>
+        patternOverrideIdx != 0 ? patternOverrideIdx :
+        skill != null && skill.AttackMotionProfileIdx != 0 ? skill.AttackMotionProfileIdx :
+        AttackMotionProfileDataTable.StationaryProfileIdx;
+
+    public static float CalculateAttackMotionVelocity(AttackMotionProfileData profile, float currentX,
+        float targetX, float remainingSeconds, float currentVelocityX, float fixedDeltaTime)
+    {
+        if (profile == null || profile.MotionType == AttackMotionType.Stationary || remainingSeconds <= 0f)
+            return 0f;
+        float delta = targetX - currentX;
+        if (Mathf.Approximately(delta, 0f)) return 0f;
+        float required = Mathf.Min(profile.MaxSpeed, Mathf.Abs(delta) / remainingSeconds) * Mathf.Sign(delta);
+        return profile.MotionType == AttackMotionType.Step ? required :
+            Mathf.MoveTowards(currentVelocityX, required, profile.Acceleration * fixedDeltaTime);
+    }
+
+    public static float CalculateAttackAlignmentTargetX(float motionStartX, float ownerX, float targetCenterX,
+        float targetVelocityX, float remainingSeconds, float targetHalfWidth, float attackReach,
+        float skinWidth, float maxDistance, bool trackUntilActive)
+    {
+        float predictedCenterX = targetCenterX + (trackUntilActive ? targetVelocityX * Mathf.Max(0f, remainingSeconds) : 0f);
+        float facing = predictedCenterX >= ownerX ? 1f : -1f;
+        float stopX = predictedCenterX - facing * (Mathf.Max(0f, targetHalfWidth) +
+            Mathf.Max(0f, attackReach) + Mathf.Max(0f, skinWidth));
+        return motionStartX + Mathf.Clamp(stopX - motionStartX, -Mathf.Max(0f, maxDistance), Mathf.Max(0f, maxDistance));
+    }
+
+    public float GetAttackRecoverySeconds(Animator animator, float animationStartedAt, float configuredRecovery)
+    {
+        if (animator == null || animator.runtimeAnimatorController == null) return Mathf.Max(0f, configuredRecovery);
+        float elapsed = Mathf.Max(0f, Time.time - animationStartedAt);
+        return CalculateAttackRecoverySeconds(animator.GetCurrentAnimatorStateInfo(0).length, elapsed, configuredRecovery);
+    }
+
+    public static float CalculateAttackRecoverySeconds(float animationLength, float elapsed, float configuredRecovery) =>
+        Mathf.Max(Mathf.Max(0f, configuredRecovery), Mathf.Max(0f, animationLength - Mathf.Max(0f, elapsed)));
 
     public async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position, Quaternion rotation = default)
     {

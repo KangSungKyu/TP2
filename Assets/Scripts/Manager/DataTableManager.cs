@@ -75,6 +75,7 @@ public class DataTableManager : Singleton<DataTableManager>
         this.dataList[DataTableType.Skill] = new SkillDataTable();
         this.dataList[DataTableType.EffectData] = new EffectDataTable();
         this.dataList[DataTableType.StageData] = new StageDataTable();
+        this.dataList[DataTableType.AttackMotionProfile] = new AttackMotionProfileDataTable();
         this.dataList[DataTableType.StageLayout] = new StageLayoutDataTable();
         this.dataList[DataTableType.ChunkResource] = new ChunkResourceDataTable();
         this.dataList[DataTableType.MonsterEncounter] = new MonsterEncounterDataTable();

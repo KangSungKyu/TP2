@@ -94,6 +94,17 @@ public class UnitBase : MonoBehaviour
     public void SetGuarding(bool state) => stats?.SetGuarding(state);
     public void SetParrying(bool state) => stats?.SetParrying(state);
     public void SetDodging(bool state) => stats?.SetDodging(state);
+    public void SetAttackMotionVelocityX(float velocityX) => motor?.SetTargetVelocityX(velocityX);
+    public void SetAttackMotionStopPosition(float worldX) => motor?.SetHorizontalStopPosition(worldX);
+    public void StopAttackMotionImmediately() => motor?.StopHorizontalImmediately();
+    public float AttackMotionVelocityX => motor != null ? motor.Velocity.x : 0f;
+    public float AttackMotionSkinWidth => motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
+    public bool TryGetAttackForwardReach(bool facingRight, out float reach)
+    {
+        if (attackHitbox != null) return attackHitbox.TryGetForwardReach(facingRight, out reach);
+        reach = 0f;
+        return false;
+    }
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
 
     public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick,
@@ -112,7 +123,9 @@ public class UnitBase : MonoBehaviour
     public virtual void CancelAttackHitbox()
     {
         sharedActionGeneration++;
+        StopAttackMotionImmediately();
         attackHitbox?.Close();
+        attackHitbox?.SetTelegraphed(false);
     }
 
     /// <summary>

@@ -98,11 +98,56 @@ public enum DataTableType : uint
     Skill = 7,            // 7순위: 스킬 데이터 (7001~)
     EffectData = 8,       // 8순위: 스킬 이펙트 연동 데이터 (8001~)
     StageData = 9,        // 9순위: 스테이지 및 룸 시퀀스 데이터 (9001~)
+    AttackMotionProfile = 10,
     ChunkResource = 11,   // 청크 후보와 ResourceData FK (11001~)
     StageLayout = 12,     // 스테이지 절차 생성 설정 (12001~)
     MonsterEncounter = 13,// 스테이지 전투 조합 (13001~)
     
     DataTableType_End
+}
+
+public enum PatternTriggerSubject : uint
+{
+    Self = 0,
+    CurrentTarget = 1
+}
+
+public enum PatternState : uint
+{
+    Idle = 0,
+    Reserved = 1,
+    Chase = 2,
+    Startup = 3,
+    Active = 4,
+    Recovery = 5,
+    Returning = 6
+}
+
+public enum PatternCancelReason : uint
+{
+    None = 0,
+    Cancelled = 1,
+    Timeout = 2,
+    TargetInvalid = 3,
+    UnsafeRetreat = 4,
+    Groggy = 5,
+    Death = 6,
+    Disabled = 7,
+    Returning = 8,
+    Exception = 9
+}
+
+public enum AttackMotionType : uint
+{
+    Stationary = 0,
+    Step = 1,
+    AcceleratingLunge = 2
+}
+
+public enum AttackTargetPolicy : uint
+{
+    SnapshotAtStartup = 0,
+    TrackUntilActive = 1
 }
 
 
@@ -268,14 +313,21 @@ public class MonsterPatternData
     [Name("patternnametextidx")]
     public uint PatternNameTextIdx { get; set; } // TextData.csv Idx 참조 (2001~)
 
-    [Name("animclipname")]
-    public string AnimClipName { get; set; } // Animator 재생 애니메이션 클립 이름
-
     [Name("executiontype")]
     public uint ExecutionType { get; set; } // 1: Simple, 2: Sequence, 3: Random, 4: Trigger
 
     [Name("triggertype")]
     public uint TriggerType { get; set; } // 0: None, 1: HpRatioUnder, 2: DistanceOver, 3: DistanceUnder, 4: TargetGroggy
+
+    // Optional until the resource-owned CSV migration lands. Null preserves the
+    // legacy, unambiguous TriggerType mapping without accepting string enums.
+    [Name("triggersubject"), Optional]
+    public uint? TriggerSubjectValue { get; set; }
+
+    [Ignore]
+    public PatternTriggerSubject? TriggerSubject => TriggerSubjectValue.HasValue &&
+        TriggerSubjectValue.Value <= (uint)PatternTriggerSubject.CurrentTarget
+            ? (PatternTriggerSubject)TriggerSubjectValue.Value : null;
 
     [Name("triggervalue")]
     public float TriggerValue { get; set; } // 조건 수치
@@ -300,6 +352,15 @@ public class MonsterPatternData
 
     [Name("skillidx")]
     public uint SkillIdx { get; set; } // 연동 SkillData Idx (Type 7: 7001~)
+
+    [Name("minstartdistance"), Optional]
+    public float MinStartDistance { get; set; }
+
+    [Name("maxstartdistance"), Optional]
+    public float MaxStartDistance { get; set; }
+
+    [Name("attackmotionprofileidx"), Optional]
+    public uint AttackMotionProfileIdx { get; set; }
 
     [Name("projectileresourceidx")]
     public uint ProjectileResourceIdx { get; set; }
@@ -386,6 +447,34 @@ public class SkillData
 
     [Name("animstate")]
     public int AnimState { get; set; } // Animator 'State' (int) 파라미터 제어 값
+
+    [Name("attackmotionprofileidx"), Optional]
+    public uint AttackMotionProfileIdx { get; set; }
+}
+
+[Serializable]
+public class AttackMotionProfileData
+{
+    [Name("idx")]
+    public uint Idx { get; set; }
+
+    [Name("motiontype"), TypeConverter(typeof(AttackMotionTypeConverter))]
+    public AttackMotionType MotionType { get; set; }
+
+    [Name("targetpolicy"), TypeConverter(typeof(AttackTargetPolicyConverter))]
+    public AttackTargetPolicy TargetPolicy { get; set; }
+
+    [Name("maxdistance")]
+    public float MaxDistance { get; set; }
+
+    [Name("maxspeed")]
+    public float MaxSpeed { get; set; }
+
+    [Name("acceleration")]
+    public float Acceleration { get; set; }
+
+    [Name("enabled"), TypeConverter(typeof(ZeroOneBooleanConverter))]
+    public bool Enabled { get; set; }
 }
 
 /// <summary>
