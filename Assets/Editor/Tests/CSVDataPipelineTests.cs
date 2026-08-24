@@ -140,10 +140,17 @@ namespace QA.Tests
         {
             var table = new EffectDataTable();
             Assert.DoesNotThrow(() => table.LoadData(
-                "idx,effectnametextidx,prefabidx,duration,scale,loopcount\n8001,2201,1020,0.3,1.0,1"));
+                "idx,effectnametextidx,prefabidx,duration,scale,loopcount,activecenterx,activecentery,activesizex,activesizey\n" +
+                "8001,2201,1020,0.3,1.0,1,0,0,0,0\n8014,2201,1081,1,1,1,.16,-.11,.56,.82"));
             Assert.IsTrue(table.TryGetEffectData(8001, out EffectData effect));
             Assert.AreEqual(2201u, effect.EffectNameTextIdx);
             Assert.AreEqual(string.Empty, table.GetDisplayName(8001));
+            Assert.IsTrue(table.TryGetEffectData(8014, out EffectData attackEffect));
+            Assert.IsTrue(attackEffect.HasValidActiveBounds);
+            Assert.AreEqual(new Vector2(.16f, -.11f),
+                new Vector2(attackEffect.ActiveCenterX, attackEffect.ActiveCenterY));
+            Assert.AreEqual(new Vector2(.56f, .82f),
+                new Vector2(attackEffect.ActiveSizeX, attackEffect.ActiveSizeY));
         }
 
         [Test]
@@ -225,6 +232,30 @@ namespace QA.Tests
             var resources = new ResourceDataTable();
             Assert.DoesNotThrow(() => resources.LoadData("idx,path\n1050,Room_11050"));
             Assert.AreEqual(1, resources.GetDataCount());
+        }
+
+        [Test]
+        public void SkillAttackSubject_StrictIntegerAndRoleMatrix()
+        {
+            const string header = "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate,attackmotionprofileidx,attacksubject,bodypart\n";
+            var table = new SkillDataTable();
+
+            table.LoadData(header + "7001,2001,2,0,1,0,1,1,1,0.1,0.01,0.01,0,7,10001,0,0");
+            Assert.IsTrue(table.TryGetSkillData(7001, out SkillData weapon));
+            Assert.AreEqual(AttackSubject.Weapon, weapon.AttackSubject);
+            Assert.AreEqual(BodyPartRole.None, weapon.BodyPartRole);
+
+            table.LoadData(header + "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,1,1");
+            Assert.IsTrue(table.TryGetSkillData(7007, out SkillData torso));
+            Assert.AreEqual(AttackSubject.BodyPart, torso.AttackSubject);
+            Assert.AreEqual(BodyPartRole.Torso, torso.BodyPartRole);
+
+            Assert.Catch<System.Exception>(() => table.LoadData(header +
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,2,1"));
+            Assert.Throws<System.InvalidOperationException>(() => table.LoadData(header +
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,0,1"));
+            Assert.Throws<System.InvalidOperationException>(() => table.LoadData(header +
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,1,0"));
         }
     }
 }

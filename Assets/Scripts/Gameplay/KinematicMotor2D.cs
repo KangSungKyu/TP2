@@ -143,6 +143,20 @@ public class KinematicMotor2D : MonoBehaviour
         hasHorizontalStopPosition = false;
     }
 
+    public bool HasGroundSupportForHorizontalStep(float deltaX)
+    {
+        if (Mathf.Abs(deltaX) <= Mathf.Epsilon) return true;
+        if (!IsGrounded || physicsCollider == null || groundCollider == null || !groundCollider.enabled) return false;
+
+        Bounds bounds = physicsCollider.bounds;
+        Vector2 probe = new Vector2(
+            bounds.center.x + Mathf.Sign(deltaX) * (bounds.extents.x + Mathf.Abs(deltaX)),
+            bounds.min.y - SkinWidth);
+        Vector2 closest = groundCollider.ClosestPoint(probe);
+        return Mathf.Abs(closest.x - probe.x) <= SkinWidth &&
+               Mathf.Abs(closest.y - probe.y) <= SkinWidth * 2f;
+    }
+
     public void SetVelocityY(float vy)
     {
         Velocity = new Vector2(Velocity.x, vy);

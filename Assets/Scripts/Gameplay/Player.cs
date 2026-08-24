@@ -78,7 +78,11 @@ public class Player : UnitBase
         if (this != null && isActiveAndEnabled) Activated?.Invoke(this);
     }
 
-    private void OnEnable() => Activated?.Invoke(this);
+    private void OnEnable()
+    {
+        SetFacingRight(facingDir.x >= 0f);
+        Activated?.Invoke(this);
+    }
     private void OnDisable()
     {
         CancelAttackHitbox();
@@ -192,6 +196,7 @@ public class Player : UnitBase
         {
             transform.position = position;
         }
+        SetFacingRight(facingDir.x >= 0f);
         SetState(PlayerState.Idle, true);
     }
 
@@ -499,6 +504,7 @@ public class Player : UnitBase
         }
 
         uint currentSkillId = Util.CreateDataIdx(DataTableType.Skill, (uint)comboStep);
+        float animationStartedAt = Time.time;
         if (skillExecutor != null)
         {
             skillExecutor.TryPlaySkillAnimation(animator, currentSkillId);
@@ -506,9 +512,6 @@ public class Player : UnitBase
 
         if (skillExecutor != null)
         {
-            Vector3 spawnOffset = (spriteRenderer != null && spriteRenderer.flipX) ? Vector3.right * 1.0f : Vector3.left * 1.0f;
-            Vector3 spawnPos = transform.position + spawnOffset + Vector3.up * 0.8f;
-            skillExecutor.SpawnSkillEffectFromDataAsync(currentSkillId, spawnPos).Forget();
             await skillExecutor.ExecuteSkillHitsAsync(currentSkillId, this, null, 15f * comboStep, cancellationToken);
         }
         else
@@ -517,21 +520,24 @@ public class Player : UnitBase
         }
 
         float windowElapsed = 0f;
+        float recoveryWindow = skillExecutor != null
+            ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, comboWindow)
+            : comboWindow;
         bool nextComboTriggered = false;
+        SetTelegraphedAttackHitbox(recoveryWindow > 0f);
 
-        while (windowElapsed < comboWindow)
+        while (windowElapsed < recoveryWindow)
         {
             windowElapsed += Time.deltaTime;
 
-            if (hasQueuedAttack)
-            {
-                nextComboTriggered = true;
-                comboStep++;
-                break;
-            }
-
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
+        if (hasQueuedAttack)
+        {
+            nextComboTriggered = true;
+            comboStep++;
+        }
+        SetTelegraphedAttackHitbox(false);
 
         if (nextComboTriggered && comboStep <= 3)
         {

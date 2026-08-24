@@ -78,54 +78,10 @@ public class SkillExecutor : MonoBehaviour
         return effectComp;
     }
 
-    public async UniTask<GameObject> SpawnSkillEffectFromDataAsync(uint skillId, Vector3 position, Quaternion rotation = default)
-    {
-        var skillTable = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
-        if (skillTable == null || !skillTable.TryGetSkillData(skillId, out var skillData))
-        {
-            Debug.LogWarning($"[SkillExecutor] SkillId {skillId}에 대한 SkillData를 찾을 수 없습니다.");
-            return null;
-        }
-
-        if (skillData.EffectIdx == 0) return null;
-
-        return await SpawnEffectByEffectIdxAsync(skillData.EffectIdx, position, rotation);
-    }
-
-    public async UniTaskVoid ExecuteSkillDataAsync(uint skillId, Vector3 position, Quaternion rotation = default, CancellationToken cancellationToken = default)
-    {
-        var skillTable = DataTableManager.Instance != null ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
-        if (skillTable == null || !skillTable.TryGetSkillData(skillId, out var skillData))
-        {
-            Debug.LogWarning($"[SkillExecutor] SkillId {skillId}에 대한 SkillData를 찾을 수 없습니다.");
-            return;
-        }
-
-        if (skillData.HitTimings == null || skillData.HitTimings.Length == 0)
-        {
-            await SpawnSkillEffectFromDataAsync(skillId, position, rotation);
-            return;
-        }
-
-        float prevTiming = 0f;
-        foreach (float timing in skillData.HitTimings)
-        {
-            float delay = timing - prevTiming;
-            if (delay > 0f)
-            {
-                int delayMs = Mathf.RoundToInt(delay * 1000f);
-                await UniTask.Delay(delayMs, cancellationToken: cancellationToken);
-            }
-            prevTiming = timing;
-
-            SpawnSkillEffectFromDataAsync(skillId, position, rotation).Forget();
-        }
-    }
-
     public async UniTask<bool> ExecuteSkillHitsAsync(uint skillId, UnitBase owner, UnitBase target,
         float patternDamage, CancellationToken cancellationToken = default,
         uint attackMotionProfileOverrideIdx = 0, Func<bool> canStartWindow = null,
-        Action onFirstSuccessfulHit = null)
+        Action onFirstSuccessfulHit = null, uint attackPatternIdx = 0)
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -140,14 +96,41 @@ public class SkillExecutor : MonoBehaviour
         float targetSnapshotX = targetBody != null ? targetBody.bounds.center.x : target != null ? target.transform.position.x : motionStartX;
         float targetSnapshotHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
         float motionVelocityX = 0f;
+        bool stepMotionBlocked = false;
+        bool attackMotionComplete = false;
         int sourceId = owner.GetInstanceID() ^ (int)skillId;
         float elapsed = 0f;
+        var spawnedTicks = new HashSet<(uint ownerUnitIdx, uint generation, uint hitTick, uint effectIdx)>();
         try
         {
-            owner.SetTelegraphedAttackHitbox(true);
+            owner.SetTelegraphedAttackHitbox(true, skill.AttackSubject, skill.BodyPartRole);
 
             for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
             {
+                bool usesPass10Effect = TryResolvePass10AttackEffectIdx(owner.UnitIdx, attackPatternIdx,
+                    skillId, tick, out uint attackEffectIdx);
+                EffectData attackEffectData = null;
+                if (usesPass10Effect)
+                {
+                    var effectTable = DataTableManager.Instance != null
+                        ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
+                    if (effectTable == null || !effectTable.TryGetEffectData(attackEffectIdx, out attackEffectData) ||
+                        !attackEffectData.HasValidActiveBounds)
+                    {
+                        Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Pattern {attackPatternIdx}/Skill {skillId} " +
+                            $"has invalid EffectData {attackEffectIdx} active bounds; attack cancelled.");
+                        return false;
+                    }
+                    var resourceTable = DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource);
+                    if (resourceTable == null ||
+                        !resourceTable.TryGetResource(attackEffectData.PrefabIdx, out ResourceData resource) ||
+                        string.IsNullOrEmpty(resource.Path))
+                    {
+                        Debug.LogError($"[SkillExecutor] Attack EffectData {attackEffectIdx} has invalid ResourceData FK " +
+                            $"{attackEffectData.PrefabIdx}; attack cancelled.");
+                        return false;
+                    }
+                }
                 float t = Mathf.Max(0f, skill.HitTimings[(int)tick]);
                 float windowStart = Mathf.Max(0f, t - skill.HitWindowPre);
                 float windowEnd = t + skill.HitWindowPost;
@@ -162,44 +145,71 @@ public class SkillExecutor : MonoBehaviour
                     float targetHalfWidth = tracking && targetBody != null ? targetBody.bounds.extents.x : targetSnapshotHalfWidth;
                     float targetVelocityX = tracking ? target.AttackMotionVelocityX : 0f;
                     bool facingRight = targetX >= owner.transform.position.x;
-                    float attackReach = owner.TryGetAttackForwardReach(facingRight, out float reach) ? reach : 0f;
+                    float attackCenterOffset = owner.TryGetAttackSweepCenterOffset(facingRight,
+                        skill.AttackSubject, skill.BodyPartRole, out float offset) ? offset : 0f;
                     float clampedTargetX = CalculateAttackAlignmentTargetX(motionStartX, owner.transform.position.x,
-                        targetX, targetVelocityX, remaining, targetHalfWidth, attackReach,
+                        targetX, targetVelocityX, remaining, targetHalfWidth, attackCenterOffset,
                         owner.AttackMotionSkinWidth, motion.MaxDistance, tracking);
-                    motionVelocityX = CalculateAttackMotionVelocity(motion, owner.transform.position.x,
-                        clampedTargetX, remaining, motionVelocityX, Time.fixedDeltaTime);
+                    motionVelocityX = attackMotionComplete ? 0f : CalculateAttackMotionVelocity(motion,
+                        owner.transform.position.x, clampedTargetX, remaining, motionVelocityX, Time.fixedDeltaTime);
                     if (!owner.IsActionGenerationCurrent(generation)) return true;
+                    if (!stepMotionBlocked && motion.MotionType == AttackMotionType.Step &&
+                        !owner.HasGroundSupportForAttackStep(motionVelocityX * Time.fixedDeltaTime))
+                    {
+                        stepMotionBlocked = true;
+                        motionVelocityX = 0f;
+                        owner.StopAttackMotionImmediately();
+                    }
                     owner.SetAttackMotionStopPosition(clampedTargetX);
-                    owner.SetAttackMotionVelocityX(motionVelocityX);
+                    owner.SetAttackMotionVelocityX(stepMotionBlocked ? 0f : motionVelocityX);
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
                 }
                 owner.StopAttackMotionImmediately();
+                attackMotionComplete = true;
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
                 if (canStartWindow != null && !canStartWindow()) return false;
 
-                if (!owner.TryOpenAttackHitbox(sourceId, generation, tick, out CombatStats.AttackSweep2D sweep))
+                CombatStats.AttackSweep2D sweep;
+                bool opened = usesPass10Effect
+                    ? owner.TryOpenAttackHitbox(sourceId, generation, tick, skill.AttackSubject,
+                        skill.BodyPartRole,
+                        new Vector2(attackEffectData.ActiveCenterX, attackEffectData.ActiveCenterY),
+                        new Vector2(attackEffectData.ActiveSizeX, attackEffectData.ActiveSizeY), out sweep)
+                    : owner.TryOpenAttackHitbox(sourceId, generation, tick, skill.AttackSubject,
+                        skill.BodyPartRole, out sweep);
+                if (!opened)
                     return false;
-
-                Vector3 attackEffectPos = sweep.Current;
-                if (target != null && target.Stats != null)
-                {
-                    Collider2D targetCol = target.Stats.DefenseBodyCollider != null ? target.Stats.DefenseBodyCollider : target.GetComponent<Collider2D>();
-                    if (targetCol != null) attackEffectPos = targetCol.ClosestPoint(sweep.Current);
-                }
-                SpawnSkillEffectFromDataAsync(skillId, attackEffectPos).Forget();
 
                 if (ApplyAttackSweep(owner, target, patternDamage, sweep)) onFirstSuccessfulHit?.Invoke();
 
-                while (elapsed + Mathf.Epsilon < windowEnd)
+                CancellationTokenSource effectWindowCts = null;
+                UniTask effectWindowTask = UniTask.CompletedTask;
+                if (usesPass10Effect && spawnedTicks.Add((owner.UnitIdx, generation, tick, attackEffectIdx)))
                 {
-                    await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
-                    elapsed += Time.fixedDeltaTime;
-                    if (!owner.IsActionGenerationCurrent(generation)) return true;
+                    effectWindowCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    effectWindowTask = SpawnAttackEffectForWindowAsync(attackEffectIdx, sweep.Current,
+                        owner.transform.rotation, owner, generation, effectWindowCts.Token);
+                }
+
+                try
+                {
+                    while (elapsed + Mathf.Epsilon < windowEnd)
+                    {
+                        await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                        elapsed += Time.fixedDeltaTime;
+                        if (!owner.IsActionGenerationCurrent(generation)) return true;
+                    }
+                }
+                finally
+                {
+                    effectWindowCts?.Cancel();
+                    await effectWindowTask;
+                    effectWindowCts?.Dispose();
                 }
 
                 owner.CloseAttackHitbox();
-                owner.SetTelegraphedAttackHitbox(true);
+                owner.SetTelegraphedAttackHitbox(true, skill.AttackSubject, skill.BodyPartRole);
             }
             return true;
         }
@@ -208,6 +218,65 @@ public class SkillExecutor : MonoBehaviour
             owner.StopAttackMotionImmediately();
             owner.CloseAttackHitbox();
             owner.SetTelegraphedAttackHitbox(false);
+        }
+    }
+
+    public static bool TryResolvePass10AttackEffectIdx(uint ownerUnitIdx, uint patternIdx, uint skillIdx,
+        out uint effectIdx) => TryResolvePass10AttackEffectIdx(ownerUnitIdx, patternIdx, skillIdx, 0u, out effectIdx);
+
+    public static bool TryResolvePass10AttackEffectIdx(uint ownerUnitIdx, uint patternIdx, uint skillIdx,
+        uint hitTick, out uint effectIdx)
+    {
+        effectIdx = (ownerUnitIdx, patternIdx, skillIdx, hitTick) switch
+        {
+            (3001u, 0u, 7003u, 0u) => 8027u,
+            (3001u, 0u, 7003u, 1u) => 8028u,
+            (3201u, 6101u, 7011u, 0u) => 8029u,
+            (3201u, 6101u, 7011u, 1u) => 8030u,
+            (3001u, 0u, 7001u, _) => 8014u,
+            (3101u, 6001u, 7001u, _) => 8015u,
+            (3102u, 6008u, 7005u, _) => 8016u,
+            (3102u, 6009u, 7006u, _) => 8017u,
+            (3103u, 6001u, 7001u, _) => 8018u,
+            (3103u, 6010u, 7007u, _) => 8019u,
+            (3104u, 6003u, 7001u, _) => 8020u,
+            (3104u, 6004u, 7001u, _) => 8021u,
+            (3105u, 6005u, 7002u, _) => 8022u,
+            (3201u, 6103u, 7013u, _) => 8023u,
+            (3105u, 6006u, 7002u, _) => 8024u,
+            (3201u, 6100u, 7012u, _) => 8025u,
+            (3201u, 6102u, 7010u, _) => 8026u,
+            _ => 0u
+        };
+        return effectIdx != 0u;
+    }
+
+    private async UniTask SpawnAttackEffectForWindowAsync(uint effectIdx, Vector2 position,
+        Quaternion rotation, UnitBase owner, uint generation, CancellationToken cancellationToken)
+    {
+        GameObject effect = await SpawnEffectByEffectIdxAsync(effectIdx, position, rotation);
+        if (effect == null) return;
+        if (cancellationToken.IsCancellationRequested || owner == null ||
+            !owner.IsActionGenerationCurrent(generation))
+        {
+            EffectPoolManager.Instance?.DespawnEffect(effect);
+            return;
+        }
+
+        Animator animator = effect.GetComponent<Animator>();
+        if (animator != null && animator.runtimeAnimatorController != null)
+        {
+            animator.Play(0, 0, 0f);
+            animator.Update(0f);
+        }
+
+        try
+        {
+            await UniTask.WaitUntilCanceled(cancellationToken);
+        }
+        finally
+        {
+            EffectPoolManager.Instance?.DespawnEffect(effect);
         }
     }
 
@@ -310,13 +379,14 @@ public class SkillExecutor : MonoBehaviour
     }
 
     public static float CalculateAttackAlignmentTargetX(float motionStartX, float ownerX, float targetCenterX,
-        float targetVelocityX, float remainingSeconds, float targetHalfWidth, float attackReach,
+        float targetVelocityX, float remainingSeconds, float targetHalfWidth, float attackCenterOffset,
         float skinWidth, float maxDistance, bool trackUntilActive)
     {
         float predictedCenterX = targetCenterX + (trackUntilActive ? targetVelocityX * Mathf.Max(0f, remainingSeconds) : 0f);
         float facing = predictedCenterX >= ownerX ? 1f : -1f;
+        float signedCenterOffset = facing * Mathf.Abs(attackCenterOffset);
         float stopX = predictedCenterX - facing * (Mathf.Max(0f, targetHalfWidth) +
-            Mathf.Max(0f, attackReach) + Mathf.Max(0f, skinWidth));
+            Mathf.Max(0f, skinWidth)) - signedCenterOffset;
         return motionStartX + Mathf.Clamp(stopX - motionStartX, -Mathf.Max(0f, maxDistance), Mathf.Max(0f, maxDistance));
     }
 
@@ -330,7 +400,8 @@ public class SkillExecutor : MonoBehaviour
     public static float CalculateAttackRecoverySeconds(float animationLength, float elapsed, float configuredRecovery) =>
         Mathf.Max(Mathf.Max(0f, configuredRecovery), Mathf.Max(0f, animationLength - Mathf.Max(0f, elapsed)));
 
-    public async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position, Quaternion rotation = default)
+    public async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position,
+        Quaternion rotation = default)
     {
         if (effectIdx == 0) return null;
 

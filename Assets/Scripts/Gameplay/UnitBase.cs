@@ -97,6 +97,8 @@ public class UnitBase : MonoBehaviour
     public void SetAttackMotionVelocityX(float velocityX) => motor?.SetTargetVelocityX(velocityX);
     public void SetAttackMotionStopPosition(float worldX) => motor?.SetHorizontalStopPosition(worldX);
     public void StopAttackMotionImmediately() => motor?.StopHorizontalImmediately();
+    public bool HasGroundSupportForAttackStep(float deltaX) =>
+        motor != null && motor.HasGroundSupportForHorizontalStep(deltaX);
     public float AttackMotionVelocityX => motor != null ? motor.Velocity.x : 0f;
     public float AttackMotionSkinWidth => motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
     public bool TryGetAttackForwardReach(bool facingRight, out float reach)
@@ -105,12 +107,41 @@ public class UnitBase : MonoBehaviour
         reach = 0f;
         return false;
     }
+    public bool TryGetAttackSweepCenterOffset(bool facingRight, out float offset)
+    {
+        return TryGetAttackSweepCenterOffset(facingRight, AttackSubject.Weapon, BodyPartRole.None, out offset);
+    }
+    public bool TryGetAttackSweepCenterOffset(bool facingRight, AttackSubject subject, BodyPartRole bodyPart,
+        out float offset)
+    {
+        if (attackHitbox != null) return attackHitbox.TryGetSweepCenterOffset(facingRight, subject, bodyPart, out offset);
+        offset = 0f;
+        return false;
+    }
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
 
     public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick,
         out CombatStats.AttackSweep2D sweep)
     {
-        if (attackHitbox != null) return attackHitbox.TryOpen(sourceId, generation, tick, out sweep);
+        return TryOpenAttackHitbox(sourceId, generation, tick, AttackSubject.Weapon, BodyPartRole.None, out sweep);
+    }
+
+    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick, AttackSubject subject,
+        BodyPartRole bodyPart, out CombatStats.AttackSweep2D sweep)
+    {
+        if (attackHitbox != null) return attackHitbox.TryOpen(sourceId, generation, tick, subject, bodyPart, out sweep);
+        sweep = default;
+        Debug.LogError($"[UnitBase] Unit idx {UnitIdx} has no serialized attack hitbox; attack cancelled.");
+        return false;
+    }
+
+    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick, AttackSubject subject,
+        BodyPartRole bodyPart, Vector2 activeCenter, Vector2 activeSize,
+        out CombatStats.AttackSweep2D sweep)
+    {
+        if (attackHitbox != null)
+            return attackHitbox.TryOpen(sourceId, generation, tick, subject, bodyPart,
+                activeCenter, activeSize, out sweep);
         sweep = default;
         Debug.LogError($"[UnitBase] Unit idx {UnitIdx} has no serialized attack hitbox; attack cancelled.");
         return false;
@@ -119,6 +150,9 @@ public class UnitBase : MonoBehaviour
     public UnitAttackHitbox2D AttackHitbox => attackHitbox;
     public void CloseAttackHitbox() => attackHitbox?.Close();
     public void SetTelegraphedAttackHitbox(bool telegraphed) => attackHitbox?.SetTelegraphed(telegraphed);
+    public void SetTelegraphedAttackHitbox(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart,
+        bool allowWeaponTracking = true) =>
+        attackHitbox?.SetTelegraphed(telegraphed, subject, bodyPart, allowWeaponTracking);
 
     public virtual void CancelAttackHitbox()
     {

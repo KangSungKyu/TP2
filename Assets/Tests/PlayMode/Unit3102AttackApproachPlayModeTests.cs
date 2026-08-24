@@ -174,7 +174,7 @@ namespace Tests.PlayMode
                     monster.SetFacingRight(facingRight);
                     bool hasReach = monster.TryGetAttackForwardReach(facingRight, out float measuredReach);
                     Collider2D attackCollider = (Collider2D)typeof(UnitAttackHitbox2D)
-                        .GetField("attackCollider", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(monster.AttackHitbox);
+                        .GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(monster.AttackHitbox);
                     bool wasEnabled = attackCollider.enabled;
                     attackCollider.enabled = true;
                     Physics2D.SyncTransforms();

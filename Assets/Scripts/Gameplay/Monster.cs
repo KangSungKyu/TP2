@@ -611,6 +611,7 @@ public class Monster : UnitBase
 
         CurrentPatternState = PatternState.Chase;
         float elapsed = 0f;
+        bool enteredStartBand = false;
         while (elapsed + Mathf.Epsilon < pattern.ChaseTimeout)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -620,9 +621,24 @@ public class Monster : UnitBase
             gap = Mathf.Max(0f, Mathf.Abs(targetCenterX - selfCenterX) - combinedHalfWidths);
             float toward = targetCenterX >= selfCenterX ? 1f : -1f;
             SetFacingRight(toward >= 0f);
-            if (gap >= min && gap <= max)
+            enteredStartBand |= gap >= min && gap <= max;
+            if (enteredStartBand)
             {
-                StopAttackMotionImmediately();
+                UnitBase target = Player.Instance;
+                if (target == null || !TryGetAttackApproachStopX(target, out float contactStopX)) return false;
+                float contactCorrection = Mathf.Abs(contactStopX - transform.position.x);
+                float contactRemaining = Mathf.Max(Time.fixedDeltaTime, pattern.ChaseTimeout - elapsed);
+                float contactSpeed = CalculateReservationChaseSpeed(contactCorrection, contactRemaining,
+                    UnitData.MoveSpeed, Time.fixedDeltaTime);
+                float contactDirection = Mathf.Sign(contactStopX - transform.position.x);
+                float contactNextX = Mathf.MoveTowards(transform.position.x, contactStopX,
+                    contactSpeed * Time.fixedDeltaTime);
+                bool contactBlocked = motor == null || contactDirection < 0f && motor.IsWalledLeft ||
+                    contactDirection > 0f && motor.IsWalledRight ||
+                    hasSpawnArea && !movementBounds.Contains(new Vector3(contactNextX, transform.position.y, transform.position.z));
+                if (contactBlocked) return false;
+                motor.SetHorizontalStopPosition(contactStopX);
+                motor.SetTargetVelocityX(contactDirection * contactSpeed);
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                 elapsed += Time.fixedDeltaTime;
                 continue;
@@ -646,13 +662,12 @@ public class Monster : UnitBase
             elapsed += Time.fixedDeltaTime;
         }
         StopAttackMotionImmediately();
-        gap = GetAttackSurfaceGap();
-        return gap >= min && gap <= max;
+        return enteredStartBand;
     }
 
     public static float CalculateReservationChaseSpeed(float correction, float remaining,
         float moveSpeed, float fixedDeltaTime) => Mathf.Min(Mathf.Max(0f, moveSpeed),
-        Mathf.Max(0f, correction) / Mathf.Max(Mathf.Max(0f, fixedDeltaTime), remaining));
+        1.25f * Mathf.Max(0f, correction) / Mathf.Max(Mathf.Max(0f, fixedDeltaTime), remaining));
 
     private async UniTask ExecutePatternCoreAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
     {
@@ -670,14 +685,18 @@ public class Monster : UnitBase
         SkillData skill = null;
         int animState = skillTable != null && skillTable.TryGetSkillData(patternSkillId, out skill)
             ? skill.AnimState : 0;
+        if (pattern.ProjectileResourceIdx != 0 && skill != null && skill.AttackSubject != AttackSubject.Weapon)
+        {
+            Debug.LogError($"[Monster] Pattern idx {pattern.Idx} projectile skill {patternSkillId} cannot use body-part attack subject.");
+            return;
+        }
 
         bool IsInsideStartBand() => playerTarget != null &&
             IsPatternStartDistanceValid(pattern, skill, GetAttackSurfaceGap());
-        if (!CanAct(generation) || !IsInsideStartBand()) return;
-        SetAttackMotionVelocityX(0f);
-
         bool stationaryAttack = SkillExecutor.ResolveAttackMotionProfile(skill, pattern.AttackMotionProfileIdx).MotionType ==
             AttackMotionType.Stationary;
+        if (!CanAct(generation) || stationaryAttack && !IsInsideStartBand()) return;
+        SetAttackMotionVelocityX(0f);
         bool CanStartActiveWindow() => playerTarget != null && CanAct(generation) &&
             (!stationaryAttack || IsInsideStartBand());
         if (!TryAcquireAttackToken(stationaryAttack)) return;
@@ -692,7 +711,10 @@ public class Monster : UnitBase
         float attackSequenceStartedAt = Time.time;
         float impactAt = attackSequenceStartedAt + effectivePreDelay + windowStart;
         BeginAttackTelegraph(generation, impactAt - AttackTelegraphLeadSeconds,
-            impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration);
+            impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration,
+            skill != null ? skill.AttackSubject : AttackSubject.Weapon,
+            skill != null ? skill.BodyPartRole : BodyPartRole.None,
+            pattern.ProjectileResourceIdx == 0);
 
         if (effectivePreDelay > 0f)
         {
@@ -752,7 +774,7 @@ public class Monster : UnitBase
                 {
                     CurrentPatternState = PatternState.Active;
                     CommitPatternCooldown(pattern);
-                });
+                }, pattern.Idx);
             if (!timedAttack && !IsInsideStartBand()) return;
             if (timedAttack && activeDuration > 0f)
             {
@@ -772,7 +794,10 @@ public class Monster : UnitBase
         float recoveryDuration = skillExecutor != null
             ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, pattern.PostDelay)
             : Mathf.Max(0f, pattern.PostDelay);
-        SetTelegraphedAttackHitbox(recoveryDuration > 0f);
+        SetTelegraphedAttackHitbox(recoveryDuration > 0f,
+            skill != null ? skill.AttackSubject : AttackSubject.Weapon,
+            skill != null ? skill.BodyPartRole : BodyPartRole.None,
+            pattern.ProjectileResourceIdx == 0);
         if (recoveryDuration > 0f)
         {
             int postMs = Mathf.RoundToInt(recoveryDuration * 1000f);
@@ -851,9 +876,9 @@ public class Monster : UnitBase
         float targetHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
         bool facingRight = targetCenterX >= transform.position.x;
         SetFacingRight(facingRight);
-        if (!TryGetAttackForwardReach(facingRight, out float reach)) return false;
+        if (!TryGetAttackSweepCenterOffset(facingRight, out float centerOffset)) return false;
         stopX = SkillExecutor.CalculateAttackAlignmentTargetX(transform.position.x, transform.position.x,
-            targetCenterX, 0f, 0f, targetHalfWidth, reach,
+            targetCenterX, 0f, 0f, targetHalfWidth, centerOffset,
             motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset, float.MaxValue, false);
         return float.IsFinite(stopX);
     }
@@ -1014,12 +1039,12 @@ public class Monster : UnitBase
     }
 
     private void BeginAttackTelegraph(uint generation, float warningStartsAt, float impactAt,
-        float activeEndsAt)
+        float activeEndsAt, AttackSubject subject, BodyPartRole bodyPart, bool allowWeaponTracking)
     {
         if (!CanAct(generation)) return;
         telegraphGeneration = generation;
         telegraphActive = true;
-        SetTelegraphedAttackHitbox(true);
+        SetTelegraphedAttackHitbox(true, subject, bodyPart, allowWeaponTracking);
         AttackTelegraphStarted?.Invoke(new AttackTelegraph(this, generation, warningStartsAt,
             impactAt, Mathf.Max(impactAt, activeEndsAt)));
     }

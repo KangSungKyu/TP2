@@ -47,7 +47,8 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
         return generation;
     }
 
-    public async Cysharp.Threading.Tasks.UniTask<GameObject> SpawnEffect(string prefabKey, Vector3 position, Quaternion rotation = default, float duration = 1.0f, Transform parent = null)
+    public async Cysharp.Threading.Tasks.UniTask<GameObject> SpawnEffect(string prefabKey, Vector3 position,
+        Quaternion rotation = default, float duration = 1.0f, Transform parent = null)
     {
         if (string.IsNullOrEmpty(prefabKey)) return null;
 
@@ -61,7 +62,6 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
                 effectObj.transform.position = position;
                 effectObj.transform.rotation = rotation;
                 if (parent != null) effectObj.transform.SetParent(parent);
-                effectObj.SetActive(true);
             }
         }
 
@@ -73,6 +73,7 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
 
         if (effectObj != null)
         {
+            effectObj.SetActive(true);
             uint generation = TrackEffect(effectObj, prefabKey);
             if (duration > 0f)
             {
@@ -124,6 +125,7 @@ public class EffectPoolManager : Singleton<EffectPoolManager>
         if (effectObj == null || !activeEffects.Remove(effectObj)) return;
 
         string key = effectObj.name;
+        if (skillEffects.TryGetValue(effectObj, out SkillEffect skillEffect)) skillEffect.ResetVisual();
         effectObj.SetActive(false);
         effectObj.transform.SetParent(transform);
 

@@ -37,6 +37,8 @@
 
 ## 공격 주체별 애니메이션 히트박스 P0 계약 (2026-08-19)
 
+> **Superseded 범위:** 이 섹션의 공격 주체·타이밍·sweep 책임은 유지한다. 다만 체형, Body/Defense 크기, 실제 Attack bounds, 무기 길이·두께 분류 및 Unit별 크기는 아래 `Monster 체형·무기·공격 방식 단일 권위 (2026-08-24)`가 대체한다.
+
 ### 1. 판정 권위
 
 - Animation Event는 추가하지 않는다. 기존 `SkillData.hittimings`, `hitcount`, `activeduration`과 `MonsterPatternData.skillidx`를 단일 타이밍 권위로 유지한다.
@@ -51,14 +53,26 @@
 |---:|---|---|---|
 | `3001` | 기본 검격 `7001/7003` | 우측 손 도검의 blade collider | Guard/Parry collider와 분리 |
 | `3101` | 창 찌르기 `6001` | 피스톤 창의 shaft 제외 tip/blade collider | 이동 `6002`는 공격 hitbox 없음 |
-| `3102` | 쌍검 공격 | 좌·우 단검 blade collider를 한 composite source로 취급 | 같은 tick에 두 날이 닿아도 1회 |
+| `3102` | `6008` Charging Thrust, `6009` Barrage | 기존 hitbox placeholder를 prototype 공격 주체로 재사용 | `6008/6009` 모두 Step `10002`(`maxdistance=0.81`, `maxspeed=9.0`)를 사용한다. |
 | `3103` | 해머·지면 충격 역할 | 해머 head; 충격파는 GroundImpact anchor에서 생성된 effect collider | 현 `5103→6001/6002` 역할 불일치는 데이터 선행 수정 대상 |
 | `3104` | 방패 밀치기 `6003`, 내려치기 `6004` | `6003` 방패 전면, `6004` 손 무기 blade/head | 몸체·방패 후면 판정 금지 |
 | `3105` | 탄환 `6005/6006` | 석궁 muzzle은 생성점만 제공; 피해 권위는 `1045` projectile collider | 근접 hitbox 생성 금지 |
-| `3106` | 지면 충격 `6007` | GroundImpact anchor에서 생성된 effect collider | 문서상 `6008`은 현재 CSV 부재이므로 활성화 금지 |
+| `3106` | 지면 충격 `6007` | GroundImpact anchor에서 생성된 effect collider | `6008`은 Unit `3102` 전용으로 분리 |
 | `3201` | `6100–6103` | 돌진·콤보·내려찍기=`대검 blade/leading edge`; 충격파=`GroundImpact effect` | Boss body contact damage 금지 |
 
 현재 Stage 1에는 머리·꼬리를 공격 주체로 쓰는 Unit이 없다. 향후 해당 패턴이 승인될 때 동일 collider role만 추가한다.
+
+### 2.1 Unit3102 Prototype Dummy 공격 계약
+
+| 연결 | 동작 계약 |
+|---|---|
+| `3102: 5102→6008 Charging Thrust→7005→State 14→Motion 10002` | center-contact 목표, 이동 `≤0.81m`, 속도 `≤9`; wall/ledge/spawn/target crossing clamp, 미도달 시 whiff 허용 |
+| `3102: 5102→6009 Barrage→7006→State 15→Motion 10002` | Step `maxdistance=0.81`, `maxspeed=9.0`; 공격 window 2회. PrototypeDummy HP `7.5/tick`·총 `15`; Guard posture `3.75/tick`·총 `7.5`; Parry attacker posture `40` |
+
+- PrototypeDummy clip 2개만 추가하며 기존 sprite, `FX 8001`, hitbox placeholder를 재사용한다.
+- 기존 공유 `6001/6002/7001`은 수정·재배정하지 않는다.
+- 프로덕션 교체 대상은 전용 sprite sheet, 전용 VFX, hitbox 궤적 계측, damage/cooldown 밸런싱이다.
+- QA 상태는 compile·제품 Error 0 및 CSV/Animator 정적 확인 완료다. Unity runner는 `0/0 timeout`으로 `BLOCKED`이며 PASS로 간주하지 않는다.
 
 ### 3. hit dedupe·방향·방어 우선순위
 
@@ -113,7 +127,7 @@
 4. `3102` 좌우 단검은 collider 2개를 한 composite role로, `3105` muzzle은 projectile spawn reference로만 납품한다.
 5. `3103/3106/3201` GroundImpact는 지면 접촉 anchor와 effect collider reference를 분리한다.
 6. 좌우 facing에서 visual과 collider의 상대 위치가 동일하게 반전되는지 Scene gizmo로 검수한다.
-7. 현 데이터에 없는 `6008` 및 머리·꼬리 공격 주체는 제작하지 않는다.
+7. `3102` PrototypeDummy는 `6008/6009`만 사용하고 기존 공유 `6001/6002/7001` 및 머리·꼬리 공격 주체를 변경하지 않는다.
 8. texture·Animator 원본을 덮어쓰지 않고 Prefab 직렬화 변경만 별도 인계한다.
 9. 모든 공격 주체 child와 Collider는 Prefab 저장 기본 OFF로 납품하고, 개발 시각화 line도 같은 child 아래에 둔다.
 10. 유닛별 toggle·독립 debug material을 만들지 않고 기존 `DebugHitboxLine` 재질·색상 규칙을 공유한다.
@@ -131,6 +145,199 @@
 9. 전조·후딜·Idle에는 모든 공격 child/Collider enabled `0`, 각 window에서만 `1`, 정상 종료·예외·취소 다음 FixedStep에는 `0`을 검증한다.
 10. Editor/Development 기본 시각화 ON, 전역 OFF 즉시 전체 숨김, Production 기본 OFF 및 debug object/material 생성 `0`을 검증한다.
 
+## Monster 체형·무기·공격 방식 단일 권위 (2026-08-24)
+
+### 1. 기준과 단일 권위
+
+- Player Body `1×2`를 중형 기준으로 사용한다.
+- Player 실제 Attack bounds `1.5×0.6`을 짧고 얇은 무기 기준(`PWL×PWT`)으로 사용한다.
+- Body/Player 폭 비율은 소형 `<0.8`, 중형 `0.8–1.2`, 대형 `>1.2–1.8`, 특대 `>1.8`로 분류한다.
+- `UnitBaseData.hitboxradius = r`이 Body/Defense bounds `2r×4r`의 단일 권위다.
+- 실제 attack bounds가 무기 길이·두께 및 `1.5×sweep`의 단일 권위다. 무기 visual이 아직 분리되지 않았으므로 현 단계에서는 collider proxy로 분류한다.
+- Long은 실제 attack 길이 `≥1.25 PWL`, Thick은 실제 attack 두께 `≥1.5 PWT`다.
+- `SuperArmor`와 knockback은 체형에서 자동 산출하지 않고 Unit 또는 Pattern override로만 지정한다.
+
+### 2. Unit 분류 및 실측 ratio
+
+| Unit | 체형 | 무기·공격 방식 | Body bounds | Body/Player | Attack bounds | 길이/PWL | 두께/PWT | 분류 |
+|---:|---|---|---:|---:|---:|---:|---:|---|
+| `3101` | 대형 | 긴 얇은 창, 찌르기 | `1.5×3` | `1.50` | `2.2×0.45` | `1.47` | `0.75` | Long / Thin |
+| `3102` | 중형 | 짧은 얇은 단검, Step 찌르기+2연타 | `1×2` | `1.00` | `1.2×0.55` | `0.80` | `0.92` | Short / Thin |
+| `3103` | 대형 | 긴 heavy proxy, Torso Ram BodyPart 공격 | `1.6×3.2` | `1.60` | `2.5×0.8` | `1.67` | `1.33` | Long / Thin; 두께 `0.9` 적용 시 Thick 후보(`1.50 PWT`) |
+| `3104` | 대형 | 짧고 두꺼운 방패·무기, 수직·대각 공격 | `1.5×3` | `1.50` | `1.8×1` | `1.20` | `1.67` | Short / Thick |
+| `3105` | 중형 | Projectile Aim→Fire→Reload | `1×2` | `1.00` | muzzle `0.12`, melee `0` | N/A | muzzle `0.20` | Projectile / melee 없음 |
+| `3201` | 특대 | 긴 두꺼운 대검, Charge·Horizontal·Vertical·Shockwave | `2×4` | `2.00` | `3×1.2` | `2.00` | `2.00` | Long / Thick |
+
+비율은 표의 bounds를 Player 기준으로 나눈 실측값이며 추정 visual 크기가 아니다.
+
+### 3. 공격 단계와 기본 궤적
+
+| 단계 | Attack collider |
+|---|---|
+| Telegraph | OFF |
+| Startup | OFF |
+| Active | ON |
+| Recovery | OFF |
+
+- 수직 공격은 기본 회전각 `≥180°`를 확보한다.
+- 수평 공격은 반대편 `±180°`에서 정면 방향으로 진행한다.
+- 찌르기는 `pull → thrust → recover` 순서를 따른다.
+- 단계와 궤적은 실제 clip·collider sweep으로 검증하며 placeholder visual의 외형으로 판정을 바꾸지 않는다.
+
+### 4. Collider 책임
+
+| Collider | 단일 책임 |
+|---|---|
+| Body | 이동·지형 충돌 |
+| Defense | 피격·Guard·Parry·surface distance |
+| Attack | Active window의 공격 sweep |
+| Projectile | 소유 Unit의 melee collider와 분리된 독립 이동·피해·수명주기 |
+
+### 5. P0 상충 및 금지
+
+- Pattern `6004`와 `6006`은 clip State `5`와 Skill State `7`이 상충한다.
+- State/Data를 정수 idx 권위로 일치시키기 전에는 production 승격을 금지한다.
+- clip명, GameObject명, 파일명 등 문자열 fallback으로 상충을 우회하지 않는다.
+
+### 6. 후속 DAG
+
+`기획 승인 → 리소스 visual/weapon 분리 → Animator State·정수 데이터 동기화 → 코드 소비 → QA → production 승격`
+
+선행 단계가 미완료면 후행 단계는 시작하지 않는다.
+
+### 7. 완료 Assert
+
+1. 모든 대상 Unit의 `hitboxradius`에서 계산한 `2r×4r`가 표의 Body/Defense bounds와 일치한다.
+2. 실제 attack bounds를 Player `1.5×0.6`으로 나눈 길이·두께 ratio가 표와 일치한다.
+3. Long/Thick 경계값 `1.25/1.5`에서 분류 누락·중복이 없다.
+4. Telegraph·Startup·Recovery의 Attack collider enabled는 `0`, Active에서만 `1`이다.
+5. 수직·수평·찌르기 궤적이 승인 clip의 실제 sweep과 일치하고 body fallback은 `0`이다.
+6. Body·Defense·Attack·Projectile 책임이 교차하지 않으며 같은 tick 중복 피해는 `0`이다.
+7. `6004/6006`의 clip State와 Skill State가 정수 데이터로 일치하고 문자열 fallback 호출은 `0`이다.
+8. 체형 변경만으로 SuperArmor·knockback 값이 자동 변경되는 경로는 `0`이다.
+
+### 8. Weapon Idle Pose 매칭 — Provisional
+
+현재 대상 7종의 actual weapon visual은 `0/7`이므로 아래 값은 collider proxy 기반 후보다. 실제 무기 sprite 제작 후 수동 재측정·승인하기 전까지 production 권위로 사용하지 않는다.
+
+#### Pose uint 후보
+
+| uint | Pose | Pivot | 각도 후보 |
+|---:|---|---|---|
+| `0` | `RearVertical` | Defense rear | `80~100°` |
+| `1` | `RearHorizontal` | Defense rear | `-10~10°`; Face Right tip/forward axis `+X` |
+| `2` | `FrontDiagonalDown` | Body center | `-55~-25°` |
+| `3` | `FrontDiagonalUp` | Body center | `25~55°` |
+
+#### Unit 매핑
+
+| Unit | 무기 분류 | Pose | 승인 전 각도 | 공격 연결 |
+|---:|---|---|---|---|
+| `3001` | Short / Thin sword | `2 FrontDiagonalDown` | `-45~-25°` | State7 `ReverseVerticalUpswing` |
+| `3101` | Long / Thin spear | `1 RearHorizontal` | `-10~5°`, tip forward | Thrust |
+| `3102` | Short / Thin dagger | `1 RearHorizontal` | `-15~5°`, tip forward | `6008/6009` 공용 |
+| `3103` | Long heavy proxy | `1 RearHorizontal` | `-10~10°`, tip forward | Torso Ram idle proxy |
+| `3104` | Short / Thick shield weapon | `3 FrontDiagonalUp` | `30~55°` | Bash / Overhead |
+| `3105` | Projectile muzzle | `2 FrontDiagonalDown` | `-35~-20°` | Aim / Fire |
+| `3201` | Long / Thick greatsword | `1 RearHorizontal` | `-15~10°` | State11 `ReverseVerticalUpswing` |
+
+#### Pose 계약
+
+- 기존 `AttackAttach·Visual identity` 계약을 유지한다. 최소 계층 후보는 `AttackAttach(identity) → WeaponVisual(PoseOffset)`이며 `AttackCollider`는 sibling으로 둔다.
+- face left는 `AttackAttach` local X mirror만 적용한다. `WeaponVisual`의 추가 flip·negative scale은 금지하며 좌우 상대 위치는 유지한다.
+- Idle에서 `AttackCollider`는 OFF이며 Body·Defense·Motor 결과에 미치는 영향은 `0`이다.
+- Idle pose와 Telegraph 첫 key는 동일해야 하며 Startup은 연속 보간한다. Active 중 face 또는 pivot 변경은 금지한다.
+- pose 식별에 문자열을 사용하지 않는다. 실제 데이터화가 승인되면 `uint enum`으로만 정의하며 현재 공정에서는 신규 table·idx를 생성하지 않는다.
+
+#### 위험
+
+- Rear pose는 좁은 통로를 가리거나 벽과 겹쳐 보일 수 있다.
+- Front diagonal은 벽·지면을 침범하거나 Unit silhouette 가독성을 낮출 수 있다.
+- collider proxy 각도는 actual weapon visual의 grip·길이·무게중심과 불일치할 수 있다.
+
+#### 완료 Assert
+
+1. 대상 7종 모두 승인된 pose uint·pivot·각도 범위와 일치하며 문자열 pose lookup은 `0`이다.
+2. Idle의 `AttackCollider.enabled == false`이고 Body·Defense bounds 및 Motor 결과 변화는 `0`이다.
+3. 좌우 facing에서 X mirror·rotation sign은 대칭이며 `AttackAttach` identity 누적 오차는 `0`이다.
+4. Idle 마지막 pose와 Telegraph 첫 key의 위치·회전 오차는 `0`, Startup 중 불연속 snap은 `0`이다.
+5. Active 동안 face·pivot 변경은 `0`이고 attack sweep은 기존 Collider 단일 권위를 유지한다.
+6. actual weapon visual 제작 후 수동 재측정·승인 전 모든 매핑은 `Provisional`로 표시된다.
+
+#### 후속 DAG
+
+`weapon visual 제작 → pose binding → animation transition → QA`
+
+선행 단계가 완료되지 않으면 다음 단계로 승격하지 않는다.
+
+### 9. BodyPart AttackSubject 계약 — P0
+
+#### AttackSubject uint 후보
+
+| uint | AttackSubject | 판정 주체 |
+|---:|---|---|
+| `0` | `Weapon` | 무기·방패·CarriedObject 전용 AttackCollider |
+| `1` | `BodyPart` | 공격 전용 serialized `bodyPartAttackCollider` |
+| `2` | `Projectile` | 독립 projectile collider와 수명주기 |
+
+- Shield와 CarriedObject는 `Weapon`으로 분류한다.
+- P0에서는 BodyPart 세부 enum을 추가하지 않고 Unit당 serialized `bodyPartAttackCollider` 1개만 허용한다.
+- Body movement collider와 Defense hit·Guard·Parry collider를 공격 판정에 재사용하지 않는다.
+- 실제 데이터화 전에는 신규 table·idx를 만들지 않는다. 필요 시 기존 `DataTableType`, PK 대역, `idx/1000` routing, FK를 감사한 뒤 PM 승인으로 `uint enum`과 데이터를 함께 동기화한다.
+
+#### 단계·수명주기
+
+| 단계 | BodyPart AttackCollider |
+|---|---|
+| Telegraph | OFF |
+| Startup | OFF |
+| Active | ON |
+| Recovery | OFF |
+
+Idle Pose의 `AttackCollider sibling` 계약을 그대로 적용한다. `bodyPartAttackCollider`는 visual·Body·Defense와 분리된 sibling이며 face left에서 local X mirror와 sweep 방향을 함께 반전한다.
+
+#### P0 구현 대상: Unit `3103` Torso Ram
+
+`후퇴/숙임 → KinematicMotor Step/Lunge → Torso collider Active → Recovery`
+
+- 이동 writer는 `KinematicMotor2D` 하나만 사용한다.
+- wall, ledge, SpawnArea 이탈 또는 target crossing이 감지되면 공격 이동과 Active window를 취소한다.
+- teleport 보정, self-contact damage, Body/Defense fallback을 금지한다.
+- 공유 utility Pattern `6002`는 `3101/3103`이 함께 사용하므로 Torso Ram으로 전환하거나 재배정하지 않는다.
+- 신규 Pattern·Skill·Text는 각각 1개 후보로만 기록한다. Motion row는 실제 거리·속도·궤적 계측 전까지 보류한다.
+
+#### Unit 매핑
+
+| Unit | AttackSubject | P0 역할 | 판정 collider |
+|---:|---|---|---|
+| `3001` | Weapon | sword 공격 | weapon AttackCollider |
+| `3101` | Weapon | spear thrust | weapon AttackCollider |
+| `3102` | Weapon | dagger `6008/6009` | weapon/prototype AttackCollider |
+| `3103` | BodyPart | Torso Ram | serialized `bodyPartAttackCollider` |
+| `3104` | Weapon | shield Bash·Overhead | shield/weapon AttackCollider |
+| `3105` | Projectile | Aim·Fire | projectile collider; muzzle는 spawn reference |
+| `3201` | Weapon | greatsword·Shockwave 기점 | weapon AttackCollider; Shockwave는 독립 effect collider |
+
+#### 구현 DAG
+
+`기획 승인 → 리소스 Torso collider 직렬화 → 신규 Pattern/Skill/Text uint 데이터 → KinematicMotor Step/Lunge 소비 → Active sweep → QA`
+
+Motion row는 리소스 직렬화와 실제 궤적 계측이 완료된 뒤 별도 승인으로 DAG에 추가한다.
+
+#### 완료 Assert
+
+1. Weapon·BodyPart·Projectile role이 정수 후보와 일치하고 문자열 subject lookup은 `0`이다.
+2. `bodyPartAttackCollider`는 Body·Defense와 다른 serialized collider이며 참조·bounds 재사용은 `0`이다.
+3. Telegraph·Startup·Recovery에서 collider enabled는 `0`, Active에서만 `1`이다.
+4. 좌우 facing에서 Torso bounds·sweep 거리·피해 결과가 대칭이고 허위 장거리 sweep은 `0`이다.
+5. 15/60 FPS에서 Active window 실행 수와 hit 결과가 동일하며 누락·중복은 `0`이다.
+6. wall·ledge·SpawnArea·target crossing 취소 다음 FixedStep에 Motor velocity, collider, token 잔존은 `0`이다.
+7. pool 재사용 10회 후 collider 기본 OFF, PoseOffset·mirror 누적 오차, 이전 owner/generation 잔존은 모두 `0`이다.
+8. teleport와 self-contact damage 호출은 `0`이며 공유 `6002`의 PK·FK·소비 Unit은 변경되지 않는다.
+
 ### 🧠 [GameDesigner 자율 회고]
 - 기획 무결성 비판: 한 FixedStep sweep은 빠른 회전 무기의 곡선 궤적을 직선으로 근사하므로 blade 끝이 넓은 호를 그리는 공격에서 오탐 또는 누락 가능성이 있다.
 - 차기 방어 지침: P0는 기존 timing당 1 sweep으로 제한하고 실제 15 FPS 검증에서 누락된 승인 공격만 동일 tick 내 기존 animation sample 사이를 분할하되 신규 전역 시스템은 만들지 않는다.
+- 2026-08-24 회고: placeholder visual은 제작 편의를 위한 표현일 뿐 Body·Defense·Attack·Projectile collider 권위와 결합하지 않는다. visual 교체가 판정 수치나 책임 경계를 암묵적으로 바꾸지 않도록 실제 bounds와 정수 데이터를 별도로 검증한다.
+- 2026-08-24 Pose 회고: collider proxy 기반 Idle pose는 visual 제작 전 임시 가독성 가설이다. 실제 무기 sprite의 grip·길이·무게중심을 수동 측정하기 전에는 collider 위치나 공격 판정을 pose에 종속시키지 않는다.
+- 2026-08-24 BodyPart 회고: 몸통 공격도 Body·Defense를 편의상 재사용하면 이동·피격·공격 책임이 결합된다. 전용 serialized collider 1개와 Active-only 수명주기로 제한하고 세부 enum·Motion 수치는 실제 계측 전까지 추가하지 않는다.

@@ -1,5 +1,30 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using UnityEngine;
+
+public sealed class AttackSubjectConverter : DefaultTypeConverter
+{
+    public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    {
+        if (uint.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out uint value) && value <= 1)
+            return (AttackSubject)value;
+        throw new FormatException($"attacksubject must be integer 0..1, but was '{text}'.");
+    }
+}
+
+public sealed class BodyPartRoleConverter : DefaultTypeConverter
+{
+    public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    {
+        if (uint.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out uint value) && value <= 1)
+            return (BodyPartRole)value;
+        throw new FormatException($"bodypart must be integer 0..1, but was '{text}'.");
+    }
+}
 
 /// <summary>
 /// DataTableManager에서 관리하는 스킬 테이블 데이터클래스입니다. (Type 7: 7001~)
@@ -16,16 +41,26 @@ public class SkillDataTable : IDataLoad
 
     public void LoadData(string csvText)
     {
-        this.skillDict.Clear();
+        var replacement = new Dictionary<uint, SkillData>();
         var records = Util.ParseFromCSV<SkillData>(csvText);
-        if (records != null)
+        foreach (SkillData item in records)
         {
-            foreach (var item in records)
-            {
-                this.skillDict[item.Idx] = item;
-            }
+            if (!IsValidAttackSubject(item))
+                throw new InvalidOperationException($"Invalid attack subject/body part contract for Skill idx {item.Idx}.");
+            replacement.Add(item.Idx, item);
         }
+        this.skillDict.Clear();
+        foreach (var pair in replacement) this.skillDict.Add(pair.Key, pair.Value);
         Debug.Log($"[SkillDataTable] 총 {this.skillDict.Count}개의 스킬 데이터가 로드되었습니다.");
+    }
+
+    private static bool IsValidAttackSubject(SkillData skill)
+    {
+        if (!Enum.IsDefined(typeof(AttackSubject), skill.AttackSubject) ||
+            !Enum.IsDefined(typeof(BodyPartRole), skill.BodyPartRole)) return false;
+        return skill.AttackSubject == AttackSubject.Weapon
+            ? skill.BodyPartRole == BodyPartRole.None
+            : skill.BodyPartRole == BodyPartRole.Torso;
     }
 
     public bool TryGetSkillData(uint skillId, out SkillData data)

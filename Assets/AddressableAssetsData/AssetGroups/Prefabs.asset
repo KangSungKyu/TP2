@@ -27,14 +27,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18fd7c06efa4c8a4382cff9872e00bc9
+    m_Address: Effect_8026
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 21b4789690521e248a43925085a4da87
     m_Address: Room_11079
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 251a51aa448d89148b733f6875ad9a99
+    m_Address: Effect_8020
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2bd3da749b8f85e449f589f83df692f8
+    m_Address: Effect_8030
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fcf28e261d8e7949948f0d3c95a8b89
+    m_Address: Effect_8029
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2fd025f20559e3e48b94409388d85c52
     m_Address: Unit_3001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fe51ecfd2e4d6946892cfe73d410fbf
+    m_Address: Effect_8014
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -47,6 +77,24 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 31d72f9f46be05c44bee462edb83caaa
     m_Address: Room_11051
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33e54c0fa0c3fc84e8d6a6d3cfd8499f
+    m_Address: Effect_8021
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3943e8d1ecf67f34f877cded50df0afa
+    m_Address: Effect_8017
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 487652c230a677c42bc867c027e636ee
+    m_Address: Effect_8028
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -65,6 +113,24 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5b385ea7c9e07d34bb907566200d5178
     m_Address: Room_11056
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6236f8f615b78ae4ba35d04b8e1c3a66
+    m_Address: Effect_8025
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bc9af8cbdd13dc40bf469a2e9ac5433
+    m_Address: Effect_8016
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dab228fc95ebd94c9f0e6ec0b86fe34
+    m_Address: Effect_8018
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -89,6 +155,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8743c172c29fd3246bb9e0f51b0493d8
     m_Address: Unit_3201
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e186ec0a3b8ddb4fbc5065b074bfcde
+    m_Address: Effect_8027
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -261,8 +333,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Prefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8faac0a8fb05bc41bc0bc8080c3222a
+    m_Address: Effect_8019
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e99f7ae641d001944ba12e8604fb4f27
     m_Address: Unit_3102
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eddc653c6d91c9e4896a5cfcc4cc6202
+    m_Address: Effect_8022
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee3035dae259b3e48a4829c229ae1cb9
+    m_Address: Effect_8023
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs
@@ -281,6 +371,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fab185c62ffcc0047b5deaaf4443bfd9
     m_Address: Unit_3103
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdb8caa2e62ea6f41ace8e9ee0b61ef7
+    m_Address: Effect_8024
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: feb1759a24e81134bbd5e8e43821fd78
+    m_Address: Effect_8015
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefabs

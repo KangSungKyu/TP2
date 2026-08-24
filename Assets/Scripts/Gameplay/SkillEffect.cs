@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class SkillEffect : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer visualRenderer;
+
     private string poolKey;
     private float damage;
     private float lifetime;
@@ -14,14 +16,16 @@ public class SkillEffect : MonoBehaviour
     private CombatStats attackerStats;
 
     private Collider2D triggerCollider;
-    private SpriteRenderer visualRenderer;
+    private Vector3 defaultVisualScale = Vector3.one;
+    private Color defaultVisualColor = Color.white;
     private Action<SkillEffect> onReturned;
     private bool returned;
 
     private void Awake()
     {
+        bool hasSerializedVisual = visualRenderer != null;
         triggerCollider = GetComponent<Collider2D>();
-        if (triggerCollider == null)
+        if (triggerCollider == null && !hasSerializedVisual)
         {
             var box = gameObject.AddComponent<BoxCollider2D>();
             box.isTrigger = true;
@@ -29,12 +33,14 @@ public class SkillEffect : MonoBehaviour
             triggerCollider = box;
         }
 
-        visualRenderer = GetComponent<SpriteRenderer>();
+        if (visualRenderer == null) visualRenderer = GetComponent<SpriteRenderer>();
         if (visualRenderer == null)
         {
             visualRenderer = gameObject.AddComponent<SpriteRenderer>();
             visualRenderer.sortingOrder = 20;
         }
+        defaultVisualScale = visualRenderer.transform.localScale;
+        defaultVisualColor = visualRenderer.color;
     }
 
     public void InitEffect(string poolKey, float damage, float lifetime, FactionType faction, CombatStats attacker, Color effectColor, Action<SkillEffect> onReturned = null)
@@ -61,8 +67,16 @@ public class SkillEffect : MonoBehaviour
         if (triggerCollider is BoxCollider2D box) box.size = size;
     }
 
+    public void ResetVisual()
+    {
+        if (visualRenderer == null) return;
+        visualRenderer.transform.localScale = defaultVisualScale;
+        visualRenderer.color = defaultVisualColor;
+    }
+
     private void Update()
     {
+        if (lifetime <= 0f || returned) return;
         timer += Time.deltaTime;
         if (timer >= lifetime)
         {
@@ -95,6 +109,7 @@ public class SkillEffect : MonoBehaviour
     {
         if (returned) return;
         returned = true;
+        ResetVisual();
         onReturned?.Invoke(this);
         onReturned = null;
         gameObject.SetActive(false);

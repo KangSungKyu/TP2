@@ -1,0 +1,602 @@
+fileFormatVersion: 2
+guid: 1173ed295436fff48aaf1362554fe1ca
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8612840393077287164
+    second: AttackEffect_8028_0
+  - first:
+      213: -1700795935779902669
+    second: AttackEffect_8028_1
+  - first:
+      213: -1614596412987959509
+    second: AttackEffect_8028_2
+  - first:
+      213: 744394260687017166
+    second: AttackEffect_8028_3
+  - first:
+      213: -5572286858246954992
+    second: AttackEffect_8028_4
+  - first:
+      213: -5435986119453304040
+    second: AttackEffect_8028_5
+  - first:
+      213: -4804153716282489392
+    second: AttackEffect_8028_6
+  - first:
+      213: -3676406630266651774
+    second: AttackEffect_8028_7
+  - first:
+      213: -1330786933232704775
+    second: AttackEffect_8028_8
+  - first:
+      213: -6653999047583771823
+    second: AttackEffect_8028_9
+  - first:
+      213: -5106958807455833858
+    second: AttackEffect_8028_10
+  - first:
+      213: 3626491965939458763
+    second: AttackEffect_8028_11
+  - first:
+      213: -1567104337977952936
+    second: AttackEffect_8028_12
+  - first:
+      213: 2414722022402748243
+    second: AttackEffect_8028_13
+  - first:
+      213: -458131764652133854
+    second: AttackEffect_8028_F1
+  - first:
+      213: 4001159258331979614
+    second: AttackEffect_8028_F2
+  - first:
+      213: 5421693765241863088
+    second: AttackEffect_8028_F3
+  - first:
+      213: 1156815001176607683
+    second: AttackEffect_8028_F4
+  - first:
+      213: 3746227777285853073
+    second: AttackEffect_8028_F5
+  - first:
+      213: 5055865096031589648
+    second: AttackEffect_8028_F6
+  - first:
+      213: 1828450246361238495
+    second: AttackEffect_8028_F7
+  - first:
+      213: -6914047691090472562
+    second: AttackEffect_8028_F8
+  - first:
+      213: 694202835927360616
+    second: AttackEffect_8028_F9
+  - first:
+      213: -9221495558472064190
+    second: AttackEffect_8028_F10
+  - first:
+      213: 4672102882550095522
+    second: AttackEffect_8028_F11
+  - first:
+      213: 924124835720040455
+    second: AttackEffect_8028_F12
+  - first:
+      213: -5946341130100194492
+    second: AttackEffect_8028_F13
+  - first:
+      213: 7058602932651314292
+    second: AttackEffect_8028_F14
+  - first:
+      213: -2479213382473644439
+    second: AttackEffect_8028_F15
+  - first:
+      213: 6218431686696372798
+    second: AttackEffect_8028_F16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: AttackEffect_8028_F1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 222369b569364a9f0800000000000000
+      internalID: -458131764652133854
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5f94aa7529f68730800000000000000
+      internalID: 4001159258331979614
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F3
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bbf03e01c9bd3b40800000000000000
+      internalID: 5421693765241863088
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F4
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cb89ff4d15dd0010800000000000000
+      internalID: 1156815001176607683
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F5
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19f03d8a0564df330800000000000000
+      internalID: 3746227777285853073
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F6
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0155249848a0a2640800000000000000
+      internalID: 5055865096031589648
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F7
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdb46dfbfc5ff5910800000000000000
+      internalID: 1828450246361238495
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e815174d14e5c00a0800000000000000
+      internalID: -6914047691090472562
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F9
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 864e48d1dcd42a900800000000000000
+      internalID: 694202835927360616
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F10
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2432e6ba5aaa60080800000000000000
+      internalID: -9221495558472064190
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F11
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ae1a7c51d4a6d040800000000000000
+      internalID: 4672102882550095522
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F12
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 700953154a623dc00800000000000000
+      internalID: 924124835720040455
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F13
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 443451b4f3a5a7da0800000000000000
+      internalID: -5946341130100194492
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F14
+      rect:
+        serializedVersion: 2
+        x: 1664
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47c463b18f135f160800000000000000
+      internalID: 7058602932651314292
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F15
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96683476090189dd0800000000000000
+      internalID: -2479213382473644439
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackEffect_8028_F16
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3a02912cae4c4650800000000000000
+      internalID: 6218431686696372798
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      AttackEffect_8028_0: -8612840393077287164
+      AttackEffect_8028_1: -1700795935779902669
+      AttackEffect_8028_10: -5106958807455833858
+      AttackEffect_8028_11: 3626491965939458763
+      AttackEffect_8028_12: -1567104337977952936
+      AttackEffect_8028_13: 2414722022402748243
+      AttackEffect_8028_2: -1614596412987959509
+      AttackEffect_8028_3: 744394260687017166
+      AttackEffect_8028_4: -5572286858246954992
+      AttackEffect_8028_5: -5435986119453304040
+      AttackEffect_8028_6: -4804153716282489392
+      AttackEffect_8028_7: -3676406630266651774
+      AttackEffect_8028_8: -1330786933232704775
+      AttackEffect_8028_9: -6653999047583771823
+      AttackEffect_8028_F1: -458131764652133854
+      AttackEffect_8028_F10: -9221495558472064190
+      AttackEffect_8028_F11: 4672102882550095522
+      AttackEffect_8028_F12: 924124835720040455
+      AttackEffect_8028_F13: -5946341130100194492
+      AttackEffect_8028_F14: 7058602932651314292
+      AttackEffect_8028_F15: -2479213382473644439
+      AttackEffect_8028_F16: 6218431686696372798
+      AttackEffect_8028_F2: 4001159258331979614
+      AttackEffect_8028_F3: 5421693765241863088
+      AttackEffect_8028_F4: 1156815001176607683
+      AttackEffect_8028_F5: 3746227777285853073
+      AttackEffect_8028_F6: 5055865096031589648
+      AttackEffect_8028_F7: 1828450246361238495
+      AttackEffect_8028_F8: -6914047691090472562
+      AttackEffect_8028_F9: 694202835927360616
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

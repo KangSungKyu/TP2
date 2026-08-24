@@ -150,6 +150,18 @@ public enum AttackTargetPolicy : uint
     TrackUntilActive = 1
 }
 
+public enum AttackSubject : uint
+{
+    Weapon = 0,
+    BodyPart = 1
+}
+
+public enum BodyPartRole : uint
+{
+    None = 0,
+    Torso = 1
+}
+
 
 // =========================================================================
 // 2. INTERFACES (인터페이스 데이터)
@@ -396,6 +408,23 @@ public class EffectData
 
     [Name("loopcount")]
     public int LoopCount { get; set; } // 반복 횟수 (0: 무한)
+
+    [Name("activecenterx")]
+    public float ActiveCenterX { get; set; }
+
+    [Name("activecentery")]
+    public float ActiveCenterY { get; set; }
+
+    [Name("activesizex")]
+    public float ActiveSizeX { get; set; }
+
+    [Name("activesizey")]
+    public float ActiveSizeY { get; set; }
+
+    public bool HasValidActiveBounds =>
+        float.IsFinite(ActiveCenterX) && float.IsFinite(ActiveCenterY) &&
+        float.IsFinite(ActiveSizeX) && float.IsFinite(ActiveSizeY) &&
+        ActiveSizeX > 0f && ActiveSizeY > 0f;
 }
 
 /// <summary>
@@ -450,6 +479,12 @@ public class SkillData
 
     [Name("attackmotionprofileidx"), Optional]
     public uint AttackMotionProfileIdx { get; set; }
+
+    [Name("attacksubject"), Optional, TypeConverter(typeof(AttackSubjectConverter))]
+    public AttackSubject AttackSubject { get; set; }
+
+    [Name("bodypart"), Optional, TypeConverter(typeof(BodyPartRoleConverter))]
+    public BodyPartRole BodyPartRole { get; set; }
 }
 
 [Serializable]

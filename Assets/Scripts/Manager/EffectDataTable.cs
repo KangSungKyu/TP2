@@ -18,6 +18,14 @@ public class EffectDataTable : IDataLoad
         {
             foreach (var item in records)
             {
+                bool hasAnyBounds = item.ActiveCenterX != 0f || item.ActiveCenterY != 0f ||
+                    item.ActiveSizeX != 0f || item.ActiveSizeY != 0f;
+                bool requiresBounds = item.Idx >= 8014u && item.Idx <= 8030u;
+                if ((hasAnyBounds || requiresBounds) && !item.HasValidActiveBounds)
+                {
+                    Debug.LogError($"[EffectDataTable] Effect idx {item.Idx} has invalid active bounds; row rejected.");
+                    continue;
+                }
                 this.dataDict[item.Idx] = item;
             }
         }
