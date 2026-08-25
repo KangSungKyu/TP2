@@ -162,6 +162,14 @@ public enum BodyPartRole : uint
     Torso = 1
 }
 
+public enum ActiveShape : uint
+{
+    Box = 0,
+    Circle = 1,
+    Capsule = 2,
+    ActiveShape_End
+}
+
 
 // =========================================================================
 // 2. INTERFACES (인터페이스 데이터)
@@ -421,10 +429,34 @@ public class EffectData
     [Name("activesizey")]
     public float ActiveSizeY { get; set; }
 
+    [Name("activeshape"), Optional]
+    public uint ActiveShapeValue { get; set; }
+
+    [Name("unitidx"), Optional]
+    public uint UnitIdx { get; set; }
+
+    [Name("patternidx"), Optional]
+    public uint PatternIdx { get; set; }
+
+    [Name("skillidx"), Optional]
+    public uint SkillIdx { get; set; }
+
+    // 0 is the shared fallback; runtime hit tick N is serialized as N + 1.
+    [Name("hittick"), Optional]
+    public uint HitTick { get; set; }
+
+    [Ignore]
+    public ActiveShape Shape => (ActiveShape)ActiveShapeValue;
+
+    [Ignore]
+    public bool HasAttackBinding => UnitIdx != 0u || PatternIdx != 0u || SkillIdx != 0u;
+
     public bool HasValidActiveBounds =>
         float.IsFinite(ActiveCenterX) && float.IsFinite(ActiveCenterY) &&
         float.IsFinite(ActiveSizeX) && float.IsFinite(ActiveSizeY) &&
-        ActiveSizeX > 0f && ActiveSizeY > 0f;
+        ActiveSizeX > 0f && ActiveSizeY > 0f &&
+        ActiveShapeValue < (uint)ActiveShape.ActiveShape_End &&
+        (Shape != ActiveShape.Circle || Mathf.Approximately(ActiveSizeX, ActiveSizeY));
 }
 
 /// <summary>

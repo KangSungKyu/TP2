@@ -85,7 +85,7 @@ public class Player : UnitBase
     }
     private void OnDisable()
     {
-        CancelAttackHitbox();
+        skillExecutor?.CancelActiveEffects();
         Deactivated?.Invoke(this);
     }
 
@@ -156,7 +156,7 @@ public class Player : UnitBase
     {
         if (deathSequenceActive) return;
         deathSequenceActive = true;
-        CancelAttackHitbox();
+        skillExecutor?.CancelActiveEffects();
         SetState(PlayerState.Hit, true);
         if (motor != null)
         {
@@ -173,7 +173,6 @@ public class Player : UnitBase
     public void ResetAfterDeath(Vector3 position)
     {
         deathGeneration++;
-        CloseAttackHitbox();
         deathSequenceActive = false;
         if (spriteRenderer != null)
         {
@@ -524,7 +523,6 @@ public class Player : UnitBase
             ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, comboWindow)
             : comboWindow;
         bool nextComboTriggered = false;
-        SetTelegraphedAttackHitbox(recoveryWindow > 0f);
 
         while (windowElapsed < recoveryWindow)
         {
@@ -537,7 +535,6 @@ public class Player : UnitBase
             nextComboTriggered = true;
             comboStep++;
         }
-        SetTelegraphedAttackHitbox(false);
 
         if (nextComboTriggered && comboStep <= 3)
         {

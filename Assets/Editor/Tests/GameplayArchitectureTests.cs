@@ -11,81 +11,103 @@ namespace QA.Tests
     public class GameplayArchitectureTests
     {
         [Test]
-        public void Pass10AttackEffects_MapByUintIdentityAndDriveExactTickBounds()
+        public void EffectDrivenAttackBounds_ResolveExactTickBeforeSharedFallback()
         {
-            (uint unit, uint pattern, uint skill, uint effect)[] mappings =
-            {
-                (3001, 0, 7001, 8014), (3101, 6001, 7001, 8015),
-                (3102, 6008, 7005, 8016), (3102, 6009, 7006, 8017),
-                (3103, 6001, 7001, 8018), (3103, 6010, 7007, 8019),
-                (3104, 6003, 7001, 8020), (3104, 6004, 7001, 8021),
-                (3105, 6005, 7002, 8022), (3201, 6103, 7013, 8023)
-            };
-            foreach (var mapping in mappings)
-            {
-                Assert.IsTrue(SkillExecutor.TryResolvePass10AttackEffectIdx(
-                    mapping.unit, mapping.pattern, mapping.skill, out uint effect));
-                Assert.AreEqual(mapping.effect, effect);
-            }
-            Assert.IsFalse(SkillExecutor.TryResolvePass10AttackEffectIdx(3106, 6007, 7003, out _));
-            (uint unit, uint pattern, uint skill, uint tick, uint effect)[] reworkV2 =
-            {
-                (3105, 6006, 7002, 0, 8024), (3201, 6100, 7012, 0, 8025),
-                (3201, 6102, 7010, 0, 8026), (3001, 0, 7003, 0, 8027),
-                (3001, 0, 7003, 1, 8028), (3201, 6101, 7011, 0, 8029),
-                (3201, 6101, 7011, 1, 8030)
-            };
-            foreach (var mapping in reworkV2)
-            {
-                Assert.IsTrue(SkillExecutor.TryResolvePass10AttackEffectIdx(
-                    mapping.unit, mapping.pattern, mapping.skill, mapping.tick, out uint effect));
-                Assert.AreEqual(mapping.effect, effect);
-            }
-            Assert.IsFalse(SkillExecutor.TryResolvePass10AttackEffectIdx(3001, 0, 7003, 2, out _));
-            Assert.IsFalse(SkillExecutor.TryResolvePass10AttackEffectIdx(3201, 6101, 7011, 2, out _));
+            const string header = "idx,effectnametextidx,prefabidx,duration,scale,loopcount,activecenterx,activecentery,activesizex,activesizey,activeshape,unitidx,patternidx,skillidx,hittick\n";
+            var table = new EffectDataTable();
+            table.LoadData(header +
+                "8014,0,1081,1,1,1,.16,-.11,.56,.82,0,3001,0,7001,0\n" +
+                "8015,0,1082,1,1,1,.09,-.005,.96,.05,2,3101,6001,7008,0\n" +
+                "8027,0,1087,1,1,1,.255,.045,.29,.75,2,3001,0,7003,1\n" +
+                "8028,0,1088,1,1,1,.195,-.09,.53,.82,0,3001,0,7003,2\n");
 
-            GameObject ownerObject = new GameObject("Pass10Owner");
-            GameObject attachObject = new GameObject("Pass10Attach");
+            Assert.IsTrue(table.TryResolveAttackEffect(3001, 0, 7001, 7, out EffectData fallback));
+            Assert.AreEqual(8014u, fallback.Idx);
+            Assert.AreEqual(ActiveShape.Box, fallback.Shape);
+            Assert.IsTrue(table.TryResolveAttackEffect(3001, 0, 7003, 0, out EffectData first));
+            Assert.AreEqual(8027u, first.Idx);
+            Assert.AreEqual(ActiveShape.Capsule, first.Shape);
+            Assert.IsTrue(table.TryResolveAttackEffect(3001, 0, 7003, 1, out EffectData second));
+            Assert.AreEqual(8028u, second.Idx);
+            Assert.IsFalse(table.TryResolveAttackEffect(3101, 6001, 7001, 0, out _));
+            Assert.IsTrue(table.TryResolveAttackEffect(3101, 6001, 7008, 0, out EffectData monster));
+            Assert.AreEqual(8015u, monster.Idx);
+        }
+
+        [Test]
+        public void SkillOwnership_PlayerComboAndMonsterPatternsAreUintIsolated()
+        {
+            var skills = new SkillDataTable();
+            var patterns = new MonsterPatternDataTable();
+            var effects = new EffectDataTable();
+            skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
+            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+            effects.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+
+            for (uint skillIdx = 7001u; skillIdx <= 7003u; skillIdx++)
+            {
+                Assert.IsTrue(skills.TryGetSkillData(skillIdx, out SkillData playerSkill));
+                Assert.AreEqual(2030u + skillIdx - 7001u, playerSkill.NameTextIdx);
+            }
+
+            (uint pattern, uint skill, uint unit, uint effect)[] monsterOwnership =
+            {
+                (6001, 7008, 3101, 8015), (6011, 7009, 3103, 8018),
+                (6003, 7014, 3104, 8020), (6004, 7014, 3104, 8021),
+                (6005, 7015, 3105, 8022), (6006, 7015, 3105, 8024),
+                (6007, 7016, 3106, 8031)
+            };
+            foreach (var row in monsterOwnership)
+            {
+                Assert.IsTrue(patterns.TryGetPatternData(row.pattern, out MonsterPatternData pattern));
+                Assert.AreEqual(row.skill, pattern.SkillIdx);
+                Assert.Greater(pattern.SkillIdx, 7003u);
+                Assert.IsTrue(effects.TryResolveAttackEffect(row.unit, row.pattern, row.skill, 0u,
+                    out EffectData effect));
+                Assert.AreEqual(row.effect, effect.Idx);
+            }
+
+            string player = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+            StringAssert.Contains("Util.CreateDataIdx(DataTableType.Skill, (uint)comboStep)", player);
+            StringAssert.Contains("skillExecutor.ExecuteSkill((int)skillNum", player,
+                "Known 1/F and 2/R raw-index defect remains outside this migration.");
+        }
+
+        [Test]
+        public void EffectDrivenAttackBounds_UseNativeBoxCircleAndCapsuleQueries()
+        {
+            GameObject targetObject = new GameObject("NativeShapeTarget");
             try
             {
-                attachObject.transform.SetParent(ownerObject.transform, false);
-                UnitBase owner = ownerObject.AddComponent<UnitBase>();
-                BoxCollider2D collider = attachObject.AddComponent<BoxCollider2D>();
-                collider.isTrigger = true;
-                collider.offset = new Vector2(.2f, .3f);
-                collider.size = new Vector2(1f, .5f);
-                UnitAttackHitbox2D hitbox = attachObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, collider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, attachObject.transform);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(owner, hitbox);
-                hitbox.Bind(owner);
+                BoxCollider2D body = targetObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(.2f, .2f);
+                CombatStats stats = targetObject.AddComponent<CombatStats>();
+                stats.SetDefenseBodyCollider(body);
 
-                Vector2 originalOffset = collider.offset;
-                Vector2 originalSize = collider.size;
-                Assert.IsTrue(owner.TryOpenAttackHitbox(1, owner.ActionGeneration, 0,
-                    AttackSubject.Weapon, BodyPartRole.None, new Vector2(.16f, -.11f),
-                    new Vector2(.56f, .82f), out var rightSweep));
-                Assert.AreEqual(.56f, rightSweep.HalfExtents.x * 2f, .001f);
-                Assert.AreEqual(.82f, rightSweep.HalfExtents.y * 2f, .001f);
-                Assert.AreEqual(.16f, rightSweep.Current.x, .001f);
-                owner.CloseAttackHitbox();
-                Assert.AreEqual(originalOffset, collider.offset);
-                Assert.AreEqual(originalSize, collider.size);
+                targetObject.transform.position = new Vector2(2f, 0f);
+                Physics2D.SyncTransforms();
+                Assert.IsTrue(stats.TryGetBodySweepFraction(new CombatStats.AttackSweep2D(
+                    Vector2.zero, new Vector2(3f, 0f), Vector2.one * .5f, 1, 1, 0,
+                    ActiveShape.Circle, Vector2.one, 0f), out _));
 
-                owner.SetFacingRight(false);
-                Assert.IsTrue(owner.TryOpenAttackHitbox(2, owner.ActionGeneration, 0,
-                    AttackSubject.Weapon, BodyPartRole.None, new Vector2(.16f, -.11f),
-                    new Vector2(.56f, .82f), out var leftSweep));
-                Assert.AreEqual(-.16f, leftSweep.Current.x, .001f);
+                targetObject.transform.position = new Vector2(.65f, .65f);
+                Physics2D.SyncTransforms();
+                Assert.IsTrue(stats.TryGetBodySweepFraction(new CombatStats.AttackSweep2D(
+                    Vector2.zero, Vector2.zero, Vector2.one, 1, 2, 0,
+                    ActiveShape.Box, new Vector2(2f, .25f), 45f), out _));
+
+                targetObject.transform.position = new Vector2(.8f, 0f);
+                Physics2D.SyncTransforms();
+                Assert.IsTrue(stats.TryGetBodySweepFraction(new CombatStats.AttackSweep2D(
+                    Vector2.zero, Vector2.zero, Vector2.one, 1, 3, 0,
+                    ActiveShape.Capsule, new Vector2(.5f, 2f), 90f), out _));
             }
             finally
             {
-                Object.DestroyImmediate(ownerObject);
+                Object.DestroyImmediate(targetObject);
             }
         }
+
 
         [Test]
         public void Test01_UnitBaseHierarchyAndPivot_PlayerAndBoss()
@@ -125,161 +147,7 @@ namespace QA.Tests
             Object.DestroyImmediate(attackerObj);
         }
 
-        [Test]
-        public void Test_CommonAttackHitbox_WindowFacingAndCancellation()
-        {
-            GameObject ownerObject = new GameObject("AttackHitboxOwner_QA");
-            GameObject hitboxObject = new GameObject("WeaponHitbox_QA");
-            hitboxObject.transform.SetParent(ownerObject.transform, false);
-            GameObject sweepObject = new GameObject("MeleeSweepVisual_QA");
-            sweepObject.transform.SetParent(hitboxObject.transform, false);
-            try
-            {
-                UnitBase owner = ownerObject.AddComponent<UnitBase>();
-                BoxCollider2D collider = hitboxObject.AddComponent<BoxCollider2D>();
-                collider.isTrigger = true;
-                collider.size = new Vector2(2f, 1f);
-                SpriteRenderer debugSprite = hitboxObject.AddComponent<SpriteRenderer>();
-                SpriteRenderer sweepSprite = sweepObject.AddComponent<SpriteRenderer>();
-                sweepSprite.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(
-                    UnityEditor.AssetDatabase.GUIDToAssetPath("577e4bcb39da808489091d00c71ddfe4"));
-                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, collider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, hitboxObject.transform);
-                typeof(UnitAttackHitbox2D).GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, debugSprite);
-                typeof(UnitAttackHitbox2D).GetField("debugSweepSprite", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, sweepSprite);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(owner, hitbox);
-                hitbox.Bind(owner);
 
-                owner.SetFacingRight(false);
-                Assert.Less(hitboxObject.transform.localScale.x, 0f);
-                Bounds originalColliderBounds = collider.bounds;
-                Assert.IsTrue(owner.TryOpenAttackHitbox(11, owner.ActionGeneration, 0, out var sweep));
-                Assert.IsTrue(hitbox.IsWindowActive);
-                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
-                Assert.IsTrue(debugSprite.enabled);
-                Assert.AreEqual(hitbox.ActiveColor, debugSprite.color, "Active hit window must render active color.");
-                Assert.AreEqual(new Vector2(1.5f, 0.75f), sweep.HalfExtents);
-                Assert.AreEqual(-0.5f, sweep.Current.x, .001f);
-                Assert.IsTrue(sweepSprite.enabled, "Active melee window must display the authoritative sweep bounds.");
-                Assert.AreEqual(sweep.Current.x, sweepSprite.bounds.center.x, .001f);
-                Assert.AreEqual(sweep.Current.y, sweepSprite.bounds.center.y, .001f);
-                Assert.AreEqual(sweep.HalfExtents.x * 2f, sweepSprite.bounds.size.x, .001f);
-                Assert.AreEqual(sweep.HalfExtents.y * 2f, sweepSprite.bounds.size.y, .001f);
-                Assert.AreEqual(1f, sweep.Current.x + sweep.HalfExtents.x, .001f,
-                    "Left-facing expansion must preserve the original rear edge.");
-                Assert.AreEqual(originalColliderBounds.center, collider.bounds.center,
-                    "Sweep expansion must not move the serialized collider anchor.");
-
-                hitbox.SetTelegraphed(true);
-                owner.CloseAttackHitbox();
-                Assert.IsFalse(hitbox.IsWindowActive);
-                Assert.IsTrue(hitbox.IsDebugVisualizationActive, "Telegraphed state must keep visualization active.");
-                Assert.IsTrue(debugSprite.enabled);
-                Assert.IsFalse(sweepSprite.enabled, "The authoritative sweep is visible only during an active window.");
-                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Telegraphed/inactive window must render inactive color.");
-
-                hitbox.SetTelegraphed(false);
-                Assert.IsFalse(hitbox.IsDebugVisualizationActive);
-                Assert.IsFalse(debugSprite.enabled);
-
-                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
-                owner.CloseAttackHitbox();
-                Assert.IsTrue(owner.TryOpenAttackHitbox(12, owner.ActionGeneration, 0, out _));
-                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Global OFF must suppress the active debug state.");
-                Assert.IsFalse(debugSprite.enabled, "Global OFF must keep the sprite renderer disabled when the window reopens.");
-                Assert.IsFalse(sweepSprite.enabled, "Global OFF must suppress the sweep renderer without changing collision.");
-                Assert.IsTrue(hitbox.IsWindowActive);
-
-                uint generation = owner.ActionGeneration;
-                owner.CancelAttackHitbox();
-                Assert.IsFalse(hitbox.IsWindowActive, "Cancel must close the attack window.");
-                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Cancel must clear the debug state.");
-                Assert.IsFalse(debugSprite.enabled, "Cancel must disable the sprite renderer.");
-                Assert.IsFalse(sweepSprite.enabled, "Cancel must disable the sweep renderer.");
-                Assert.IsFalse(owner.IsActionGenerationCurrent(generation));
-
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                owner.SetFacingRight(true);
-                Assert.IsTrue(owner.TryOpenAttackHitbox(13, owner.ActionGeneration, 0, out var rightSweep));
-                Assert.IsTrue(debugSprite.enabled);
-                Assert.IsTrue(sweepSprite.enabled);
-                Assert.AreEqual(.5f, rightSweep.Current.x, .001f);
-                Assert.AreEqual(rightSweep.Current.x, sweepSprite.bounds.center.x, .001f);
-                Assert.AreEqual(rightSweep.HalfExtents.x * 2f, sweepSprite.bounds.size.x, .001f);
-                typeof(UnitAttackHitbox2D).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.Invoke(hitbox, null);
-                Assert.IsFalse(debugSprite.enabled, "Disable must not leave a pooled sprite renderer enabled.");
-                Assert.IsFalse(sweepSprite.enabled, "Disable must not leave a pooled sweep renderer enabled.");
-                Assert.IsFalse(collider.enabled, "Disable must close the attack collider.");
-                owner.CloseAttackHitbox();
-                Assert.IsFalse(hitbox.IsDebugVisualizationActive, "Re-enable must not restore a closed window.");
-                Assert.IsFalse(debugSprite.enabled, "Re-enable must not restore stale visualization.");
-            }
-            finally
-            {
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                Object.DestroyImmediate(ownerObject);
-            }
-        }
-
-        [Test]
-        public void Test_HitboxLifecycle_YellowToRedToYellowToOff_Transition()
-        {
-            GameObject ownerObject = new GameObject("HitboxLifecycle_Owner_QA");
-            GameObject hitboxObject = new GameObject("HitboxLifecycle_Hitbox_QA");
-            hitboxObject.transform.SetParent(ownerObject.transform, false);
-            try
-            {
-                UnitBase owner = ownerObject.AddComponent<UnitBase>();
-                BoxCollider2D collider = hitboxObject.AddComponent<BoxCollider2D>();
-                collider.isTrigger = true;
-                SpriteRenderer debugSprite = hitboxObject.AddComponent<SpriteRenderer>();
-                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, collider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, hitboxObject.transform);
-                typeof(UnitAttackHitbox2D).GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, debugSprite);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(owner, hitbox);
-                hitbox.Bind(owner);
-
-                // 1. 선딜 (Pre-delay): 🟡 Yellow, Collider disabled
-                owner.SetTelegraphedAttackHitbox(true);
-                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
-                Assert.IsFalse(hitbox.IsWindowActive);
-                Assert.IsFalse(collider.enabled, "Telegraphed state must keep attack collider disabled to prevent pre-damage.");
-                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Pre-delay must display yellow inactive color.");
-
-                // 2. 타격 순간 (Active Window): 🔴 Red, Collider enabled
-                Assert.IsTrue(owner.TryOpenAttackHitbox(101, owner.ActionGeneration, 0, out _));
-                Assert.IsTrue(hitbox.IsWindowActive);
-                Assert.IsTrue(collider.enabled, "Active hit window must enable attack collider.");
-                Assert.AreEqual(hitbox.ActiveColor, debugSprite.color, "Active hit window must display red active color.");
-
-                // 3. 후딜 (Post-delay): 🟡 Yellow, Collider disabled
-                owner.CloseAttackHitbox();
-                owner.SetTelegraphedAttackHitbox(true);
-                Assert.IsTrue(hitbox.IsDebugVisualizationActive);
-                Assert.IsFalse(hitbox.IsWindowActive);
-                Assert.IsFalse(collider.enabled, "Post-delay must keep attack collider disabled.");
-                Assert.AreEqual(hitbox.InactiveColor, debugSprite.color, "Post-delay must display yellow inactive color.");
-
-                // 4. 모션 완전 종료 (OFF): Visual disabled, Collider disabled
-                owner.CloseAttackHitbox();
-                owner.SetTelegraphedAttackHitbox(false);
-                Assert.IsFalse(hitbox.IsDebugVisualizationActive);
-                Assert.IsFalse(debugSprite.enabled, "Complete motion end must turn off debug visualization.");
-                Assert.IsFalse(collider.enabled);
-            }
-            finally
-            {
-                Object.DestroyImmediate(ownerObject);
-            }
-        }
 
         [Test]
         public void Test_TelegraphTimer_SyncsWithWindowStart_AndPreRendersYellowHitbox()
@@ -294,85 +162,7 @@ namespace QA.Tests
             Assert.AreEqual(0.05f, windowStart, 0.001f, "windowStart must be HitTiming - HitWindowPre.");
         }
 
-        [Test]
-        public void Test_DoubledAttackTiming_RecoveryAndMultiHitGapContracts()
-        {
-            Assert.AreEqual(1.6f, SkillExecutor.CalculateAttackRecoverySeconds(2f, .4f, .5f), .001f,
-                "A doubled clip must not be truncated by the old combo/recovery duration.");
-            Assert.AreEqual(.5f, SkillExecutor.CalculateAttackRecoverySeconds(.4f, .4f, .5f), .001f,
-                "Existing longer recovery remains authoritative.");
 
-            float firstStart = .20f - .06f;
-            float firstEnd = .20f + .06f;
-            float secondStart = .50f - .06f;
-            float secondEnd = .50f + .06f;
-            Assert.Greater(secondStart, firstEnd, "Doubled 7003 timings must retain a collider-OFF gap.");
-            Assert.AreEqual(.12f, firstEnd - firstStart, .001f);
-            Assert.AreEqual(.12f, secondEnd - secondStart, .001f);
-            foreach (float fixedStep in new[] { 1f / 15f, 1f / 60f })
-            {
-                float elapsed = 0f;
-                while (elapsed + Mathf.Epsilon < firstStart) elapsed += fixedStep;
-                Assert.That(elapsed, Is.InRange(firstStart, firstStart + fixedStep));
-                while (elapsed + Mathf.Epsilon < firstEnd) elapsed += fixedStep;
-                Assert.That(elapsed, Is.InRange(firstEnd, firstEnd + fixedStep));
-                while (elapsed + Mathf.Epsilon < secondStart) elapsed += fixedStep;
-                Assert.That(elapsed, Is.InRange(secondStart, secondStart + fixedStep));
-            }
-
-            string player = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
-            string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
-            StringAssert.Contains("windowElapsed < recoveryWindow", player);
-            StringAssert.Contains("GetAttackRecoverySeconds(animator, animationStartedAt, pattern.PostDelay)", monster);
-            StringAssert.Contains("if (windowStart > 0f)", monster);
-            StringAssert.Contains("SetTelegraphedAttackHitbox(false);", monster);
-        }
-
-        [Test]
-        public void ShadowStalker_AttackAttachCurve_IsContinuousAndPreservesActivePose()
-        {
-            var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<AnimationClip>(
-                "Assets/Anims/Monster/ShadowStalker_Attack.anim");
-            Assert.NotNull(clip);
-            Assert.AreEqual(2f, clip.length, 1f / clip.frameRate);
-            Assert.AreEqual(8f, clip.frameRate);
-
-            var bindings = UnityEditor.AnimationUtility.GetCurveBindings(clip);
-            AnimationCurve x = UnityEditor.AnimationUtility.GetEditorCurve(clip,
-                System.Array.Find(bindings, b => b.path.Contains("AttackAttach") && b.propertyName == "m_LocalPosition.x"));
-            AnimationCurve y = UnityEditor.AnimationUtility.GetEditorCurve(clip,
-                System.Array.Find(bindings, b => b.path.Contains("AttackAttach") && b.propertyName == "m_LocalPosition.y"));
-            AnimationCurve z = UnityEditor.AnimationUtility.GetEditorCurve(clip,
-                System.Array.Find(bindings, b => b.path.Contains("AttackAttach") && b.propertyName == "localEulerAnglesRaw.z"));
-            Assert.NotNull(x); Assert.NotNull(y); Assert.NotNull(z);
-            Assert.AreEqual(6, x.length); Assert.AreEqual(6, y.length); Assert.AreEqual(6, z.length);
-            Assert.AreEqual(.7f, x.Evaluate(0f), .001f);
-            Assert.AreEqual(1f, y.Evaluate(0f), .001f);
-            Assert.AreEqual(0f, z.Evaluate(0f), .001f);
-            Assert.AreEqual(.49056f, x.Evaluate(.24f), .001f);
-            Assert.AreEqual(1.3614f, y.Evaluate(.24f), .001f);
-            Assert.AreEqual(43.8f, z.Evaluate(.24f), .001f);
-            Assert.AreEqual(.7f, x.Evaluate(2f), .001f);
-            Assert.AreEqual(1f, y.Evaluate(2f), .001f);
-            Assert.AreEqual(0f, z.Evaluate(2f), .001f);
-
-            Vector2 previous = new Vector2(x.Evaluate(0f), y.Evaluate(0f));
-            for (int frame = 1; frame <= 16; frame++)
-            {
-                Vector2 current = new Vector2(x.Evaluate(frame / 8f), y.Evaluate(frame / 8f));
-                Assert.IsTrue(float.IsFinite(current.x) && float.IsFinite(current.y));
-                Assert.Less(Vector2.Distance(previous, current), .604f);
-                Assert.That(current.x, Is.InRange(.49056f, .9f));
-                Assert.That(current.y, Is.InRange(.78f, 1.3614f));
-                previous = current;
-            }
-
-            var spriteBinding = UnityEditor.AnimationUtility.GetObjectReferenceCurveBindings(clip);
-            Assert.AreEqual(1, spriteBinding.Length);
-            var spriteKeys = UnityEditor.AnimationUtility.GetObjectReferenceCurve(clip, spriteBinding[0]);
-            Assert.AreEqual(8, spriteKeys.Length);
-            Assert.IsFalse(System.Array.Exists(spriteKeys, key => key.value == null));
-        }
 
         [Test]
         public void Test_ContactPoint_SpawnsEffectsAtHitSurfaceNotRoot()
@@ -410,172 +200,8 @@ namespace QA.Tests
             }
         }
 
-        [Test]
-        public void Test_RepeatedAttackGenerationAndGuardSpriteContracts()
-        {
-            GameObject attackerObject = new GameObject("RepeatedAttack_Attacker_QA");
-            GameObject hitboxObject = new GameObject("RepeatedAttack_Hitbox_QA");
-            GameObject targetObject = new GameObject("RepeatedAttack_Target_QA");
-            hitboxObject.transform.SetParent(attackerObject.transform, false);
-            try
-            {
-                UnitBase attacker = attackerObject.AddComponent<UnitBase>();
-                BoxCollider2D attackCollider = hitboxObject.AddComponent<BoxCollider2D>();
-                attackCollider.isTrigger = true;
-                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, attackCollider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, hitboxObject.transform);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(attacker, hitbox);
-                hitbox.Bind(attacker);
 
-                CombatStats target = targetObject.AddComponent<CombatStats>();
-                target.InitStats();
-                BoxCollider2D body = targetObject.AddComponent<BoxCollider2D>();
-                target.SetDefenseBodyCollider(body);
-                SpriteRenderer guardSprite = targetObject.AddComponent<SpriteRenderer>();
-                guardSprite.transform.localPosition = Vector3.right;
-                typeof(CombatStats).GetField("debugGuardSprite", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(target, guardSprite);
-                target.SetGuarding(false);
 
-                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack1));
-                Assert.IsFalse(target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack1));
-                Assert.AreEqual(90f, target.CurrentHp);
-                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack1);
-                Assert.AreEqual(90f, target.CurrentHp, "One attack tick must damage the same target once.");
-
-                attacker.CloseAttackHitbox();
-                attacker.CancelAttackHitbox();
-                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack2));
-                Assert.AreNotEqual(attack1.Generation, attack2.Generation);
-                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack2);
-                Assert.AreEqual(80f, target.CurrentHp, "A new generation must damage the target again.");
-
-                attacker.CancelAttackHitbox();
-                Assert.IsTrue(attacker.TryOpenAttackHitbox(31, attacker.ActionGeneration, 0, out var attack3));
-                Assert.AreNotEqual(attack2.Generation, attack3.Generation);
-                target.TakeDamage(10f, attacker: attacker.Stats, attackSweep: attack3);
-                Assert.AreEqual(70f, target.CurrentHp, "Cancel must not poison the following generation.");
-
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                target.SetFacingRight(false);
-                target.SetGuarding(true);
-                Assert.IsTrue(guardSprite.enabled);
-                Assert.Less(guardSprite.transform.localPosition.x, 0f);
-                target.SetParrying(true);
-                Assert.Greater(guardSprite.color.g, guardSprite.color.b * 0.9f);
-                target.SetParrying(false);
-                target.SetGuarding(false);
-                Assert.IsFalse(guardSprite.enabled);
-                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
-                target.SetGuarding(true);
-                Assert.IsFalse(guardSprite.enabled, "Global OFF must not change the actual guarding state.");
-                Assert.IsTrue(target.IsGuarding);
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                target.SetGuarding(false);
-                target.SetGuarding(true);
-                typeof(CombatStats).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(target, null);
-                Assert.IsFalse(guardSprite.enabled, "Pool/disable must hide the guard sprite.");
-            }
-            finally
-            {
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                Object.DestroyImmediate(attackerObject);
-                Object.DestroyImmediate(targetObject);
-            }
-        }
-
-        [Test]
-        public void Test_PlayerGuardDebugPrefab_GameViewContract()
-        {
-            GameObject playerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Prefabs/Unit_3001.prefab"));
-            try
-            {
-                Player player = playerObject.GetComponent<Player>();
-                CombatStats stats = playerObject.GetComponent<CombatStats>();
-                Transform guardRoot = playerObject.transform.Find("DebugGuardVisual");
-                SpriteRenderer guard = guardRoot.GetComponent<SpriteRenderer>();
-                UnitAttackHitbox2D hitbox = playerObject.GetComponentInChildren<UnitAttackHitbox2D>(true);
-                SpriteRenderer attackDebug = hitbox.GetComponentInChildren<SpriteRenderer>(true);
-                hitbox.Bind(player);
-                Assert.NotNull(stats);
-                Assert.NotNull(guard);
-                Assert.NotNull(hitbox);
-                Assert.IsFalse(guard.enabled);
-                Assert.AreEqual(new Vector3(1f, 1f, 0f), guardRoot.localPosition);
-                Vector2 guardSize = Vector2.Scale(guard.sprite.bounds.size, guardRoot.lossyScale);
-                Assert.AreEqual(1f, guardSize.x, .001f);
-                Assert.AreEqual(2f, guardSize.y, .001f);
-
-                Collider2D defenseBody = playerObject.GetComponent<Collider2D>();
-                Bounds expectedGuardBounds = defenseBody.bounds;
-                expectedGuardBounds.center += Vector3.right * expectedGuardBounds.size.x;
-                Assert.AreEqual(expectedGuardBounds.center.x, guard.bounds.center.x, .001f);
-                Assert.AreEqual(expectedGuardBounds.center.y, guard.bounds.center.y, .001f);
-                Assert.AreEqual(expectedGuardBounds.size.x, guard.bounds.size.x, .001f);
-                Assert.AreEqual(expectedGuardBounds.size.y, guard.bounds.size.y, .001f);
-
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                stats.SetFacingRight(true);
-                stats.SetGuarding(true);
-                Assert.IsTrue(guard.enabled);
-                Assert.AreEqual(new Color(0f, .5f, 1f, .35f), guard.color);
-                stats.SetFacingRight(false);
-                Assert.AreEqual(-1f, guardRoot.localPosition.x, .001f);
-                stats.SetParrying(true);
-                Assert.AreEqual(new Color(0f, 1f, 1f, .35f), guard.color);
-
-                Assert.IsTrue(player.TryOpenAttackHitbox(71, player.ActionGeneration, 0, out _));
-                stats.SetGuarding(false);
-                stats.SetParrying(false);
-                Assert.IsFalse(guard.enabled);
-                Assert.IsTrue(attackDebug.enabled, "Attack debug must follow its own active window.");
-
-                UnitAttackHitbox2D.DebugVisualizationEnabled = false;
-                stats.SetGuarding(true);
-                Assert.IsTrue(stats.IsGuarding);
-                Assert.IsFalse(guard.enabled);
-                player.CloseAttackHitbox();
-                Assert.IsTrue(player.TryOpenAttackHitbox(72, player.ActionGeneration, 0, out _));
-                Assert.IsFalse(attackDebug.enabled);
-                playerObject.SetActive(false);
-                Assert.IsFalse(guard.enabled);
-                Assert.IsFalse(attackDebug.enabled);
-            }
-            finally
-            {
-                UnitAttackHitbox2D.DebugVisualizationEnabled = true;
-                Object.DestroyImmediate(playerObject);
-            }
-        }
-
-        [Test]
-        public void Test_CommonAttackHitbox_FixedStepAndLifecycleContracts()
-        {
-            string executor = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
-            string unit = File.ReadAllText("Assets/Scripts/Gameplay/UnitBase.cs");
-            string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
-            string player = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
-            string portal = File.ReadAllText("Assets/Scripts/Gameplay/IntraRoomPortal.cs");
-            string hitbox = File.ReadAllText("Assets/Scripts/Gameplay/Combat/UnitAttackHitbox2D.cs");
-
-            StringAssert.Contains("PlayerLoopTiming.FixedUpdate", executor);
-            StringAssert.Contains("TryGetAttackSweepFraction(sweep", executor);
-            StringAssert.Contains("attackSweep: sweep", executor);
-            StringAssert.Contains("finally", executor);
-            StringAssert.Contains("owner.CloseAttackHitbox()", executor);
-            StringAssert.Contains("has no serialized attack hitbox; attack cancelled", unit);
-            StringAssert.Contains("CancelAttackHitbox()", monster);
-            StringAssert.Contains("CancelAttackHitbox()", player);
-            StringAssert.Contains("player.CancelAttackHitbox()", portal);
-            StringAssert.Contains("#if UNITY_EDITOR || DEVELOPMENT_BUILD", hitbox);
-            StringAssert.Contains("DebugVisualizationEnabled", hitbox);
-            StringAssert.Contains("Debug.DrawLine", hitbox);
-            StringAssert.DoesNotContain("new Material", hitbox);
-            StringAssert.DoesNotContain("new GameObject", hitbox);
-            StringAssert.DoesNotContain("pStats.TakeDamage(pattern.Damage", monster);
-            StringAssert.DoesNotContain("SpawnSkillEffect($\"Player_Hit", player);
-        }
 
         [TestCase(true, 2f, false, true)]
         [TestCase(false, -2f, false, true)]
@@ -1662,7 +1288,7 @@ namespace QA.Tests
 
             Assert.IsTrue(table.TryGetPatternData(6005, out var straight));
             Assert.IsTrue(table.TryGetPatternData(6006, out var low));
-            Assert.AreEqual(7002u, straight.SkillIdx);
+            Assert.AreEqual(7015u, straight.SkillIdx);
             Assert.AreEqual(1045u, straight.ProjectileResourceIdx);
             Assert.AreEqual(15f, straight.ProjectileSpeed, 0.01f);
             Assert.AreEqual(25f, straight.ProjectileMaxDistance, 0.01f);
@@ -1694,7 +1320,7 @@ namespace QA.Tests
 
             Assert.IsTrue(patterns.TryGetPatternData(6005, out MonsterPatternData far));
             Assert.IsTrue(patterns.TryGetPatternData(6006, out MonsterPatternData near));
-            Assert.IsTrue(skills.TryGetSkillData(7002, out SkillData projectileSkill));
+            Assert.IsTrue(skills.TryGetSkillData(7015, out SkillData projectileSkill));
             Assert.AreEqual(8f, far.MinStartDistance);
             Assert.AreEqual(10f, far.MaxStartDistance);
             Assert.IsFalse(Monster.IsPatternStartDistanceValid(far, projectileSkill, 7.999f));
@@ -1706,7 +1332,7 @@ namespace QA.Tests
             Assert.IsFalse(Monster.IsPatternStartDistanceValid(near, projectileSkill, 8.001f));
 
             Assert.IsTrue(patterns.TryGetPatternData(6001, out MonsterPatternData melee));
-            Assert.IsTrue(skills.TryGetSkillData(7001, out SkillData meleeSkill));
+            Assert.IsTrue(skills.TryGetSkillData(7008, out SkillData meleeSkill));
             Assert.IsTrue(Monster.TryGetPatternStartDistanceBand(melee, meleeSkill, out float min, out float max));
             Assert.AreEqual(0f, min);
             Assert.AreEqual(meleeSkill.Range, max);
@@ -1967,7 +1593,7 @@ namespace QA.Tests
         }
 
         [Test]
-        public void PhaseA1x1_PlaytestUsesEntryAndSingleMonster3103Override()
+        public void PhaseA1x1_PlaytestUsesEntryAndSingleMonster3102Override()
         {
             string builder = File.ReadAllText("Assets/Scripts/Scene/TilemapStageBuilder.cs");
             string main = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
@@ -1983,7 +1609,7 @@ namespace QA.Tests
                 socket => socket.EntryMarker != null));
             Assert.GreaterOrEqual(room.GetComponentsInChildren<SpawnPointMarker>(true).Length, 2);
             StringAssert.Contains("UsePhaseA1x1Playtest = true", main);
-            StringAssert.Contains("DevelopmentMonsterUnitIdx = 3103u", main);
+            StringAssert.Contains("DevelopmentMonsterUnitIdx = 3102u", main);
             Assert.AreEqual(1, System.Array.FindAll(room.GetComponentsInChildren<SpawnPointMarker>(true),
                 marker => marker.MonsterId == 3102u).Length);
             Assert.AreEqual(0, System.Array.FindAll(room.GetComponentsInChildren<SpawnPointMarker>(true),
@@ -1994,8 +1620,8 @@ namespace QA.Tests
             Assert.Less(spawner.IndexOf("if (zones.Count == 1 && zones[0].MonsterId != 0u)"),
                 spawner.IndexOf("uint[] encounter = GetCurrentEncounter(zones)"));
             StringAssert.Contains("playtestMarker.EnableSpawn = false", spawner);
-            Assert.NotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3103.prefab")
-                .GetComponent<SkillExecutor>(), "Unit_3103 must keep its prefab-bound SkillExecutor.");
+            Assert.NotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3102.prefab")
+                .GetComponent<SkillExecutor>(), "Unit_3102 must keep its prefab-bound SkillExecutor.");
         }
 
         [Test]
@@ -2014,7 +1640,8 @@ namespace QA.Tests
 
             var skills = new SkillDataTable();
             skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
-            foreach (uint idx in new uint[] { 7001, 7002, 7003, 7004, 7010, 7011, 7012, 7013 })
+            foreach (uint idx in new uint[] { 7001, 7002, 7003, 7004, 7006, 7008, 7009,
+                         7010, 7011, 7012, 7013, 7014, 7015, 7016 })
             {
                 Assert.IsTrue(skills.TryGetSkillData(idx, out var skillData));
                 Assert.AreEqual(10001u, skillData.AttackMotionProfileIdx);
@@ -2022,7 +1649,8 @@ namespace QA.Tests
 
             var patterns = new MonsterPatternDataTable();
             patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
-            foreach (uint idx in new uint[] { 6001, 6002, 6003, 6004, 6005, 6006, 6007, 6100, 6101, 6102, 6103 })
+            foreach (uint idx in new uint[] { 6001, 6002, 6003, 6004, 6005, 6006, 6007,
+                         6011, 6012, 6100, 6101, 6102, 6103 })
             {
                 Assert.IsTrue(patterns.TryGetPatternData(idx, out var pattern));
                 Assert.AreEqual(0u, pattern.AttackMotionProfileIdx);
@@ -2064,71 +1692,146 @@ namespace QA.Tests
         }
 
         [Test]
-        public void Unit3102Prototype_ThrustAndBarrageContracts()
+        public void EffectScale_AppliesOnceToUnit3101And3102NativePoseAndBounds()
         {
-            Assert.AreEqual(DataTableType.MonsterPattern, Util.GetDataTableType(6008));
-            Assert.AreEqual(DataTableType.MonsterPattern, Util.GetDataTableType(6009));
-            Assert.AreEqual(DataTableType.Skill, Util.GetDataTableType(7005));
-            Assert.AreEqual(DataTableType.Skill, Util.GetDataTableType(7006));
-            var profiles = new AttackMotionProfileDataTable();
-            profiles.LoadData(File.ReadAllText("Assets/Datas/AttackMotionProfileData.csv"));
-            Assert.IsTrue(profiles.TryGetValid(10002, out var thrust));
-            Assert.AreEqual(AttackMotionType.Step, thrust.MotionType);
-            Assert.AreEqual(AttackTargetPolicy.SnapshotAtStartup, thrust.TargetPolicy);
+            var table = new EffectDataTable();
+            table.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+            MethodInfo createSweep = typeof(SkillExecutor).GetMethod("TryCreateEffectSweep",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(createSweep);
 
-            GameObject attackerObject = new GameObject("BarrageAttacker_QA");
-            GameObject hitboxObject = new GameObject("BarrageHitbox_QA");
-            GameObject targetObject = new GameObject("BarrageTarget_QA");
-            hitboxObject.transform.SetParent(attackerObject.transform, false);
+            foreach ((uint unitIdx, uint effectIdx) in new[]
+            {
+                (3101u, 8015u), (3102u, 8016u), (3102u, 8017u)
+            })
+            {
+                GameObject ownerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                    $"Assets/Prefabs/Unit_{unitIdx}.prefab"));
+                try
+                {
+                    UnitBase owner = ownerObject.GetComponent<UnitBase>();
+                    Assert.IsTrue(table.TryGetEffectData(effectIdx, out EffectData data));
+                    Vector2 bodyCenter = owner.Stats.DefenseBodyCollider.bounds.center;
+
+                    owner.SetFacingRight(true);
+                    object[] rightArgs = { owner, data, Vector2.zero, 1, 1u, 0u,
+                        default(CombatStats.AttackSweep2D), Quaternion.identity };
+                    Assert.IsTrue((bool)createSweep.Invoke(null, rightArgs));
+                    CombatStats.AttackSweep2D right = (CombatStats.AttackSweep2D)rightArgs[6];
+
+                    owner.SetFacingRight(false);
+                    object[] leftArgs = { owner, data, Vector2.zero, 1, 1u, 0u,
+                        default(CombatStats.AttackSweep2D), Quaternion.identity };
+                    Assert.IsTrue((bool)createSweep.Invoke(null, leftArgs));
+                    CombatStats.AttackSweep2D left = (CombatStats.AttackSweep2D)leftArgs[6];
+
+                    Assert.AreEqual(data.ActiveSizeX * data.Scale, right.Size.x, .0001f);
+                    Assert.AreEqual(data.ActiveSizeY * data.Scale, right.Size.y, .0001f);
+                    Assert.AreEqual(data.ActiveCenterX * data.Scale, right.Current.x - bodyCenter.x, .0001f);
+                    Assert.AreEqual(data.ActiveCenterX * data.Scale, bodyCenter.x - left.Current.x, .0001f);
+                    Assert.AreEqual(right.Size, left.Size);
+                    Assert.AreEqual(right.Shape, left.Shape);
+                }
+                finally
+                {
+                    Object.DestroyImmediate(ownerObject);
+                }
+            }
+        }
+
+        [Test]
+        public void EffectDrivenAttackBounds_GameViewDebugReusesOneOwnerRenderer()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            StringAssert.Contains("DrawEffectBoundsDebug(owner, sweep);", source);
+            StringAssert.Contains("DrawEffectBoundsDebug(owner, movedSweep);", source);
+            StringAssert.Contains("sweep.Shape == ActiveShape.Circle", source);
+            StringAssert.Contains("sweep.Shape == ActiveShape.Capsule", source);
+            StringAssert.Contains("owner.gameObject.AddComponent<LineRenderer>()", source);
+            StringAssert.Contains("effectBoundsDebugLine.sharedMaterial = material", source);
+            StringAssert.Contains("HideEffectBoundsDebug();", source);
+            StringAssert.Contains("#if UNITY_EDITOR || DEVELOPMENT_BUILD", source);
+            StringAssert.DoesNotContain("new GameObject(\"DebugEffect", source);
+            StringAssert.DoesNotContain("Debug.DrawLine", source);
+            StringAssert.DoesNotContain("new Material", source);
+        }
+
+        [Test]
+        public void Effect8015_VisualStartsAtFrame4WhenHitWindowOpens()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            StringAssert.Contains("SpearSentryAttackEffectIdx = 8015u", source);
+            StringAssert.Contains("SpearSentryActiveFrameNormalizedTime = 0.5f", source);
+            StringAssert.Contains("animator.Play(0, 0, normalizedStartTime);", source);
+            StringAssert.Contains("attackEffectIdx == SpearSentryAttackEffectIdx ? SpearSentryActiveFrameNormalizedTime : 0f", source);
+        }
+
+        [Test]
+        public void Unit3102_EffectVisualsMirrorOnceAndScaleCoversDefenseBody()
+        {
+            var table = new EffectDataTable();
+            table.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+            GameObject ownerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Unit_3102.prefab"));
+            MethodInfo pose = typeof(SkillExecutor).GetMethod("TryCalculateEffectPose",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo visualTransform = typeof(SkillExecutor).GetMethod("ApplyEffectVisualTransform",
+                BindingFlags.Static | BindingFlags.NonPublic);
             try
             {
-                UnitBase attacker = attackerObject.AddComponent<UnitBase>();
-                BoxCollider2D attackCollider = hitboxObject.AddComponent<BoxCollider2D>();
-                attackCollider.isTrigger = true;
-                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, attackCollider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(hitbox, hitboxObject.transform);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(attacker, hitbox);
-                hitbox.Bind(attacker);
+                UnitBase owner = ownerObject.GetComponent<UnitBase>();
+                Collider2D body = owner.Stats.DefenseBodyCollider;
+                Assert.NotNull(body);
+                Assert.NotNull(pose);
+                Assert.NotNull(visualTransform);
 
-                CombatStats target = targetObject.AddComponent<CombatStats>();
-                target.MaxHp = 100;
-                target.InitStats();
-                for (int attack = 0; attack < 2; attack++)
+                foreach ((uint idx, string path) in new[]
                 {
-                    for (int tick = 0; tick < 2; tick++)
+                    (8016u, "Assets/Prefabs/Effects/Attack/Effect_8016.prefab"),
+                    (8017u, "Assets/Prefabs/Effects/Attack/Effect_8017.prefab")
+                })
+                {
+                    Assert.IsTrue(table.TryGetEffectData(idx, out EffectData data));
+                    GameObject effect = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path));
+                    try
                     {
-                        Assert.IsTrue(attacker.TryOpenAttackHitbox(7006, attacker.ActionGeneration, (uint)tick, out var sweep));
-                        target.TakeDamage(10, attackSweep: sweep);
-                        target.TakeDamage(10, attackSweep: sweep);
-                        attacker.CloseAttackHitbox();
-                        Assert.IsFalse(attackCollider.enabled, "Barrage collider must be off between hit windows.");
+                        owner.SetFacingRight(true);
+                        object[] rightArgs = { owner, data, Vector2.zero, Quaternion.identity };
+                        Assert.IsTrue((bool)pose.Invoke(null, rightArgs));
+                        owner.SetFacingRight(false);
+                        object[] leftArgs = { owner, data, Vector2.zero, Quaternion.identity };
+                        Assert.IsTrue((bool)pose.Invoke(null, leftArgs));
+                        Vector2 bodyCenter = body.bounds.center;
+                        Vector2 right = (Vector2)rightArgs[2];
+                        Vector2 left = (Vector2)leftArgs[2];
+                        Assert.AreEqual(right.x - bodyCenter.x, bodyCenter.x - left.x, .0001f);
+                        Assert.AreEqual(right.y, left.y, .0001f);
+
+                        visualTransform.Invoke(null, new object[] { effect, data.Scale, true });
+                        SpriteRenderer renderer = effect.GetComponentInChildren<SpriteRenderer>(true);
+                        Vector3 rightScale = renderer.transform.localScale;
+                        visualTransform.Invoke(null, new object[] { effect, data.Scale, false });
+                        Vector3 leftScale = renderer.transform.localScale;
+                        Assert.AreEqual(rightScale.x, -leftScale.x, .0001f);
+                        Assert.AreEqual(rightScale.y, leftScale.y, .0001f);
+                        Assert.IsFalse(renderer.flipX, "Facing must be applied once by visual X scale.");
+                        Vector2 envelope = Vector2.Scale(renderer.sprite.bounds.size,
+                            new Vector2(Mathf.Abs(leftScale.x), Mathf.Abs(leftScale.y)));
+                        Assert.GreaterOrEqual(envelope.x + .0001f, body.bounds.size.x);
+                        Assert.GreaterOrEqual(envelope.y + .0001f, body.bounds.size.y);
+                    }
+                    finally
+                    {
+                        Object.DestroyImmediate(effect);
                     }
                 }
-                Assert.AreEqual(60, target.CurrentHp,
-                    "Each Barrage window hits once, and a second attack generation can hit again.");
-
-                string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
-                int animationStart = monster.IndexOf("TryPlaySkillAnimation", System.StringComparison.Ordinal);
-                int executionStart = monster.IndexOf("ExecuteSkillHitsAsync", animationStart, System.StringComparison.Ordinal);
-                Assert.GreaterOrEqual(animationStart, 0);
-                Assert.Greater(executionStart, animationStart,
-                    "Animation and SkillExecutor must start in the same attack startup path.");
-                string executor = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
-                int motionStart = executor.IndexOf("SetAttackMotionStopPosition", System.StringComparison.Ordinal);
-                int fixedYield = executor.IndexOf("PlayerLoopTiming.FixedUpdate", motionStart, System.StringComparison.Ordinal);
-                Assert.GreaterOrEqual(motionStart, 0);
-                Assert.Greater(fixedYield, motionStart, "Thrust motion must be armed before the first startup fixed tick.");
             }
             finally
             {
-                Object.DestroyImmediate(attackerObject);
-                Object.DestroyImmediate(targetObject);
+                Object.DestroyImmediate(ownerObject);
             }
         }
+
 
         [Test]
         public void Unit3102SimplePatterns_UseCommonPatternExecutionWithoutBasicAttackFallback()
@@ -2266,84 +1969,6 @@ namespace QA.Tests
             }
         }
 
-        [Test]
-        public void AttackMotion_ActiveTimeReachAlignment_LeftRightTrackingAndStationary()
-        {
-            GameObject ownerObject = new GameObject("ReachAlignmentOwner_QA");
-            GameObject attachObject = new GameObject("ReachAlignmentAttach_QA");
-            GameObject hitboxObject = new GameObject("ReachAlignmentHitbox_QA");
-            attachObject.transform.SetParent(ownerObject.transform, false);
-            hitboxObject.transform.SetParent(attachObject.transform, false);
-            hitboxObject.transform.localPosition = Vector3.right;
-            try
-            {
-                UnitBase owner = ownerObject.AddComponent<UnitBase>();
-                BoxCollider2D collider = hitboxObject.AddComponent<BoxCollider2D>();
-                collider.isTrigger = true;
-                collider.size = new Vector2(2f, 1f);
-                UnitAttackHitbox2D hitbox = hitboxObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, collider);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, attachObject.transform);
-                typeof(UnitBase).GetField("attackHitbox", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(owner, hitbox);
-                hitbox.Bind(owner);
-
-                owner.SetFacingRight(true);
-                Assert.IsTrue(owner.TryGetAttackForwardReach(true, out float rightReach));
-                owner.SetFacingRight(false);
-                Assert.IsTrue(owner.TryGetAttackForwardReach(false, out float leftReach));
-                Assert.AreEqual(3f, rightReach, .001f);
-                Assert.AreEqual(3f, leftReach, .001f);
-                owner.SetFacingRight(true);
-                Assert.IsTrue(owner.TryGetAttackSweepCenterOffset(true, out float rightCenterOffset));
-                owner.SetFacingRight(false);
-                Assert.IsTrue(owner.TryGetAttackSweepCenterOffset(false, out float leftCenterOffset));
-                Assert.AreEqual(1.5f, rightCenterOffset, .001f);
-                Assert.AreEqual(-1.5f, leftCenterOffset, .001f);
-
-                const float skin = .01f;
-                float snapshot = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 10f, 2f, .5f, 1f, rightCenterOffset, skin, 20f, false);
-                float tracking = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 10f, 2f, .5f, 1f, rightCenterOffset, skin, 20f, true);
-                float left = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, -10f, -2f, .5f, 1f, leftCenterOffset, skin, 20f, false);
-                Assert.AreEqual(7.49f, snapshot, .001f);
-                Assert.AreEqual(8.49f, tracking, .001f);
-                Assert.AreEqual(-7.49f, left, .001f);
-                Assert.AreEqual(skin, 9f - (snapshot + rightCenterOffset), .001f,
-                    "Step root must align the sweep center to the target body near surface without crossing it.");
-
-                var stationary = new AttackMotionProfileData { MotionType = AttackMotionType.Stationary, Enabled = true };
-                Assert.AreEqual(0f, SkillExecutor.CalculateAttackMotionVelocity(stationary, 0f, tracking, .5f, 8f, .02f));
-                foreach (float fixedStep in new[] { 1f / 15f, 1f / 60f })
-                {
-                    var step = new AttackMotionProfileData { MotionType = AttackMotionType.Step, MaxSpeed = 100f, MaxDistance = 20f, Enabled = true };
-                    float x = 0f;
-                    float remaining = .5f;
-                    while (remaining > 0f)
-                    {
-                        float dt = Mathf.Min(fixedStep, remaining);
-                        x += SkillExecutor.CalculateAttackMotionVelocity(step, x, tracking, remaining, 0f, dt) * dt;
-                        remaining -= dt;
-                    }
-                    Assert.LessOrEqual(Mathf.Abs(tracking - x), skin + step.MaxSpeed * fixedStep);
-                }
-
-                var doubledStep = new AttackMotionProfileData
-                    { MotionType = AttackMotionType.Step, MaxSpeed = 9f, MaxDistance = .81f, Enabled = true };
-                var skillTable = new SkillDataTable();
-                skillTable.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
-                Assert.IsTrue(skillTable.TryGetSkillData(7005u, out SkillData thrust));
-                Assert.IsTrue(skillTable.TryGetSkillData(7006u, out SkillData barrage));
-                float thrustWindowStart = Mathf.Max(0f, thrust.HitTimings[0] - thrust.HitWindowPre);
-                float barrageWindowStart = Mathf.Max(0f, barrage.HitTimings[0] - barrage.HitWindowPre);
-                Assert.LessOrEqual(Mathf.Min(doubledStep.MaxDistance, doubledStep.MaxSpeed * barrageWindowStart), .63f,
-                    "6009 startup timing cannot consume more than 0.63m after the 2x profile migration.");
-                Assert.LessOrEqual(Mathf.Min(doubledStep.MaxDistance, doubledStep.MaxSpeed * thrustWindowStart), .81f,
-                    "6008 total attack motion remains capped by the profile max distance.");
-            }
-            finally
-            {
-                Object.DestroyImmediate(ownerObject);
-            }
-        }
 
         [Test]
         public void AttackSwingEffect_IsAbsentFromAttackRuntimeWhileResponseEffectsRemain()
@@ -2374,211 +1999,7 @@ namespace QA.Tests
             return x;
         }
 
-        [Test]
-        public void AttackAttach_StaysActiveWhileOnlyColliderTracksWindow()
-        {
-            foreach (uint unitIdx in new uint[] { 3001u, 3101u, 3102u, 3103u, 3104u, 3105u, 3106u, 3201u })
-            {
-                GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Unit_{unitIdx}.prefab");
-                GameObject instance = Object.Instantiate(prefab);
-                try
-                {
-                    UnitBase unit = instance.GetComponent<UnitBase>();
-                    UnitAttackHitbox2D hitbox = instance.GetComponentInChildren<UnitAttackHitbox2D>(true);
-                    Collider2D collider = (Collider2D)typeof(UnitAttackHitbox2D)
-                        .GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hitbox);
-                    SpriteRenderer debugSprite = (SpriteRenderer)typeof(UnitAttackHitbox2D)
-                        .GetField("debugHitboxSprite", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hitbox);
-                    SpriteRenderer sweepSprite = (SpriteRenderer)typeof(UnitAttackHitbox2D)
-                        .GetField("debugSweepSprite", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hitbox);
 
-                    hitbox.Bind(unit);
-                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach after Bind");
-                    Assert.IsFalse(collider.enabled, $"Unit_{unitIdx} collider after Bind");
-                    Assert.IsTrue(hitbox.TryOpen(1, unit.ActionGeneration, 0, out _));
-                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach during window");
-                    Assert.IsTrue(collider.enabled, $"Unit_{unitIdx} collider during window");
-                    Assert.AreEqual(collider.bounds.size.x, debugSprite.bounds.size.x, .001f, $"Unit_{unitIdx} debug width");
-                    Assert.AreEqual(collider.bounds.size.y, debugSprite.bounds.size.y, .001f, $"Unit_{unitIdx} debug height");
-                    if (unitIdx == 3102u)
-                    {
-                        Assert.NotNull(sweepSprite, "Unit_3102 must serialize the separate effective-sweep renderer.");
-                        Assert.IsNull(sweepSprite.GetComponent<Collider2D>());
-                        Assert.IsNull(sweepSprite.GetComponent<Rigidbody2D>());
-                        Assert.AreEqual(collider.bounds.size.x * 1.5f, sweepSprite.bounds.size.x, .001f);
-                        Assert.AreEqual(collider.bounds.size.y * 1.5f, sweepSprite.bounds.size.y, .001f);
-                    }
-                    hitbox.Close();
-                    Assert.IsTrue(hitbox.gameObject.activeSelf, $"Unit_{unitIdx} AttackAttach after Close");
-                    Assert.IsFalse(collider.enabled, $"Unit_{unitIdx} collider after Close");
-                }
-                finally
-                {
-                    Object.DestroyImmediate(instance);
-                }
-            }
 
-            StringAssert.DoesNotContain("gameObject.SetActive", File.ReadAllText(
-                "Assets/Scripts/Gameplay/Combat/UnitAttackHitbox2D.cs"));
-        }
-
-        [Test]
-        public void AttackSubject_SelectsExactlyOneColliderAndUsesEffectBoundsWithoutWeaponVisual()
-        {
-            GameObject ownerObject = new GameObject("AttackSubjectOwner");
-            GameObject attachObject = new GameObject("AttackAttach");
-            GameObject weaponObject = new GameObject("WeaponCollider");
-            GameObject torsoObject = new GameObject("TorsoCollider");
-            try
-            {
-                attachObject.transform.SetParent(ownerObject.transform, false);
-                weaponObject.transform.SetParent(attachObject.transform, false);
-                torsoObject.transform.SetParent(attachObject.transform, false);
-                BoxCollider2D weapon = weaponObject.AddComponent<BoxCollider2D>();
-                BoxCollider2D torso = torsoObject.AddComponent<BoxCollider2D>();
-                weapon.isTrigger = true;
-                torso.isTrigger = true;
-                weapon.size = new Vector2(1f, .5f);
-                torso.size = new Vector2(2f, 1f);
-                UnitBase owner = ownerObject.AddComponent<UnitBase>();
-                UnitAttackHitbox2D hitbox = attachObject.AddComponent<UnitAttackHitbox2D>();
-                typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, weapon);
-                typeof(UnitAttackHitbox2D).GetField("torsoAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, torso);
-                typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, attachObject.transform);
-                Assert.IsNull(typeof(UnitAttackHitbox2D).GetField("weaponVisual",
-                    BindingFlags.Instance | BindingFlags.NonPublic));
-
-                hitbox.Bind(owner);
-                Assert.IsTrue(hitbox.TryOpen(1, owner.ActionGeneration, 0,
-                    AttackSubject.Weapon, BodyPartRole.None, new Vector2(.16f, -.11f),
-                    new Vector2(.56f, .82f), out CombatStats.AttackSweep2D weaponSweep));
-                Assert.IsTrue(weapon.enabled);
-                Assert.IsFalse(torso.enabled);
-                Assert.AreEqual(.56f, weaponSweep.HalfExtents.x * 2f, .001f);
-                Assert.AreEqual(.82f, weaponSweep.HalfExtents.y * 2f, .001f);
-                Assert.AreEqual(.16f, weaponSweep.Current.x, .001f);
-                Assert.AreEqual(-.11f, weaponSweep.Current.y, .001f);
-                hitbox.Close();
-                Assert.IsFalse(weapon.enabled);
-                Assert.IsFalse(torso.enabled);
-                Assert.AreEqual(new Vector2(1f, .5f), weapon.size);
-
-                hitbox.SetFacingRight(false);
-                Assert.IsTrue(hitbox.TryOpen(2, owner.ActionGeneration, 0,
-                    AttackSubject.BodyPart, BodyPartRole.Torso, out CombatStats.AttackSweep2D torsoSweep));
-                Assert.IsFalse(weapon.enabled);
-                Assert.IsTrue(torso.enabled);
-                Assert.AreEqual(torso.bounds.size.x * 1.5f, torsoSweep.HalfExtents.x * 2f, .001f);
-                Assert.Less(torsoSweep.Current.x, owner.transform.position.x);
-                hitbox.Close();
-
-                hitbox.SetTelegraphed(true, AttackSubject.Weapon, BodyPartRole.None);
-                hitbox.SetTelegraphed(false);
-            }
-            finally
-            {
-                Object.DestroyImmediate(ownerObject);
-            }
-        }
-
-        [Test]
-        public void Unit3103TorsoRam_ActiveDataPrefabAndCombatContract()
-        {
-            var monsters = new MonsterDataTable();
-            var patterns = new MonsterPatternDataTable();
-            var skills = new SkillDataTable();
-            monsters.LoadData(File.ReadAllText("Assets/Datas/MonsterBaseData.csv"));
-            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
-            skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
-            Assert.IsTrue(monsters.TryGetMonsterData(5103u, out MonsterBaseData monsterData));
-            CollectionAssert.Contains(monsterData.PatternIdxList, 6010u);
-            Assert.IsTrue(patterns.TryGetPatternData(6010u, out MonsterPatternData pattern));
-            Assert.IsTrue(skills.TryGetSkillData(7007u, out SkillData skill));
-            Assert.AreEqual(7007u, pattern.SkillIdx);
-            Assert.AreEqual(14, skill.AnimState);
-            Assert.AreEqual(10002u, SkillExecutor.ResolveAttackMotionProfileIdx(skill, pattern.AttackMotionProfileIdx));
-            Assert.AreEqual(AttackSubject.BodyPart, skill.AttackSubject);
-            Assert.AreEqual(BodyPartRole.Torso, skill.BodyPartRole);
-            Assert.AreEqual(0u, pattern.ProjectileResourceIdx);
-
-            Assert.IsNull(typeof(UnitAttackHitbox2D).GetField("weaponVisual",
-                BindingFlags.Instance | BindingFlags.NonPublic));
-
-            GameObject instance = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Prefabs/Unit_3103.prefab"));
-            GameObject normalTarget = null;
-            GameObject guardTarget = null;
-            GameObject parryTarget = null;
-            try
-            {
-                UnitBase owner = instance.GetComponent<UnitBase>();
-                CombatStats ownerStats = instance.GetComponent<CombatStats>();
-                typeof(CombatStats).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.Invoke(ownerStats, null);
-                typeof(UnitBase).GetField("stats", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.SetValue(owner, ownerStats);
-                UnitAttackHitbox2D hitbox = instance.GetComponentInChildren<UnitAttackHitbox2D>(true);
-                Collider2D weapon = (Collider2D)typeof(UnitAttackHitbox2D)
-                    .GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(hitbox);
-                Collider2D torso = (Collider2D)typeof(UnitAttackHitbox2D)
-                    .GetField("torsoAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(hitbox);
-                Assert.NotNull(weapon);
-                Assert.NotNull(torso);
-                Assert.IsTrue(torso.isTrigger);
-                Assert.IsFalse(torso.enabled);
-
-                hitbox.Bind(owner);
-                owner.SetFacingRight(true);
-                Assert.IsTrue(hitbox.TryOpen(7007, owner.ActionGeneration, 0,
-                    AttackSubject.BodyPart, BodyPartRole.Torso, out CombatStats.AttackSweep2D sweep));
-                Assert.IsFalse(weapon.enabled);
-                Assert.IsTrue(torso.enabled);
-                Assert.AreEqual(2.4f, sweep.HalfExtents.x * 2f, .001f);
-                Assert.AreEqual(2.4f, sweep.HalfExtents.y * 2f, .001f);
-
-                CombatStats CreateTarget(string name, bool guard, bool parry, out GameObject targetObject)
-                {
-                    targetObject = new GameObject(name);
-                    targetObject.transform.position = new Vector3(2f, 0f, 0f);
-                    BoxCollider2D body = targetObject.AddComponent<BoxCollider2D>();
-                    body.size = new Vector2(.8f, 1.6f);
-                    body.offset = new Vector2(0f, 1.6f);
-                    CombatStats targetStats = targetObject.AddComponent<CombatStats>();
-                    typeof(CombatStats).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
-                        ?.Invoke(targetStats, null);
-                    targetStats.SetDefenseBodyCollider(body);
-                    targetStats.SetFacingRight(false);
-                    targetStats.SetGuarding(guard);
-                    targetStats.SetParrying(parry);
-                    return targetStats;
-                }
-
-                CombatStats normal = CreateTarget("TorsoNormal", false, false, out normalTarget);
-                normal.TakeDamage(pattern.Damage, attacker: owner.Stats, attackSweep: sweep);
-                Assert.AreEqual(85f, normal.CurrentHp, .001f);
-
-                CombatStats guard = CreateTarget("TorsoGuard", true, false, out guardTarget);
-                guard.TakeDamage(pattern.Damage, attacker: owner.Stats, attackSweep: sweep);
-                Assert.AreEqual(100f, guard.CurrentHp, .001f);
-                Assert.AreEqual(7.5f, guard.CurrentPosture, .001f);
-
-                CombatStats parry = CreateTarget("TorsoParry", false, true, out parryTarget);
-                parry.TakeDamage(pattern.Damage, attacker: owner.Stats, attackSweep: sweep);
-                Assert.AreEqual(100f, parry.CurrentHp, .001f);
-                Assert.AreEqual(0f, parry.CurrentPosture, .001f);
-                Assert.AreEqual(40f, owner.Stats.CurrentPosture, .001f);
-
-                owner.CancelAttackHitbox();
-                Assert.IsFalse(weapon.enabled);
-                Assert.IsFalse(torso.enabled);
-            }
-            finally
-            {
-                Object.DestroyImmediate(normalTarget);
-                Object.DestroyImmediate(guardTarget);
-                Object.DestroyImmediate(parryTarget);
-                Object.DestroyImmediate(instance);
-            }
-        }
     }
 }

@@ -15,6 +15,7 @@ idx,en,kr
 2016,Straight Projectile,직선 탄환
 2017,Low Projectile,하단 탄환
 2018,Torso Ram,몸통 박치기
+2019,Cyber Spearman Attack,사이버 창병 공격
 2020,Slash Effect,베기 효과
 2021,Fireball Effect,화염구 효과
 2022,Heavy Slash Effect,강공격 베기 효과
@@ -22,9 +23,12 @@ idx,en,kr
 2024,Guard Effect,가드 효과
 2025,Dodge Effect,회피 효과
 2026,Hit Effect,피격 효과
-2030,Basic Attack,기본 공격
-2031,Fireball,화염구
-2032,Heavy Attack,강공격
+2027,Wave Heavy Attack,파동 중장병 공격
+2028,Shield Sentinel Attack,방패 파수병 공격
+2029,Orbital Marksman Attack,궤도 사수 공격
+2030,Basic Attack 1,기본 공격 1타
+2031,Basic Attack 2,기본 공격 2타
+2032,Basic Attack 3,기본 공격 3타
 2033,Non-visual Skill,비시각 스킬
 2034,Garon Slam,가론 내려찍기
 2035,Garon Barrage,가론 연속 난타

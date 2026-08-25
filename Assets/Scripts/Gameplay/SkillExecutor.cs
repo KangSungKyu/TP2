@@ -10,6 +10,8 @@ using UnityEngine;
 /// </summary>
 public class SkillExecutor : MonoBehaviour
 {
+    private const uint SpearSentryAttackEffectIdx = 8015u;
+    private const float SpearSentryActiveFrameNormalizedTime = 0.5f;
     public static SkillExecutor Instance { get; private set; }
 
     // =========================================================================
@@ -24,6 +26,9 @@ public class SkillExecutor : MonoBehaviour
     private bool particleLoadFailureLogged;
     private readonly Dictionary<int, float> nextAvailable = new Dictionary<int, float>();
     private readonly HashSet<SkillEffect> activeSkillEffects = new HashSet<SkillEffect>();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private LineRenderer effectBoundsDebugLine;
+#endif
 
     // =========================================================================
     // 2. PUBLIC METHODS (PascalCase)
@@ -100,22 +105,27 @@ public class SkillExecutor : MonoBehaviour
         bool attackMotionComplete = false;
         int sourceId = owner.GetInstanceID() ^ (int)skillId;
         float elapsed = 0f;
+        float firstWindowStart = Mathf.Max(0f, skill.HitTimings[0] - skill.HitWindowPre);
+        float lastWindowEnd = skill.HitTimings[skill.HitTimings.Length - 1] + skill.HitWindowPost;
         var spawnedTicks = new HashSet<(uint ownerUnitIdx, uint generation, uint hitTick, uint effectIdx)>();
         try
         {
-            owner.SetTelegraphedAttackHitbox(true, skill.AttackSubject, skill.BodyPartRole);
-
             for (uint tick = 0; tick < (uint)skill.HitTimings.Length; tick++)
             {
-                bool usesPass10Effect = TryResolvePass10AttackEffectIdx(owner.UnitIdx, attackPatternIdx,
-                    skillId, tick, out uint attackEffectIdx);
+                var effectTable = DataTableManager.Instance != null
+                    ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
                 EffectData attackEffectData = null;
-                if (usesPass10Effect)
+                bool usesPass10Effect = effectTable != null && effectTable.TryResolveAttackEffect(
+                    owner.UnitIdx, attackPatternIdx, skillId, tick, out attackEffectData);
+                uint attackEffectIdx = usesPass10Effect ? attackEffectData.Idx : 0u;
+                if (!usesPass10Effect)
                 {
-                    var effectTable = DataTableManager.Instance != null
-                        ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
-                    if (effectTable == null || !effectTable.TryGetEffectData(attackEffectIdx, out attackEffectData) ||
-                        !attackEffectData.HasValidActiveBounds)
+                    Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Pattern {attackPatternIdx}/Skill {skillId} has no EffectData attack bounds; tick cancelled.");
+                    return false;
+                }
+                else
+                {
+                    if (!attackEffectData.HasValidActiveBounds)
                     {
                         Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Pattern {attackPatternIdx}/Skill {skillId} " +
                             $"has invalid EffectData {attackEffectIdx} active bounds; attack cancelled.");
@@ -134,6 +144,8 @@ public class SkillExecutor : MonoBehaviour
                 float t = Mathf.Max(0f, skill.HitTimings[(int)tick]);
                 float windowStart = Mathf.Max(0f, t - skill.HitWindowPre);
                 float windowEnd = t + skill.HitWindowPost;
+                if (!TryCalculateEffectPose(owner, attackEffectData, out Vector2 previousEffectCenter,
+                    out Quaternion effectRotation)) return false;
 
                 while (elapsed + Mathf.Epsilon < windowStart)
                 {
@@ -145,8 +157,8 @@ public class SkillExecutor : MonoBehaviour
                     float targetHalfWidth = tracking && targetBody != null ? targetBody.bounds.extents.x : targetSnapshotHalfWidth;
                     float targetVelocityX = tracking ? target.AttackMotionVelocityX : 0f;
                     bool facingRight = targetX >= owner.transform.position.x;
-                    float attackCenterOffset = owner.TryGetAttackSweepCenterOffset(facingRight,
-                        skill.AttackSubject, skill.BodyPartRole, out float offset) ? offset : 0f;
+                    float attackCenterOffset = (facingRight ? 1f : -1f) *
+                        attackEffectData.ActiveCenterX * attackEffectData.Scale;
                     float clampedTargetX = CalculateAttackAlignmentTargetX(motionStartX, owner.transform.position.x,
                         targetX, targetVelocityX, remaining, targetHalfWidth, attackCenterOffset,
                         owner.AttackMotionSkinWidth, motion.MaxDistance, tracking);
@@ -170,56 +182,182 @@ public class SkillExecutor : MonoBehaviour
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
                 if (canStartWindow != null && !canStartWindow()) return false;
 
-                CombatStats.AttackSweep2D sweep;
-                bool opened = usesPass10Effect
-                    ? owner.TryOpenAttackHitbox(sourceId, generation, tick, skill.AttackSubject,
-                        skill.BodyPartRole,
-                        new Vector2(attackEffectData.ActiveCenterX, attackEffectData.ActiveCenterY),
-                        new Vector2(attackEffectData.ActiveSizeX, attackEffectData.ActiveSizeY), out sweep)
-                    : owner.TryOpenAttackHitbox(sourceId, generation, tick, skill.AttackSubject,
-                        skill.BodyPartRole, out sweep);
-                if (!opened)
-                    return false;
+                if (!TryCreateEffectSweep(owner, attackEffectData, previousEffectCenter, sourceId,
+                    generation, tick, out CombatStats.AttackSweep2D sweep, out effectRotation)) return false;
+                previousEffectCenter = sweep.Current;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                DrawEffectBoundsDebug(owner, sweep);
+#endif
 
-                if (ApplyAttackSweep(owner, target, patternDamage, sweep)) onFirstSuccessfulHit?.Invoke();
+                bool tickHitCommitted = ApplyAttackSweep(owner, target, patternDamage, sweep);
+                if (tickHitCommitted) onFirstSuccessfulHit?.Invoke();
 
-                CancellationTokenSource effectWindowCts = null;
-                UniTask effectWindowTask = UniTask.CompletedTask;
                 if (usesPass10Effect && spawnedTicks.Add((owner.UnitIdx, generation, tick, attackEffectIdx)))
                 {
-                    effectWindowCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                    effectWindowTask = SpawnAttackEffectForWindowAsync(attackEffectIdx, sweep.Current,
-                        owner.transform.rotation, owner, generation, effectWindowCts.Token);
+                    float visualEnd = Mathf.Max(lastWindowEnd, firstWindowStart + attackEffectData.Duration);
+                    SpawnAttackEffectForWindowAsync(attackEffectIdx, sweep.Current, effectRotation, owner,
+                        generation, attackEffectData.Scale, owner.IsFacingRight,
+                        Mathf.Max(0f, visualEnd - elapsed),
+                        attackEffectIdx == SpearSentryAttackEffectIdx ? SpearSentryActiveFrameNormalizedTime : 0f,
+                        cancellationToken).Forget();
                 }
 
-                try
+                while (elapsed + Mathf.Epsilon < windowEnd)
                 {
-                    while (elapsed + Mathf.Epsilon < windowEnd)
+                    await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                    elapsed += Time.fixedDeltaTime;
+                    if (!owner.IsActionGenerationCurrent(generation)) return true;
+                    if (!TryCreateEffectSweep(owner, attackEffectData, previousEffectCenter, sourceId,
+                        generation, tick, out CombatStats.AttackSweep2D movedSweep, out _)) return false;
+                    previousEffectCenter = movedSweep.Current;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    DrawEffectBoundsDebug(owner, movedSweep);
+#endif
+                    if (!tickHitCommitted && ApplyAttackSweep(owner, target, patternDamage, movedSweep))
                     {
-                        await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
-                        elapsed += Time.fixedDeltaTime;
-                        if (!owner.IsActionGenerationCurrent(generation)) return true;
+                        tickHitCommitted = true;
+                        onFirstSuccessfulHit?.Invoke();
                     }
                 }
-                finally
-                {
-                    effectWindowCts?.Cancel();
-                    await effectWindowTask;
-                    effectWindowCts?.Dispose();
-                }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                HideEffectBoundsDebug();
+#endif
 
-                owner.CloseAttackHitbox();
-                owner.SetTelegraphedAttackHitbox(true, skill.AttackSubject, skill.BodyPartRole);
             }
             return true;
         }
         finally
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            HideEffectBoundsDebug();
+#endif
             owner.StopAttackMotionImmediately();
-            owner.CloseAttackHitbox();
-            owner.SetTelegraphedAttackHitbox(false);
         }
     }
+
+    private static bool TryCalculateEffectPose(UnitBase owner, EffectData effect, out Vector2 position,
+        out Quaternion rotation)
+    {
+        position = default;
+        rotation = owner != null ? owner.transform.rotation : Quaternion.identity;
+        Collider2D body = owner != null && owner.Stats != null ? owner.Stats.DefenseBodyCollider : null;
+        if (body == null || !body.enabled || !body.gameObject.activeInHierarchy)
+        {
+            Debug.LogError($"[SkillExecutor] Unit {(owner != null ? owner.UnitIdx : 0u)} has no active DefenseBodyCollider; attack tick cancelled.");
+            return false;
+        }
+        if (!float.IsFinite(effect.Scale) || effect.Scale <= 0f)
+        {
+            Debug.LogError($"[SkillExecutor] EffectData {effect.Idx} has invalid Scale {effect.Scale}; attack tick cancelled.");
+            return false;
+        }
+        Vector2 local = new Vector2((owner.IsFacingRight ? 1f : -1f) * effect.ActiveCenterX,
+            effect.ActiveCenterY) * effect.Scale;
+        position = (Vector2)body.bounds.center + (Vector2)(rotation * (Vector3)local);
+        return true;
+    }
+
+    private static bool TryCreateEffectSweep(UnitBase owner, EffectData effect, Vector2 previous,
+        int sourceId, uint generation, uint tick, out CombatStats.AttackSweep2D sweep,
+        out Quaternion rotation)
+    {
+        sweep = default;
+        if (!TryCalculateEffectPose(owner, effect, out Vector2 current, out rotation)) return false;
+        Vector2 size = new Vector2(effect.ActiveSizeX, effect.ActiveSizeY) * effect.Scale;
+        float angle = rotation.eulerAngles.z;
+        float radians = angle * Mathf.Deg2Rad;
+        float c = Mathf.Abs(Mathf.Cos(radians));
+        float s = Mathf.Abs(Mathf.Sin(radians));
+        Vector2 half = size * .5f;
+        Vector2 extents = effect.Shape == ActiveShape.Circle ? Vector2.one * half.x :
+            new Vector2(c * half.x + s * half.y, s * half.x + c * half.y);
+        sweep = new CombatStats.AttackSweep2D(previous, current, extents, sourceId, generation, tick,
+            effect.Shape, size, angle);
+        return true;
+    }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private void DrawEffectBoundsDebug(UnitBase owner, CombatStats.AttackSweep2D sweep)
+    {
+        if (effectBoundsDebugLine == null)
+        {
+            LineRenderer existing = owner != null ? owner.GetComponentInChildren<LineRenderer>(true) : null;
+            Material material = existing != null ? existing.sharedMaterial :
+                owner != null ? owner.GetComponentInChildren<SpriteRenderer>(true)?.sharedMaterial : null;
+            if (owner == null || material == null) return;
+            effectBoundsDebugLine = owner.gameObject.AddComponent<LineRenderer>();
+            effectBoundsDebugLine.sharedMaterial = material;
+            effectBoundsDebugLine.useWorldSpace = true;
+            effectBoundsDebugLine.loop = true;
+            effectBoundsDebugLine.startWidth = .04f;
+            effectBoundsDebugLine.endWidth = .04f;
+            effectBoundsDebugLine.sortingLayerID = existing != null ? existing.sortingLayerID : 0;
+            effectBoundsDebugLine.sortingOrder = existing != null ? existing.sortingOrder + 1 : 100;
+        }
+
+        Color color = sweep.Shape == ActiveShape.Circle ? Color.cyan :
+            sweep.Shape == ActiveShape.Capsule ? Color.yellow : Color.red;
+        effectBoundsDebugLine.startColor = color;
+        effectBoundsDebugLine.endColor = color;
+        effectBoundsDebugLine.enabled = true;
+        Quaternion rotation = Quaternion.Euler(0f, 0f, sweep.Angle);
+
+        if (sweep.Shape == ActiveShape.Box)
+        {
+            Vector2 half = sweep.Size * .5f;
+            effectBoundsDebugLine.positionCount = 4;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 local = i switch
+                {
+                    0 => new Vector2(-half.x, -half.y),
+                    1 => new Vector2(-half.x, half.y),
+                    2 => new Vector2(half.x, half.y),
+                    _ => new Vector2(half.x, -half.y)
+                };
+                effectBoundsDebugLine.SetPosition(i,
+                    sweep.Current + (Vector2)(rotation * (Vector3)local));
+            }
+            return;
+        }
+
+        const int segmentsPerCap = 12;
+        effectBoundsDebugLine.positionCount = segmentsPerCap * 2;
+        bool vertical = sweep.Shape == ActiveShape.Circle || sweep.Size.y >= sweep.Size.x;
+        float radius = (vertical ? sweep.Size.x : sweep.Size.y) * .5f;
+        float halfSegment = sweep.Shape == ActiveShape.Circle ? 0f :
+            Mathf.Max(0f, (vertical ? sweep.Size.y : sweep.Size.x) - radius * 2f) * .5f;
+        for (int i = 0; i < segmentsPerCap * 2; i++)
+        {
+            float radians;
+            Vector2 capCenter;
+            if (vertical)
+            {
+                bool top = i < segmentsPerCap;
+                int capIndex = top ? i : i - segmentsPerCap;
+                radians = (top ? capIndex : segmentsPerCap - 1 + capIndex) *
+                    Mathf.PI / (segmentsPerCap - 1);
+                capCenter = new Vector2(0f, top ? halfSegment : -halfSegment);
+            }
+            else
+            {
+                bool right = i < segmentsPerCap;
+                int capIndex = right ? i : i - segmentsPerCap;
+                radians = (-.5f + (right ? capIndex : segmentsPerCap - 1 + capIndex) /
+                    (float)(segmentsPerCap - 1)) * Mathf.PI;
+                capCenter = new Vector2(right ? halfSegment : -halfSegment, 0f);
+            }
+            Vector2 local = capCenter + new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * radius;
+            effectBoundsDebugLine.SetPosition(i,
+                sweep.Current + (Vector2)(rotation * (Vector3)local));
+        }
+    }
+
+    private void HideEffectBoundsDebug()
+    {
+        if (effectBoundsDebugLine != null) effectBoundsDebugLine.enabled = false;
+    }
+#endif
 
     public static bool TryResolvePass10AttackEffectIdx(uint ownerUnitIdx, uint patternIdx, uint skillIdx,
         out uint effectIdx) => TryResolvePass10AttackEffectIdx(ownerUnitIdx, patternIdx, skillIdx, 0u, out effectIdx);
@@ -227,34 +365,20 @@ public class SkillExecutor : MonoBehaviour
     public static bool TryResolvePass10AttackEffectIdx(uint ownerUnitIdx, uint patternIdx, uint skillIdx,
         uint hitTick, out uint effectIdx)
     {
-        effectIdx = (ownerUnitIdx, patternIdx, skillIdx, hitTick) switch
-        {
-            (3001u, 0u, 7003u, 0u) => 8027u,
-            (3001u, 0u, 7003u, 1u) => 8028u,
-            (3201u, 6101u, 7011u, 0u) => 8029u,
-            (3201u, 6101u, 7011u, 1u) => 8030u,
-            (3001u, 0u, 7001u, _) => 8014u,
-            (3101u, 6001u, 7001u, _) => 8015u,
-            (3102u, 6008u, 7005u, _) => 8016u,
-            (3102u, 6009u, 7006u, _) => 8017u,
-            (3103u, 6001u, 7001u, _) => 8018u,
-            (3103u, 6010u, 7007u, _) => 8019u,
-            (3104u, 6003u, 7001u, _) => 8020u,
-            (3104u, 6004u, 7001u, _) => 8021u,
-            (3105u, 6005u, 7002u, _) => 8022u,
-            (3201u, 6103u, 7013u, _) => 8023u,
-            (3105u, 6006u, 7002u, _) => 8024u,
-            (3201u, 6100u, 7012u, _) => 8025u,
-            (3201u, 6102u, 7010u, _) => 8026u,
-            _ => 0u
-        };
-        return effectIdx != 0u;
+        EffectDataTable table = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
+        EffectData effect = null;
+        bool found = table != null && table.TryResolveAttackEffect(ownerUnitIdx, patternIdx, skillIdx,
+            hitTick, out effect);
+        effectIdx = found ? effect.Idx : 0u;
+        return found;
     }
 
     private async UniTask SpawnAttackEffectForWindowAsync(uint effectIdx, Vector2 position,
-        Quaternion rotation, UnitBase owner, uint generation, CancellationToken cancellationToken)
+        Quaternion rotation, UnitBase owner, uint generation, float scale, bool facingRight, float duration,
+        float normalizedStartTime, CancellationToken cancellationToken)
     {
-        GameObject effect = await SpawnEffectByEffectIdxAsync(effectIdx, position, rotation);
+        GameObject effect = await SpawnEffectByEffectIdxAsync(effectIdx, position, rotation, duration);
         if (effect == null) return;
         if (cancellationToken.IsCancellationRequested || owner == null ||
             !owner.IsActionGenerationCurrent(generation))
@@ -266,13 +390,20 @@ public class SkillExecutor : MonoBehaviour
         Animator animator = effect.GetComponent<Animator>();
         if (animator != null && animator.runtimeAnimatorController != null)
         {
-            animator.Play(0, 0, 0f);
+            animator.Play(0, 0, normalizedStartTime);
             animator.Update(0f);
         }
+        ApplyEffectVisualTransform(effect, scale, facingRight);
 
         try
         {
-            await UniTask.WaitUntilCanceled(cancellationToken);
+            float elapsed = 0f;
+            while (elapsed < duration && owner != null && owner.IsActionGenerationCurrent(generation))
+            {
+                if (await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, cancellationToken).SuppressCancellationThrow()) break;
+                ApplyEffectVisualTransform(effect, scale, facingRight);
+                elapsed += Time.deltaTime;
+            }
         }
         finally
         {
@@ -401,7 +532,7 @@ public class SkillExecutor : MonoBehaviour
         Mathf.Max(Mathf.Max(0f, configuredRecovery), Mathf.Max(0f, animationLength - Mathf.Max(0f, elapsed)));
 
     public async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position,
-        Quaternion rotation = default)
+        Quaternion rotation = default, float durationOverride = -1f)
     {
         if (effectIdx == 0) return null;
 
@@ -426,13 +557,24 @@ public class SkillExecutor : MonoBehaviour
             return null;
         }
 
-        float duration = effectData.Duration > 0f ? effectData.Duration : 1.0f;
+        float duration = durationOverride >= 0f ? durationOverride :
+            (effectData.Duration > 0f ? effectData.Duration : 1.0f);
         if (EffectPoolManager.Instance != null)
         {
-            return await EffectPoolManager.Instance.SpawnEffect(prefabKey, position, rotation, duration);
+            GameObject effect = await EffectPoolManager.Instance.SpawnEffect(prefabKey, position, rotation, duration);
+            ApplyEffectVisualTransform(effect, effectData.Scale, true);
+            return effect;
         }
 
         return null;
+    }
+
+    private static void ApplyEffectVisualTransform(GameObject effect, float scale, bool facingRight)
+    {
+        SpriteRenderer visual = effect != null ? effect.GetComponentInChildren<SpriteRenderer>(true) : null;
+        if (visual == null) return;
+        visual.flipX = false;
+        visual.transform.localScale = new Vector3((facingRight ? 1f : -1f) * scale, scale, 1f);
     }
 
 
@@ -494,6 +636,9 @@ public class SkillExecutor : MonoBehaviour
         particleLoadGeneration++;
         particleLoadPending = false;
         CancelActiveEffects();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        HideEffectBoundsDebug();
+#endif
     }
 
     public void CancelActiveEffects()

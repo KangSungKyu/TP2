@@ -279,7 +279,6 @@ public class Monster : UnitBase
         pendingSequenceIndex = -1;
         failedReservationPatternIdx = 0u;
         skipFailedReservationOnce = false;
-        CloseAttackHitbox();
         deathSequenceActive = false;
         hasSpawnArea = false;
         CurrentLeashState = LeashState.Idle;
@@ -793,16 +792,12 @@ public class Monster : UnitBase
         float recoveryDuration = skillExecutor != null
             ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, pattern.PostDelay)
             : Mathf.Max(0f, pattern.PostDelay);
-        SetTelegraphedAttackHitbox(recoveryDuration > 0f,
-            skill != null ? skill.AttackSubject : AttackSubject.Weapon,
-            skill != null ? skill.BodyPartRole : BodyPartRole.None);
         if (recoveryDuration > 0f)
         {
             int postMs = Mathf.RoundToInt(recoveryDuration * 1000f);
             await UniTask.Delay(postMs, cancellationToken: cancellationToken);
             if (!CanAct(generation)) return;
         }
-        SetTelegraphedAttackHitbox(false);
 
         SetAnimState(1);
         }
@@ -810,7 +805,6 @@ public class Monster : UnitBase
         {
             SetAttackMotionVelocityX(0f);
             EndAttackTelegraph(generation);
-            SetTelegraphedAttackHitbox(false);
             ReleaseAttackToken();
         }
     }
@@ -874,7 +868,11 @@ public class Monster : UnitBase
         float targetHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
         bool facingRight = targetCenterX >= transform.position.x;
         SetFacingRight(facingRight);
-        if (!TryGetAttackSweepCenterOffset(facingRight, out float centerOffset)) return false;
+        EffectDataTable effectTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
+        if (currentPattern == null || effectTable == null || !effectTable.TryResolveAttackEffect(
+            UnitIdx, currentPattern.Idx, currentPattern.SkillIdx, 0u, out EffectData effect)) return false;
+        float centerOffset = (facingRight ? 1f : -1f) * effect.ActiveCenterX;
         stopX = SkillExecutor.CalculateAttackAlignmentTargetX(transform.position.x, transform.position.x,
             targetCenterX, 0f, 0f, targetHalfWidth, centerOffset,
             motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset, float.MaxValue, false);
@@ -914,9 +912,7 @@ public class Monster : UnitBase
             patternCancellation?.Dispose();
             patternCancellation = null;
             StopAttackMotionImmediately();
-            CancelAttackHitbox();
             EndAttackTelegraph(cancelledGeneration);
-            SetTelegraphedAttackHitbox(false);
             skillExecutor?.CancelActiveEffects();
             if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.DespawnProjectilesOwnedBy(this);
             ReleaseAttackToken();
@@ -1042,7 +1038,6 @@ public class Monster : UnitBase
         if (!CanAct(generation)) return;
         telegraphGeneration = generation;
         telegraphActive = true;
-        SetTelegraphedAttackHitbox(true, subject, bodyPart);
         AttackTelegraphStarted?.Invoke(new AttackTelegraph(this, generation, warningStartsAt,
             impactAt, Mathf.Max(impactAt, activeEndsAt)));
     }
@@ -1051,7 +1046,6 @@ public class Monster : UnitBase
     {
         if (!telegraphActive || telegraphGeneration != generation) return;
         telegraphActive = false;
-        SetTelegraphedAttackHitbox(false);
         AttackTelegraphEnded?.Invoke(this, generation);
     }
 }

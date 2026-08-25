@@ -49,11 +49,11 @@ namespace QA.Tests
                 Assert.IsNotEmpty(texts.GetText(effect.EffectNameTextIdx));
             }
 
-            uint[] skillIds = { 7001, 7002, 7003, 7004, 7010, 7011, 7012, 7013 };
-            for (int i = 0; i < skillIds.Length; i++)
+            uint[] skillIds = { 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+                7010, 7011, 7012, 7013, 7014, 7015, 7016 };
+            foreach (uint skillId in skillIds)
             {
-                Assert.IsTrue(skills.TryGetSkillData(skillIds[i], out var skill));
-                Assert.AreEqual((uint)(2030 + i), skill.NameTextIdx);
+                Assert.IsTrue(skills.TryGetSkillData(skillId, out var skill));
                 Assert.IsNotEmpty(texts.GetText(skill.NameTextIdx));
             }
 
@@ -100,15 +100,15 @@ namespace QA.Tests
             var patterns = new MonsterPatternDataTable();
             patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
             Assert.IsTrue(patterns.TryGetPatternData(6007, out var pattern6007));
-            Assert.AreEqual(7003u, pattern6007.SkillIdx);
+            Assert.AreEqual(7016u, pattern6007.SkillIdx);
             Assert.AreEqual(18f, pattern6007.Damage);
 
             var skills = new SkillDataTable();
             skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
-            Assert.IsTrue(skills.TryGetSkillData(7003, out var skill7003));
-            CollectionAssert.AreEqual(new[] { 0.10f, 0.25f }, skill7003.HitTimings);
-            Assert.AreEqual(0.04f, skill7003.HitWindowPre);
-            Assert.AreEqual(0.06f, skill7003.HitWindowPost);
+            Assert.IsTrue(skills.TryGetSkillData(7016, out var skill7016));
+            CollectionAssert.AreEqual(new[] { 0.10f, 0.25f }, skill7016.HitTimings);
+            Assert.AreEqual(0.06f, skill7016.HitWindowPre);
+            Assert.AreEqual(0.06f, skill7016.HitWindowPost);
 
             var encounters = new MonsterEncounterDataTable();
             encounters.LoadData(File.ReadAllText("Assets/Datas/MonsterEncounterData.csv"));
@@ -117,7 +117,7 @@ namespace QA.Tests
             var unit3106Prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3106.prefab");
             Assert.NotNull(unit3106Prefab);
             Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<Animator>(true).Length);
-            Assert.AreEqual(1, unit3106Prefab.GetComponentsInChildren<SpriteRenderer>(true).Length);
+            Assert.NotNull(unit3106Prefab.transform.Find("Visual").GetComponent<SpriteRenderer>());
             StringAssert.Contains("Unit_3106", File.ReadAllText("Assets/AddressableAssetsData/AssetGroups/Prefabs.asset"));
 
             Assert.NotNull(AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Anims/Monster/ShieldSentinelAnimatorController.controller"));

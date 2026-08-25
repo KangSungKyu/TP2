@@ -17,9 +17,13 @@ public class CombatStats : MonoBehaviour
         public readonly int SourceId;
         public readonly uint Generation;
         public readonly uint Tick;
+        public readonly ActiveShape Shape;
+        public readonly Vector2 Size;
+        public readonly float Angle;
 
         public AttackSweep2D(Vector2 previous, Vector2 current, Vector2 halfExtents,
-            int sourceId, uint generation, uint tick)
+            int sourceId, uint generation, uint tick, ActiveShape shape = ActiveShape.Box,
+            Vector2 size = default, float angle = 0f)
         {
             Previous = previous;
             Current = current;
@@ -27,6 +31,9 @@ public class CombatStats : MonoBehaviour
             SourceId = sourceId;
             Generation = generation;
             Tick = tick;
+            Shape = shape;
+            Size = size == default ? halfExtents * 2f : size;
+            Angle = angle;
         }
     }
 
@@ -140,7 +147,7 @@ public class CombatStats : MonoBehaviour
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (debugGuardSprite == null) return;
-        bool visible = UnitAttackHitbox2D.DebugVisualizationEnabled && stateActive && (IsGuarding || IsParrying);
+        bool visible = stateActive && (IsGuarding || IsParrying);
         debugGuardSprite.enabled = visible;
         if (visible) debugGuardSprite.color = IsParrying ? new Color(0f, 1f, 1f, 0.35f) : new Color(0f, 0.5f, 1f, 0.35f);
 #else
@@ -155,10 +162,53 @@ public class CombatStats : MonoBehaviour
             fraction = 0f;
             return false;
         }
-        Bounds body = defenseBodyCollider.bounds;
-        body.Expand(new Vector3(sweep.HalfExtents.x * 2f, sweep.HalfExtents.y * 2f, 0f));
-        return TryGetSweepFraction(sweep.Previous, sweep.Current, body, out fraction);
+        return TryGetNativeShapeFraction(sweep, defenseBodyCollider, out fraction);
     }
+
+    private static bool TryGetNativeShapeFraction(AttackSweep2D sweep, Collider2D target,
+        out float fraction)
+    {
+        fraction = 0f;
+        Vector2 displacement = sweep.Current - sweep.Previous;
+        float distance = displacement.magnitude;
+        int layerMask = 1 << target.gameObject.layer;
+        if (distance <= Mathf.Epsilon)
+        {
+            Collider2D[] overlaps = sweep.Shape switch
+            {
+                ActiveShape.Circle => Physics2D.OverlapCircleAll(sweep.Current, sweep.Size.x * .5f, layerMask),
+                ActiveShape.Capsule => Physics2D.OverlapCapsuleAll(sweep.Current, sweep.Size,
+                    GetCapsuleDirection(sweep.Size), sweep.Angle, layerMask),
+                _ => Physics2D.OverlapBoxAll(sweep.Current, sweep.Size, sweep.Angle, layerMask)
+            };
+            foreach (Collider2D overlap in overlaps)
+                if (overlap == target) return true;
+            return false;
+        }
+
+        Vector2 direction = displacement / distance;
+        RaycastHit2D[] hits = sweep.Shape switch
+        {
+            ActiveShape.Circle => Physics2D.CircleCastAll(sweep.Previous, sweep.Size.x * .5f,
+                direction, distance, layerMask),
+            ActiveShape.Capsule => Physics2D.CapsuleCastAll(sweep.Previous, sweep.Size,
+                GetCapsuleDirection(sweep.Size), sweep.Angle, direction, distance, layerMask),
+            _ => Physics2D.BoxCastAll(sweep.Previous, sweep.Size, sweep.Angle, direction, distance, layerMask)
+        };
+        bool found = false;
+        float nearest = 1f;
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider != target) continue;
+            nearest = Mathf.Min(nearest, hit.fraction);
+            found = true;
+        }
+        fraction = nearest;
+        return found;
+    }
+
+    private static CapsuleDirection2D GetCapsuleDirection(Vector2 size) =>
+        size.y >= size.x ? CapsuleDirection2D.Vertical : CapsuleDirection2D.Horizontal;
 
     public bool TryGetAttackSweepFraction(AttackSweep2D sweep, out float fraction)
     {

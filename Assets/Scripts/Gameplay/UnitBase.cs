@@ -22,6 +22,7 @@ public class UnitBase : MonoBehaviour
     public FactionType Faction => UnitData != null ? (FactionType)UnitData.Faction :
         (this is Player ? FactionType.PlayerAlly : this is Monster ? FactionType.Enemy : FactionType.None);
     public virtual uint ActionGeneration => sharedActionGeneration;
+    public bool IsFacingRight { get; private set; } = true;
 
 
     // =========================================================================
@@ -36,7 +37,6 @@ public class UnitBase : MonoBehaviour
     protected CapsuleCollider2D hitCollider;
     protected Rigidbody2D rb2d;
     protected KinematicMotor2D motor;
-    [SerializeField] private UnitAttackHitbox2D attackHitbox;
     private uint sharedActionGeneration;
 
     protected bool isGrounded => motor != null ? motor.IsGrounded : false;
@@ -76,8 +76,8 @@ public class UnitBase : MonoBehaviour
 
     public virtual void SetFacingRight(bool isRight)
     {
+        IsFacingRight = isRight;
         if (stats != null) stats.SetFacingRight(isRight);
-        attackHitbox?.SetFacingRight(isRight);
         if (spriteRenderer != null)
         {
             spriteRenderer.flipX = isRight;
@@ -101,65 +101,7 @@ public class UnitBase : MonoBehaviour
         motor != null && motor.HasGroundSupportForHorizontalStep(deltaX);
     public float AttackMotionVelocityX => motor != null ? motor.Velocity.x : 0f;
     public float AttackMotionSkinWidth => motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
-    public bool TryGetAttackForwardReach(bool facingRight, out float reach)
-    {
-        if (attackHitbox != null) return attackHitbox.TryGetForwardReach(facingRight, out reach);
-        reach = 0f;
-        return false;
-    }
-    public bool TryGetAttackSweepCenterOffset(bool facingRight, out float offset)
-    {
-        return TryGetAttackSweepCenterOffset(facingRight, AttackSubject.Weapon, BodyPartRole.None, out offset);
-    }
-    public bool TryGetAttackSweepCenterOffset(bool facingRight, AttackSubject subject, BodyPartRole bodyPart,
-        out float offset)
-    {
-        if (attackHitbox != null) return attackHitbox.TryGetSweepCenterOffset(facingRight, subject, bodyPart, out offset);
-        offset = 0f;
-        return false;
-    }
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
-
-    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick,
-        out CombatStats.AttackSweep2D sweep)
-    {
-        return TryOpenAttackHitbox(sourceId, generation, tick, AttackSubject.Weapon, BodyPartRole.None, out sweep);
-    }
-
-    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick, AttackSubject subject,
-        BodyPartRole bodyPart, out CombatStats.AttackSweep2D sweep)
-    {
-        if (attackHitbox != null) return attackHitbox.TryOpen(sourceId, generation, tick, subject, bodyPart, out sweep);
-        sweep = default;
-        Debug.LogError($"[UnitBase] Unit idx {UnitIdx} has no serialized attack hitbox; attack cancelled.");
-        return false;
-    }
-
-    public bool TryOpenAttackHitbox(int sourceId, uint generation, uint tick, AttackSubject subject,
-        BodyPartRole bodyPart, Vector2 activeCenter, Vector2 activeSize,
-        out CombatStats.AttackSweep2D sweep)
-    {
-        if (attackHitbox != null)
-            return attackHitbox.TryOpen(sourceId, generation, tick, subject, bodyPart,
-                activeCenter, activeSize, out sweep);
-        sweep = default;
-        Debug.LogError($"[UnitBase] Unit idx {UnitIdx} has no serialized attack hitbox; attack cancelled.");
-        return false;
-    }
-
-    public UnitAttackHitbox2D AttackHitbox => attackHitbox;
-    public void CloseAttackHitbox() => attackHitbox?.Close();
-    public void SetTelegraphedAttackHitbox(bool telegraphed) => attackHitbox?.SetTelegraphed(telegraphed);
-    public void SetTelegraphedAttackHitbox(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart) =>
-        attackHitbox?.SetTelegraphed(telegraphed, subject, bodyPart);
-
-    public virtual void CancelAttackHitbox()
-    {
-        sharedActionGeneration++;
-        StopAttackMotionImmediately();
-        attackHitbox?.Close();
-        attackHitbox?.SetTelegraphed(false);
-    }
 
     /// <summary>
     /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
@@ -217,7 +159,6 @@ public class UnitBase : MonoBehaviour
         {
             animator = visualTransform.gameObject.AddComponent<Animator>();
         }
-        attackHitbox?.Bind(this);
     }
 
     protected virtual void updateGroundCheck()
