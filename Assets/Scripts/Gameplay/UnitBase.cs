@@ -150,9 +150,8 @@ public class UnitBase : MonoBehaviour
     public UnitAttackHitbox2D AttackHitbox => attackHitbox;
     public void CloseAttackHitbox() => attackHitbox?.Close();
     public void SetTelegraphedAttackHitbox(bool telegraphed) => attackHitbox?.SetTelegraphed(telegraphed);
-    public void SetTelegraphedAttackHitbox(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart,
-        bool allowWeaponTracking = true) =>
-        attackHitbox?.SetTelegraphed(telegraphed, subject, bodyPart, allowWeaponTracking);
+    public void SetTelegraphedAttackHitbox(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart) =>
+        attackHitbox?.SetTelegraphed(telegraphed, subject, bodyPart);
 
     public virtual void CancelAttackHitbox()
     {

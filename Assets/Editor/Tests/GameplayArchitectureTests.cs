@@ -2423,19 +2423,17 @@ namespace QA.Tests
         }
 
         [Test]
-        public void AttackSubject_SelectsExactlyOneSerializedColliderAndPreservesWeaponVisual()
+        public void AttackSubject_SelectsExactlyOneColliderAndUsesEffectBoundsWithoutWeaponVisual()
         {
             GameObject ownerObject = new GameObject("AttackSubjectOwner");
             GameObject attachObject = new GameObject("AttackAttach");
             GameObject weaponObject = new GameObject("WeaponCollider");
             GameObject torsoObject = new GameObject("TorsoCollider");
-            GameObject visualObject = new GameObject("WeaponVisual");
             try
             {
                 attachObject.transform.SetParent(ownerObject.transform, false);
                 weaponObject.transform.SetParent(attachObject.transform, false);
                 torsoObject.transform.SetParent(attachObject.transform, false);
-                visualObject.transform.SetParent(attachObject.transform, false);
                 BoxCollider2D weapon = weaponObject.AddComponent<BoxCollider2D>();
                 BoxCollider2D torso = torsoObject.AddComponent<BoxCollider2D>();
                 weapon.isTrigger = true;
@@ -2447,35 +2445,23 @@ namespace QA.Tests
                 typeof(UnitAttackHitbox2D).GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, weapon);
                 typeof(UnitAttackHitbox2D).GetField("torsoAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, torso);
                 typeof(UnitAttackHitbox2D).GetField("attachRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, attachObject.transform);
-                typeof(UnitAttackHitbox2D).GetField("weaponVisual", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(hitbox, visualObject.transform);
-                Vector3 visualPosition = new Vector3(.2f, .3f, 0f);
-                Quaternion visualRotation = Quaternion.Euler(0f, 0f, 17f);
-                Vector3 visualScale = new Vector3(.8f, .9f, 1f);
-                visualObject.transform.localPosition = visualPosition;
-                visualObject.transform.localRotation = visualRotation;
-                visualObject.transform.localScale = visualScale;
+                Assert.IsNull(typeof(UnitAttackHitbox2D).GetField("weaponVisual",
+                    BindingFlags.Instance | BindingFlags.NonPublic));
 
                 hitbox.Bind(owner);
                 Assert.IsTrue(hitbox.TryOpen(1, owner.ActionGeneration, 0,
-                    AttackSubject.Weapon, BodyPartRole.None, out CombatStats.AttackSweep2D weaponSweep));
+                    AttackSubject.Weapon, BodyPartRole.None, new Vector2(.16f, -.11f),
+                    new Vector2(.56f, .82f), out CombatStats.AttackSweep2D weaponSweep));
                 Assert.IsTrue(weapon.enabled);
                 Assert.IsFalse(torso.enabled);
-                Assert.AreEqual(weapon.bounds.size.x * 1.5f, weaponSweep.HalfExtents.x * 2f, .001f);
-                Vector3 animatedPosition = new Vector3(.7f, 1.1f, 0f);
-                Quaternion animatedRotation = Quaternion.Euler(0f, 0f, 42f);
-                weaponObject.transform.localPosition = animatedPosition;
-                weaponObject.transform.localRotation = animatedRotation;
-                typeof(UnitAttackHitbox2D).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.Invoke(hitbox, null);
-                Assert.AreEqual(animatedPosition, visualObject.transform.localPosition);
-                Assert.Less(Quaternion.Angle(animatedRotation, visualObject.transform.localRotation), .001f);
-                Assert.AreEqual(visualScale, visualObject.transform.localScale);
+                Assert.AreEqual(.56f, weaponSweep.HalfExtents.x * 2f, .001f);
+                Assert.AreEqual(.82f, weaponSweep.HalfExtents.y * 2f, .001f);
+                Assert.AreEqual(.16f, weaponSweep.Current.x, .001f);
+                Assert.AreEqual(-.11f, weaponSweep.Current.y, .001f);
                 hitbox.Close();
                 Assert.IsFalse(weapon.enabled);
                 Assert.IsFalse(torso.enabled);
-                Assert.AreEqual(visualPosition, visualObject.transform.localPosition);
-                Assert.Less(Quaternion.Angle(visualRotation, visualObject.transform.localRotation), .001f);
-                Assert.AreEqual(visualScale, visualObject.transform.localScale);
+                Assert.AreEqual(new Vector2(1f, .5f), weapon.size);
 
                 hitbox.SetFacingRight(false);
                 Assert.IsTrue(hitbox.TryOpen(2, owner.ActionGeneration, 0,
@@ -2484,20 +2470,9 @@ namespace QA.Tests
                 Assert.IsTrue(torso.enabled);
                 Assert.AreEqual(torso.bounds.size.x * 1.5f, torsoSweep.HalfExtents.x * 2f, .001f);
                 Assert.Less(torsoSweep.Current.x, owner.transform.position.x);
-                torsoObject.transform.localPosition = new Vector3(-.5f, 1.4f, 0f);
-                typeof(UnitAttackHitbox2D).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.Invoke(hitbox, null);
-                Assert.AreEqual(visualPosition, visualObject.transform.localPosition);
-                Assert.Less(Quaternion.Angle(visualRotation, visualObject.transform.localRotation), .001f);
                 hitbox.Close();
 
-                hitbox.SetTelegraphed(true, AttackSubject.Weapon, BodyPartRole.None, false);
-                weaponObject.transform.localPosition = new Vector3(1.2f, 1.5f, 0f);
-                typeof(UnitAttackHitbox2D).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.Invoke(hitbox, null);
-                Assert.AreEqual(visualPosition, visualObject.transform.localPosition);
-                Assert.Less(Quaternion.Angle(visualRotation, visualObject.transform.localRotation), .001f);
-                Assert.AreEqual(visualScale, visualObject.transform.localScale);
+                hitbox.SetTelegraphed(true, AttackSubject.Weapon, BodyPartRole.None);
                 hitbox.SetTelegraphed(false);
             }
             finally
@@ -2526,16 +2501,8 @@ namespace QA.Tests
             Assert.AreEqual(BodyPartRole.Torso, skill.BodyPartRole);
             Assert.AreEqual(0u, pattern.ProjectileResourceIdx);
 
-            uint[] visualUnits = { 3001u, 3101u, 3102u, 3103u, 3104u, 3105u, 3201u };
-            foreach (uint unitIdx in visualUnits)
-            {
-                GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Unit_{unitIdx}.prefab");
-                Assert.NotNull(prefab, $"Unit_{unitIdx} prefab");
-                UnitAttackHitbox2D prefabHitbox = prefab.GetComponentInChildren<UnitAttackHitbox2D>(true);
-                Assert.NotNull(prefabHitbox, $"Unit_{unitIdx} UnitAttackHitbox2D");
-                Assert.NotNull(typeof(UnitAttackHitbox2D).GetField("weaponVisual", BindingFlags.Instance | BindingFlags.NonPublic)
-                    ?.GetValue(prefabHitbox), $"Unit_{unitIdx} WeaponVisual serialized reference");
-            }
+            Assert.IsNull(typeof(UnitAttackHitbox2D).GetField("weaponVisual",
+                BindingFlags.Instance | BindingFlags.NonPublic));
 
             GameObject instance = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Unit_3103.prefab"));
@@ -2555,15 +2522,10 @@ namespace QA.Tests
                     .GetField("weaponAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(hitbox);
                 Collider2D torso = (Collider2D)typeof(UnitAttackHitbox2D)
                     .GetField("torsoAttackCollider", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(hitbox);
-                Transform weaponVisual = (Transform)typeof(UnitAttackHitbox2D)
-                    .GetField("weaponVisual", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(hitbox);
                 Assert.NotNull(weapon);
                 Assert.NotNull(torso);
                 Assert.IsTrue(torso.isTrigger);
                 Assert.IsFalse(torso.enabled);
-                Vector3 visualPosition = weaponVisual.localPosition;
-                Quaternion visualRotation = weaponVisual.localRotation;
-                Vector3 visualScale = weaponVisual.localScale;
 
                 hitbox.Bind(owner);
                 owner.SetFacingRight(true);
@@ -2609,9 +2571,6 @@ namespace QA.Tests
                 owner.CancelAttackHitbox();
                 Assert.IsFalse(weapon.enabled);
                 Assert.IsFalse(torso.enabled);
-                Assert.AreEqual(visualPosition, weaponVisual.localPosition);
-                Assert.AreEqual(visualRotation, weaponVisual.localRotation);
-                Assert.AreEqual(visualScale, weaponVisual.localScale);
             }
             finally
             {

@@ -15,7 +15,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     [SerializeField] private Collider2D weaponAttackCollider;
     [SerializeField] private Collider2D torsoAttackCollider;
     [SerializeField] private Transform attachRoot;
-    [SerializeField] private Transform weaponVisual;
     [SerializeField] private SpriteRenderer debugHitboxSprite;
     [SerializeField] private SpriteRenderer debugSweepSprite;
     [SerializeField] private LineRenderer debugHitboxLine;
@@ -29,11 +28,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     private bool telegraphedActive;
     private uint hitGeneration;
     private Collider2D selectedAttackCollider;
-    private Vector3 weaponVisualIdlePosition;
-    private Quaternion weaponVisualIdleRotation;
-    private Vector3 weaponVisualIdleScale;
-    private bool weaponVisualPoseCached;
-    private bool trackWeaponVisual;
     private BoxCollider2D effectBoundsCollider;
     private Vector2 effectBoundsOriginalOffset;
     private Vector2 effectBoundsOriginalSize;
@@ -59,8 +53,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     public void Bind(UnitBase unit)
     {
         owner = unit;
-        CacheWeaponVisualIdlePose();
-        RestoreWeaponVisualIdlePose();
         SetWindowActive(false);
     }
 
@@ -124,16 +116,12 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
 
     public void SetTelegraphed(bool telegraphed)
     {
-        SetTelegraphed(telegraphed, AttackSubject.Weapon, BodyPartRole.None, true);
+        SetTelegraphed(telegraphed, AttackSubject.Weapon, BodyPartRole.None);
     }
 
-    public void SetTelegraphed(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart,
-        bool allowWeaponTracking)
+    public void SetTelegraphed(bool telegraphed, AttackSubject subject, BodyPartRole bodyPart)
     {
         telegraphedActive = telegraphed;
-        trackWeaponVisual = telegraphed && allowWeaponTracking &&
-            subject == AttackSubject.Weapon && bodyPart == BodyPartRole.None;
-        if (!trackWeaponVisual) RestoreWeaponVisualIdlePose();
         if (telegraphed && !windowActive) DisableAttackColliders();
         UpdateDebugVisualization();
     }
@@ -194,8 +182,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
             box.offset = activeCenter;
             box.size = activeSize;
         }
-        trackWeaponVisual = subject == AttackSubject.Weapon && bodyPart == BodyPartRole.None;
-        if (!trackWeaponVisual) RestoreWeaponVisualIdlePose();
         selectedAttackCollider.enabled = true;
         windowActive = true;
         Physics2D.SyncTransforms();
@@ -230,8 +216,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     public void Close()
     {
         windowActive = false;
-        trackWeaponVisual = false;
-        RestoreWeaponVisualIdlePose();
         RestoreEffectBounds();
         DisableAttackColliders();
         UpdateDebugVisualization();
@@ -242,8 +226,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
     {
         windowActive = false;
         telegraphedActive = false;
-        trackWeaponVisual = false;
-        RestoreWeaponVisualIdlePose();
         RestoreEffectBounds();
         DisableAttackColliders();
         UpdateDebugVisualization();
@@ -251,7 +233,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
 
     private void LateUpdate()
     {
-        SyncWeaponVisualToCollider();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (!IsDebugVisualizationActive || selectedAttackCollider == null ||
             debugHitboxSprite != null || debugHitboxLine != null) return;
@@ -274,8 +255,6 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         if (!active) telegraphedActive = false;
         if (!active)
         {
-            trackWeaponVisual = false;
-            RestoreWeaponVisualIdlePose();
             RestoreEffectBounds();
             DisableAttackColliders();
         }
@@ -354,34 +333,4 @@ public sealed class UnitAttackHitbox2D : MonoBehaviour
         effectBoundsActive = false;
     }
 
-    private void CacheWeaponVisualIdlePose()
-    {
-        if (weaponVisual == null || weaponVisualPoseCached) return;
-        weaponVisualIdlePosition = weaponVisual.localPosition;
-        weaponVisualIdleRotation = weaponVisual.localRotation;
-        weaponVisualIdleScale = weaponVisual.localScale;
-        weaponVisualPoseCached = true;
-    }
-
-    private void SyncWeaponVisualToCollider()
-    {
-        if (!trackWeaponVisual || weaponVisual == null || weaponAttackCollider == null) return;
-        Transform colliderTransform = weaponAttackCollider.transform;
-        Vector3 worldPosition = colliderTransform.TransformPoint(weaponAttackCollider.offset);
-        Quaternion worldRotation = colliderTransform.rotation;
-        Transform parent = weaponVisual.parent;
-        weaponVisual.localPosition = parent != null ? parent.InverseTransformPoint(worldPosition) : worldPosition;
-        weaponVisual.localRotation = parent != null
-            ? Quaternion.Inverse(parent.rotation) * worldRotation
-            : worldRotation;
-        weaponVisual.localScale = weaponVisualIdleScale;
-    }
-
-    private void RestoreWeaponVisualIdlePose()
-    {
-        if (!weaponVisualPoseCached || weaponVisual == null) return;
-        weaponVisual.localPosition = weaponVisualIdlePosition;
-        weaponVisual.localRotation = weaponVisualIdleRotation;
-        weaponVisual.localScale = weaponVisualIdleScale;
-    }
 }

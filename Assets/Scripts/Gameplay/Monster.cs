@@ -713,8 +713,7 @@ public class Monster : UnitBase
         BeginAttackTelegraph(generation, impactAt - AttackTelegraphLeadSeconds,
             impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration,
             skill != null ? skill.AttackSubject : AttackSubject.Weapon,
-            skill != null ? skill.BodyPartRole : BodyPartRole.None,
-            pattern.ProjectileResourceIdx == 0);
+            skill != null ? skill.BodyPartRole : BodyPartRole.None);
 
         if (effectivePreDelay > 0f)
         {
@@ -796,8 +795,7 @@ public class Monster : UnitBase
             : Mathf.Max(0f, pattern.PostDelay);
         SetTelegraphedAttackHitbox(recoveryDuration > 0f,
             skill != null ? skill.AttackSubject : AttackSubject.Weapon,
-            skill != null ? skill.BodyPartRole : BodyPartRole.None,
-            pattern.ProjectileResourceIdx == 0);
+            skill != null ? skill.BodyPartRole : BodyPartRole.None);
         if (recoveryDuration > 0f)
         {
             int postMs = Mathf.RoundToInt(recoveryDuration * 1000f);
@@ -1039,12 +1037,12 @@ public class Monster : UnitBase
     }
 
     private void BeginAttackTelegraph(uint generation, float warningStartsAt, float impactAt,
-        float activeEndsAt, AttackSubject subject, BodyPartRole bodyPart, bool allowWeaponTracking)
+        float activeEndsAt, AttackSubject subject, BodyPartRole bodyPart)
     {
         if (!CanAct(generation)) return;
         telegraphGeneration = generation;
         telegraphActive = true;
-        SetTelegraphedAttackHitbox(true, subject, bodyPart, allowWeaponTracking);
+        SetTelegraphedAttackHitbox(true, subject, bodyPart);
         AttackTelegraphStarted?.Invoke(new AttackTelegraph(this, generation, warningStartsAt,
             impactAt, Mathf.Max(impactAt, activeEndsAt)));
     }
