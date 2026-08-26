@@ -22,19 +22,19 @@ AnimationClip:
     curve:
     - time: 0
       value: {fileID: -172481640740481823, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.125
+    - time: 0.2
       value: {fileID: -5838801372605328724, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.25
+    - time: 0.4
       value: {fileID: 8067568608127391370, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.375
+    - time: 0.6
       value: {fileID: -8747003562987851774, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.5
+    - time: 0.7
       value: {fileID: 863858995094619270, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.625
+    - time: 0.8
       value: {fileID: -6437727873297896643, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.75
+    - time: 0.9
       value: {fileID: 136233737622679624, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
-    - time: 0.875
+    - time: 1
       value: {fileID: -5998764538092943455, guid: 814b46f5764c3cf43b9791b457ee99b2, type: 3}
     attribute: m_Sprite
     path: Visual

@@ -3,95 +3,29 @@ guid: 1173ed295436fff48aaf1362554fe1ca
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8612840393077287164
-    second: AttackEffect_8028_0
-  - first:
-      213: -1700795935779902669
-    second: AttackEffect_8028_1
-  - first:
-      213: -1614596412987959509
-    second: AttackEffect_8028_2
-  - first:
-      213: 744394260687017166
-    second: AttackEffect_8028_3
-  - first:
-      213: -5572286858246954992
-    second: AttackEffect_8028_4
-  - first:
-      213: -5435986119453304040
-    second: AttackEffect_8028_5
-  - first:
-      213: -4804153716282489392
-    second: AttackEffect_8028_6
-  - first:
-      213: -3676406630266651774
-    second: AttackEffect_8028_7
-  - first:
-      213: -1330786933232704775
-    second: AttackEffect_8028_8
-  - first:
-      213: -6653999047583771823
-    second: AttackEffect_8028_9
-  - first:
-      213: -5106958807455833858
-    second: AttackEffect_8028_10
-  - first:
-      213: 3626491965939458763
-    second: AttackEffect_8028_11
-  - first:
-      213: -1567104337977952936
-    second: AttackEffect_8028_12
-  - first:
-      213: 2414722022402748243
-    second: AttackEffect_8028_13
-  - first:
-      213: -458131764652133854
+      213: 694202835927360616
     second: AttackEffect_8028_F1
   - first:
-      213: 4001159258331979614
+      213: -9221495558472064190
     second: AttackEffect_8028_F2
   - first:
-      213: 5421693765241863088
+      213: 4672102882550095522
     second: AttackEffect_8028_F3
   - first:
-      213: 1156815001176607683
+      213: 924124835720040455
     second: AttackEffect_8028_F4
   - first:
-      213: 3746227777285853073
+      213: -5946341130100194492
     second: AttackEffect_8028_F5
   - first:
-      213: 5055865096031589648
+      213: 7058602932651314292
     second: AttackEffect_8028_F6
   - first:
-      213: 1828450246361238495
+      213: -2479213382473644439
     second: AttackEffect_8028_F7
   - first:
-      213: -6914047691090472562
-    second: AttackEffect_8028_F8
-  - first:
-      213: 694202835927360616
-    second: AttackEffect_8028_F9
-  - first:
-      213: -9221495558472064190
-    second: AttackEffect_8028_F10
-  - first:
-      213: 4672102882550095522
-    second: AttackEffect_8028_F11
-  - first:
-      213: 924124835720040455
-    second: AttackEffect_8028_F12
-  - first:
-      213: -5946341130100194492
-    second: AttackEffect_8028_F13
-  - first:
-      213: 7058602932651314292
-    second: AttackEffect_8028_F14
-  - first:
-      213: -2479213382473644439
-    second: AttackEffect_8028_F15
-  - first:
       213: 6218431686696372798
-    second: AttackEffect_8028_F16
+    second: AttackEffect_8028_F8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -216,7 +150,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 222369b569364a9f0800000000000000
-      internalID: -458131764652133854
+      internalID: 694202835927360616
       vertices: []
       indices:
       edges: []
@@ -238,7 +172,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: e5f94aa7529f68730800000000000000
-      internalID: 4001159258331979614
+      internalID: -9221495558472064190
       vertices: []
       indices:
       edges: []
@@ -260,7 +194,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 0bbf03e01c9bd3b40800000000000000
-      internalID: 5421693765241863088
+      internalID: 4672102882550095522
       vertices: []
       indices:
       edges: []
@@ -282,7 +216,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 3cb89ff4d15dd0010800000000000000
-      internalID: 1156815001176607683
+      internalID: 924124835720040455
       vertices: []
       indices:
       edges: []
@@ -304,7 +238,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 19f03d8a0564df330800000000000000
-      internalID: 3746227777285853073
+      internalID: -5946341130100194492
       vertices: []
       indices:
       edges: []
@@ -326,7 +260,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 0155249848a0a2640800000000000000
-      internalID: 5055865096031589648
+      internalID: 7058602932651314292
       vertices: []
       indices:
       edges: []
@@ -348,7 +282,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: fdb46dfbfc5ff5910800000000000000
-      internalID: 1828450246361238495
+      internalID: -2479213382473644439
       vertices: []
       indices:
       edges: []
@@ -370,182 +304,6 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: e815174d14e5c00a0800000000000000
-      internalID: -6914047691090472562
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F9
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 864e48d1dcd42a900800000000000000
-      internalID: 694202835927360616
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F10
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2432e6ba5aaa60080800000000000000
-      internalID: -9221495558472064190
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F11
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2ae1a7c51d4a6d040800000000000000
-      internalID: 4672102882550095522
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F12
-      rect:
-        serializedVersion: 2
-        x: 1408
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 700953154a623dc00800000000000000
-      internalID: 924124835720040455
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F13
-      rect:
-        serializedVersion: 2
-        x: 1536
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 443451b4f3a5a7da0800000000000000
-      internalID: -5946341130100194492
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F14
-      rect:
-        serializedVersion: 2
-        x: 1664
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 47c463b18f135f160800000000000000
-      internalID: 7058602932651314292
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F15
-      rect:
-        serializedVersion: 2
-        x: 1792
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 96683476090189dd0800000000000000
-      internalID: -2479213382473644439
-      vertices: []
-      indices:
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: AttackEffect_8028_F16
-      rect:
-        serializedVersion: 2
-        x: 1920
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e3a02912cae4c4650800000000000000
       internalID: 6218431686696372798
       vertices: []
       indices:
@@ -565,36 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      AttackEffect_8028_0: -8612840393077287164
-      AttackEffect_8028_1: -1700795935779902669
-      AttackEffect_8028_10: -5106958807455833858
-      AttackEffect_8028_11: 3626491965939458763
-      AttackEffect_8028_12: -1567104337977952936
-      AttackEffect_8028_13: 2414722022402748243
-      AttackEffect_8028_2: -1614596412987959509
-      AttackEffect_8028_3: 744394260687017166
-      AttackEffect_8028_4: -5572286858246954992
-      AttackEffect_8028_5: -5435986119453304040
-      AttackEffect_8028_6: -4804153716282489392
-      AttackEffect_8028_7: -3676406630266651774
-      AttackEffect_8028_8: -1330786933232704775
-      AttackEffect_8028_9: -6653999047583771823
-      AttackEffect_8028_F1: -458131764652133854
-      AttackEffect_8028_F10: -9221495558472064190
-      AttackEffect_8028_F11: 4672102882550095522
-      AttackEffect_8028_F12: 924124835720040455
-      AttackEffect_8028_F13: -5946341130100194492
-      AttackEffect_8028_F14: 7058602932651314292
-      AttackEffect_8028_F15: -2479213382473644439
-      AttackEffect_8028_F16: 6218431686696372798
-      AttackEffect_8028_F2: 4001159258331979614
-      AttackEffect_8028_F3: 5421693765241863088
-      AttackEffect_8028_F4: 1156815001176607683
-      AttackEffect_8028_F5: 3746227777285853073
-      AttackEffect_8028_F6: 5055865096031589648
-      AttackEffect_8028_F7: 1828450246361238495
-      AttackEffect_8028_F8: -6914047691090472562
-      AttackEffect_8028_F9: 694202835927360616
+      AttackEffect_8028_F1: 694202835927360616
+      AttackEffect_8028_F2: -9221495558472064190
+      AttackEffect_8028_F3: 4672102882550095522
+      AttackEffect_8028_F4: 924124835720040455
+      AttackEffect_8028_F5: -5946341130100194492
+      AttackEffect_8028_F6: 7058602932651314292
+      AttackEffect_8028_F7: -2479213382473644439
+      AttackEffect_8028_F8: 6218431686696372798
   mipmapLimitGroupName:
   pSDRemoveMatte: 0
   userData:

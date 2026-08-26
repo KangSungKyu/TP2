@@ -18,6 +18,11 @@ public class EffectDataTable : IDataLoad
         {
             foreach (var item in records)
             {
+                if (!item.HasValidSpawnPivot)
+                {
+                    Debug.LogError($"[EffectDataTable] Effect idx {item.Idx} has invalid spawn pivot; row rejected.");
+                    continue;
+                }
                 bool hasAnyBounds = item.ActiveCenterX != 0f || item.ActiveCenterY != 0f ||
                     item.ActiveSizeX != 0f || item.ActiveSizeY != 0f;
                 bool requiresBounds = item.HasAttackBinding;

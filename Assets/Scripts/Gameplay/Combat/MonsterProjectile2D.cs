@@ -64,7 +64,7 @@ namespace Gameplay.Combat
             {
                 var intendedSweep = new CombatStats.AttackSweep2D(transform.position,
                     (Vector2)transform.position + direction * step, projectileCollider.bounds.extents,
-                    GetInstanceID(), ownerGeneration, hitTick);
+                    GetInstanceID(), ownerGeneration, hitTick, hasExteriorPose: true);
                 UnitBase sweptTarget = null;
                 float sweptFraction = float.MaxValue;
                 Player player = Player.Instance;
@@ -103,7 +103,7 @@ namespace Gameplay.Combat
                     {
                         var sweep = new CombatStats.AttackSweep2D(transform.position,
                             hits[i].centroid, projectileCollider.bounds.extents,
-                            GetInstanceID(), ownerGeneration, hitTick++);
+                            GetInstanceID(), ownerGeneration, hitTick++, hasExteriorPose: true);
                         target.Stats?.TakeDamage(damage, false, false, Owner.Stats, hits[i].point,
                             attackSweep: sweep);
                     }

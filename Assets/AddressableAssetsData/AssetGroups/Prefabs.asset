@@ -15,6 +15,18 @@ MonoBehaviour:
   m_GroupName: Prefabs
   m_GUID: 7e1fc94225183164c823d4d951014df0
   m_SerializeEntries:
+  - m_GUID: bb9817be4cc44948a5098f11acdd61cf
+    m_Address: Effect_8031
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a26461aa14bf490480bde17038afb64e
+    m_Address: Effect_8032
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Prefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 012de00646c720947964270f8590877d
     m_Address: Room_11072
     m_ReadOnly: 0

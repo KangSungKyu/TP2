@@ -140,8 +140,9 @@ namespace QA.Tests
         {
             var table = new EffectDataTable();
             Assert.DoesNotThrow(() => table.LoadData(
-                "idx,effectnametextidx,prefabidx,duration,scale,loopcount,activecenterx,activecentery,activesizex,activesizey\n" +
-                "8001,2201,1020,0.3,1.0,1,0,0,0,0\n8014,2201,1081,1,1,1,.16,-.11,.56,.82"));
+                "idx,effectnametextidx,prefabidx,duration,scale,loopcount,spawnpivotx,spawnpivoty,activecenterx,activecentery,activesizex,activesizey,activeshape,unitidx,patternidx,skillidx,hittick\n" +
+                "8001,2201,1020,0.3,1.0,1,0,0,0,0,0,0,0,0,0,0,0\n" +
+                "8014,2201,1081,1,1,1,1,0,.16,-.11,.56,.82,0,3001,0,7001,0"));
             Assert.IsTrue(table.TryGetEffectData(8001, out EffectData effect));
             Assert.AreEqual(2201u, effect.EffectNameTextIdx);
             Assert.AreEqual(string.Empty, table.GetDisplayName(8001));
@@ -151,6 +152,8 @@ namespace QA.Tests
                 new Vector2(attackEffect.ActiveCenterX, attackEffect.ActiveCenterY));
             Assert.AreEqual(new Vector2(.56f, .82f),
                 new Vector2(attackEffect.ActiveSizeX, attackEffect.ActiveSizeY));
+            Assert.AreEqual(new Vector2(1f, 0f),
+                new Vector2(attackEffect.SpawnPivotX, attackEffect.SpawnPivotY));
         }
 
         [Test]

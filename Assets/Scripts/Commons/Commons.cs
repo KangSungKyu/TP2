@@ -417,6 +417,14 @@ public class EffectData
     [Name("loopcount")]
     public int LoopCount { get; set; } // 반복 횟수 (0: 무한)
 
+    // Scale-independent local world-unit offset from the owner's body center.
+    [Name("spawnpivotx")]
+    public float SpawnPivotX { get; set; }
+
+    [Name("spawnpivoty")]
+    public float SpawnPivotY { get; set; }
+
+    // Scale-applied attack-bounds center relative to the visual root at SpawnPivot.
     [Name("activecenterx")]
     public float ActiveCenterX { get; set; }
 
@@ -450,6 +458,9 @@ public class EffectData
 
     [Ignore]
     public bool HasAttackBinding => UnitIdx != 0u || PatternIdx != 0u || SkillIdx != 0u;
+
+    [Ignore]
+    public bool HasValidSpawnPivot => float.IsFinite(SpawnPivotX) && float.IsFinite(SpawnPivotY);
 
     public bool HasValidActiveBounds =>
         float.IsFinite(ActiveCenterX) && float.IsFinite(ActiveCenterY) &&

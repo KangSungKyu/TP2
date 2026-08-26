@@ -79,9 +79,11 @@
 - 동일 `(sourceId, actionGeneration, tick, target)`은 공격 주체 collider 수와 접촉 횟수에 관계없이 최대 1회 피해를 준다.
 - `hitcount>1`은 서로 다른 tick만 추가 피해를 허용한다. 패링 성공 시 기존 `(sourceId, generation)` 차단으로 후속 tick 전체를 무효화한다.
 - 좌·우 composite 무기와 다중 collider는 같은 source/generation/tick을 공유한다. 투사체는 projectile instance의 source와 tick을 독립 사용한다.
-- face direction 변경은 Unit root/Visual flip과 같은 프레임에 공격 주체 local X·sweep 방향을 한 번만 반전한다. collider scale을 음수로 누적하지 않는다.
-- 기존 `DoesGuardIntersectFirst`의 sweep fraction을 유지하여 공격 진행 방향에서 guard/parry collider가 body collider보다 먼저, 그리고 유효 거리 epsilon보다 앞서 접촉한 경우에만 방어가 우선한다.
-- guard와 body가 같은 fraction이거나 sweep 길이가 `0`이면 방어 우선으로 승격하지 않고 body 판정을 사용한다.
+- 공격 facing은 Startup 시작 pose에서 snapshot하고 Active 종료까지 고정한다. collider scale을 음수로 누적하지 않는다.
+- fraction이 작은 후보를 우선하며, 정면 접촉에서 차이가 `epsilon = motor.SkinWidth`, motor가 없으면 `Physics2D.defaultContactOffset` 이하일 때만 `Parry > Guard > Body`를 적용한다.
+- Startup부터 overlap하여 마지막 exterior pose가 없으면 Body로 판정한다. pose 합성·역보간·Body collider fallback은 금지한다.
+- 공격마다 마지막 비접촉 exterior pose 1개만 보존하고 Active에서 `exterior → current`를 sweep한다. face flip, teleport, generation 변경, 취소·사망·pool 반환 시 폐기한다.
+- Chase 종료 후 Step/Lunge만 Motor를 소유하며 Active 진입 시 기본 정지한다. 명시된 이동공격만 Active 이동을 유지하고 이중 Motor writer를 금지한다.
 
 ### 4. 근접·투사체 경계와 강제 종료
 

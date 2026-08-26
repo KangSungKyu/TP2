@@ -1,10 +1,12 @@
 using NUnit.Framework;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace QA.Tests
 {
@@ -13,13 +15,13 @@ namespace QA.Tests
         [Test]
         public void EffectDrivenAttackBounds_ResolveExactTickBeforeSharedFallback()
         {
-            const string header = "idx,effectnametextidx,prefabidx,duration,scale,loopcount,activecenterx,activecentery,activesizex,activesizey,activeshape,unitidx,patternidx,skillidx,hittick\n";
+            const string header = "idx,effectnametextidx,prefabidx,duration,scale,loopcount,spawnpivotx,spawnpivoty,activecenterx,activecentery,activesizex,activesizey,activeshape,unitidx,patternidx,skillidx,hittick\n";
             var table = new EffectDataTable();
             table.LoadData(header +
-                "8014,0,1081,1,1,1,.16,-.11,.56,.82,0,3001,0,7001,0\n" +
-                "8015,0,1082,1,1,1,.09,-.005,.96,.05,2,3101,6001,7008,0\n" +
-                "8027,0,1087,1,1,1,.255,.045,.29,.75,2,3001,0,7003,1\n" +
-                "8028,0,1088,1,1,1,.195,-.09,.53,.82,0,3001,0,7003,2\n");
+                "8014,0,1081,1,1,1,0,0,.16,-.11,.56,.82,0,3001,0,7001,0\n" +
+                "8015,0,1082,1,1,1,0,0,.09,-.005,.96,.05,2,3101,6001,7008,0\n" +
+                "8027,0,1087,1,1,1,0,0,.255,.045,.29,.75,2,3001,0,7003,1\n" +
+                "8028,0,1088,1,1,1,0,0,.195,-.09,.53,.82,0,3001,0,7003,2\n");
 
             Assert.IsTrue(table.TryResolveAttackEffect(3001, 0, 7001, 7, out EffectData fallback));
             Assert.AreEqual(8014u, fallback.Idx);
@@ -294,13 +296,28 @@ namespace QA.Tests
                 defender.SetFacingRight(facingRight);
                 defender.SetGuarding(true);
                 var sweep = new CombatStats.AttackSweep2D(
-                    new Vector2(startX, 0f), new Vector2(endX, 0f), Vector2.zero, 101, 1, 0);
+                    new Vector2(startX, 0f), new Vector2(endX, 0f), Vector2.zero, 101, 1, 0,
+                    hasExteriorPose: Mathf.Abs(startX) > .5f);
 
                 if (Mathf.Abs(endX) > .5f)
                 {
                     Assert.IsFalse(defender.TryGetBodySweepFraction(sweep, out _));
                     Assert.IsTrue(defender.TryGetAttackSweepFraction(sweep, out _),
                         "A front guard-only intersection must reach defense resolution before the body.");
+                }
+
+                if (expectedDefended)
+                {
+                    Assert.IsTrue(sweep.HasExteriorPose);
+                    MethodInfo guardMethod = typeof(CombatStats).GetMethod("TryGetGuardSweepFraction",
+                        BindingFlags.Instance | BindingFlags.NonPublic);
+                    object[] guardArgs = { sweep, 0f };
+                    Assert.IsTrue((bool)guardMethod.Invoke(defender, guardArgs),
+                        $"Guard bounds missed; fraction={guardArgs[1]}");
+                    MethodInfo resolveMethod = typeof(CombatStats).GetMethod("DoesGuardIntersectFirst",
+                        BindingFlags.Instance | BindingFlags.NonPublic);
+                    Assert.IsTrue((bool)resolveMethod.Invoke(defender, new object[] { sweep }),
+                        $"Exterior defense resolution failed; guardFraction={guardArgs[1]}");
                 }
 
                 Assert.AreEqual(expectedDefended, defender.TakeDamage(20f, attackSweep: sweep));
@@ -329,7 +346,7 @@ namespace QA.Tests
                 defender.SetParrying(true);
                 var sweep = new CombatStats.AttackSweep2D(
                     Vector2.right * 3f, Vector2.right * 1.25f, Vector2.zero,
-                    projectile ? 402 : 401, 1, 0);
+                    projectile ? 402 : 401, 1, 0, hasExteriorPose: true);
 
                 Assert.IsFalse(defender.TryGetBodySweepFraction(sweep, out _));
                 Assert.IsTrue(defender.TryGetAttackSweepFraction(sweep, out _));
@@ -351,6 +368,37 @@ namespace QA.Tests
         }
 
         [Test]
+        public void GuardExteriorSweep_D1ToD5_ThirtySixCasePolicyMatrix()
+        {
+            MethodInfo policy = typeof(CombatStats).GetMethod("ShouldDefenseWin",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(policy);
+            bool Resolve(params object[] args) => (bool)policy.Invoke(null, args);
+            int cases = 0;
+            for (int defenseState = 0; defenseState < 3; defenseState++)
+            for (int facing = 0; facing < 2; facing++)
+            for (int front = 0; front < 2; front++)
+            for (int relation = -1; relation <= 1; relation++)
+            {
+                float bodyDistance = .5f;
+                float guardDistance = bodyDistance + (relation < 0 ? -.02f : relation == 0 ? .005f : .02f);
+                float facingSign = facing != 0 ? 1f : -1f;
+                float sourceSide = front != 0 ? facingSign : -facingSign;
+                bool directionMatches = -sourceSide * facingSign < 0f;
+                bool defended = defenseState != 0 && Resolve(
+                    true, front != 0, directionMatches, guardDistance, bodyDistance, .01f, 1f);
+                Assert.AreEqual(defenseState != 0 && front != 0 && relation <= 0, defended,
+                    $"state={defenseState}, facing={facing}, front={front}, relation={relation}");
+                cases++;
+            }
+            Assert.AreEqual(36, cases);
+            Assert.IsFalse(Resolve(false, true, true, .4f, .5f, .01f, 1f),
+                "D2: no exterior pose remains Body-first.");
+            Assert.IsFalse(Resolve(true, true, true, 0f, 0f, .01f, 0f),
+                "Zero-length sweep remains Body-first.");
+        }
+
+        [Test]
         public void Test_GuardSweep_GenerationTickAndStateTransitionsAreSingleResolution()
         {
             var defenderObject = new GameObject("GuardSweepLifecycle_Defender_QA");
@@ -365,25 +413,67 @@ namespace QA.Tests
                 defender.SetFacingRight(true);
                 defender.SetParrying(true);
 
-                var first = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.right * 1.25f, Vector2.zero, 202, 7, 0);
+                var first = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.right * 1.25f,
+                    Vector2.zero, 202, 7, 0, hasExteriorPose: true);
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep: first));
                 defender.SetParrying(false);
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep:
-                    new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 7, 1)));
+                    new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero,
+                        202, 7, 1, hasExteriorPose: true)));
                 Assert.AreEqual(100f, defender.CurrentHp, "Parried attack generation must not apply later ticks.");
 
                 defender.SetGuarding(true);
-                var guardTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 8, 0);
+                var guardTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero,
+                    Vector2.zero, 202, 8, 0, hasExteriorPose: true);
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep: guardTick));
                 defender.SetGuarding(false);
-                var releasedTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero, Vector2.zero, 202, 8, 1);
+                var releasedTick = new CombatStats.AttackSweep2D(Vector2.right * 3f, Vector2.zero,
+                    Vector2.zero, 202, 8, 1, hasExteriorPose: true);
                 Assert.IsFalse(defender.TakeDamage(20f, attackSweep: releasedTick));
                 Assert.IsTrue(defender.TakeDamage(20f, attackSweep: releasedTick));
                 Assert.AreEqual(80f, defender.CurrentHp, "One source/generation/tick may damage at most once.");
 
                 Assert.IsFalse(defender.TakeDamage(20f, attackSweep:
-                    new CombatStats.AttackSweep2D(Vector2.left * 3f, Vector2.zero, Vector2.zero, 202, 9, 0)));
+                    new CombatStats.AttackSweep2D(Vector2.left * 3f, Vector2.zero, Vector2.zero,
+                        202, 9, 0, hasExteriorPose: true)));
                 Assert.AreEqual(60f, defender.CurrentHp, "A pooled source with a new generation must resolve normally.");
+            }
+            finally { Object.DestroyImmediate(defenderObject); }
+        }
+
+        [TestCase(true, 1f / 15f)]
+        [TestCase(true, 1f / 60f)]
+        [TestCase(false, 1f / 15f)]
+        [TestCase(false, 1f / 60f)]
+        public void GuardExteriorSweep_BodyHitThenNextGenerationsRecoverGuard(bool facingRight, float fixedStep)
+        {
+            var defenderObject = new GameObject("GuardRecovery_Defender_QA");
+            try
+            {
+                var body = defenderObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(1f, 2f);
+                var defender = defenderObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = 100f;
+                defender.InitStats();
+                defender.SetDefenseBodyCollider(body);
+                defender.SetFacingRight(facingRight);
+                defender.SetGuarding(true);
+                float side = facingRight ? 1f : -1f;
+
+                Assert.IsFalse(defender.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
+                    Vector2.right * side * .25f, Vector2.zero, Vector2.zero, 3102, 41, 0,
+                    hasExteriorPose: false)), "D2 close overlap must resolve as Body.");
+                Assert.AreEqual(90f, defender.CurrentHp);
+
+                float travel = 4.5f * fixedStep;
+                for (uint generation = 42; generation <= 43; generation++)
+                {
+                    Assert.IsTrue(defender.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
+                        Vector2.right * side * (3f + travel), Vector2.zero, Vector2.zero,
+                        3102, generation, generation - 42, hasExteriorPose: true)));
+                }
+                Assert.AreEqual(90f, defender.CurrentHp, "Independent thrust/barrage generations must guard after Body.");
+                Assert.AreEqual(10f, defender.CurrentPosture, "Both recovered guards must resolve once.");
             }
             finally { Object.DestroyImmediate(defenderObject); }
         }
@@ -1310,6 +1400,57 @@ namespace QA.Tests
             StringAssert.DoesNotContain("Physics.", projectile);
         }
 
+        [UnityTest]
+        public IEnumerator PlayerDamageFlash_RestoresAcrossRepeatedHitsCancellationAndDeath()
+        {
+            var playerObject = new GameObject("PlayerDamageFlash_QA");
+            var visualObject = new GameObject("Visual");
+            visualObject.transform.SetParent(playerObject.transform, false);
+            var renderer = visualObject.AddComponent<SpriteRenderer>();
+            renderer.color = Color.white;
+            var stats = playerObject.AddComponent<CombatStats>();
+            stats.MaxHp = 100f;
+            stats.InitStats();
+            try
+            {
+                Assert.IsFalse(stats.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
+                    Vector2.zero, Vector2.zero, Vector2.zero, 42, 1u, 0u)));
+                Assert.AreEqual(Color.red, renderer.color);
+                yield return new WaitForSeconds(.2f);
+                Assert.AreEqual(Color.white, renderer.color);
+
+                Assert.IsFalse(stats.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
+                    Vector2.zero, Vector2.zero, Vector2.zero, 42, 2u, 0u)));
+                Assert.AreEqual(80f, stats.CurrentHp, "A new attack generation must damage again.");
+                playerObject.SetActive(false);
+                Assert.AreEqual(Color.white, renderer.color, "Disable/cancellation must restore the original color.");
+                playerObject.SetActive(true);
+
+                stats.TakeDamage(100f, attackSweep: new CombatStats.AttackSweep2D(
+                    Vector2.zero, Vector2.zero, Vector2.zero, 42, 3u, 0u));
+                Assert.IsTrue(stats.IsDead);
+                float deadHp = stats.CurrentHp;
+                Assert.IsFalse(stats.TakeDamage(10f));
+                Assert.AreEqual(deadHp, stats.CurrentHp, "Death lock remains separate from transient hit flash.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [Test]
+        public void MonsterPatternStart_AdvancesAttackGenerationBeforeExecution()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            int method = source.IndexOf("private async UniTask ExecutePatternAsync", System.StringComparison.Ordinal);
+            int generation = source.IndexOf("actionGeneration++;", method, System.StringComparison.Ordinal);
+            int assignment = source.IndexOf("currentPattern = pattern;", method, System.StringComparison.Ordinal);
+            Assert.GreaterOrEqual(method, 0);
+            Assert.Greater(generation, method);
+            Assert.Greater(assignment, generation);
+        }
+
         [Test]
         public void Test_MonsterPatternStartDistanceBand_SelectionFallbackAndBoundaries()
         {
@@ -1692,6 +1833,67 @@ namespace QA.Tests
         }
 
         [Test]
+        public void EffectSpawnPivot_MovesVisualAndPreservesAuthoritativeSweep()
+        {
+            var table = new EffectDataTable();
+            table.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+            MethodInfo visualPose = typeof(SkillExecutor).GetMethod("TryCalculateEffectVisualPose",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo createSweep = typeof(SkillExecutor).GetMethod("TryCreateEffectSweep",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(visualPose);
+            Assert.NotNull(createSweep);
+
+            foreach ((uint unitIdx, uint effectIdx, float expectedRightCenterX) in new[]
+            {
+                (3001u, 8014u, 1.2578125f), (3001u, 8027u, 1.421875f),
+                (3001u, 8028u, 1.3203125f), (3001u, 8032u, 1.1171875f),
+                (3102u, 8017u, .78490566f), (3201u, 8029u, .28089844f)
+            })
+            {
+                GameObject ownerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                    $"Assets/Prefabs/Unit_{unitIdx}.prefab"));
+                try
+                {
+                    UnitBase owner = ownerObject.GetComponent<UnitBase>();
+                    Assert.IsTrue(table.TryGetEffectData(effectIdx, out EffectData data));
+                    Vector2 bodyCenter = owner.Stats.DefenseBodyCollider.bounds.center;
+
+                    foreach (bool facingRight in new[] { true, false })
+                    {
+                        owner.SetFacingRight(facingRight);
+                        object[] visualArgs = { owner, data, Vector2.zero, Quaternion.identity };
+                        Assert.IsTrue((bool)visualPose.Invoke(null, visualArgs));
+                        Vector2 visualRoot = (Vector2)visualArgs[2];
+                        Quaternion rotation = (Quaternion)visualArgs[3];
+                        Vector2 expectedPivot = bodyCenter + (Vector2)(rotation * new Vector3(
+                            (facingRight ? 1f : -1f) * data.SpawnPivotX, data.SpawnPivotY, 0f));
+                        Assert.AreEqual(expectedPivot.x, visualRoot.x, .0001f);
+                        Assert.AreEqual(expectedPivot.y, visualRoot.y, .0001f);
+
+                        object[] sweepArgs = { owner, data, Vector2.zero, 1, 1u, 0u,
+                            default(CombatStats.AttackSweep2D), Quaternion.identity };
+                        Assert.IsTrue((bool)createSweep.Invoke(null, sweepArgs));
+                        CombatStats.AttackSweep2D sweep = (CombatStats.AttackSweep2D)sweepArgs[6];
+                        Vector2 alphaCenter = visualRoot + (Vector2)(rotation * new Vector3(
+                            (facingRight ? 1f : -1f) * data.ActiveCenterX * data.Scale,
+                            data.ActiveCenterY * data.Scale, 0f));
+                        Assert.AreEqual(sweep.Current.x, alphaCenter.x, .0001f);
+                        Assert.AreEqual(sweep.Current.y, alphaCenter.y, .0001f);
+                        Assert.AreEqual(expectedRightCenterX,
+                            Mathf.Abs(sweep.Current.x - bodyCenter.x), .0001f);
+                        Assert.AreEqual(data.ActiveSizeX * data.Scale, sweep.Size.x, .0001f);
+                        Assert.AreEqual(data.ActiveSizeY * data.Scale, sweep.Size.y, .0001f);
+                    }
+                }
+                finally
+                {
+                    Object.DestroyImmediate(ownerObject);
+                }
+            }
+        }
+
+        [Test]
         public void EffectScale_AppliesOnceToUnit3101And3102NativePoseAndBounds()
         {
             var table = new EffectDataTable();
@@ -1757,16 +1959,6 @@ namespace QA.Tests
         }
 
         [Test]
-        public void Effect8015_VisualStartsAtFrame4WhenHitWindowOpens()
-        {
-            string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
-            StringAssert.Contains("SpearSentryAttackEffectIdx = 8015u", source);
-            StringAssert.Contains("SpearSentryActiveFrameNormalizedTime = 0.5f", source);
-            StringAssert.Contains("animator.Play(0, 0, normalizedStartTime);", source);
-            StringAssert.Contains("attackEffectIdx == SpearSentryAttackEffectIdx ? SpearSentryActiveFrameNormalizedTime : 0f", source);
-        }
-
-        [Test]
         public void Unit3102_EffectVisualsMirrorOnceAndScaleCoversDefenseBody()
         {
             var table = new EffectDataTable();
@@ -1774,6 +1966,8 @@ namespace QA.Tests
             GameObject ownerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Unit_3102.prefab"));
             MethodInfo pose = typeof(SkillExecutor).GetMethod("TryCalculateEffectPose",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo createSweep = typeof(SkillExecutor).GetMethod("TryCreateEffectSweep",
                 BindingFlags.Static | BindingFlags.NonPublic);
             MethodInfo visualTransform = typeof(SkillExecutor).GetMethod("ApplyEffectVisualTransform",
                 BindingFlags.Static | BindingFlags.NonPublic);
@@ -1783,6 +1977,7 @@ namespace QA.Tests
                 Collider2D body = owner.Stats.DefenseBodyCollider;
                 Assert.NotNull(body);
                 Assert.NotNull(pose);
+                Assert.NotNull(createSweep);
                 Assert.NotNull(visualTransform);
 
                 foreach ((uint idx, string path) in new[]
@@ -1806,6 +2001,24 @@ namespace QA.Tests
                         Vector2 left = (Vector2)leftArgs[2];
                         Assert.AreEqual(right.x - bodyCenter.x, bodyCenter.x - left.x, .0001f);
                         Assert.AreEqual(right.y, left.y, .0001f);
+                        float rightAngle = ((Quaternion)rightArgs[3]).eulerAngles.z;
+                        float leftAngle = ((Quaternion)leftArgs[3]).eulerAngles.z;
+                        float ownerAngle = owner.transform.rotation.eulerAngles.z;
+                        Assert.AreEqual(0f, Mathf.DeltaAngle(ownerAngle, rightAngle), .0001f);
+                        Assert.AreEqual(0f, Mathf.DeltaAngle(ownerAngle, leftAngle), .0001f);
+
+                        owner.SetFacingRight(true);
+                        object[] rightSweepArgs = { owner, data, right, 1, 1u, 0u,
+                            default(CombatStats.AttackSweep2D), Quaternion.identity };
+                        Assert.IsTrue((bool)createSweep.Invoke(null, rightSweepArgs));
+                        owner.SetFacingRight(false);
+                        object[] leftSweepArgs = { owner, data, left, 1, 1u, 0u,
+                            default(CombatStats.AttackSweep2D), Quaternion.identity };
+                        Assert.IsTrue((bool)createSweep.Invoke(null, leftSweepArgs));
+                        var rightSweep = (CombatStats.AttackSweep2D)rightSweepArgs[6];
+                        var leftSweep = (CombatStats.AttackSweep2D)leftSweepArgs[6];
+                        Assert.AreEqual(0f, Mathf.DeltaAngle(ownerAngle, rightSweep.Angle), .0001f);
+                        Assert.AreEqual(0f, Mathf.DeltaAngle(ownerAngle, leftSweep.Angle), .0001f);
 
                         visualTransform.Invoke(null, new object[] { effect, data.Scale, true });
                         SpriteRenderer renderer = effect.GetComponentInChildren<SpriteRenderer>(true);
@@ -1825,11 +2038,28 @@ namespace QA.Tests
                         Object.DestroyImmediate(effect);
                     }
                 }
+
             }
             finally
             {
                 Object.DestroyImmediate(ownerObject);
             }
+        }
+
+        [Test]
+        public void AttackEffectVisualTail_IsMeasuredFromEachHitWindow()
+        {
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            StringAssert.Contains("Mathf.Max(lastWindowEnd, windowStart + attackEffectData.Duration)", source);
+            StringAssert.DoesNotContain("firstWindowStart + attackEffectData.Duration", source);
+            Assert.Less(source.IndexOf("SpawnAttackEffectForWindowAsync(effect, owner", System.StringComparison.Ordinal),
+                source.IndexOf("for (uint tick = 0; tick < (uint)skill.HitTimings.Length", System.StringComparison.Ordinal));
+            StringAssert.Contains("effect.HitTick == 0u && attackEffects.Length > 1", source);
+            Assert.IsFalse(new EffectData
+            {
+                ActiveCenterX = 0f, ActiveCenterY = 0f, ActiveSizeX = float.NaN, ActiveSizeY = 1f,
+                ActiveShapeValue = (uint)ActiveShape.Box
+            }.HasValidActiveBounds);
         }
 
 

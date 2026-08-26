@@ -20,10 +20,11 @@ public class CombatStats : MonoBehaviour
         public readonly ActiveShape Shape;
         public readonly Vector2 Size;
         public readonly float Angle;
+        public readonly bool HasExteriorPose;
 
         public AttackSweep2D(Vector2 previous, Vector2 current, Vector2 halfExtents,
             int sourceId, uint generation, uint tick, ActiveShape shape = ActiveShape.Box,
-            Vector2 size = default, float angle = 0f)
+            Vector2 size = default, float angle = 0f, bool hasExteriorPose = false)
         {
             Previous = previous;
             Current = current;
@@ -34,6 +35,7 @@ public class CombatStats : MonoBehaviour
             Shape = shape;
             Size = size == default ? halfExtents * 2f : size;
             Angle = angle;
+            HasExteriorPose = hasExteriorPose;
         }
     }
 
@@ -89,6 +91,9 @@ public class CombatStats : MonoBehaviour
     private uint lastAttackTick;
     private int parriedAttackSourceId;
     private uint parriedAttackGeneration;
+    private SpriteRenderer hitFlashRenderer;
+    private Color hitFlashOriginalColor;
+    private uint hitFlashGeneration;
 
 
     // =========================================================================
@@ -103,6 +108,7 @@ public class CombatStats : MonoBehaviour
 
     public void InitStats()
     {
+        RestoreHitFlash();
         CurrentHp = MaxHp;
         CurrentMp = MaxMp;
         CurrentPosture = 0f;
@@ -141,7 +147,11 @@ public class CombatStats : MonoBehaviour
     }
     public void SetDefenseBodyCollider(Collider2D bodyCollider) => defenseBodyCollider = bodyCollider;
 
-    private void OnDisable() => SetGuardDebugVisible(false);
+    private void OnDisable()
+    {
+        RestoreHitFlash();
+        SetGuardDebugVisible(false);
+    }
 
     private void SetGuardDebugVisible(bool stateActive = true)
     {
@@ -349,13 +359,22 @@ public class CombatStats : MonoBehaviour
 
     private bool DoesGuardIntersectFirst(AttackSweep2D sweep)
     {
+        if (!sweep.HasExteriorPose || !IsAttackInFront(sweep.Previous)) return false;
         if (!TryGetGuardSweepFraction(sweep, out float guardFraction)) return false;
         if (!TryGetBodySweepFraction(sweep, out float bodyFraction)) return true;
 
         float epsilon = motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
         float sweepLength = Vector2.Distance(sweep.Previous, sweep.Current);
-        return sweepLength > 0f && guardFraction + epsilon / sweepLength < bodyFraction;
+        float facing = isFacingRight ? 1f : -1f;
+        return ShouldDefenseWin(sweep.HasExteriorPose, IsAttackInFront(sweep.Previous),
+            (sweep.Current.x - sweep.Previous.x) * facing < 0f,
+            guardFraction * sweepLength, bodyFraction * sweepLength, epsilon, sweepLength);
     }
+
+    private static bool ShouldDefenseWin(bool hasExteriorPose, bool attackStartsInFront,
+        bool directionMatches, float guardDistance, float bodyDistance, float epsilon, float sweepLength) =>
+        hasExteriorPose && attackStartsInFront && directionMatches && sweepLength > 0f &&
+        guardDistance <= bodyDistance + Mathf.Max(0f, epsilon);
 
     private bool TryGetGuardSweepFraction(AttackSweep2D sweep, out float fraction)
     {
@@ -466,7 +485,13 @@ public class CombatStats : MonoBehaviour
         var rend = GetComponentInChildren<SpriteRenderer>();
         if (rend != null)
         {
-            FlashSpriteRedAsync(rend, this.GetCancellationTokenOnDestroy()).Forget();
+            if (hitFlashRenderer != rend)
+            {
+                RestoreHitFlash();
+                hitFlashRenderer = rend;
+                hitFlashOriginalColor = rend.color;
+            }
+            FlashSpriteRedAsync(rend, ++hitFlashGeneration, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         if (attacker != null)
@@ -490,13 +515,29 @@ public class CombatStats : MonoBehaviour
         motor.ApplyKnockback(pushDir * force, HitReactionDuration);
     }
 
-    private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, CancellationToken cancellationToken)
+    private async UniTaskVoid FlashSpriteRedAsync(SpriteRenderer rend, uint generation,
+        CancellationToken cancellationToken)
     {
         if (rend == null) return;
-        Color original = rend.color;
         rend.color = Color.red;
-        await UniTask.Delay(System.TimeSpan.FromSeconds(HitReactionDuration), cancellationToken: cancellationToken);
-        if (rend != null) rend.color = original;
+        try
+        {
+            await UniTask.Delay(System.TimeSpan.FromSeconds(HitReactionDuration), cancellationToken: cancellationToken);
+        }
+        catch (System.OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (generation == hitFlashGeneration) RestoreHitFlash();
+        }
+    }
+
+    private void RestoreHitFlash()
+    {
+        hitFlashGeneration++;
+        if (hitFlashRenderer != null) hitFlashRenderer.color = hitFlashOriginalColor;
+        hitFlashRenderer = null;
     }
 
     private void SpawnResponseEffect(uint effectIdx, Vector3 spawnPos)

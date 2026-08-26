@@ -97,6 +97,11 @@ public class Monster : UnitBase
     private uint failedReservationPatternIdx;
     private bool skipFailedReservationOnce;
     private int pendingSequenceIndex = -1;
+    private EffectData reservationAttackEffect;
+    private Vector2? reservationExteriorPose;
+    private bool reservationExteriorLocked;
+    private bool reservationExteriorFacing;
+    private uint reservationExteriorGeneration;
     public static int ActiveAttackTokens => activeAttackTokens;
     public override uint ActionGeneration => actionGeneration;
     public LeashState CurrentLeashState { get; private set; }
@@ -279,6 +284,7 @@ public class Monster : UnitBase
         pendingSequenceIndex = -1;
         failedReservationPatternIdx = 0u;
         skipFailedReservationOnce = false;
+        ClearReservationExteriorPose();
         deathSequenceActive = false;
         hasSpawnArea = false;
         CurrentLeashState = LeashState.Idle;
@@ -555,9 +561,11 @@ public class Monster : UnitBase
     private async UniTask ExecutePatternAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
     {
         if (pattern == null || playerTarget == null || currentPattern != null) return;
+        actionGeneration++;
         currentPattern = pattern;
         patternStartedAt = Time.time;
         patternCooldownCommitted = false;
+        ClearReservationExteriorPose();
         CurrentPatternState = PatternState.Reserved;
         patternCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken, this.GetCancellationTokenOnDestroy());
@@ -592,6 +600,7 @@ public class Monster : UnitBase
                 patternCancellation?.Dispose();
                 patternCancellation = null;
                 currentPattern = null;
+                ClearReservationExteriorPose();
                 if (CurrentPatternState != PatternState.Returning) CurrentPatternState = PatternState.Idle;
             }
         }
@@ -603,6 +612,10 @@ public class Monster : UnitBase
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
         if (table == null || !table.TryGetSkillData(pattern.SkillIdx, out SkillData skill) ||
             !TryGetPatternStartDistanceBand(pattern, skill, out float min, out float max)) return false;
+        EffectDataTable effectTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
+        effectTable?.TryResolveAttackEffect(UnitIdx, pattern.Idx, pattern.SkillIdx, 0u,
+            out reservationAttackEffect);
 
         float gap = GetAttackSurfaceGap();
         if (pattern.ChaseTimeout <= 0f) return gap >= min && gap <= max;
@@ -620,6 +633,7 @@ public class Monster : UnitBase
             gap = Mathf.Max(0f, Mathf.Abs(targetCenterX - selfCenterX) - combinedHalfWidths);
             float toward = targetCenterX >= selfCenterX ? 1f : -1f;
             SetFacingRight(toward >= 0f);
+            SampleReservationExteriorPose();
             enteredStartBand |= gap >= min && gap <= max;
             if (enteredStartBand)
             {
@@ -640,6 +654,7 @@ public class Monster : UnitBase
                 motor.SetTargetVelocityX(contactDirection * contactSpeed);
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                 elapsed += Time.fixedDeltaTime;
+                SampleReservationExteriorPose();
                 continue;
             }
 
@@ -659,6 +674,7 @@ public class Monster : UnitBase
             motor.SetTargetVelocityX(direction * speed);
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
             elapsed += Time.fixedDeltaTime;
+            SampleReservationExteriorPose();
         }
         StopAttackMotionImmediately();
         return enteredStartBand;
@@ -772,7 +788,9 @@ public class Monster : UnitBase
                 {
                     CurrentPatternState = PatternState.Active;
                     CommitPatternCooldown(pattern);
-                }, pattern.Idx);
+                }, pattern.Idx, reservationExteriorFacing == IsFacingRight
+                    && reservationExteriorGeneration == generation
+                    ? reservationExteriorPose : null);
             if (!timedAttack && !IsInsideStartBand()) return;
             if (timedAttack && activeDuration > 0f)
             {
@@ -921,6 +939,7 @@ public class Monster : UnitBase
             pendingSequenceIndex = -1;
             failedReservationPatternIdx = 0u;
             skipFailedReservationOnce = false;
+            ClearReservationExteriorPose();
             CurrentPatternState = reason == PatternCancelReason.Returning
                 ? PatternState.Returning : PatternState.Idle;
         }
@@ -933,6 +952,47 @@ public class Monster : UnitBase
     private bool CanAct(uint generation) => generation == actionGeneration && !deathSequenceActive &&
         CurrentLeashState != LeashState.Returning && stats != null && !stats.IsDead &&
         !stats.IsGroggy && isActiveAndEnabled;
+
+    private void SampleReservationExteriorPose()
+    {
+        if (reservationAttackEffect == null || Player.Instance == null) return;
+        if (reservationExteriorGeneration != actionGeneration)
+        {
+            reservationExteriorPose = null;
+            reservationExteriorLocked = false;
+            reservationExteriorFacing = IsFacingRight;
+            reservationExteriorGeneration = actionGeneration;
+        }
+        if (reservationExteriorFacing != IsFacingRight)
+        {
+            reservationExteriorPose = null;
+            reservationExteriorLocked = false;
+        }
+        if (reservationExteriorLocked) return;
+        reservationExteriorFacing = IsFacingRight;
+        if (!SkillExecutor.TrySampleNonContactEffectPose(this, Player.Instance, reservationAttackEffect,
+            reservationExteriorFacing, out Vector2 pose, out bool contacted))
+        {
+            ClearReservationExteriorPose();
+            reservationExteriorLocked = true;
+            return;
+        }
+        if (contacted)
+        {
+            reservationExteriorLocked = reservationExteriorPose.HasValue;
+            return;
+        }
+        reservationExteriorPose = pose;
+    }
+
+    private void ClearReservationExteriorPose()
+    {
+        reservationAttackEffect = null;
+        reservationExteriorPose = null;
+        reservationExteriorLocked = false;
+        reservationExteriorFacing = IsFacingRight;
+        reservationExteriorGeneration = actionGeneration;
+    }
 
     private void BeginReturn()
     {
