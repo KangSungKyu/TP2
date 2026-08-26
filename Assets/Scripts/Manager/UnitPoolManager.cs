@@ -14,8 +14,8 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     private const uint PlayerUnitIdx = 3001;
     private readonly Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
     private readonly List<Monster> activeMonsterList = new List<Monster>();
-    private readonly Dictionary<uint, Queue<MonsterProjectile2D>> projectilePools = new Dictionary<uint, Queue<MonsterProjectile2D>>();
-    private readonly HashSet<MonsterProjectile2D> activeProjectiles = new HashSet<MonsterProjectile2D>();
+    private readonly Dictionary<uint, Queue<UnitProjectile2D>> projectilePools = new Dictionary<uint, Queue<UnitProjectile2D>>();
+    private readonly HashSet<UnitProjectile2D> activeProjectiles = new HashSet<UnitProjectile2D>();
 
     public async UniTask<Player> SpawnPlayerAsync(Vector3 position)
     {
@@ -137,7 +137,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         activeMonsterList.Clear();
     }
 
-    public async UniTask<MonsterProjectile2D> SpawnMonsterProjectileAsync(
+    public async UniTask<UnitProjectile2D> SpawnUnitProjectileAsync(
         uint resourceIdx, UnitBase owner, uint ownerGeneration, Vector2 position,
         Vector2 direction, float speed, float maxDistance, float damage)
     {
@@ -162,7 +162,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             return null;
         }
 
-        MonsterProjectile2D projectile = null;
+        UnitProjectile2D projectile = null;
         if (projectilePools.TryGetValue(resourceIdx, out var queue))
             while (queue.Count > 0 && projectile == null) projectile = queue.Dequeue();
 
@@ -176,10 +176,10 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
             GameObject instance = await ResourceManager.Instance.InstantiateAsyncTask(
                 resourceData.Path, null, position, Quaternion.identity);
             if (instance == null) return null;
-            projectile = instance.GetComponent<MonsterProjectile2D>();
+            projectile = instance.GetComponent<UnitProjectile2D>();
             if (projectile == null)
             {
-                Debug.LogError($"[UnitPoolManager] Projectile ResourceData idx {resourceIdx} has no MonsterProjectile2D component.");
+                Debug.LogError($"[UnitPoolManager] Projectile ResourceData idx {resourceIdx} has no UnitProjectile2D component.");
                 ResourceManager.Instance.ReleaseInstance(instance);
                 return null;
             }
@@ -192,14 +192,15 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
         }
 
         activeProjectiles.Add(projectile);
-        projectile.Activate(resourceIdx, owner, ownerGeneration, position, direction, speed, maxDistance, damage);
+        projectile.Activate(resourceIdx, owner, ownerGeneration, position, direction, speed, maxDistance,
+            damage);
         return projectile;
     }
 
     public void DespawnProjectilesOwnedBy(UnitBase owner)
     {
         if (owner == null || activeProjectiles.Count == 0) return;
-        var snapshot = new List<MonsterProjectile2D>(activeProjectiles);
+        var snapshot = new List<UnitProjectile2D>(activeProjectiles);
         foreach (var projectile in snapshot)
             if (projectile != null && projectile.Owner == owner) projectile.ReturnToPool();
     }
@@ -207,18 +208,18 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     public void DespawnAllProjectiles()
     {
         if (activeProjectiles.Count == 0) return;
-        var snapshot = new List<MonsterProjectile2D>(activeProjectiles);
+        var snapshot = new List<UnitProjectile2D>(activeProjectiles);
         foreach (var projectile in snapshot) if (projectile != null) projectile.ReturnToPool();
         activeProjectiles.Clear();
     }
 
-    public void ReturnProjectile(uint resourceIdx, MonsterProjectile2D projectile)
+    public void ReturnProjectile(uint resourceIdx, UnitProjectile2D projectile)
     {
         if (projectile == null || (!activeProjectiles.Remove(projectile) && !projectile.gameObject.activeSelf)) return;
         projectile.gameObject.SetActive(false);
         if (!projectilePools.TryGetValue(resourceIdx, out var queue))
         {
-            queue = new Queue<MonsterProjectile2D>();
+            queue = new Queue<UnitProjectile2D>();
             projectilePools.Add(resourceIdx, queue);
         }
         if (!queue.Contains(projectile)) queue.Enqueue(projectile);

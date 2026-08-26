@@ -150,4 +150,5 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d57749a94306034bba999a1cd661213, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.Combat.MonsterProjectile2D
+  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.Combat.UnitProjectile2D
+  reflectable: 1

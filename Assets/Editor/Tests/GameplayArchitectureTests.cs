@@ -54,7 +54,8 @@ namespace QA.Tests
 
             (uint pattern, uint skill, uint unit, uint effect)[] monsterOwnership =
             {
-                (6001, 7008, 3101, 8015), (6011, 7009, 3103, 8018),
+                (6001, 7008, 3101, 8015), (6012, 7009, 3103, 8018),
+                (6013, 7017, 3103, 8033), (6014, 7018, 3103, 8034),
                 (6003, 7014, 3104, 8020), (6004, 7014, 3104, 8021),
                 (6005, 7015, 3105, 8022), (6006, 7015, 3105, 8024),
                 (6007, 7016, 3106, 8031)
@@ -68,6 +69,12 @@ namespace QA.Tests
                     out EffectData effect));
                 Assert.AreEqual(row.effect, effect.Idx);
             }
+
+            var chain = new System.Collections.Generic.List<MonsterPatternData>();
+            Assert.IsTrue(patterns.TryBuildPatternChain(6012, chain));
+            CollectionAssert.AreEqual(new uint[] { 6012, 6013, 6014 }, chain.ConvertAll(item => item.Idx));
+            Assert.IsTrue(patterns.IsChainChild(6013));
+            Assert.IsTrue(patterns.IsChainChild(6014));
 
             string player = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
             StringAssert.Contains("Util.CreateDataIdx(DataTableType.Skill, (uint)comboStep)", player);
@@ -160,7 +167,7 @@ namespace QA.Tests
             float windowStart = Mathf.Max(0f, firstHitTiming - hitWindowPre);
 
             float effectivePreDelay = Monster.CalculateEffectivePreDelay(configuredPreDelay, windowStart);
-            Assert.AreEqual(1.45f, effectivePreDelay, 0.001f, "EffectivePreDelay must compensate for windowStart.");
+            Assert.AreEqual(0.45f, effectivePreDelay, 0.001f, "Pattern and skill startup overlap instead of adding.");
             Assert.AreEqual(0.05f, windowStart, 0.001f, "windowStart must be HitTiming - HitWindowPre.");
         }
 
@@ -276,7 +283,7 @@ namespace QA.Tests
         [TestCase(false, -3f, 0f, true)]
         [TestCase(true, -3f, 0f, false)]
         [TestCase(false, 3f, 0f, false)]
-        [TestCase(true, 0.5f, 0f, false)]
+        [TestCase(true, 0.5f, 0f, true)]
         [TestCase(true, 0f, 0.25f, false)]
         [TestCase(true, 100f, 0.5f, true)]
         [TestCase(true, 3f, 1.25f, true)]
@@ -308,16 +315,18 @@ namespace QA.Tests
 
                 if (expectedDefended)
                 {
-                    Assert.IsTrue(sweep.HasExteriorPose);
-                    MethodInfo guardMethod = typeof(CombatStats).GetMethod("TryGetGuardSweepFraction",
-                        BindingFlags.Instance | BindingFlags.NonPublic);
-                    object[] guardArgs = { sweep, 0f };
-                    Assert.IsTrue((bool)guardMethod.Invoke(defender, guardArgs),
-                        $"Guard bounds missed; fraction={guardArgs[1]}");
                     MethodInfo resolveMethod = typeof(CombatStats).GetMethod("DoesGuardIntersectFirst",
                         BindingFlags.Instance | BindingFlags.NonPublic);
                     Assert.IsTrue((bool)resolveMethod.Invoke(defender, new object[] { sweep }),
-                        $"Exterior defense resolution failed; guardFraction={guardArgs[1]}");
+                        "Defense resolution failed.");
+                    if (sweep.HasExteriorPose)
+                    {
+                        MethodInfo guardMethod = typeof(CombatStats).GetMethod("TryGetGuardSweepFraction",
+                            BindingFlags.Instance | BindingFlags.NonPublic);
+                        object[] guardArgs = { sweep, 0f };
+                        Assert.IsTrue((bool)guardMethod.Invoke(defender, guardArgs),
+                            $"Guard bounds missed; fraction={guardArgs[1]}");
+                    }
                 }
 
                 Assert.AreEqual(expectedDefended, defender.TakeDamage(20f, attackSweep: sweep));
@@ -355,7 +364,7 @@ namespace QA.Tests
                 Assert.AreEqual(40f, attacker.CurrentPosture);
 
                 string source = File.ReadAllText(projectile
-                    ? "Assets/Scripts/Gameplay/Combat/MonsterProjectile2D.cs"
+                    ? "Assets/Scripts/Gameplay/Combat/UnitProjectile2D.cs"
                     : "Assets/Scripts/Gameplay/SkillExecutor.cs");
                 StringAssert.Contains("TryGetAttackSweepFraction", source);
                 StringAssert.Contains("attackSweep:", source);
@@ -393,7 +402,7 @@ namespace QA.Tests
             }
             Assert.AreEqual(36, cases);
             Assert.IsFalse(Resolve(false, true, true, .4f, .5f, .01f, 1f),
-                "D2: no exterior pose remains Body-first.");
+                "D1 fraction policy remains exterior-only; D2 fallback is resolved by CombatStats.");
             Assert.IsFalse(Resolve(true, true, true, 0f, 0f, .01f, 0f),
                 "Zero-length sweep remains Body-first.");
         }
@@ -445,7 +454,7 @@ namespace QA.Tests
         [TestCase(true, 1f / 60f)]
         [TestCase(false, 1f / 15f)]
         [TestCase(false, 1f / 60f)]
-        public void GuardExteriorSweep_BodyHitThenNextGenerationsRecoverGuard(bool facingRight, float fixedStep)
+        public void GuardExteriorSweep_CloseFallbackGuardsConsecutiveGenerations(bool facingRight, float fixedStep)
         {
             var defenderObject = new GameObject("GuardRecovery_Defender_QA");
             try
@@ -460,22 +469,59 @@ namespace QA.Tests
                 defender.SetGuarding(true);
                 float side = facingRight ? 1f : -1f;
 
-                Assert.IsFalse(defender.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
-                    Vector2.right * side * .25f, Vector2.zero, Vector2.zero, 3102, 41, 0,
-                    hasExteriorPose: false)), "D2 close overlap must resolve as Body.");
-                Assert.AreEqual(90f, defender.CurrentHp);
-
-                float travel = 4.5f * fixedStep;
-                for (uint generation = 42; generation <= 43; generation++)
+                float contact = .25f + 4.5f * fixedStep;
+                for (uint generation = 41; generation <= 42; generation++)
                 {
                     Assert.IsTrue(defender.TakeDamage(10f, attackSweep: new CombatStats.AttackSweep2D(
-                        Vector2.right * side * (3f + travel), Vector2.zero, Vector2.zero,
-                        3102, generation, generation - 42, hasExteriorPose: true)));
+                        Vector2.right * side * contact, Vector2.right * side * contact, Vector2.zero,
+                        3102, generation, 0, hasExteriorPose: false)));
                 }
-                Assert.AreEqual(90f, defender.CurrentHp, "Independent thrust/barrage generations must guard after Body.");
-                Assert.AreEqual(10f, defender.CurrentPosture, "Both recovered guards must resolve once.");
+                Assert.AreEqual(100f, defender.CurrentHp, "Consecutive close thrusts must both guard.");
+                Assert.AreEqual(10f, defender.CurrentPosture, "Both close guards must resolve once.");
             }
             finally { Object.DestroyImmediate(defenderObject); }
+        }
+
+        [Test]
+        public void GuardExteriorSweep_CloseFallbackParryRearAndInactivePolicy()
+        {
+            var defenderObject = new GameObject("GuardClosePolicy_Defender_QA");
+            var attackerObject = new GameObject("GuardClosePolicy_Attacker_QA");
+            try
+            {
+                var body = defenderObject.AddComponent<BoxCollider2D>();
+                body.size = new Vector2(1f, 2f);
+                var defender = defenderObject.AddComponent<CombatStats>();
+                var attacker = attackerObject.AddComponent<CombatStats>();
+                defender.MaxHp = defender.MaxPosture = attacker.MaxPosture = 100f;
+                defender.InitStats();
+                attacker.InitStats();
+                defender.SetDefenseBodyCollider(body);
+                defender.SetFacingRight(true);
+                defender.SetGuarding(true);
+                defender.SetParrying(true);
+
+                Assert.IsTrue(defender.TakeDamage(10f, attacker: attacker, attackSweep:
+                    new CombatStats.AttackSweep2D(Vector2.right * .25f, Vector2.right * .25f,
+                        Vector2.zero, 3102, 51, 0, hasExteriorPose: false)));
+                Assert.AreEqual(40f, attacker.CurrentPosture, "Parry must win over Guard.");
+                Assert.AreEqual(0f, defender.CurrentPosture);
+
+                defender.SetParrying(false);
+                Assert.IsFalse(defender.TakeDamage(10f, attackSweep:
+                    new CombatStats.AttackSweep2D(Vector2.left * .25f, Vector2.left * .25f,
+                        Vector2.zero, 3102, 52, 0, hasExteriorPose: false)));
+                defender.SetGuarding(false);
+                Assert.IsFalse(defender.TakeDamage(10f, attackSweep:
+                    new CombatStats.AttackSweep2D(Vector2.right * .25f, Vector2.right * .25f,
+                        Vector2.zero, 3102, 53, 0, hasExteriorPose: false)));
+                Assert.AreEqual(80f, defender.CurrentHp, "Rear and inactive defense must remain Body hits.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(defenderObject);
+                Object.DestroyImmediate(attackerObject);
+            }
         }
 
         [Test]
@@ -513,13 +559,13 @@ namespace QA.Tests
                 Assert.IsFalse(monster.Stats.IsGuarding || monster.Stats.IsParrying || monster.Stats.IsDodging);
                 Assert.IsFalse(boss.Stats.IsGuarding || boss.Stats.IsParrying || boss.Stats.IsDodging);
 
-                MethodInfo hostile = typeof(Gameplay.Combat.MonsterProjectile2D)
+                MethodInfo hostile = typeof(CombatStats)
                     .GetMethod("IsHostile", BindingFlags.Static | BindingFlags.NonPublic);
                 Assert.IsTrue((bool)hostile.Invoke(null, new object[] { player, monster }));
                 Assert.IsTrue((bool)hostile.Invoke(null, new object[] { monster, player }));
                 Assert.IsFalse((bool)hostile.Invoke(null, new object[] { monster, boss }));
                 Assert.IsFalse((bool)hostile.Invoke(null, new object[] { monster, monster }));
-                Assert.IsTrue(typeof(UnitPoolManager).GetMethod("SpawnMonsterProjectileAsync")
+                Assert.IsTrue(typeof(UnitPoolManager).GetMethod("SpawnUnitProjectileAsync")
                     .GetParameters()[1].ParameterType == typeof(UnitBase));
             }
             finally
@@ -1389,7 +1435,7 @@ namespace QA.Tests
 
             string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
             string pool = File.ReadAllText("Assets/Scripts/Manager/UnitPoolManager.cs");
-            string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/MonsterProjectile2D.cs");
+            string projectile = File.ReadAllText("Assets/Scripts/Gameplay/Combat/UnitProjectile2D.cs");
             StringAssert.Contains("pattern.ProjectileResourceIdx != 0", monster);
             StringAssert.Contains("pattern.ProjectileResourceIdx == 0", monster);
             StringAssert.Contains("pattern.Damage", monster);
@@ -1445,7 +1491,7 @@ namespace QA.Tests
             string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
             int method = source.IndexOf("private async UniTask ExecutePatternAsync", System.StringComparison.Ordinal);
             int generation = source.IndexOf("actionGeneration++;", method, System.StringComparison.Ordinal);
-            int assignment = source.IndexOf("currentPattern = pattern;", method, System.StringComparison.Ordinal);
+            int assignment = source.IndexOf("currentPattern = patternChain[0];", method, System.StringComparison.Ordinal);
             Assert.GreaterOrEqual(method, 0);
             Assert.Greater(generation, method);
             Assert.Greater(assignment, generation);
@@ -1478,6 +1524,23 @@ namespace QA.Tests
             Assert.AreEqual(0f, min);
             Assert.AreEqual(meleeSkill.Range, max);
 
+            Assert.IsTrue(patterns.TryGetPatternData(6010, out MonsterPatternData torsoRam));
+            Assert.IsTrue(skills.TryGetSkillData(7007, out SkillData torsoRamSkill));
+            Assert.AreEqual((uint)PatternTriggerType.DistanceOver, torsoRam.TriggerType);
+            Assert.AreEqual(10f, torsoRam.TriggerValue);
+            Assert.AreEqual(7.5f, torsoRam.TriggerValue);
+            Assert.IsTrue(Monster.IsPatternStartDistanceValid(torsoRam, torsoRamSkill, 7.5f));
+            Assert.IsTrue(Monster.IsPatternStartDistanceValid(torsoRam, torsoRamSkill, 7.51f));
+            Assert.IsTrue(Monster.IsPatternStartDistanceValid(torsoRam, torsoRamSkill, 15f));
+            Assert.IsFalse(Monster.IsPatternStartDistanceValid(torsoRam, torsoRamSkill, 15.01f));
+
+            Assert.IsTrue(patterns.TryGetPatternData(6012, out MonsterPatternData chain));
+            Assert.IsTrue(skills.TryGetSkillData(7009, out SkillData chainSkill));
+            Assert.AreEqual(0f, chain.MinStartDistance, "The chain has no minimum distance.");
+            Assert.IsTrue(Monster.IsPatternStartDistanceValid(chain, chainSkill, 0f));
+            Assert.IsTrue(Monster.IsPatternStartDistanceValid(chain, chainSkill, 2f));
+            Assert.IsFalse(Monster.IsPatternStartDistanceValid(chain, chainSkill, 2.01f));
+
             foreach (float step in new[] { 1f / 15f, 1f / 60f })
             {
                 float boundary = 8f + 0f * step;
@@ -1488,9 +1551,147 @@ namespace QA.Tests
             string monster = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
             StringAssert.Contains("CanReservePattern(pattern, skillTable)", monster);
             StringAssert.Contains("GetAttackSurfaceGap()", monster);
-            StringAssert.Contains("IsInsideStartBand", monster);
+            StringAssert.Contains("float distToPlayer = GetAttackSurfaceGap();", monster,
+                "Distance triggers and start bands must share collider surface-gap authority.");
+            StringAssert.Contains("float detectRange = GetPatternEvaluationRange();", monster);
+            StringAssert.Contains("hasSpawnArea", monster, "Pattern range expansion must preserve the leash gate.");
+            StringAssert.DoesNotContain("GetDetectionDistance()", monster);
+            Assert.Less(monster.IndexOf("PatternExecutionType.Trigger", System.StringComparison.Ordinal),
+                monster.IndexOf("PatternExecutionType.Simple", System.StringComparison.Ordinal),
+                "In-band Torso Ram must be considered before the Simple chain.");
+            StringAssert.DoesNotContain("IsInsideStartBand", monster,
+                "Distance bands are selection/Chase authority only after attack confirmation.");
             StringAssert.Contains("SetAttackMotionVelocityX(0f);", monster);
             StringAssert.DoesNotContain("pattern.TriggerValue > 0f ? pattern.TriggerValue", monster);
+        }
+
+        [Test]
+        public void Unit3103_DistanceBandsUseStrictTriggerAndClampedChaseBoundary()
+        {
+            var chain = new MonsterPatternData { MinStartDistance = 0f, MaxStartDistance = 2f };
+            var ram = new MonsterPatternData
+            {
+                TriggerType = (uint)PatternTriggerType.DistanceOver,
+                TriggerValue = 7.5f,
+                MinStartDistance = 7.5f,
+                MaxStartDistance = 15f
+            };
+            var skill = new SkillData { Range = 15f };
+            foreach ((float gap, bool chainExpected, bool ramExpected) in new[]
+            {
+                (0f, true, false), (2f, true, false), (2.01f, false, false),
+                (7.49f, false, false), (7.5f, false, false), (7.51f, false, true),
+                (15f, false, true), (15.01f, false, false)
+            })
+            {
+                bool chainSelected = Monster.IsPatternStartDistanceValid(chain, skill, gap);
+                bool ramSelected = gap > ram.TriggerValue &&
+                    Monster.IsPatternStartDistanceValid(ram, skill, gap);
+                Assert.AreEqual(chainExpected, chainSelected, $"6012 gap {gap}");
+                Assert.AreEqual(ramExpected, ramSelected, $"6010 gap {gap}");
+                Assert.IsFalse(chainSelected && ramSelected, $"Bands overlap at gap {gap}.");
+                Assert.AreEqual(chainSelected, Monster.IsPatternStartDistanceValid(chain, skill, Mathf.Abs(-gap)));
+                Assert.AreEqual(ramSelected, Mathf.Abs(-gap) > ram.TriggerValue &&
+                    Monster.IsPatternStartDistanceValid(ram, skill, Mathf.Abs(-gap)));
+            }
+
+            MethodInfo normalize = typeof(Monster).GetMethod("NormalizeAttackSurfaceGap",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(normalize);
+            Assert.AreEqual(7.5f, (float)normalize.Invoke(null, new object[] { 7.504f, .01f }), .0001f);
+            Assert.AreEqual(7.51f, (float)normalize.Invoke(null, new object[] { 7.506f, .01f }), .0001f);
+            Assert.AreEqual(18.1f, 15f + 3.1f, .0001f, "Gap 15 endpoint fits Motion10003 MaxDistance 18.1.");
+
+            foreach (float fixedStep in new[] { 1f / 15f, 1f / 30f, 1f / 60f })
+            {
+                foreach (float startGap in new[] { 2.01f, 7.5f })
+                {
+                    float gap = startGap;
+                    while (gap > 2f) gap = Mathf.Max(2f, gap - 4.5f * fixedStep);
+                    Assert.AreEqual(2f, gap, .0001f,
+                        "Motor stop clamps chase to the nearest data band boundary without crossing it.");
+                }
+            }
+
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            StringAssert.Contains("PatternTriggerType.DistanceOver => distToPlayer > pattern.TriggerValue", source);
+            StringAssert.Contains("TryGetNearestApproachBandStopX(out attackStopX)", source);
+        }
+
+        [Test]
+        public void Unit3104_RandomPatternsAreBalancedAndEffectsMatchReach()
+        {
+            var patterns = new MonsterPatternDataTable();
+            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+            Assert.IsTrue(patterns.TryGetPatternData(6003, out MonsterPatternData push));
+            Assert.IsTrue(patterns.TryGetPatternData(6004, out MonsterPatternData slam));
+            foreach (MonsterPatternData pattern in new[] { push, slam })
+            {
+                Assert.AreEqual((uint)PatternExecutionType.Random, pattern.ExecutionType);
+                Assert.AreEqual((uint)PatternTriggerType.None, pattern.TriggerType);
+                Assert.AreEqual(100, pattern.RandomWeight);
+            }
+
+            UnityEngine.Random.State previousState = UnityEngine.Random.state;
+            int pushCount = 0;
+            try
+            {
+                for (int seed = 0; seed < 10000; seed++)
+                {
+                    UnityEngine.Random.InitState(seed);
+                    if (UnityEngine.Random.Range(0, push.RandomWeight + slam.RandomWeight) < push.RandomWeight)
+                        pushCount++;
+                }
+            }
+            finally { UnityEngine.Random.state = previousState; }
+            Assert.That(pushCount / 10000f, Is.InRange(.48f, .52f));
+            Assert.AreEqual(6004u, slam.Idx, "6003 cooldown leaves 6004 as the sole candidate.");
+            Assert.AreEqual(6003u, push.Idx, "6004 cooldown leaves 6003 as the sole candidate.");
+
+            var effects = new EffectDataTable();
+            effects.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+            foreach ((uint idx, Vector2 center, Vector2 size) in new[]
+            {
+                (8020u, new Vector2(.75f, 0f), new Vector2(3f, 1.8f)),
+                (8021u, new Vector2(1.5f, 0f), new Vector2(1.5f, 3f))
+            })
+            {
+                Assert.IsTrue(effects.TryGetEffectData(idx, out EffectData effect));
+                Vector2 finalCenter = new Vector2(effect.ActiveCenterX, effect.ActiveCenterY) * effect.Scale;
+                Vector2 finalSize = new Vector2(effect.ActiveSizeX, effect.ActiveSizeY) * effect.Scale;
+                Assert.AreEqual(center.x, finalCenter.x, .0001f);
+                Assert.AreEqual(center.y, finalCenter.y, .0001f);
+                Assert.AreEqual(size.x, finalSize.x, .0001f);
+                Assert.AreEqual(size.y, finalSize.y, .0001f);
+                Assert.AreEqual(2.25f, finalCenter.x + finalSize.x * .5f, .0001f,
+                    "Owner half-width .75 plus surface gap 1.5 is the exact forward reach.");
+            }
+
+            string selector = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            Assert.Less(selector.IndexOf("PatternExecutionType.Random", System.StringComparison.Ordinal),
+                selector.IndexOf("PatternExecutionType.Sequence", System.StringComparison.Ordinal));
+            StringAssert.Contains("!IsCooldown(pattern.Idx)", selector);
+        }
+
+        [Test]
+        public void AttackTelegraphCommonPathStartsOneSecondEarlierWithoutMovingAttack()
+        {
+            const float attackStartsAt = 10f;
+            foreach ((float pre, float motion) in new[] { (.09f, .09f), (.12f, .28f) })
+            {
+                Assert.IsTrue(Monster.TryCalculateSkillTelegraphWindow(
+                    attackStartsAt, pre, motion, out float originalStart, out float originalEnd));
+                Assert.IsTrue(Monster.TryCalculateSkillTelegraphWindow(
+                    attackStartsAt, pre, motion, out float earlierStart, out float earlierEnd, 1f));
+                Assert.AreEqual(1f, originalStart - earlierStart, .0001f);
+                Assert.AreEqual(attackStartsAt, originalEnd, .0001f);
+                Assert.AreEqual(originalEnd, earlierEnd, .0001f, "Attack start must remain unchanged.");
+            }
+
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            StringAssert.Contains("AttackTelegraphVisualLeadSeconds = 1f", source);
+            StringAssert.DoesNotContain("reservationAttackEffect.Idx == 8020u", source);
+            StringAssert.Contains("(!telegraphActive || telegraphGeneration != generation)", source);
         }
 
         [Test]
@@ -1734,7 +1935,7 @@ namespace QA.Tests
         }
 
         [Test]
-        public void PhaseA1x1_PlaytestUsesEntryAndSingleMonster3102Override()
+        public void PhaseA1x1_PlaytestUsesEntryAndSingleMonster3105Override()
         {
             string builder = File.ReadAllText("Assets/Scripts/Scene/TilemapStageBuilder.cs");
             string main = File.ReadAllText("Assets/Scripts/Scene/MainScene.cs");
@@ -1750,19 +1951,49 @@ namespace QA.Tests
                 socket => socket.EntryMarker != null));
             Assert.GreaterOrEqual(room.GetComponentsInChildren<SpawnPointMarker>(true).Length, 2);
             StringAssert.Contains("UsePhaseA1x1Playtest = true", main);
-            StringAssert.Contains("DevelopmentMonsterUnitIdx = 3102u", main);
+            StringAssert.Contains("DevelopmentMonsterUnitIdx = 3105u", main);
+            StringAssert.DoesNotContain("DevelopmentMonsterUnitIdx = 3104u", main);
+            StringAssert.DoesNotContain("DevelopmentMonsterUnitIdx = 3103u", main);
             Assert.AreEqual(1, System.Array.FindAll(room.GetComponentsInChildren<SpawnPointMarker>(true),
                 marker => marker.MonsterId == 3102u).Length);
             Assert.AreEqual(0, System.Array.FindAll(room.GetComponentsInChildren<SpawnPointMarker>(true),
-                marker => marker.MonsterId == 3103u).Length,
+                marker => marker.MonsterId == 3105u).Length,
                 "The Development prefab remains unchanged; the runtime override owns the test unit.");
             StringAssert.Contains("ConfigureDevelopmentPlaytestMarkers", builder);
             StringAssert.Contains("markers[1].MonsterId = DevelopmentMonsterUnitIdx", builder);
             Assert.Less(spawner.IndexOf("if (zones.Count == 1 && zones[0].MonsterId != 0u)"),
                 spawner.IndexOf("uint[] encounter = GetCurrentEncounter(zones)"));
             StringAssert.Contains("playtestMarker.EnableSpawn = false", spawner);
-            Assert.NotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3102.prefab")
-                .GetComponent<SkillExecutor>(), "Unit_3102 must keep its prefab-bound SkillExecutor.");
+            Assert.NotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Unit_3105.prefab")
+                .GetComponent<SkillExecutor>(), "Unit_3105 must keep its prefab-bound SkillExecutor.");
+
+            var units = new UnitBaseDataTable();
+            units.LoadData(File.ReadAllText("Assets/Datas/UnitBaseData.csv"));
+            Assert.IsTrue(units.TryGetUnitData(3105, out UnitBaseData unit3105));
+            Assert.AreEqual(1007u, unit3105.PrefabId);
+            Assert.AreEqual(1016u, unit3105.AnimatorId);
+            var monsters = new MonsterDataTable();
+            monsters.LoadData(File.ReadAllText("Assets/Datas/MonsterBaseData.csv"));
+            Assert.IsTrue(monsters.TryGetMonsterData(5105, out MonsterBaseData monster3105));
+            CollectionAssert.AreEqual(new uint[] { 6005u, 6006u }, monster3105.PatternIdxList);
+
+            var patterns = new MonsterPatternDataTable();
+            patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
+            var skills = new SkillDataTable();
+            skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
+            var effects = new EffectDataTable();
+            effects.LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+            foreach ((uint patternIdx, uint effectIdx) in new[] { (6005u, 8022u), (6006u, 8024u) })
+            {
+                Assert.IsTrue(patterns.TryGetPatternData(patternIdx, out MonsterPatternData pattern));
+                Assert.AreEqual(7015u, pattern.SkillIdx);
+                Assert.IsTrue(skills.TryGetSkillData(pattern.SkillIdx, out _));
+                Assert.IsTrue(effects.TryGetEffectData(effectIdx, out EffectData effect));
+                Assert.IsTrue(effect.HasValidActiveBounds);
+                Assert.AreEqual(3105u, effect.UnitIdx);
+                Assert.AreEqual(patternIdx, effect.PatternIdx);
+                Assert.AreEqual(7015u, effect.SkillIdx);
+            }
         }
 
         [Test]
@@ -1771,31 +2002,71 @@ namespace QA.Tests
             Assert.AreEqual(DataTableType.AttackMotionProfile, Util.GetDataTableType(10001));
             var persisted = new AttackMotionProfileDataTable();
             persisted.LoadData(File.ReadAllText("Assets/Datas/AttackMotionProfileData.csv"));
-            Assert.AreEqual(3, persisted.GetDataCount());
+            Assert.AreEqual(4, persisted.GetDataCount());
             Assert.IsTrue(persisted.TryGetValid(10001, out var persistedStationary));
             Assert.AreEqual(AttackMotionType.Stationary, persistedStationary.MotionType);
             Assert.IsTrue(persisted.TryGetValid(10002, out var persistedStep));
             Assert.AreEqual(AttackMotionType.Step, persistedStep.MotionType);
+            Assert.AreEqual(2.31f, persistedStep.MaxDistance, .0001f);
+            Assert.AreEqual(9f, persistedStep.MaxSpeed, .0001f);
+            Assert.AreEqual(0f, persistedStep.Acceleration, .0001f);
             Assert.IsTrue(persistedStep.Enabled);
-            Assert.IsFalse(persisted.TryGetValid(10003, out _));
+            Assert.IsTrue(persisted.TryGetValid(10003, out var persistedLunge));
+            Assert.AreEqual(AttackMotionType.AcceleratingLunge, persistedLunge.MotionType);
+            Assert.AreEqual(AttackTargetPolicy.TrackUntilActive, persistedLunge.TargetPolicy);
+            Assert.AreEqual(18.1f, persistedLunge.MaxDistance, .0001f);
+            Assert.AreEqual(32f, persistedLunge.MaxSpeed, .0001f);
+            Assert.AreEqual(64f, persistedLunge.Acceleration, .0001f);
+            Assert.IsTrue(persisted.TryGetValid(10004, out var persistedShortStep));
+            Assert.AreEqual(AttackMotionType.Step, persistedShortStep.MotionType);
+            Assert.AreEqual(1.905f, persistedShortStep.MaxDistance, .0001f);
+            Assert.AreEqual(4.5f, persistedShortStep.MaxSpeed, .0001f);
+            Assert.AreEqual(0f, persistedShortStep.Acceleration, .0001f);
 
             var skills = new SkillDataTable();
             skills.LoadData(File.ReadAllText("Assets/Datas/SkillData.csv"));
+            foreach (uint idx in new uint[] { 7005, 7006, 7017, 7018 })
+            {
+                Assert.IsTrue(skills.TryGetSkillData(idx, out var movingSkill));
+                Assert.AreEqual(SkillMotionPhase.AttackMotion | SkillMotionPhase.Pre,
+                    movingSkill.MotionPhaseMask, $"Skill {idx} must move continuously through startup and PRE.");
+            }
+            Assert.IsTrue(skills.TryGetSkillData(7007, out var torsoMotionSkill));
+            Assert.AreEqual(SkillMotionPhase.AttackMotion | SkillMotionPhase.Active,
+                torsoMotionSkill.MotionPhaseMask);
             foreach (uint idx in new uint[] { 7001, 7002, 7003, 7004, 7006, 7008, 7009,
                          7010, 7011, 7012, 7013, 7014, 7015, 7016 })
             {
                 Assert.IsTrue(skills.TryGetSkillData(idx, out var skillData));
                 Assert.AreEqual(10001u, skillData.AttackMotionProfileIdx);
+                if (idx != 7006u) Assert.AreEqual(SkillMotionPhase.None, skillData.MotionPhaseMask);
             }
 
             var patterns = new MonsterPatternDataTable();
             patterns.LoadData(File.ReadAllText("Assets/Datas/MonsterPatternData.csv"));
             foreach (uint idx in new uint[] { 6001, 6002, 6003, 6004, 6005, 6006, 6007,
-                         6011, 6012, 6100, 6101, 6102, 6103 })
+                         6100, 6101, 6102, 6103 })
             {
                 Assert.IsTrue(patterns.TryGetPatternData(idx, out var pattern));
                 Assert.AreEqual(0u, pattern.AttackMotionProfileIdx);
             }
+            Assert.IsTrue(patterns.TryGetPatternData(6012, out var chainStart));
+            Assert.AreEqual(10001u, chainStart.AttackMotionProfileIdx);
+            Assert.IsTrue(patterns.TryGetPatternData(6013, out var chainMiddle));
+            Assert.AreEqual(10002u, chainMiddle.AttackMotionProfileIdx);
+            Assert.IsTrue(patterns.TryGetPatternData(6014, out var chainEnd));
+            Assert.AreEqual(10004u, chainEnd.AttackMotionProfileIdx);
+            Assert.IsTrue(patterns.TryGetPatternData(6010, out var torsoRam));
+            Assert.AreEqual(10003u, torsoRam.AttackMotionProfileIdx);
+
+            Assert.IsTrue(skills.TryGetSkillData(7009, out var chainSkill1));
+            Assert.IsTrue(skills.TryGetSkillData(7017, out var chainSkill2));
+            Assert.IsTrue(skills.TryGetSkillData(7018, out var chainSkill3));
+            Assert.AreEqual(.18f, chainSkill1.AttackMotionTime, .0001f);
+            Assert.AreEqual(.15f, chainSkill2.AttackMotionTime, .0001f);
+            Assert.AreEqual(.25f, chainSkill3.AttackMotionTime, .0001f);
+            Assert.AreEqual(.58f, chainSkill1.AttackMotionTime + chainSkill2.AttackMotionTime +
+                chainSkill3.AttackMotionTime, .0001f);
 
             string meta = File.ReadAllText("Assets/Datas/AttackMotionProfileData.csv.meta");
             string guid = Regex.Match(meta, @"(?m)^guid: ([0-9a-f]+)$").Groups[1].Value;
@@ -1833,6 +2104,23 @@ namespace QA.Tests
         }
 
         [Test]
+        public void SkillMotionPhaseMask_UsesOneContextAndOneDistanceBudget()
+        {
+            SkillMotionPhase startup = SkillMotionPhase.AttackMotion | SkillMotionPhase.Pre;
+            Assert.AreNotEqual(0, startup & SkillMotionPhase.AttackMotion);
+            Assert.AreNotEqual(0, startup & SkillMotionPhase.Pre);
+            Assert.AreEqual(SkillMotionPhase.None, SkillMotionPhase.Active & SkillMotionPhase.Post);
+
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            Assert.AreEqual(1, Regex.Matches(source, @"new MotionContext\s*\{").Count,
+                "A skill execution owns exactly one movement context.");
+            StringAssert.Contains("profile.MaxDistance - context.MovedDistance", source);
+            StringAssert.Contains("SkillMotionPhase.Active, lastWindowEnd - elapsed", source);
+            StringAssert.Contains("SkillMotionPhase.Post, recoverySeconds - recoveryElapsed", source);
+            StringAssert.DoesNotContain("attackMotionComplete", source);
+        }
+
+        [Test]
         public void EffectSpawnPivot_MovesVisualAndPreservesAuthoritativeSweep()
         {
             var table = new EffectDataTable();
@@ -1848,7 +2136,8 @@ namespace QA.Tests
             {
                 (3001u, 8014u, 1.2578125f), (3001u, 8027u, 1.421875f),
                 (3001u, 8028u, 1.3203125f), (3001u, 8032u, 1.1171875f),
-                (3102u, 8017u, .78490566f), (3201u, 8029u, .28089844f)
+                (3102u, 8017u, .78490566f), (3104u, 8020u, .75f),
+                (3104u, 8021u, 1.5f), (3201u, 8029u, .28089844f)
             })
             {
                 GameObject ownerObject = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
@@ -1857,6 +2146,11 @@ namespace QA.Tests
                 {
                     UnitBase owner = ownerObject.GetComponent<UnitBase>();
                     Assert.IsTrue(table.TryGetEffectData(effectIdx, out EffectData data));
+                    CombatStats stats = ownerObject.GetComponent<CombatStats>();
+                    typeof(UnitBase).GetField("stats", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .SetValue(owner, stats);
+                    if (stats.DefenseBodyCollider == null)
+                        stats.SetDefenseBodyCollider(ownerObject.GetComponent<Collider2D>());
                     Vector2 bodyCenter = owner.Stats.DefenseBodyCollider.bounds.center;
 
                     foreach (bool facingRight in new[] { true, false })
@@ -2125,15 +2419,16 @@ namespace QA.Tests
             string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
             StringAssert.Contains("UniTask.Delay(100", monsterSource);
             StringAssert.Contains("CancellationTokenSource.CreateLinkedTokenSource", monsterSource);
-            StringAssert.Contains("CalculateReservationChaseSpeed(correction, remaining", monsterSource);
+            StringAssert.Contains("CalculateReservationChaseSpeed(UnitData.MoveSpeed)", monsterSource);
             StringAssert.Contains("PlayerLoopTiming.FixedUpdate", monsterSource);
             StringAssert.Contains("CurrentPatternState = PatternState.Active", monsterSource);
-            StringAssert.Contains("ReleaseAttackToken();\n        CurrentPatternState = PatternState.Recovery", monsterSource.Replace("\r", ""));
+            StringAssert.Contains("finally\n        {\n            StopAttackMotionImmediately();\n            ReleaseAttackToken();",
+                monsterSource.Replace("\r", ""), "The chain owns one token until its shared finally cleanup.");
             StringAssert.Contains("mData.PatternIdxList.Length > 16", monsterSource);
-            Assert.AreEqual(1.25f, Monster.CalculateReservationChaseSpeed(1f, 1f, 10f, .02f), .0001f);
-            Assert.AreEqual(4.5f, Monster.CalculateReservationChaseSpeed(10f, 1f, 4.5f, .02f), .0001f);
+            Assert.AreEqual(10f, Monster.CalculateReservationChaseSpeed(10f), .0001f);
+            Assert.AreEqual(4.5f, Monster.CalculateReservationChaseSpeed(4.5f), .0001f);
 
-            foreach (float fixedStep in new[] { 1f / 15f, 1f / 60f })
+            foreach (float fixedStep in new[] { 1f / 15f, 1f / 30f, 1f / 60f })
             {
                 const float timeout = 1f;
                 const float moveSpeed = 4.5f;
@@ -2142,9 +2437,8 @@ namespace QA.Tests
                 while (elapsed + Mathf.Epsilon < timeout)
                 {
                     float remaining = timeout - elapsed;
-                    float speed = Monster.CalculateReservationChaseSpeed(0.405f - position,
-                        remaining, moveSpeed, fixedStep);
-                    Assert.LessOrEqual(speed, moveSpeed);
+                    float speed = Monster.CalculateReservationChaseSpeed(moveSpeed);
+                    Assert.AreEqual(moveSpeed, speed, .0001f);
                     position = Mathf.Min(.405f, position + speed * fixedStep);
                     elapsed += fixedStep;
                     Assert.LessOrEqual(position, .405f, "Correction must not overshoot its boundary.");
@@ -2189,13 +2483,106 @@ namespace QA.Tests
                     "A step beyond the current support must be rejected before movement.");
 
                 string executor = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
-                StringAssert.Contains("motion.MotionType == AttackMotionType.Step", executor);
+                StringAssert.Contains("profile.MotionType == AttackMotionType.Stationary", executor);
                 StringAssert.Contains("owner.HasGroundSupportForAttackStep", executor);
             }
             finally
             {
                 Object.DestroyImmediate(unitObject);
                 Object.DestroyImmediate(groundObject);
+            }
+        }
+
+        [Test]
+        public void TorsoStep_UsesOppositeTargetSurfaceAndPreservesSnapshotAndLeash()
+        {
+            string executor = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+            StringAssert.Contains("Vector2 previousSampledPose = sampledPose;", executor);
+            StringAssert.Contains("if (overshootTarget &&", executor);
+            StringAssert.Contains("ApplyAttackSweep(owner, patternDamage, motionSweep)", executor);
+            StringAssert.Contains("float deltaX = targetBody.bounds.center.x - ownerBody.bounds.center.x;", executor);
+            StringAssert.Contains("float directionEpsilon = Mathf.Max(owner.AttackMotionSkinWidth, Physics2D.defaultContactOffset);", executor);
+            StringAssert.Contains("if (Mathf.Abs(deltaX) > directionEpsilon) facingSnapshot = deltaX > 0f;", executor,
+                "Exact overlap must retain the last valid facing instead of producing a zero direction.");
+            StringAssert.Contains("owner.SetFacingRight(facingSnapshot);", executor);
+            StringAssert.Contains("if (facingSnapshot != previousFacing) initialExteriorPose = null;", executor,
+                "A selector-facing exterior pose cannot survive a motion-start direction change.");
+            StringAssert.Contains("if (!overshootTarget || IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active))",
+                executor, "Torso mask5 keeps segment contact and its explicitly selected Active sweep.");
+            string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            StringAssert.Contains("float impactAt = motionIsAttack ? telegraphEndsAt - windowStart : telegraphEndsAt;",
+                monsterSource, "Torso HUD active fill must cover the movement attack interval.");
+
+            foreach (float fixedStep in new[] { 1f / 15f, 1f / 60f })
+            {
+                float right = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 5f,
+                    3f, fixedStep, 1f, .2f, .01f, 18.1f, false, true, .8f);
+                float left = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, -5f,
+                    -3f, fixedStep, 1f, .2f, .01f, 18.1f, false, true, .8f);
+                Assert.AreEqual(6.8f, right, .0001f, "Torso endpoint must place its body beyond the target surface.");
+                Assert.AreEqual(-6.8f, left, .0001f);
+                Assert.AreEqual(right, SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 5f,
+                    30f, fixedStep, 1f, .2f, .01f, 18.1f, false, true, .8f), .0001f,
+                    "Snapshot motion ignores later target velocity.");
+                float lockedRight = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 5f,
+                    0f, fixedStep, 1f, .2f, .01f, 18.1f, false, true, .8f, 1f);
+                Assert.AreEqual(lockedRight, SkillExecutor.CalculateAttackAlignmentTargetX(0f, 8f, 5f,
+                    0f, fixedStep, 1f, .2f, .01f, 18.1f, false, true, .8f, 1f), .0001f,
+                    "Crossing the target cannot reverse a locked lunge endpoint.");
+                Assert.AreEqual(2.31f, SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, 5f,
+                    0f, fixedStep, .5f, .2f, .01f, 2.31f, false), .0001f,
+                    "Ordinary Step retains its profile distance cap.");
+            }
+
+            foreach (float gap in new[] { 1.5f, 5f, 9.9f, 10f })
+            {
+                float targetCenter = gap + 1.8f;
+                float endpoint = SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f, targetCenter,
+                    0f, .82f, 1f, .2f, .01f, 18.1f, false, true, .8f);
+                Assert.AreEqual(Mathf.Min(18.1f, targetCenter + 1.8f), endpoint, .0001f);
+                Assert.AreEqual(-endpoint, SkillExecutor.CalculateAttackAlignmentTargetX(0f, 0f,
+                    -targetCenter, 0f, .82f, 1f, .2f, .01f, 18.1f, false, true, .8f), .0001f);
+            }
+
+            var lunge = new AttackMotionProfileData
+            {
+                MotionType = AttackMotionType.AcceleratingLunge,
+                MaxDistance = 18.1f,
+                MaxSpeed = 32f,
+                Acceleration = 64f,
+                Enabled = true
+            };
+            foreach (float fixedStep in new[] { 1f / 15f, 1f / 30f, .02f, 1f / 60f })
+            {
+                float position = 0f;
+                float velocity = 0f;
+                for (float elapsed = 0f; elapsed + Mathf.Epsilon < .82f + fixedStep; elapsed += fixedStep)
+                {
+                    velocity = SkillExecutor.CalculateAttackMotionVelocity(lunge, position, 18.1f,
+                        Mathf.Max(fixedStep, .82f - elapsed), velocity, fixedStep);
+                    position = Mathf.MoveTowards(position, 18.1f, Mathf.Abs(velocity) * fixedStep);
+                }
+                Assert.AreEqual(18.1f, position, .0001f,
+                    $"10003 must arrive within .82s plus one {fixedStep:0.####}s physics tick.");
+            }
+
+            StringAssert.Contains("HasGroundSupportForAttackStep", executor);
+            StringAssert.Contains("IsAttackMotionPositionAllowed", executor);
+            StringAssert.Contains("IsAttackMotionBlocked", executor);
+            StringAssert.DoesNotContain("Teleport(", executor);
+
+            var monsterObject = new GameObject("TorsoStepLeash_QA");
+            try
+            {
+                Monster monster = monsterObject.AddComponent<Monster>();
+                Assert.IsTrue(monster.ConfigureSpawnArea(Vector3.zero,
+                    new Bounds(Vector3.zero, new Vector3(4f, 4f, 1f)), false));
+                Assert.IsTrue(monster.IsAttackMotionPositionAllowed(1.9f));
+                Assert.IsFalse(monster.IsAttackMotionPositionAllowed(2.1f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(monsterObject);
             }
         }
 

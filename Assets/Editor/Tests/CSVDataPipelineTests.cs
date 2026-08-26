@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace QA.Tests
 {
@@ -102,9 +103,9 @@ namespace QA.Tests
         [Test]
         public void Test06_SkillDataTable_ParsingAndKeyValidity()
         {
-            string csvContent = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate\n" +
-                               "7001,2101,Skill_01,1.5,0.0,0.5,5,1.0,1,1,0.15,0.05,0.1,8001,7\n" +
-                               "7002,2102,Skill_Fireball,5.0,0.2,3.0,20,2.5,0,1,0.12,0.08,0.15,8002,7";
+            string csvContent = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,attackmotiontime,motionphasemask,effectidx,animstate\n" +
+                               "7001,2101,Skill_01,1.5,0.0,0.5,5,1.0,1,1,0.15,0.05,0.1,0.2,3,8001,7\n" +
+                               "7002,2102,Skill_Fireball,5.0,0.2,3.0,20,2.5,0,1,0.12,0.08,0.15,0.4,0,8002,7";
 
             SkillDataTable table = new SkillDataTable();
             table.LoadData(csvContent);
@@ -119,8 +120,38 @@ namespace QA.Tests
             Assert.IsTrue(skill7001.IsBasicAttack);
             Assert.AreEqual(0.05f, skill7001.HitWindowPre, 0.001f, "HitWindowPre 0.05s 검증");
             Assert.AreEqual(0.1f, skill7001.HitWindowPost, 0.001f, "HitWindowPost 0.1s 검증");
+            Assert.AreEqual(0.2f, skill7001.AttackMotionTime, 0.001f);
+            Assert.AreEqual(SkillMotionPhase.AttackMotion | SkillMotionPhase.Pre, skill7001.MotionPhaseMask);
             Assert.AreEqual(7, skill7001.AnimState, "AnimState 7 검증");
             Assert.IsFalse(table.GetById(7002).IsBasicAttack);
+            Assert.Throws<CsvHelper.HeaderValidationException>(() => new SkillDataTable().LoadData(
+                "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate\n" +
+                "7001,2101,1.5,0,0.5,5,1,1,1,0.15,0.05,0.1,8001,7"));
+        }
+
+        [TestCase("-0.1")]
+        [TestCase("NaN")]
+        [TestCase("Infinity")]
+        public void SkillData_InvalidAttackMotionTimeFallsBackToZero(string value)
+        {
+            const string header = "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,attackmotiontime,motionphasemask,effectidx,animstate\n";
+            LogAssert.Expect(LogType.Warning,
+                "[SkillDataTable] Skill idx 7001 has invalid attackmotiontime; using 0.");
+            var table = new SkillDataTable();
+            table.LoadData(header + $"7001,2101,1.5,0,0.5,5,1,1,1,0.15,0.05,0.1,{value},0,8001,7");
+            Assert.IsTrue(table.TryGetSkillData(7001, out SkillData skill));
+            Assert.AreEqual(0f, skill.AttackMotionTime);
+        }
+
+        [TestCase("16")]
+        [TestCase("-1")]
+        [TestCase("bad")]
+        public void SkillData_MotionPhaseMaskRejectsInvalidBits(string value)
+        {
+            const string header = "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,attackmotiontime,motionphasemask,effectidx,animstate\n";
+            var ex = Assert.Catch<System.Exception>(() => new SkillDataTable().LoadData(header +
+                $"7001,2101,1.5,0,0.5,5,1,1,1,0.15,0.05,0.1,0.2,{value},8001,7"));
+            StringAssert.Contains("Skill idx 7001", ex.ToString());
         }
 
         [TestCase("true")]
@@ -130,8 +161,8 @@ namespace QA.Tests
         public void Test_SkillData_BooleanRejectsNonZeroOne(string value)
         {
             var table = new SkillDataTable();
-            string csv = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate\n" +
-                         $"7001,2101,Skill_01,1.5,0,0.5,5,1,{value},1,0.15,0.05,0.1,8001,7";
+            string csv = "idx,nametextidx,animationclip,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,attackmotiontime,motionphasemask,effectidx,animstate\n" +
+                         $"7001,2101,Skill_01,1.5,0,0.5,5,1,{value},1,0.15,0.05,0.1,0.2,0,8001,7";
             Assert.Catch<System.Exception>(() => table.LoadData(csv));
         }
 
@@ -154,6 +185,71 @@ namespace QA.Tests
                 new Vector2(attackEffect.ActiveSizeX, attackEffect.ActiveSizeY));
             Assert.AreEqual(new Vector2(1f, 0f),
                 new Vector2(attackEffect.SpawnPivotX, attackEffect.SpawnPivotY));
+        }
+
+        [Test]
+        public void MonsterPatternChain_ValidatesAtomicallyAndExcludesChildren()
+        {
+            const string header = "idx,patternnametextidx,executiontype,triggertype,triggersubject,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx,nextpatternidx,minstartdistance,maxstartdistance,projectileresourceidx,projectilespeed,projectilemaxdistance,attackmotionprofileidx\n";
+            static string Row(uint idx, uint next) =>
+                $"{idx},2010,1,0,0,0,100,0,0,0,10,1,7001,{next},0,2,0,0,0,0\n";
+
+            var valid = new MonsterPatternDataTable();
+            valid.LoadData(header + Row(6001, 6002) + Row(6002, 6003) + Row(6003, 0));
+            var chain = new System.Collections.Generic.List<MonsterPatternData>();
+            Assert.IsTrue(valid.TryBuildPatternChain(6001, chain));
+            CollectionAssert.AreEqual(new uint[] { 6001, 6002, 6003 }, chain.ConvertAll(item => item.Idx));
+            Assert.IsTrue(valid.IsChainChild(6002));
+            Assert.IsFalse(valid.TryBuildPatternChain(6002, chain), "Linked children cannot be selector entries.");
+
+            var self = new MonsterPatternDataTable();
+            LogAssert.Expect(LogType.Error, "[MonsterPatternDataTable] Pattern chain rooted at 6001 has invalid next FK 6001; chain rejected.");
+            self.LoadData(header + Row(6001, 6001));
+            Assert.AreEqual(0, self.GetDataCount());
+
+            var missing = new MonsterPatternDataTable();
+            LogAssert.Expect(LogType.Error, "[MonsterPatternDataTable] Pattern chain rooted at 6001 has invalid next FK 6099; chain rejected.");
+            missing.LoadData(header + Row(6001, 6099));
+            Assert.AreEqual(0, missing.GetDataCount());
+
+            var cycle = new MonsterPatternDataTable();
+            LogAssert.Expect(LogType.Error, "[MonsterPatternDataTable] Pattern chain rooted at 6001 has a cycle or exceeds 16 steps; chain rejected.");
+            LogAssert.Expect(LogType.Error, "[MonsterPatternDataTable] Pattern chain rooted at 6002 has a cycle or exceeds 16 steps; chain rejected.");
+            cycle.LoadData(header + Row(6001, 6002) + Row(6002, 6001));
+            Assert.AreEqual(0, cycle.GetDataCount());
+
+            var tooLongCsv = new StringBuilder(header);
+            for (uint idx = 6001; idx <= 6017; idx++) tooLongCsv.Append(Row(idx, idx == 6017 ? 0u : idx + 1u));
+            var tooLong = new MonsterPatternDataTable();
+            LogAssert.Expect(LogType.Error, "[MonsterPatternDataTable] Pattern chain rooted at 6001 has a cycle or exceeds 16 steps; chain rejected.");
+            tooLong.LoadData(tooLongCsv.ToString());
+            Assert.AreEqual(0, tooLong.GetDataCount());
+
+            foreach (float fixedDelta in new[] { 1f / 15f, 1f / 30f, 1f / 60f })
+            {
+                Assert.AreEqual(.045f, Monster.CalculateEffectivePreDelay(.045f, .045f) + .045f, .0001f);
+                Assert.AreEqual(.0375f, Monster.CalculateEffectivePreDelay(.0375f, .0375f) + .0375f, .0001f);
+                Assert.AreEqual(.0625f, Monster.CalculateEffectivePreDelay(.0625f, .0625f) + .0625f, .0001f);
+                Assert.AreEqual(.2f, Monster.CalculatePatternRecoverySeconds(.2f, 0f), .0001f,
+                    $"Linked zero PostDelay follows complete recovery at fixedDelta {fixedDelta}.");
+                Assert.AreEqual(.25f, Monster.CalculatePatternRecoverySeconds(.2f, .05f), .0001f,
+                    $"Linked recovery and PostDelay must add exactly once at fixedDelta {fixedDelta}.");
+                Assert.AreEqual(.2f, Monster.CalculatePatternRecoverySeconds(.2f, 0f), .0001f,
+                    $"Final step retains animation recovery at fixedDelta {fixedDelta}.");
+            }
+
+            string monsterSource = File.ReadAllText("Assets/Scripts/Gameplay/Monster.cs");
+            int sequenceStart = monsterSource.IndexOf("private async UniTask ExecutePatternAsync", System.StringComparison.Ordinal);
+            int coreStart = monsterSource.IndexOf("private async UniTask ExecutePatternCoreAsync", sequenceStart, System.StringComparison.Ordinal);
+            int coreEnd = monsterSource.IndexOf("protected virtual UniTask ExecuteMovementAiAsync", coreStart, System.StringComparison.Ordinal);
+            string sequenceBody = monsterSource.Substring(sequenceStart, coreStart - sequenceStart);
+            Assert.AreEqual(0, sequenceBody.Split(new[] { "BeginAttackTelegraph(" }, System.StringSplitOptions.None).Length - 1,
+                "The pattern root must not emit or await a shared telegraph.");
+            StringAssert.Contains("CurrentPatternState != PatternState.Recovery", sequenceBody,
+                "A failed step must terminate the chain instead of advancing to its child.");
+            StringAssert.Contains("CancelCurrentPattern(PatternCancelReason.TargetInvalid)", sequenceBody);
+            StringAssert.Contains("BeginAttackTelegraph(", monsterSource.Substring(coreStart, coreEnd - coreStart),
+                "Every skill step owns its non-blocking PRE telegraph.");
         }
 
         [Test]
@@ -240,25 +336,25 @@ namespace QA.Tests
         [Test]
         public void SkillAttackSubject_StrictIntegerAndRoleMatrix()
         {
-            const string header = "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,effectidx,animstate,attackmotionprofileidx,attacksubject,bodypart\n";
+            const string header = "idx,nametextidx,range,casttime,cooldownsec,mpcost,damagemultiplier,isbasicattack,hitcount,hittimings,hitwindowpre,hitwindowpost,attackmotiontime,motionphasemask,effectidx,animstate,attackmotionprofileidx,attacksubject,bodypart\n";
             var table = new SkillDataTable();
 
-            table.LoadData(header + "7001,2001,2,0,1,0,1,1,1,0.1,0.01,0.01,0,7,10001,0,0");
+            table.LoadData(header + "7001,2001,2,0,1,0,1,1,1,0.1,0.01,0.01,0.2,0,0,7,10001,0,0");
             Assert.IsTrue(table.TryGetSkillData(7001, out SkillData weapon));
             Assert.AreEqual(AttackSubject.Weapon, weapon.AttackSubject);
             Assert.AreEqual(BodyPartRole.None, weapon.BodyPartRole);
 
-            table.LoadData(header + "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,1,1");
+            table.LoadData(header + "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0.3,5,0,14,10002,1,1");
             Assert.IsTrue(table.TryGetSkillData(7007, out SkillData torso));
             Assert.AreEqual(AttackSubject.BodyPart, torso.AttackSubject);
             Assert.AreEqual(BodyPartRole.Torso, torso.BodyPartRole);
 
             Assert.Catch<System.Exception>(() => table.LoadData(header +
-                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,2,1"));
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0.3,5,0,14,10002,2,1"));
             Assert.Throws<System.InvalidOperationException>(() => table.LoadData(header +
-                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,0,1"));
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0.3,5,0,14,10002,0,1"));
             Assert.Throws<System.InvalidOperationException>(() => table.LoadData(header +
-                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0,14,10002,1,0"));
+                "7007,2018,2,0,1,0,1,0,1,0.1,0.01,0.01,0.3,5,0,14,10002,1,0"));
         }
     }
 }

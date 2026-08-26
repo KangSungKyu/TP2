@@ -61,7 +61,10 @@ public class UnitSpawner : Singleton<UnitSpawner>
         {
             SpawnPointMarker playtestMarker = zones[0];
             playtestMarker.EnableSpawn = false;
-            SpawnMonsterUnit(playtestMarker.MonsterId, playtestMarker.transform.position, false, movementBounds);
+            Bounds? playtestBounds = movementBounds.HasValue
+                ? ResolveDevelopmentMovementBounds(playtestMarker.transform.position, movementBounds.Value)
+                : movementBounds;
+            SpawnMonsterUnit(playtestMarker.MonsterId, playtestMarker.transform.position, false, playtestBounds);
             return;
         }
 #endif
@@ -235,6 +238,23 @@ public class UnitSpawner : Singleton<UnitSpawner>
         }
         return selected != null ? selected.bounds : (Bounds?)null;
     }
+
+#if UNITY_EDITOR
+    private static Bounds ResolveDevelopmentMovementBounds(Vector3 origin, Bounds roomBounds)
+    {
+        if (!roomBounds.Contains(origin)) return roomBounds;
+
+        Vector3 min = roomBounds.min;
+        Vector3 max = roomBounds.max;
+        min.x = Mathf.Max(min.x, origin.x - 20f);
+        min.y = Mathf.Max(min.y, origin.y - 20f);
+        max.x = Mathf.Min(max.x, origin.x + 20f);
+        max.y = Mathf.Min(max.y, origin.y + 20f);
+        var result = new Bounds();
+        result.SetMinMax(min, max);
+        return result.Contains(origin) ? result : roomBounds;
+    }
+#endif
 
     private static void ConfigureMonsterUIAndRewards(UnitBase unit, bool isBoss)
     {

@@ -6,6 +6,22 @@ namespace QA.Tests
 {
     public sealed class MonsterSpawnAreaLeashTests
     {
+        [Test]
+        public void DevelopmentLeash_IsMarkerCenteredFortyMetersClippedToRoom()
+        {
+            MethodInfo resolve = typeof(UnitSpawner).GetMethod("ResolveDevelopmentMovementBounds",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(resolve);
+
+            var room = new Bounds(new Vector3(10f, 0f, 0f), new Vector3(60f, 30f, 2f));
+            Bounds clipped = (Bounds)resolve.Invoke(null, new object[] { Vector3.zero, room });
+            Assert.AreEqual(new Vector3(0f, 0f, 0f), clipped.center);
+            Assert.AreEqual(new Vector3(40f, 30f, 2f), clipped.size);
+
+            Bounds fallback = (Bounds)resolve.Invoke(null, new object[] { new Vector3(100f, 0f), room });
+            Assert.AreEqual(room, fallback, "A room that does not contain the origin remains authoritative.");
+        }
+
         [TestCase(false, 100f)]
         [TestCase(true, 75f)]
         public void BoundsExit_CancelsGenerationAndRestoresAccordingToArenaPolicy(bool bossArena, float expectedHp)

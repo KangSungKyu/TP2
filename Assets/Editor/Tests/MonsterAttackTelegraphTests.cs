@@ -11,16 +11,46 @@ namespace QA.Tests
 {
     public sealed class MonsterAttackTelegraphTests
     {
-        [TestCase(0.25f, 0f, 1.5f)]
-        [TestCase(0.25f, 0.10f, 1.5f)]
-        [TestCase(2f, 0.10f, 2.10f)]
-        public void EffectiveDelay_GuaranteesLeadWithoutOverwritingPattern(
-            float configuredPreDelay, float firstHitTiming, float expectedImpactOffset)
+        [TestCase(0.045f, 0.045f, 0.045f)]
+        [TestCase(0.05f, 0.0375f, 0.05f)]
+        [TestCase(0f, 0.0625f, 0.0625f)]
+        public void StepStartup_UsesPatternOrWindowOnce(
+            float configuredPreDelay, float windowStart, float expectedStartup)
         {
-            float effective = Monster.CalculateEffectivePreDelay(configuredPreDelay, firstHitTiming);
-            Assert.AreEqual(expectedImpactOffset, effective + firstHitTiming, 0.001f);
-            Assert.GreaterOrEqual(effective + firstHitTiming, Monster.AttackTelegraphLeadSeconds);
-            Assert.GreaterOrEqual(effective, configuredPreDelay);
+            float lead = Monster.CalculateEffectivePreDelay(configuredPreDelay, windowStart);
+            Assert.AreEqual(expectedStartup, lead + windowStart, 0.001f);
+            Assert.AreEqual(Mathf.Max(configuredPreDelay, windowStart), lead + windowStart, 0.001f);
+        }
+
+        [TestCase(2f, 0f, 0f, false, 2f)]
+        [TestCase(2f, .5f, 0f, true, 1.5f)]
+        [TestCase(2f, 0f, .2f, true, 1.8f)]
+        [TestCase(2f, .5f, .2f, true, 1.3f)]
+        public void SkillTelegraph_AddsAttackMotionTimeAndPre(
+            float attackStart, float preDuration, float attackMotionTime,
+            bool expected, float expectedStart)
+        {
+            Assert.AreEqual(expected, Monster.TryCalculateSkillTelegraphWindow(attackStart, preDuration,
+                attackMotionTime,
+                out float displayStart, out float displayEnd));
+            Assert.AreEqual(expectedStart, displayStart, .0001f);
+            Assert.AreEqual(attackStart, displayEnd, .0001f, "Telegraph calculation cannot shift ATTACK.");
+        }
+
+        [TestCase(1f / 15f)]
+        [TestCase(1f / 30f)]
+        [TestCase(1f / 60f)]
+        public void AttackMotionTime_DelaysEachChainStepExactlyOnce(float fixedStep)
+        {
+            float[] motion = { .18f, .15f, .25f };
+            float baseline = 0f;
+            float delayed = 0f;
+            foreach (float value in motion)
+            {
+                baseline += Monster.CalculateSkillStartupSeconds(0f, .05f, 0f);
+                delayed += Monster.CalculateSkillStartupSeconds(0f, .05f, value);
+            }
+            Assert.AreEqual(.58f, delayed - baseline, fixedStep);
         }
 
         [Test]

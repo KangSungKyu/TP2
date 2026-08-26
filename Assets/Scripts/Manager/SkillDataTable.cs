@@ -26,6 +26,17 @@ public sealed class BodyPartRoleConverter : DefaultTypeConverter
     }
 }
 
+public sealed class SkillMotionPhaseConverter : DefaultTypeConverter
+{
+    public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    {
+        if (uint.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out uint value) &&
+            (value & ~0x0Fu) == 0u)
+            return (SkillMotionPhase)value;
+        throw new FormatException($"Skill idx {row.GetField("idx")} motionphasemask must be integer bits 0x00..0x0F, but was '{text}'.");
+    }
+}
+
 /// <summary>
 /// DataTableManager에서 관리하는 스킬 테이블 데이터클래스입니다. (Type 7: 7001~)
 /// CsvHelper 기반의 SkillData 파싱 및 하위 호환성을 위한 SkillInfo 매핑을 지원합니다.
@@ -45,6 +56,12 @@ public class SkillDataTable : IDataLoad
         var records = Util.ParseFromCSV<SkillData>(csvText);
         foreach (SkillData item in records)
         {
+            if (float.IsNaN(item.AttackMotionTime) || float.IsInfinity(item.AttackMotionTime) ||
+                item.AttackMotionTime < 0f)
+            {
+                Debug.LogWarning($"[SkillDataTable] Skill idx {item.Idx} has invalid attackmotiontime; using 0.");
+                item.AttackMotionTime = 0f;
+            }
             if (!IsValidAttackSubject(item))
                 throw new InvalidOperationException($"Invalid attack subject/body part contract for Skill idx {item.Idx}.");
             replacement.Add(item.Idx, item);

@@ -668,7 +668,7 @@ public class StageManager : Singleton<StageManager>
 
     public void CleanupActiveChunksAndEffects()
     {
-        Player.Instance?.CancelAttackHitbox();
+        Player.Instance?.GetComponent<SkillExecutor>()?.CancelActiveEffects();
         for (int i = ActiveChunkInstances.Count - 1; i >= 0; i--)
         {
             var chunk = ActiveChunkInstances[i];

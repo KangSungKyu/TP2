@@ -73,7 +73,7 @@ public enum PatternTriggerType : uint
 {
     None = 0,
     HpRatioUnder = 1,   // 체력 비율 이하 시 (예: 0.5f 이하 2페이즈)
-    DistanceOver = 2,   // 플레이어 거리 이상 시 (예: 8m 이상 돌진)
+    DistanceOver = 2,   // 플레이어 거리 초과 시 (예: 8m 초과 돌진)
     DistanceUnder = 3,  // 플레이어 거리 이하 시 (예: 근접 난타)
     TargetGroggy = 4,   // 타겟 자세 100% 무방비 시 (예: 처형/강공격)
     PatternTriggerType_End
@@ -121,6 +121,16 @@ public enum PatternState : uint
     Active = 4,
     Recovery = 5,
     Returning = 6
+}
+
+[Flags]
+public enum SkillMotionPhase : uint
+{
+    None = 0,
+    AttackMotion = 1,
+    Pre = 2,
+    Active = 4,
+    Post = 8
 }
 
 public enum PatternCancelReason : uint
@@ -373,6 +383,9 @@ public class MonsterPatternData
     [Name("skillidx")]
     public uint SkillIdx { get; set; } // 연동 SkillData Idx (Type 7: 7001~)
 
+    [Name("nextpatternidx"), Optional]
+    public uint NextPatternIdx { get; set; } // 0=end; linked children are not normal selector candidates
+
     [Name("minstartdistance"), Optional]
     public float MinStartDistance { get; set; }
 
@@ -390,6 +403,7 @@ public class MonsterPatternData
 
     [Name("projectilemaxdistance")]
     public float ProjectileMaxDistance { get; set; }
+
 }
 
 
@@ -513,6 +527,12 @@ public class SkillData
 
     [Name("hitwindowpost")]
     public float HitWindowPost { get; set; }
+
+    [Name("attackmotiontime")]
+    public float AttackMotionTime { get; set; }
+
+    [Name("motionphasemask"), TypeConverter(typeof(SkillMotionPhaseConverter))]
+    public SkillMotionPhase MotionPhaseMask { get; set; }
 
     [Name("effectidx")]
     public uint EffectIdx { get; set; } // EffectData.csv Idx 참조 (Type 8: 8001~)

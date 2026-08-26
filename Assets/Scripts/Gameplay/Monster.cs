@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class Monster : UnitBase
 {
+    private const float AttackTelegraphVisualLeadSeconds = 1f;
     public enum LeashState { Idle, Combat, Returning }
     public readonly struct PatternSnapshot
     {
@@ -51,7 +52,6 @@ public class Monster : UnitBase
         }
     }
 
-    public const float AttackTelegraphLeadSeconds = 1.5f;
     private const float FallbackAttackEffectDuration = 0.2f;
     public static event Action<AttackTelegraph> AttackTelegraphStarted;
     public static event Action<Monster, uint> AttackTelegraphEnded;
@@ -87,6 +87,7 @@ public class Monster : UnitBase
     private uint spawnRoomGeneration;
     private uint spawnZoneGeneration;
     private readonly List<MonsterPatternData> randomPatternCandidates = new List<MonsterPatternData>(16);
+    private readonly List<MonsterPatternData> patternChain = new List<MonsterPatternData>(16);
     private CancellationTokenSource patternCancellation;
     private MonsterPatternData currentPattern;
     private float patternStartedAt;
@@ -339,6 +340,7 @@ public class Monster : UnitBase
                 Debug.LogError($"[Monster] Unit {UnitIdx} rejected invalid/duplicate Pattern FK {pIdx}.");
                 return;
             }
+            if (patternDB.IsChainChild(pIdx)) continue;
             Patterns.Add(pattern);
         }
     }
@@ -395,7 +397,7 @@ public class Monster : UnitBase
 
     private MonsterPatternData SelectNextPattern(bool requireCurrentBand, uint excludedPatternIdx)
     {
-        float distToPlayer = GetDetectionDistance();
+        float distToPlayer = GetAttackSurfaceGap();
         float hpRatio = stats != null ? (stats.CurrentHp / stats.MaxHp) : 1.0f;
         SkillDataTable skillTable = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -410,7 +412,7 @@ public class Monster : UnitBase
                 bool isTriggered = ((PatternTriggerType)pattern.TriggerType) switch
                 {
                     PatternTriggerType.HpRatioUnder => hpRatio <= pattern.TriggerValue,
-                    PatternTriggerType.DistanceOver => distToPlayer >= pattern.TriggerValue,
+                    PatternTriggerType.DistanceOver => distToPlayer > pattern.TriggerValue,
                     PatternTriggerType.DistanceUnder => distToPlayer <= pattern.TriggerValue,
                     PatternTriggerType.TargetGroggy => Player.Instance != null && Player.Instance.Stats != null && Player.Instance.Stats.IsGroggy,
                     _ => false
@@ -499,20 +501,16 @@ public class Monster : UnitBase
         return !pattern.TriggerSubjectValue.HasValue || pattern.TriggerSubject == expected;
     }
 
-    private float GetDetectionDistance()
-    {
-        Collider2D self = stats != null ? stats.DefenseBodyCollider : null;
-        Collider2D target = Player.Instance != null && Player.Instance.Stats != null
-            ? Player.Instance.Stats.DefenseBodyCollider : null;
-        return Vector2.Distance(self != null ? self.bounds.center : transform.position,
-            target != null ? target.bounds.center : playerTarget.position);
-    }
-
     private float GetAttackSurfaceGap()
     {
-        return TryGetAttackGeometry(out float selfX, out float targetX, out float widths)
-            ? Mathf.Max(0f, Mathf.Abs(targetX - selfX) - widths) : float.PositiveInfinity;
+        if (!TryGetAttackGeometry(out float selfX, out float targetX, out float widths))
+            return float.PositiveInfinity;
+        float skinWidth = motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
+        return NormalizeAttackSurfaceGap(Mathf.Max(0f, Mathf.Abs(targetX - selfX) - widths), skinWidth);
     }
+
+    private static float NormalizeAttackSurfaceGap(float gap, float skinWidth) =>
+        skinWidth > 0f && float.IsFinite(gap) ? Mathf.Round(gap / skinWidth) * skinWidth : gap;
 
     private bool TryGetAttackGeometry(out float selfX, out float targetX, out float combinedHalfWidths)
     {
@@ -561,8 +559,21 @@ public class Monster : UnitBase
     private async UniTask ExecutePatternAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
     {
         if (pattern == null || playerTarget == null || currentPattern != null) return;
+        MonsterPatternDataTable patternTable = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<MonsterPatternDataTable>(DataTableType.MonsterPattern) : null;
+        if (patternTable == null || !patternTable.TryBuildPatternChain(pattern.Idx, patternChain)) return;
+        SkillDataTable skillTable = DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill);
+        for (int i = 0; i < patternChain.Count; i++)
+        {
+            if (skillTable == null || patternChain[i].SkillIdx == 0u ||
+                !skillTable.TryGetSkillData(patternChain[i].SkillIdx, out _))
+            {
+                Debug.LogError($"[Monster] Pattern chain {pattern.Idx} has invalid Skill FK at {patternChain[i].Idx}; chain rejected.");
+                return;
+            }
+        }
         actionGeneration++;
-        currentPattern = pattern;
+        currentPattern = patternChain[0];
         patternStartedAt = Time.time;
         patternCooldownCommitted = false;
         ClearReservationExteriorPose();
@@ -571,16 +582,31 @@ public class Monster : UnitBase
             cancellationToken, this.GetCancellationTokenOnDestroy());
         try
         {
-            if (!await ChaseIntoStartBandAsync(pattern, patternCancellation.Token))
+            for (int step = 0; step < patternChain.Count; step++)
             {
-                CancelCurrentPattern(PatternCancelReason.Timeout);
-                failedReservationPatternIdx = pattern.Idx;
-                skipFailedReservationOnce = true;
-                return;
+                MonsterPatternData currentStep = patternChain[step];
+                currentPattern = currentStep;
+                patternStartedAt = Time.time;
+                ClearReservationExteriorPose();
+                CurrentPatternState = PatternState.Reserved;
+                if (step == 0 && !await ChaseIntoStartBandAsync(currentStep, patternCancellation.Token))
+                {
+                    failedReservationPatternIdx = currentStep.Idx;
+                    skipFailedReservationOnce = true;
+                    CancelCurrentPattern(PatternCancelReason.Timeout);
+                    return;
+                }
+                StopAttackMotionImmediately();
+                if (!holdsAttackToken && !TryAcquireAttackToken(true)) return;
+                CurrentPatternState = PatternState.Startup;
+                await ExecutePatternCoreAsync(currentStep, patternChain[0], patternCancellation.Token);
+                if (!CanAct(actionGeneration)) return;
+                if (CurrentPatternState != PatternState.Recovery)
+                {
+                    CancelCurrentPattern(PatternCancelReason.TargetInvalid);
+                    return;
+                }
             }
-            StopAttackMotionImmediately();
-            CurrentPatternState = PatternState.Startup;
-            await ExecutePatternCoreAsync(pattern, patternCancellation.Token);
         }
         catch (OperationCanceledException) when (patternCancellation == null || patternCancellation.IsCancellationRequested || cancellationToken.IsCancellationRequested)
         {
@@ -595,7 +621,7 @@ public class Monster : UnitBase
         {
             StopAttackMotionImmediately();
             ReleaseAttackToken();
-            if (currentPattern == pattern)
+            if (currentPattern != null)
             {
                 patternCancellation?.Dispose();
                 patternCancellation = null;
@@ -616,6 +642,20 @@ public class Monster : UnitBase
             ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
         effectTable?.TryResolveAttackEffect(UnitIdx, pattern.Idx, pattern.SkillIdx, 0u,
             out reservationAttackEffect);
+
+        if (skill.HitTimings != null && skill.HitTimings.Length > 0)
+        {
+            GetAttackTiming(pattern.SkillIdx, pattern.ProjectileResourceIdx != 0,
+                out float firstHitTiming, out float activeDuration, out float hitWindowPre);
+            float windowStart = Mathf.Max(0f, firstHitTiming - hitWindowPre);
+            float attackMotionTime = Mathf.Max(0f, skill.AttackMotionTime);
+            float attackStartsAt = Time.time + pattern.ChaseTimeout +
+                CalculateSkillStartupSeconds(pattern.PreDelay, windowStart, attackMotionTime);
+            if (TryCalculateSkillTelegraphWindow(attackStartsAt, windowStart, attackMotionTime,
+                out float warningStartsAt, out float warningEndsAt, AttackTelegraphVisualLeadSeconds))
+                BeginAttackTelegraph(actionGeneration, warningStartsAt, warningEndsAt, warningEndsAt,
+                    skill.AttackSubject, skill.BodyPartRole);
+        }
 
         float gap = GetAttackSurfaceGap();
         if (pattern.ChaseTimeout <= 0f) return gap >= min && gap <= max;
@@ -639,10 +679,7 @@ public class Monster : UnitBase
             {
                 UnitBase target = Player.Instance;
                 if (target == null || !TryGetAttackApproachStopX(target, out float contactStopX)) return false;
-                float contactCorrection = Mathf.Abs(contactStopX - transform.position.x);
-                float contactRemaining = Mathf.Max(Time.fixedDeltaTime, pattern.ChaseTimeout - elapsed);
-                float contactSpeed = CalculateReservationChaseSpeed(contactCorrection, contactRemaining,
-                    UnitData.MoveSpeed, Time.fixedDeltaTime);
+                float contactSpeed = CalculateReservationChaseSpeed(UnitData.MoveSpeed);
                 float contactDirection = Mathf.Sign(contactStopX - transform.position.x);
                 float contactNextX = Mathf.MoveTowards(transform.position.x, contactStopX,
                     contactSpeed * Time.fixedDeltaTime);
@@ -663,9 +700,7 @@ public class Monster : UnitBase
             float boundary = retreating ? min : max;
             float desiredSelfCenterX = targetCenterX - toward * (combinedHalfWidths + boundary);
             float desiredRootX = transform.position.x + desiredSelfCenterX - selfCenterX;
-            float correction = Mathf.Abs(desiredRootX - transform.position.x);
-            float remaining = Mathf.Max(Time.fixedDeltaTime, pattern.ChaseTimeout - elapsed);
-            float speed = CalculateReservationChaseSpeed(correction, remaining, UnitData.MoveSpeed, Time.fixedDeltaTime);
+            float speed = CalculateReservationChaseSpeed(UnitData.MoveSpeed);
             float nextX = Mathf.MoveTowards(transform.position.x, desiredRootX, speed * Time.fixedDeltaTime);
             bool movementBlocked = motor == null || direction < 0f && motor.IsWalledLeft || direction > 0f && motor.IsWalledRight ||
                 hasSpawnArea && !movementBounds.Contains(new Vector3(nextX, transform.position.y, transform.position.z));
@@ -680,11 +715,10 @@ public class Monster : UnitBase
         return enteredStartBand;
     }
 
-    public static float CalculateReservationChaseSpeed(float correction, float remaining,
-        float moveSpeed, float fixedDeltaTime) => Mathf.Min(Mathf.Max(0f, moveSpeed),
-        1.25f * Mathf.Max(0f, correction) / Mathf.Max(Mathf.Max(0f, fixedDeltaTime), remaining));
+    public static float CalculateReservationChaseSpeed(float moveSpeed) => Mathf.Max(0f, moveSpeed);
 
-    private async UniTask ExecutePatternCoreAsync(MonsterPatternData pattern, CancellationToken cancellationToken)
+    private async UniTask ExecutePatternCoreAsync(MonsterPatternData pattern,
+        MonsterPatternData cooldownOwner, CancellationToken cancellationToken)
     {
         uint generation = actionGeneration;
         if (playerTarget == null || !CanAct(generation)) return;
@@ -706,15 +740,11 @@ public class Monster : UnitBase
             return;
         }
 
-        bool IsInsideStartBand() => playerTarget != null &&
-            IsPatternStartDistanceValid(pattern, skill, GetAttackSurfaceGap());
-        bool stationaryAttack = SkillExecutor.ResolveAttackMotionProfile(skill, pattern.AttackMotionProfileIdx).MotionType ==
-            AttackMotionType.Stationary;
-        if (!CanAct(generation) || stationaryAttack && !IsInsideStartBand()) return;
+        bool IsConfirmedTargetValid() => playerTarget != null && playerTarget.gameObject.activeInHierarchy &&
+            Player.Instance != null && Player.Instance.isActiveAndEnabled && Player.Instance.Stats != null &&
+            !Player.Instance.Stats.IsDead && CanAct(generation);
+        if (!IsConfirmedTargetValid()) return;
         SetAttackMotionVelocityX(0f);
-        bool CanStartActiveWindow() => playerTarget != null && CanAct(generation) &&
-            (!stationaryAttack || IsInsideStartBand());
-        if (!TryAcquireAttackToken(stationaryAttack)) return;
         CurrentPatternState = PatternState.Startup;
         try
         {
@@ -723,16 +753,29 @@ public class Monster : UnitBase
             out float firstHitTiming, out float activeDuration, out float hitWindowPre);
         float windowStart = Mathf.Max(0f, firstHitTiming - hitWindowPre);
         float effectivePreDelay = CalculateEffectivePreDelay(pattern.PreDelay, windowStart);
+        float attackMotionTime = skill != null ? Mathf.Max(0f, skill.AttackMotionTime) : 0f;
+        float startupLead = effectivePreDelay + attackMotionTime;
         float attackSequenceStartedAt = Time.time;
-        float impactAt = attackSequenceStartedAt + effectivePreDelay + windowStart;
-        BeginAttackTelegraph(generation, impactAt - AttackTelegraphLeadSeconds,
-            impactAt, attackSequenceStartedAt + effectivePreDelay + activeDuration,
-            skill != null ? skill.AttackSubject : AttackSubject.Weapon,
-            skill != null ? skill.BodyPartRole : BodyPartRole.None);
-
-        if (effectivePreDelay > 0f)
+        float attackStartsAt = attackSequenceStartedAt +
+            CalculateSkillStartupSeconds(pattern.PreDelay, windowStart, attackMotionTime);
+        if (skill != null && (!telegraphActive || telegraphGeneration != generation) &&
+            TryCalculateSkillTelegraphWindow(attackStartsAt, windowStart,
+            attackMotionTime,
+            out float telegraphStartsAt, out float telegraphEndsAt,
+            AttackTelegraphVisualLeadSeconds))
         {
-            int preMs = Mathf.RoundToInt(effectivePreDelay * 1000f);
+            bool motionIsAttack = skill.AttackSubject == AttackSubject.BodyPart &&
+                skill.BodyPartRole == BodyPartRole.Torso;
+            float impactAt = motionIsAttack ? telegraphEndsAt - windowStart : telegraphEndsAt;
+            BeginAttackTelegraph(generation, telegraphStartsAt, impactAt, telegraphEndsAt,
+                skill != null ? skill.AttackSubject : AttackSubject.Weapon,
+                skill != null ? skill.BodyPartRole : BodyPartRole.None);
+        }
+
+        float schedulerLead = effectivePreDelay + (pattern.ProjectileResourceIdx != 0 ? attackMotionTime : 0f);
+        if (schedulerLead > 0f)
+        {
+            int preMs = Mathf.RoundToInt(schedulerLead * 1000f);
             await UniTask.Delay(preMs, cancellationToken: cancellationToken);
             if (!CanAct(generation)) return;
         }
@@ -761,7 +804,8 @@ public class Monster : UnitBase
                 if (!CanAct(generation)) return;
             }
             SetAttackMotionVelocityX(0f);
-            if (!IsInsideStartBand()) return;
+            EndAttackTelegraph(generation);
+            if (!IsConfirmedTargetValid()) return;
             if (pattern.ProjectileSpeed <= 0f || pattern.ProjectileMaxDistance <= 0f)
             {
                 Debug.LogError($"[Monster] Pattern idx {pattern.Idx} has invalid projectile speed/distance.");
@@ -771,45 +815,52 @@ public class Monster : UnitBase
             Vector2 direction = playerTarget != null
                 ? ((Vector2)playerTarget.position - (Vector2)spawnPos).normalized
                 : (spriteRenderer != null && spriteRenderer.flipX ? Vector2.right : Vector2.left);
-            var projectile = await UnitPoolManager.Instance.SpawnMonsterProjectileAsync(
+            var projectile = await UnitPoolManager.Instance.SpawnUnitProjectileAsync(
                 pattern.ProjectileResourceIdx, this, generation, spawnPos, direction,
                 pattern.ProjectileSpeed, pattern.ProjectileMaxDistance, pattern.Damage);
             if (projectile == null || !CanAct(generation)) return;
             CurrentPatternState = PatternState.Active;
-            CommitPatternCooldown(pattern);
+            CommitPatternCooldown(cooldownOwner);
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
         else if (skillExecutor != null)
         {
             timedAttack = await skillExecutor.ExecuteSkillHitsAsync(
                 patternSkillId, this, Player.Instance,
-                pattern.Damage, cancellationToken, pattern.AttackMotionProfileIdx, CanStartActiveWindow,
+                pattern.Damage, cancellationToken, pattern.AttackMotionProfileIdx, () =>
+                {
+                    EndAttackTelegraph(generation);
+                    return IsConfirmedTargetValid();
+                },
                 () =>
                 {
+                    if (!CanAct(generation)) return;
                     CurrentPatternState = PatternState.Active;
-                    CommitPatternCooldown(pattern);
+                    CommitPatternCooldown(cooldownOwner);
                 }, pattern.Idx, reservationExteriorFacing == IsFacingRight
                     && reservationExteriorGeneration == generation
-                    ? reservationExteriorPose : null);
-            if (!timedAttack && !IsInsideStartBand()) return;
+                    ? reservationExteriorPose : null,
+                () =>
+                {
+                    CurrentPatternState = PatternState.Recovery;
+                    return skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, 0f);
+                });
             if (timedAttack && activeDuration > 0f)
             {
-                float remainingWindow = attackSequenceStartedAt + effectivePreDelay + activeDuration - Time.time;
+                float remainingWindow = attackSequenceStartedAt + startupLead + activeDuration - Time.time;
                 if (remainingWindow > 0f)
                     await UniTask.Delay(Mathf.RoundToInt(remainingWindow * 1000f), cancellationToken: cancellationToken);
             }
         }
 
         if (!timedAttack && pattern.ProjectileResourceIdx == 0)
+        {
             Debug.LogError($"[Monster] Unit idx {UnitIdx} has no valid attack hitbox window; attack cancelled.");
+            return;
+        }
 
-        EndAttackTelegraph(generation);
-
-        ReleaseAttackToken();
         CurrentPatternState = PatternState.Recovery;
-        float recoveryDuration = skillExecutor != null
-            ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, pattern.PostDelay)
-            : Mathf.Max(0f, pattern.PostDelay);
+        float recoveryDuration = Mathf.Max(0f, pattern.PostDelay);
         if (recoveryDuration > 0f)
         {
             int postMs = Mathf.RoundToInt(recoveryDuration * 1000f);
@@ -823,23 +874,29 @@ public class Monster : UnitBase
         {
             SetAttackMotionVelocityX(0f);
             EndAttackTelegraph(generation);
-            ReleaseAttackToken();
         }
     }
+
+    public static float CalculatePatternRecoverySeconds(float animationRecovery,
+        float postDelay) =>
+        Mathf.Max(0f, animationRecovery) + Mathf.Max(0f, postDelay);
+
+    public override bool IsAttackMotionPositionAllowed(float worldX) => !hasSpawnArea ||
+        movementBounds.Contains(new Vector3(worldX, transform.position.y, transform.position.z));
 
     protected virtual UniTask ExecuteMovementAiAsync(CancellationToken _)
     {
         uint generation = actionGeneration;
         if (playerTarget == null || !CanAct(generation)) return UniTask.CompletedTask;
 
-        float dist = Vector3.Distance(transform.position, playerTarget.position);
-        float detectRange = (MonsterData != null && MonsterData.DetectRange > 0f) ? MonsterData.DetectRange : 6.0f;
-        bool hasAttackStop = TryGetAttackApproachStopX(playerTarget.GetComponent<UnitBase>(), out float attackStopX);
+        float detectRange = GetPatternEvaluationRange();
+        bool hasAttackStop = TryGetAttackApproachStopX(playerTarget.GetComponent<UnitBase>(), out float attackStopX) ||
+            TryGetNearestApproachBandStopX(out attackStopX);
         float stopTolerance = (motor != null ? motor.SkinWidth : 0f) +
             ((UnitData != null ? UnitData.MoveSpeed : 0f) * Time.fixedDeltaTime);
         bool reachedAttackStop = hasAttackStop && Mathf.Abs(transform.position.x - attackStopX) <= stopTolerance;
 
-        if (dist <= detectRange && !reachedAttackStop)
+        if (GetAttackSurfaceGap() <= detectRange && !reachedAttackStop)
         {
             Vector3 dir = (playerTarget.position - transform.position).normalized;
             SetFacingRight(dir.x >= 0);
@@ -863,6 +920,31 @@ public class Monster : UnitBase
             SetAnimState(1);
         }
         return UniTask.CompletedTask;
+    }
+
+    private bool TryGetNearestApproachBandStopX(out float stopX)
+    {
+        stopX = transform.position.x;
+        if (currentPattern != null || !TryGetAttackGeometry(out float selfX, out float targetX, out float widths))
+            return false;
+        SkillDataTable skills = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
+        if (skills == null) return false;
+
+        float gap = NormalizeAttackSurfaceGap(Mathf.Max(0f, Mathf.Abs(targetX - selfX) - widths),
+            motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset);
+        float boundary = -1f;
+        foreach (MonsterPatternData pattern in Patterns)
+            if (skills.TryGetSkillData(pattern.SkillIdx, out SkillData skill) &&
+                TryGetPatternStartDistanceBand(pattern, skill, out _, out float max) &&
+                max < gap && max > boundary)
+                boundary = max;
+        if (boundary < 0f) return false;
+
+        float direction = targetX >= selfX ? 1f : -1f;
+        float desiredSelfCenter = targetX - direction * (widths + boundary);
+        stopX = transform.position.x + desiredSelfCenter - selfX;
+        return float.IsFinite(stopX) && IsAttackMotionPositionAllowed(stopX);
     }
 
     private void CommitPatternCooldown(MonsterPatternData pattern)
@@ -1069,8 +1151,36 @@ public class Monster : UnitBase
         animator.SetInteger("State", stateValue);
     }
 
-    public static float CalculateEffectivePreDelay(float configuredPreDelay, float firstHitTiming) =>
-        Mathf.Max(Mathf.Max(0f, configuredPreDelay), AttackTelegraphLeadSeconds - Mathf.Max(0f, firstHitTiming));
+    public static float CalculateEffectivePreDelay(float configuredPreDelay, float windowStart) =>
+        Mathf.Max(0f, Mathf.Max(0f, configuredPreDelay) - Mathf.Max(0f, windowStart));
+
+    public static float CalculateSkillStartupSeconds(float configuredPreDelay, float windowStart,
+        float attackMotionTime) => CalculateEffectivePreDelay(configuredPreDelay, windowStart) +
+        Mathf.Max(0f, attackMotionTime) + Mathf.Max(0f, windowStart);
+
+    public static bool TryCalculateSkillTelegraphWindow(float attackStartsAt, float preDuration,
+        float attackMotionTime,
+        out float displayStartsAt, out float displayEndsAt, float visualLeadSeconds = 0f)
+    {
+        displayEndsAt = attackStartsAt;
+        float duration = Mathf.Max(0f, attackMotionTime) + Mathf.Max(0f, preDuration) +
+            Mathf.Max(0f, visualLeadSeconds);
+        displayStartsAt = displayEndsAt - duration;
+        return duration > 0f;
+    }
+
+    private float GetPatternEvaluationRange()
+    {
+        float range = MonsterData != null && MonsterData.DetectRange > 0f ? MonsterData.DetectRange : 6f;
+        SkillDataTable skills = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
+        if (skills == null) return range;
+        foreach (MonsterPatternData pattern in Patterns)
+            if (skills.TryGetSkillData(pattern.SkillIdx, out SkillData skill) &&
+                TryGetPatternStartDistanceBand(pattern, skill, out _, out float max))
+                range = Mathf.Max(range, max);
+        return range;
+    }
 
     private static void GetAttackTiming(uint skillId, bool projectile, out float firstHitTiming,
         out float activeDuration, out float hitWindowPre)

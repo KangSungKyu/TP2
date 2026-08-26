@@ -99,6 +99,9 @@ public class UnitBase : MonoBehaviour
     public void StopAttackMotionImmediately() => motor?.StopHorizontalImmediately();
     public bool HasGroundSupportForAttackStep(float deltaX) =>
         motor != null && motor.HasGroundSupportForHorizontalStep(deltaX);
+    public virtual bool IsAttackMotionPositionAllowed(float worldX) => true;
+    public bool IsAttackMotionBlocked(float velocityX) => motor == null ||
+        velocityX < 0f && motor.IsWalledLeft || velocityX > 0f && motor.IsWalledRight;
     public float AttackMotionVelocityX => motor != null ? motor.Velocity.x : 0f;
     public float AttackMotionSkinWidth => motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
@@ -131,6 +134,7 @@ public class UnitBase : MonoBehaviour
     protected virtual void Awake()
     {
         stats = GetComponent<CombatStats>();
+        stats?.BindUnit(this);
         skillExecutor = GetComponent<SkillExecutor>();
         motor = GetComponent<KinematicMotor2D>();
         if (motor == null)

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,17 @@ using UnityEngine.Events;
 /// </summary>
 public class CombatStats : MonoBehaviour
 {
+    private static readonly Dictionary<int, CombatStats> DefenseBodies = new();
+    public enum DamageResolution : uint
+    {
+        None = 0,
+        Body = 1,
+        Guard = 2,
+        Parry = 3,
+        Dodge = 4,
+        Ignored = 5
+    }
+
     public readonly struct AttackSweep2D
     {
         public readonly Vector2 Previous;
@@ -84,6 +96,7 @@ public class CombatStats : MonoBehaviour
     private const float HitReactionDuration = 0.15f;
     private KinematicMotor2D motor;
     private Collider2D defenseBodyCollider;
+    private UnitBase unit;
     [SerializeField] private SpriteRenderer debugGuardSprite;
     private bool isFacingRight = true;
     private int lastAttackSourceId;
@@ -102,9 +115,12 @@ public class CombatStats : MonoBehaviour
 
     private void Awake()
     {
+        unit = GetComponent<UnitBase>();
         motor = GetComponent<KinematicMotor2D>();
         InitStats();
     }
+
+    private void OnEnable() => RegisterDefenseBody();
 
     public void InitStats()
     {
@@ -145,12 +161,111 @@ public class CombatStats : MonoBehaviour
         }
 #endif
     }
-    public void SetDefenseBodyCollider(Collider2D bodyCollider) => defenseBodyCollider = bodyCollider;
+    public void SetDefenseBodyCollider(Collider2D bodyCollider)
+    {
+        UnregisterDefenseBody();
+        defenseBodyCollider = bodyCollider;
+        RegisterDefenseBody();
+    }
+
+    public void BindUnit(UnitBase owner)
+    {
+        UnregisterDefenseBody();
+        unit = owner;
+        RegisterDefenseBody();
+    }
 
     private void OnDisable()
     {
+        UnregisterDefenseBody();
         RestoreHitFlash();
         SetGuardDebugVisible(false);
+    }
+
+    private void RegisterDefenseBody()
+    {
+        if (unit != null && defenseBodyCollider != null)
+            DefenseBodies[defenseBodyCollider.GetInstanceID()] = this;
+    }
+
+    private void UnregisterDefenseBody()
+    {
+        if (defenseBodyCollider == null) return;
+        int id = defenseBodyCollider.GetInstanceID();
+        if (DefenseBodies.TryGetValue(id, out CombatStats registered) && registered == this)
+            DefenseBodies.Remove(id);
+    }
+
+    public static int CollectAttackSweepVictims(UnitBase owner, AttackSweep2D sweep,
+        List<UnitBase> victims, List<float> fractions = null)
+    {
+        victims.Clear();
+        fractions?.Clear();
+        if (owner == null || !owner.IsActionGenerationCurrent(sweep.Generation)) return 0;
+
+        Vector2 displacement = sweep.Current - sweep.Previous;
+        float distance = displacement.magnitude;
+        if (distance <= Mathf.Epsilon)
+        {
+            Collider2D[] overlaps = sweep.Shape switch
+            {
+                ActiveShape.Circle => Physics2D.OverlapCircleAll(sweep.Current, sweep.Size.x * .5f),
+                ActiveShape.Capsule => Physics2D.OverlapCapsuleAll(sweep.Current, sweep.Size,
+                    GetCapsuleDirection(sweep.Size), sweep.Angle),
+                _ => Physics2D.OverlapBoxAll(sweep.Current, sweep.Size, sweep.Angle)
+            };
+            foreach (Collider2D collider in overlaps) AddContact(owner, collider, 0f, victims, fractions);
+        }
+        else
+        {
+            Vector2 direction = displacement / distance;
+            RaycastHit2D[] hits = sweep.Shape switch
+            {
+                ActiveShape.Circle => Physics2D.CircleCastAll(sweep.Previous, sweep.Size.x * .5f,
+                    direction, distance),
+                ActiveShape.Capsule => Physics2D.CapsuleCastAll(sweep.Previous, sweep.Size,
+                    GetCapsuleDirection(sweep.Size), sweep.Angle, direction, distance),
+                _ => Physics2D.BoxCastAll(sweep.Previous, sweep.Size, sweep.Angle, direction, distance)
+            };
+            foreach (RaycastHit2D hit in hits) AddContact(owner, hit.collider, hit.fraction, victims, fractions);
+        }
+        return victims.Count;
+    }
+
+    private static void AddContact(UnitBase owner, Collider2D collider, float fraction,
+        List<UnitBase> victims, List<float> fractions)
+    {
+        if (collider == null || !DefenseBodies.TryGetValue(collider.GetInstanceID(), out CombatStats stats)) return;
+        UnitBase victim = stats.unit;
+        if (!IsHostile(owner, victim) || !victim.isActiveAndEnabled || stats.IsDead ||
+            stats.defenseBodyCollider == null || !stats.defenseBodyCollider.enabled) return;
+
+        int existing = victims.IndexOf(victim);
+        if (existing >= 0)
+        {
+            if (fractions != null && fraction < fractions[existing]) fractions[existing] = fraction;
+            return;
+        }
+
+        int insert = 0;
+        while (insert < victims.Count && (fractions == null || fractions[insert] < fraction ||
+            Mathf.Approximately(fractions[insert], fraction) &&
+            CompareVictims(victims[insert], victim) <= 0)) insert++;
+        victims.Insert(insert, victim);
+        fractions?.Insert(insert, fraction);
+    }
+
+    private static int CompareVictims(UnitBase left, UnitBase right)
+    {
+        int idx = left.UnitIdx.CompareTo(right.UnitIdx);
+        return idx != 0 ? idx : left.GetInstanceID().CompareTo(right.GetInstanceID());
+    }
+
+    internal static bool IsHostile(UnitBase owner, UnitBase victim)
+    {
+        if (owner == null || victim == null || owner == victim) return false;
+        return owner.Faction == FactionType.PlayerAlly && victim.Faction == FactionType.Enemy ||
+            owner.Faction == FactionType.Enemy && victim.Faction == FactionType.PlayerAlly;
     }
 
     private void SetGuardDebugVisible(bool stateActive = true)
@@ -241,12 +356,21 @@ public class CombatStats : MonoBehaviour
         CombatStats attacker = null, Vector2? attackOrigin = null, float guardAmountMultiplier = 1f,
         AttackSweep2D? attackSweep = null)
     {
-        if (IsDead) return false;
+        DamageResolution result = ResolveDamage(amount, isGroundAttack, isJumped, attacker,
+            attackOrigin, guardAmountMultiplier, attackSweep);
+        return result != DamageResolution.None && result != DamageResolution.Body;
+    }
+
+    public DamageResolution ResolveDamage(float amount, bool isGroundAttack = false, bool isJumped = false,
+        CombatStats attacker = null, Vector2? attackOrigin = null, float guardAmountMultiplier = 1f,
+        AttackSweep2D? attackSweep = null, bool suppressParryPosture = false)
+    {
+        if (IsDead) return DamageResolution.Ignored;
         if (attackSweep.HasValue)
         {
             AttackSweep2D sweep = attackSweep.Value;
-            if (sweep.SourceId == parriedAttackSourceId && sweep.Generation == parriedAttackGeneration) return true;
-            if (sweep.SourceId == lastAttackSourceId && sweep.Generation == lastAttackGeneration && sweep.Tick == lastAttackTick) return true;
+            if (sweep.SourceId == parriedAttackSourceId && sweep.Generation == parriedAttackGeneration) return DamageResolution.Ignored;
+            if (sweep.SourceId == lastAttackSourceId && sweep.Generation == lastAttackGeneration && sweep.Tick == lastAttackTick) return DamageResolution.Ignored;
             lastAttackSourceId = sweep.SourceId;
             lastAttackGeneration = sweep.Generation;
             lastAttackTick = sweep.Tick;
@@ -285,14 +409,14 @@ public class CombatStats : MonoBehaviour
         {
             Debug.Log($"[{gameObject.name}] 공격 회피(Dodge) 성공!");
             SpawnResponseEffect(8012, contactPoint);
-            return true;
+            return DamageResolution.Dodge;
         }
 
         if (isGroundAttack && isJumped)
         {
             Debug.Log($"[{gameObject.name}] 지면 공격 점프(Jump) 회피 성공!");
             SpawnResponseEffect(8012, contactPoint);
-            return true;
+            return DamageResolution.Dodge;
         }
 
         bool canDefend = attackSweep.HasValue
@@ -311,9 +435,10 @@ public class CombatStats : MonoBehaviour
 
             if (attacker != null)
             {
-                attacker.AddPosture(40f);
+                if (!suppressParryPosture) attacker.AddPosture(40f);
+                attacker.GetComponent<Monster>()?.CancelCurrentPattern(PatternCancelReason.Cancelled);
             }
-            return true;
+            return DamageResolution.Parry;
         }
 
         if (IsGuarding && canDefend)
@@ -329,10 +454,10 @@ public class CombatStats : MonoBehaviour
             }
 
             Debug.Log($"[{gameObject.name}] 가드(Guard) 성공!");
-            return true;
+            return DamageResolution.Guard;
         }
 
-        if (amount <= 0f) return false;
+        if (amount <= 0f) return DamageResolution.None;
 
         SpawnResponseEffect(8013, contactPoint);
         ApplyHpDamage(amount, attacker);
@@ -345,7 +470,7 @@ public class CombatStats : MonoBehaviour
             OnDeath?.Invoke();
         }
 
-        return false;
+        return DamageResolution.Body;
     }
 
     private bool IsAttackInFront(Vector2? attackOrigin)
@@ -359,7 +484,14 @@ public class CombatStats : MonoBehaviour
 
     private bool DoesGuardIntersectFirst(AttackSweep2D sweep)
     {
-        if (!sweep.HasExteriorPose || !IsAttackInFront(sweep.Previous)) return false;
+        if (!sweep.HasExteriorPose)
+        {
+            float fallbackFacing = isFacingRight ? 1f : -1f;
+            float deltaX = sweep.Current.x - sweep.Previous.x;
+            return IsAttackInFront(sweep.Current) &&
+                (Mathf.Approximately(deltaX, 0f) || deltaX * fallbackFacing < 0f);
+        }
+        if (!IsAttackInFront(sweep.Previous)) return false;
         if (!TryGetGuardSweepFraction(sweep, out float guardFraction)) return false;
         if (!TryGetBodySweepFraction(sweep, out float bodyFraction)) return true;
 

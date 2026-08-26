@@ -642,7 +642,8 @@ namespace QA.Tests
                 Assert.AreEqual(1, bindings.Length);
                 Assert.AreEqual(expectedPath, bindings[0].path);
                 var frames = AnimationUtility.GetObjectReferenceCurve(clip, bindings[0]);
-                Assert.AreEqual(8, frames.Length);
+                int expectedFrameCount = name == "ShieldSentinel" && action.StartsWith("Attack") ? 9 : 8;
+                Assert.AreEqual(expectedFrameCount, frames.Length);
                 Assert.IsFalse(System.Array.Exists(frames, frame => frame.value == null));
             }
         }

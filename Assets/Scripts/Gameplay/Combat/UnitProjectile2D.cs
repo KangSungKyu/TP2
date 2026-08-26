@@ -1,10 +1,13 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Gameplay.Combat
 {
     [RequireComponent(typeof(Collider2D))]
-    public sealed class MonsterProjectile2D : MonoBehaviour
+    public sealed class UnitProjectile2D : MonoBehaviour
     {
+        private readonly List<UnitBase> sweepVictims = new();
+        private readonly List<float> sweepFractions = new();
         private readonly RaycastHit2D[] hits = new RaycastHit2D[8];
         private Collider2D projectileCollider;
         private uint resourceIdx;
@@ -15,12 +18,18 @@ namespace Gameplay.Combat
         private float travelled;
         private float damage;
         private uint hitTick;
+        [SerializeField] private bool reflectable;
+        private bool reflected;
         private bool returned = true;
+
+        private const float ReflectedDamageMultiplier = 0.5f;
 
         public UnitBase Owner { get; private set; }
         public float Speed => speed;
         public float MaxDistance => maxDistance;
         public float TravelledDistance => travelled;
+        public bool IsReflectable => reflectable;
+        public bool IsReflected => reflected;
 
         private void Awake()
         {
@@ -33,14 +42,15 @@ namespace Gameplay.Combat
             resourceIdx = resourceDataIdx;
             Owner = owner;
             ownerGeneration = generation;
-            direction = forward.sqrMagnitude > 0f ? forward.normalized : Vector2.right;
             speed = moveSpeed;
             maxDistance = distance;
             travelled = 0f;
             damage = patternDamage;
             hitTick = 0;
+            reflected = false;
             returned = false;
-            transform.SetPositionAndRotation(position, Quaternion.identity);
+            transform.position = position;
+            SetDirection(forward);
             gameObject.SetActive(true);
         }
 
@@ -65,29 +75,21 @@ namespace Gameplay.Combat
                 var intendedSweep = new CombatStats.AttackSweep2D(transform.position,
                     (Vector2)transform.position + direction * step, projectileCollider.bounds.extents,
                     GetInstanceID(), ownerGeneration, hitTick, hasExteriorPose: true);
-                UnitBase sweptTarget = null;
-                float sweptFraction = float.MaxValue;
-                Player player = Player.Instance;
-                if (player != null && player.Stats != null && IsHostile(Owner, player) &&
-                    player.Stats.TryGetAttackSweepFraction(intendedSweep, out float playerFraction))
+                if (CombatStats.CollectAttackSweepVictims(Owner, intendedSweep, sweepVictims,
+                    sweepFractions) > 0)
                 {
-                    sweptTarget = player;
-                    sweptFraction = playerFraction;
-                }
-                foreach (Monster monster in Monster.ActiveMonsters)
-                {
-                    if (monster == null || monster.Stats == null || !IsHostile(Owner, monster) ||
-                        !monster.Stats.TryGetAttackSweepFraction(intendedSweep, out float monsterFraction) ||
-                        monsterFraction >= sweptFraction) continue;
-                    sweptTarget = monster;
-                    sweptFraction = monsterFraction;
-                }
-                if (sweptTarget != null)
-                {
-                    sweptTarget.Stats.TakeDamage(damage, false, false, Owner.Stats,
-                        Vector2.Lerp(intendedSweep.Previous, intendedSweep.Current, sweptFraction),
-                        attackSweep: intendedSweep);
+                    UnitBase sweptTarget = sweepVictims[0];
+                    float sweptFraction = sweepFractions[0];
+                    Vector2 contact = Vector2.Lerp(intendedSweep.Previous, intendedSweep.Current, sweptFraction);
+                    bool canReflect = TryGetReflectionDirection(sweptTarget, out Vector2 reflectedDirection);
+                    CombatStats.DamageResolution result = sweptTarget.Stats.ResolveDamage(damage, false, false, Owner.Stats,
+                        contact, attackSweep: intendedSweep, suppressParryPosture: canReflect);
                     hitTick++;
+                    if (result == CombatStats.DamageResolution.Parry && canReflect)
+                    {
+                        ReflectFrom(sweptTarget, reflectedDirection, contact, step * sweptFraction);
+                        return;
+                    }
                     ReturnToPool();
                     return;
                 }
@@ -98,15 +100,6 @@ namespace Gameplay.Combat
                 {
                     Transform hitTransform = hits[i].collider != null ? hits[i].collider.transform : null;
                     if (hitTransform == null || hitTransform == Owner.transform || hitTransform.IsChildOf(Owner.transform)) continue;
-                    UnitBase target = hits[i].collider.GetComponentInParent<UnitBase>();
-                    if (target != null && target != Owner && IsHostile(Owner, target))
-                    {
-                        var sweep = new CombatStats.AttackSweep2D(transform.position,
-                            hits[i].centroid, projectileCollider.bounds.extents,
-                            GetInstanceID(), ownerGeneration, hitTick++, hasExteriorPose: true);
-                        target.Stats?.TakeDamage(damage, false, false, Owner.Stats, hits[i].point,
-                            attackSweep: sweep);
-                    }
                     ReturnToPool();
                     return;
                 }
@@ -117,13 +110,40 @@ namespace Gameplay.Combat
             if (travelled >= maxDistance) ReturnToPool();
         }
 
-        private static bool IsHostile(UnitBase owner, UnitBase target)
+        private bool TryGetReflectionDirection(UnitBase defender, out Vector2 reflectedDirection)
         {
-            FactionType ownerFaction = owner.Faction;
-            FactionType targetFaction = target.Faction;
-            return ownerFaction != FactionType.None && targetFaction != FactionType.None &&
-                ownerFaction != FactionType.Neutral && targetFaction != FactionType.Neutral &&
-                ownerFaction != targetFaction;
+            reflectedDirection = Vector2.zero;
+            if (!reflectable || reflected || Owner == null || defender == null ||
+                Owner.Faction == FactionType.None || Owner.Faction == FactionType.Neutral ||
+                defender.Faction == FactionType.None || defender.Faction == FactionType.Neutral)
+                return false;
+            Collider2D ownerBody = Owner.Stats != null ? Owner.Stats.DefenseBodyCollider : null;
+            Collider2D defenderBody = defender.Stats != null ? defender.Stats.DefenseBodyCollider : null;
+            if (ownerBody == null || !ownerBody.enabled || !ownerBody.gameObject.activeInHierarchy ||
+                defenderBody == null || !defenderBody.enabled || !defenderBody.gameObject.activeInHierarchy)
+                return false;
+            Vector2 delta = (Vector2)ownerBody.bounds.center - (Vector2)defenderBody.bounds.center;
+            if (delta.sqrMagnitude <= Mathf.Epsilon) return false;
+            reflectedDirection = delta.normalized;
+            return true;
+        }
+
+        private void ReflectFrom(UnitBase defender, Vector2 reflectedDirection, Vector2 position,
+            float consumedDistance)
+        {
+            transform.position = position;
+            travelled = Mathf.Min(maxDistance, travelled + Mathf.Max(0f, consumedDistance));
+            Owner = defender;
+            ownerGeneration = defender.ActionGeneration;
+            SetDirection(reflectedDirection);
+            damage *= ReflectedDamageMultiplier;
+            reflected = true;
+        }
+
+        private void SetDirection(Vector2 value)
+        {
+            direction = value.sqrMagnitude > 0f ? value.normalized : Vector2.right;
+            transform.right = direction;
         }
 
         public void ReturnToPool()
@@ -137,6 +157,7 @@ namespace Gameplay.Combat
             travelled = 0f;
             damage = 0f;
             hitTick = 0;
+            reflected = false;
             if (UnitPoolManager.Instance != null) UnitPoolManager.Instance.ReturnProjectile(resourceIdx, this);
             else gameObject.SetActive(false);
         }

@@ -28,6 +28,17 @@ public class SkillExecutor : MonoBehaviour
     private LineRenderer effectBoundsDebugLine;
 #endif
 
+    private sealed class MotionContext
+    {
+        public float StartX;
+        public float EndpointX;
+        public float VelocityX;
+        public float MovedDistance;
+        public uint Generation;
+        public bool FacingRight;
+        public bool Blocked;
+    }
+
     // =========================================================================
     // 2. PUBLIC METHODS (PascalCase)
     // =========================================================================
@@ -85,7 +96,7 @@ public class SkillExecutor : MonoBehaviour
         float patternDamage, CancellationToken cancellationToken = default,
         uint attackMotionProfileOverrideIdx = 0, Func<bool> canStartWindow = null,
         Action onFirstSuccessfulHit = null, uint attackPatternIdx = 0,
-        Vector2? initialExteriorPose = null)
+        Vector2? initialExteriorPose = null, Func<float> getRecoverySeconds = null)
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -96,15 +107,17 @@ public class SkillExecutor : MonoBehaviour
         uint generation = owner.ActionGeneration;
         bool facingSnapshot = owner.IsFacingRight;
         AttackMotionProfileData motion = ResolveAttackMotionProfile(skill, attackMotionProfileOverrideIdx);
+        bool overshootTarget = skill.AttackSubject == AttackSubject.BodyPart &&
+            skill.BodyPartRole == BodyPartRole.Torso;
         float motionStartX = owner.transform.position.x;
+        Collider2D ownerBody = owner.Stats != null ? owner.Stats.DefenseBodyCollider : null;
+        float ownerSnapshotHalfWidth = ownerBody != null ? ownerBody.bounds.extents.x : 0f;
         Collider2D targetBody = target != null && target.Stats != null ? target.Stats.DefenseBodyCollider : null;
         float targetSnapshotX = targetBody != null ? targetBody.bounds.center.x : target != null ? target.transform.position.x : motionStartX;
         float targetSnapshotHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
-        float motionVelocityX = 0f;
-        bool stepMotionBlocked = false;
-        bool attackMotionComplete = false;
-        int sourceId = owner.GetInstanceID() ^ (int)skillId;
-        float elapsed = 0f;
+        int sourceId = unchecked(owner.GetInstanceID() ^ (int)skillId ^ ((int)attackPatternIdx * 397));
+        float elapsed = -Mathf.Max(0f, skill.AttackMotionTime);
+        float firstWindowStart = Mathf.Max(0f, skill.HitTimings[0] - skill.HitWindowPre);
         float lastWindowEnd = skill.HitTimings[skill.HitTimings.Length - 1] + skill.HitWindowPost;
         var effectTable = DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData);
         var resourceTable = DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource);
@@ -136,6 +149,24 @@ public class SkillExecutor : MonoBehaviour
             attackEffects[tick] = effect;
         }
 
+        if (overshootTarget)
+        {
+            if (ownerBody == null || !ownerBody.enabled || targetBody == null || !targetBody.enabled)
+            {
+                Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Skill {skillId} torso motion requires active owner and target body colliders.");
+                return false;
+            }
+            bool previousFacing = facingSnapshot;
+            float deltaX = targetBody.bounds.center.x - ownerBody.bounds.center.x;
+            float directionEpsilon = Mathf.Max(owner.AttackMotionSkinWidth, Physics2D.defaultContactOffset);
+            if (Mathf.Abs(deltaX) > directionEpsilon) facingSnapshot = deltaX > 0f;
+            owner.SetFacingRight(facingSnapshot);
+            if (facingSnapshot != previousFacing) initialExteriorPose = null;
+            targetSnapshotX = targetBody.bounds.center.x;
+            targetSnapshotHalfWidth = targetBody.bounds.extents.x;
+        }
+        float facingSnapshotSign = facingSnapshot ? 1f : -1f;
+
         for (uint tick = 0; tick < (uint)attackEffects.Length; tick++)
         {
             EffectData effect = attackEffects[tick];
@@ -144,6 +175,34 @@ public class SkillExecutor : MonoBehaviour
                 SpawnAttackEffectForWindowAsync(effect, owner, generation, facingSnapshot,
                     effect.Duration, cancellationToken).Forget();
         }
+
+        float? lockedOvershootTargetX = null;
+        if (overshootTarget)
+        {
+            EffectData firstEffect = attackEffects[0];
+            float attackCenterOffset = facingSnapshotSign *
+                (firstEffect.SpawnPivotX + firstEffect.ActiveCenterX * firstEffect.Scale);
+            lockedOvershootTargetX = CalculateAttackAlignmentTargetX(motionStartX, motionStartX,
+                targetSnapshotX, 0f, 0f, targetSnapshotHalfWidth, attackCenterOffset,
+                owner.AttackMotionSkinWidth, motion.MaxDistance, false, true,
+                ownerSnapshotHalfWidth, facingSnapshotSign);
+        }
+
+        EffectData alignmentEffect = attackEffects[0];
+        float alignmentOffset = facingSnapshotSign *
+            (alignmentEffect.SpawnPivotX + alignmentEffect.ActiveCenterX * alignmentEffect.Scale);
+        var motionContext = new MotionContext
+        {
+            StartX = motionStartX,
+            EndpointX = lockedOvershootTargetX ?? CalculateAttackAlignmentTargetX(
+                motionStartX, motionStartX, targetSnapshotX, 0f, 0f, targetSnapshotHalfWidth,
+                alignmentOffset, owner.AttackMotionSkinWidth, motion.MaxDistance, false),
+            Generation = generation,
+            FacingRight = facingSnapshot
+        };
+        if (skill.MotionPhaseMask != SkillMotionPhase.None &&
+            (motion == null || motion.MotionType == AttackMotionType.Stationary || !motion.Enabled))
+            Debug.LogWarning($"[SkillExecutor] Skill {skillId} has motion phases but resolves to Stationary; movement disabled.");
 
         try
         {
@@ -156,6 +215,7 @@ public class SkillExecutor : MonoBehaviour
                 float windowEnd = t + skill.HitWindowPost;
                 Vector2? exteriorPose = tick == 0u ? initialExteriorPose : null;
                 bool exteriorLocked = false;
+                bool tickHitCommitted = false;
                 if (!TryCalculateEffectPoseForFacing(owner, attackEffectData, facingSnapshot,
                     out Vector2 sampledPose, out Quaternion effectRotation)) return false;
                 TryUpdateExteriorPose(target, owner, attackEffectData, facingSnapshot, sampledPose,
@@ -163,33 +223,27 @@ public class SkillExecutor : MonoBehaviour
 
                 while (elapsed + Mathf.Epsilon < windowStart)
                 {
-                    float remaining = windowStart - elapsed;
-                    bool tracking = motion.TargetPolicy == AttackTargetPolicy.TrackUntilActive && target != null;
-                    targetBody = tracking && target.Stats != null ? target.Stats.DefenseBodyCollider : targetBody;
-                    float targetX = tracking
-                        ? (targetBody != null ? targetBody.bounds.center.x : target.transform.position.x) : targetSnapshotX;
-                    float targetHalfWidth = tracking && targetBody != null ? targetBody.bounds.extents.x : targetSnapshotHalfWidth;
-                    float targetVelocityX = tracking ? target.AttackMotionVelocityX : 0f;
-                    bool facingRight = facingSnapshot;
-                    float attackCenterOffset = (facingRight ? 1f : -1f) *
-                        (attackEffectData.SpawnPivotX + attackEffectData.ActiveCenterX * attackEffectData.Scale);
-                    float clampedTargetX = CalculateAttackAlignmentTargetX(motionStartX, owner.transform.position.x,
-                        targetX, targetVelocityX, remaining, targetHalfWidth, attackCenterOffset,
-                        owner.AttackMotionSkinWidth, motion.MaxDistance, tracking);
-                    motionVelocityX = attackMotionComplete ? 0f : CalculateAttackMotionVelocity(motion,
-                        owner.transform.position.x, clampedTargetX, remaining, motionVelocityX, Time.fixedDeltaTime);
+                    if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                        owner.SetFacingRight(facingSnapshot);
+                    SkillMotionPhase phase = elapsed < 0f ? SkillMotionPhase.AttackMotion :
+                        elapsed < firstWindowStart ? SkillMotionPhase.Pre : SkillMotionPhase.Active;
+                    bool phaseMoves = IsMotionPhaseEnabled(skill.MotionPhaseMask, phase);
+                    float remaining = phase == SkillMotionPhase.AttackMotion &&
+                        IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Pre)
+                        ? firstWindowStart - elapsed
+                        : phase == SkillMotionPhase.AttackMotion ? -elapsed
+                        : phase == SkillMotionPhase.Pre ? firstWindowStart - elapsed
+                        : lastWindowEnd - elapsed;
                     if (!owner.IsActionGenerationCurrent(generation)) return true;
-                    if (!stepMotionBlocked && motion.MotionType == AttackMotionType.Step &&
-                        !owner.HasGroundSupportForAttackStep(motionVelocityX * Time.fixedDeltaTime))
-                    {
-                        stepMotionBlocked = true;
-                        motionVelocityX = 0f;
-                        owner.StopAttackMotionImmediately();
-                    }
-                    owner.SetAttackMotionStopPosition(clampedTargetX);
-                    owner.SetAttackMotionVelocityX(stepMotionBlocked ? 0f : motionVelocityX);
+                    if (!PrepareMotionStep(owner, motion, motionContext, skill.MotionPhaseMask,
+                        phase, remaining)) return false;
+                    float previousOwnerX = owner.transform.position.x;
+                    Vector2 previousSampledPose = sampledPose;
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
+                    CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
+                    if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                        owner.SetFacingRight(facingSnapshot);
                     if (owner.IsFacingRight != facingSnapshot)
                     {
                         exteriorPose = null;
@@ -197,24 +251,50 @@ public class SkillExecutor : MonoBehaviour
                     }
                     if (!TryCalculateEffectPoseForFacing(owner, attackEffectData, facingSnapshot,
                         out sampledPose, out _)) return false;
+                    if (overshootTarget && phaseMoves && phase != SkillMotionPhase.Active &&
+                        TryCreateEffectSweepForFacing(owner, attackEffectData, previousSampledPose,
+                            sourceId, generation, tick, facingSnapshot, exteriorPose.HasValue,
+                            out CombatStats.AttackSweep2D motionSweep, out _))
+                    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        DrawEffectBoundsDebug(owner, motionSweep);
+#endif
+                        if (!tickHitCommitted)
+                        {
+                            tickHitCommitted = ApplyAttackSweep(owner, patternDamage, motionSweep);
+                            if (tickHitCommitted) onFirstSuccessfulHit?.Invoke();
+                        }
+                    }
                     TryUpdateExteriorPose(target, owner, attackEffectData, facingSnapshot, sampledPose,
                         sourceId, generation, tick, ref exteriorPose, ref exteriorLocked);
                 }
-                owner.StopAttackMotionImmediately();
-                attackMotionComplete = true;
+                if (!IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active))
+                {
+                    owner.StopAttackMotionImmediately();
+                    motionContext.VelocityX = 0f;
+                }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (overshootTarget) HideEffectBoundsDebug();
+#endif
+                if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                    owner.SetFacingRight(facingSnapshot);
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
                 if (canStartWindow != null && !canStartWindow()) return false;
 
-                if (!TryCreateEffectSweepForFacing(owner, attackEffectData, exteriorPose ?? sampledPose,
-                    sourceId, generation, tick, facingSnapshot, exteriorPose.HasValue,
+                Vector2 activePrevious = overshootTarget ? sampledPose : exteriorPose ?? sampledPose;
+                if (!TryCreateEffectSweepForFacing(owner, attackEffectData, activePrevious,
+                    sourceId, generation, tick, facingSnapshot, !overshootTarget && exteriorPose.HasValue,
                     out CombatStats.AttackSweep2D sweep, out effectRotation)) return false;
                 Vector2 previousEffectCenter = sweep.Current;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 DrawEffectBoundsDebug(owner, sweep);
 #endif
 
-                bool tickHitCommitted = ApplyAttackSweep(owner, target, patternDamage, sweep);
-                if (tickHitCommitted) onFirstSuccessfulHit?.Invoke();
+                if (!overshootTarget || IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active))
+                {
+                    tickHitCommitted = ApplyAttackSweep(owner, patternDamage, sweep);
+                    if (tickHitCommitted) onFirstSuccessfulHit?.Invoke();
+                }
 
                 bool deferredWildcard = attackEffectData.HitTick == 0u && attackEffects.Length > 1;
                 if (deferredWildcard && spawnedTicks.Add((owner.UnitIdx, generation, tick, attackEffectIdx)))
@@ -227,8 +307,12 @@ public class SkillExecutor : MonoBehaviour
 
                 while (elapsed + Mathf.Epsilon < windowEnd)
                 {
+                    if (!PrepareMotionStep(owner, motion, motionContext, skill.MotionPhaseMask,
+                        SkillMotionPhase.Active, lastWindowEnd - elapsed)) return false;
+                    float previousOwnerX = owner.transform.position.x;
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
+                    CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
                     if (!owner.IsActionGenerationCurrent(generation)) return true;
                     if (!TryCreateEffectSweepForFacing(owner, attackEffectData, previousEffectCenter,
                         sourceId, generation, tick, facingSnapshot, true,
@@ -237,7 +321,9 @@ public class SkillExecutor : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     DrawEffectBoundsDebug(owner, movedSweep);
 #endif
-                    if (!tickHitCommitted && ApplyAttackSweep(owner, target, patternDamage, movedSweep))
+                    if ((!overshootTarget || IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active)) &&
+                        !tickHitCommitted &&
+                        ApplyAttackSweep(owner, patternDamage, movedSweep))
                     {
                         tickHitCommitted = true;
                         onFirstSuccessfulHit?.Invoke();
@@ -247,6 +333,18 @@ public class SkillExecutor : MonoBehaviour
                 HideEffectBoundsDebug();
 #endif
 
+            }
+            float recoverySeconds = Mathf.Max(0f, getRecoverySeconds?.Invoke() ?? 0f);
+            float recoveryElapsed = 0f;
+            while (recoveryElapsed + Mathf.Epsilon < recoverySeconds)
+            {
+                if (!owner.IsActionGenerationCurrent(generation)) return true;
+                if (!PrepareMotionStep(owner, motion, motionContext, skill.MotionPhaseMask,
+                    SkillMotionPhase.Post, recoverySeconds - recoveryElapsed)) return false;
+                float previousOwnerX = owner.transform.position.x;
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                recoveryElapsed += Time.fixedDeltaTime;
+                CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
             }
             return true;
         }
@@ -504,28 +602,18 @@ public class SkillExecutor : MonoBehaviour
         }
     }
 
-    private static bool ApplyAttackSweep(UnitBase owner, UnitBase target, float damage,
-        CombatStats.AttackSweep2D sweep)
+    private static bool ApplyAttackSweep(UnitBase owner, float damage, CombatStats.AttackSweep2D sweep)
     {
-        if (target != null)
-        {
-            return ApplyAttackSweepToTarget(owner, target, damage, sweep);
-        }
-        if (!(owner is Player)) return false;
-
+        var targets = new List<UnitBase>();
+        CombatStats.CollectAttackSweepVictims(owner, sweep, targets);
         bool hit = false;
-        var targets = new List<Monster>(Monster.ActiveMonsters);
-        foreach (Monster candidate in targets) hit |= ApplyAttackSweepToTarget(owner, candidate, damage, sweep);
+        foreach (UnitBase target in targets)
+        {
+            target.Stats.TakeDamage(damage, attacker: owner.Stats, attackOrigin: sweep.Previous,
+                attackSweep: sweep);
+            hit = true;
+        }
         return hit;
-    }
-
-    private static bool ApplyAttackSweepToTarget(UnitBase owner, UnitBase target, float damage,
-        CombatStats.AttackSweep2D sweep)
-    {
-        if (target == null || !target.isActiveAndEnabled || target.Stats == null || owner.Faction == target.Faction ||
-            !target.Stats.TryGetAttackSweepFraction(sweep, out _)) return false;
-        target.Stats.TakeDamage(damage, attacker: owner.Stats, attackOrigin: sweep.Previous, attackSweep: sweep);
-        return true;
     }
 
     public bool TryPlaySkillAnimation(Animator animator, uint skillId)
@@ -602,16 +690,65 @@ public class SkillExecutor : MonoBehaviour
             Mathf.MoveTowards(currentVelocityX, required, profile.Acceleration * fixedDeltaTime);
     }
 
+    internal static bool IsMotionPhaseEnabled(SkillMotionPhase mask, SkillMotionPhase phase) =>
+        (mask & phase) != 0;
+
+    private static bool PrepareMotionStep(UnitBase owner, AttackMotionProfileData profile,
+        MotionContext context, SkillMotionPhase mask, SkillMotionPhase phase, float remainingSeconds)
+    {
+        if (!IsMotionPhaseEnabled(mask, phase) || profile == null || !profile.Enabled ||
+            profile.MotionType == AttackMotionType.Stationary)
+        {
+            owner.StopAttackMotionImmediately();
+            context.VelocityX = 0f;
+            return true;
+        }
+
+        float remainingDistance = Mathf.Max(0f, profile.MaxDistance - context.MovedDistance);
+        if (remainingDistance <= Mathf.Epsilon)
+        {
+            owner.StopAttackMotionImmediately();
+            context.VelocityX = 0f;
+            return true;
+        }
+        context.VelocityX = CalculateAttackMotionVelocity(profile, owner.transform.position.x,
+            context.EndpointX, remainingSeconds, context.VelocityX, Time.fixedDeltaTime);
+        float maxVelocity = remainingDistance / Mathf.Max(Time.fixedDeltaTime, Mathf.Epsilon);
+        context.VelocityX = Mathf.Clamp(context.VelocityX, -maxVelocity, maxVelocity);
+        if (Mathf.Approximately(context.VelocityX, 0f)) return true;
+        if (!owner.HasGroundSupportForAttackStep(context.VelocityX * Time.fixedDeltaTime) ||
+            !owner.IsAttackMotionPositionAllowed(context.EndpointX) ||
+            owner.IsAttackMotionBlocked(context.VelocityX))
+        {
+            context.Blocked = true;
+            owner.StopAttackMotionImmediately();
+            context.VelocityX = 0f;
+            return false;
+        }
+        owner.SetAttackMotionStopPosition(context.EndpointX);
+        owner.SetAttackMotionVelocityX(context.VelocityX);
+        return true;
+    }
+
+    private static void CompleteMotionStep(MotionContext context, float previousX, float currentX) =>
+        context.MovedDistance += Mathf.Abs(currentX - previousX);
+
     public static float CalculateAttackAlignmentTargetX(float motionStartX, float ownerX, float targetCenterX,
         float targetVelocityX, float remainingSeconds, float targetHalfWidth, float attackCenterOffset,
-        float skinWidth, float maxDistance, bool trackUntilActive)
+        float skinWidth, float maxDistance, bool trackUntilActive, bool overshootTarget = false,
+        float ownerHalfWidth = 0f, float fixedFacingSign = 0f)
     {
         float predictedCenterX = targetCenterX + (trackUntilActive ? targetVelocityX * Mathf.Max(0f, remainingSeconds) : 0f);
-        float facing = predictedCenterX >= ownerX ? 1f : -1f;
+        float facing = Mathf.Approximately(fixedFacingSign, 0f)
+            ? (predictedCenterX >= ownerX ? 1f : -1f)
+            : Mathf.Sign(fixedFacingSign);
         float signedCenterOffset = facing * Mathf.Abs(attackCenterOffset);
-        float stopX = predictedCenterX - facing * (Mathf.Max(0f, targetHalfWidth) +
-            Mathf.Max(0f, skinWidth)) - signedCenterOffset;
-        return motionStartX + Mathf.Clamp(stopX - motionStartX, -Mathf.Max(0f, maxDistance), Mathf.Max(0f, maxDistance));
+        float stopX = overshootTarget
+            ? predictedCenterX + facing * (Mathf.Max(0f, targetHalfWidth) + Mathf.Max(0f, ownerHalfWidth))
+            : predictedCenterX - facing * (Mathf.Max(0f, targetHalfWidth) + Mathf.Max(0f, skinWidth)) -
+              signedCenterOffset;
+        float limit = Mathf.Max(0f, maxDistance);
+        return motionStartX + Mathf.Clamp(stopX - motionStartX, -limit, limit);
     }
 
     public float GetAttackRecoverySeconds(Animator animator, float animationStartedAt, float configuredRecovery)

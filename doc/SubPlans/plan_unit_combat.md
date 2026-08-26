@@ -306,7 +306,30 @@ Idle Pose의 `AttackCollider sibling` 계약을 그대로 적용한다. `bodyPar
 - wall, ledge, SpawnArea 이탈 또는 target crossing이 감지되면 공격 이동과 Active window를 취소한다.
 - teleport 보정, self-contact damage, Body/Defense fallback을 금지한다.
 - 공유 utility Pattern `6002`는 `3101/3103`이 함께 사용하므로 Torso Ram으로 전환하거나 재배정하지 않는다.
-- 신규 Pattern·Skill·Text는 각각 1개 후보로만 기록한다. Motion row는 실제 거리·속도·궤적 계측 전까지 보류한다.
+- Torso Ram은 기존 `6010/7007/8019/10002`를 유지하며 신규 Pattern·Skill·Text·Motion row를 만들지 않는다.
+
+#### Unit `3103` 패턴 개편 승인 계약 (2026-08-26)
+
+- `6010 Torso Ram` 예약 band는 양측 `DefenseBodyCollider`의 가까운 표면 간 수평 gap `1.5–10.0m`다. Startup 시작에 target body center/half-width와 facing을 snapshot하며 Active 중 재추적·반전하지 않는다.
+- `6010`은 기존 예약 row `Motion 10003 AcceleratingLunge`를 활성화해 `maxdistance=13.1m`, `maxspeed=24m/s`, `acceleration=48m/s²`, `enabled=1`을 사용한다. Player 폭 `1.0m`, 3103 폭 `1.6m`에서 종점은 `snapshotTargetCenter + facing×(0.5+0.8+0.5)=targetCenter+facing×1.8m`; 마지막 `0.5m`는 target 반대편 표면 이후 overshoot다.
+- gap `g`에서 요구 이동거리는 `g+3.1m`이므로 `1.5–10m` band는 `4.6–13.1m`다. Skill `7007`은 `HitTiming=0.88`, `Pre/Post=0.06/0.06`, `windowStart=0.82s`, Active `0.82–0.94s`다. 최대거리 연속시간 `0.796s` 뒤 FixedStep `0.02s` 1회 안정 여유를 둔다.
+- root telegraph는 이동 전에 정확히 `1.5s` 1회다. 현행 `effectivePreDelay = Pattern.PreDelay - windowStart` 계약에 따라 `6010.predelay=2.32s`로 저장하며, 이동과 합산한 Active 진입은 Pattern 시작 후 `2.32s`다. 종료 즉시 속도 `0`, recovery `0.6s`를 적용한다.
+- 50Hz 모사 기준 gap `1.5/10m`에서 target 근접면 통과는 이동 시작 후 약 `0.32/0.68s`, 최종 종점은 `0.82s` 이내다. 플레이어의 최초 시각 반응시간은 약 `1.82–2.18s`이며 damage commit은 Active 진입 시 1회다.
+- 6010은 명시 Active 이동공격 예외다. 전 구간 KinematicMotor 단일 writer와 swept cast를 사용하며 wall·ledge·SpawnArea/leash 경계에서 즉시 정지하고 남은 hit를 취소한다. 완전 통과 종점이 bounds 안에 없으면 Startup 전에 예약을 취소하며 clamp·teleport·재조준하지 않는다.
+- `8019`도 Effect 판정 권위이므로 확대 대상에 포함한다. damage `15`, cooldown `2`, chase timeout `1`은 유지한다.
+- `6011 Charging Thrust`는 `5103.patternidxlist`에서 제거하고 전역 Pattern 행을 삭제한다. 감사 기준 다른 Unit 소비자는 없으며 `8018`을 `6012`로 이관한 뒤 잔여 런타임 FK는 `0`이어야 한다.
+- 모든 연속공격은 seconds 기반 등박자를 기본으로 하며 선형 `nextpatternidx`로만 연결한다. 링크 `postdelay`는 최소 `0.05s`, 예외 휴지는 해당 선행 Pattern의 명시값으로만 허용한다.
+- 3103 chain은 `6012→6013→6014→0`이다. 각 Pattern은 독립 Skill·Effect·exterior sweep을 소유하며 조건 분기와 PatternStepData는 사용하지 않는다.
+- `6012/7009/8018`: Vertical Slash I, damage `4`, guard posture `2`, surface gap `0–1.5m`, Stationary `10001`, startup/active/recovery `0.09/0.12/0.05s`, `nextpatternidx=6013`.
+- `6013/7017/8033`: Thrust, damage `5`, guard posture `2.5`, surface gap `0–1.905m`, Step `10002(0.81m,9m/s)`, startup/active/recovery `0.075/0.095/0.15s` 뒤 명시 rest `0.375s`(`postdelay=0.525`), `nextpatternidx=6014`. `8033`은 `Resource 1099`와 `8032` raw bounds를 재사용한다.
+- `6014/7018/8034`: Vertical Slash II, damage `6`, guard posture `3`, surface gap `0–2.0m`, Step `10004(0.405m,4.5m/s)`, startup/active/recovery `0.125/0.135/0.60s`, `nextpatternidx=0`. `8034`는 `Resource 1085` visual을 재사용하되 독립 Effect 행과 scale `3.018867924528302`를 사용한다.
+- 모든 공격 Effect의 `SpawnPivot=(0.8,0)m`는 Body `1.6×2.0m`의 전방 표면이며 scale을 적용하지 않는다. FaceLeft에서는 SpawnPivotX와 ActiveCenterX만 부호 반전한다.
+- `8018`은 scale `2.34375`, raw center `(0.100,0.135)`, raw size `(0.720,0.890)`, Box다. 최종 world center/size는 `(1.034375,0.316406)/(1.6875,2.085938)m`다.
+- `8033`은 scale `2.34375`, raw center `(0.050,0.003333333)`, raw size `(0.950,0.250)`, Box다. 최종 world center/size는 `(0.917188,0.007812)/(2.226563,0.585938)m`다.
+- `8034`는 scale `3.018867924528302`, `8018` raw bounds, Box다. 최종 world center/size는 `(1.101887,0.407547)/(2.173585,2.686792)m`다.
+- `8019`는 scale `1.98419834046611`, raw center `(0.100101,0.00157)`, raw size `(0.806371,0.440269)`, Capsule다. 최종 world center/size는 `(0.998620,0.003115)/(1.600000,0.873581)m`다.
+- 신규 uint 후보는 Pattern `6013/6014`, Skill `7017/7018`, Effect `8033/8034`, Motion `10004`, Text `2038/2039`다. Resource는 기존 `1099/1085`를 재사용하며 문자열 key와 신규 Resource 행은 `0`이다.
+- chain 총 damage는 기존 위협도와 같은 `15`, 총 guard posture는 `7.5`, MP는 각 Skill `5`, chain cooldown commit은 첫 성공 Pattern에서 1회만 수행한다. Parry·groggy·취소·사망·pool return·generation 변경 시 남은 링크를 즉시 폐기한다.
 
 #### Unit 매핑
 
@@ -322,7 +345,7 @@ Idle Pose의 `AttackCollider sibling` 계약을 그대로 적용한다. `bodyPar
 
 #### 구현 DAG
 
-`기획 승인 → 리소스 Torso collider 직렬화 → 신규 Pattern/Skill/Text uint 데이터 → KinematicMotor Step/Lunge 소비 → Active sweep → QA`
+`기획 승인 → 8018 이관·8033 Effect FK → 6011 제거·6012/7009 갱신 → Animator 3타 동기화 → Active sweep → QA`
 
 Motion row는 리소스 직렬화와 실제 궤적 계측이 완료된 뒤 별도 승인으로 DAG에 추가한다.
 
