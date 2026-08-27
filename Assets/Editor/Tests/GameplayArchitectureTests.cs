@@ -3051,11 +3051,11 @@ namespace QA.Tests
             var ground = new MonsterPatternData
             {
                 Idx = 6103u, TriggerType = (uint)PatternTriggerType.DistanceUnder,
-                TriggerValue = 8f, MinStartDistance = 5f, MaxStartDistance = 8f, ChaseTimeout = .5f
+                TriggerValue = 2f, MinStartDistance = 0f, MaxStartDistance = 2f, ChaseTimeout = .5f
             };
-            foreach (float gap in new[] { 5f, 7.99f, 8f, 8.01f })
+            foreach (float gap in new[] { 0f, 1f, 1.99f, 2f, 2.01f })
                 Assert.IsTrue(Monster.IsPatternStartDistanceValid(ground, skill, gap, .01f), $"6103 gap {gap}");
-            foreach (float gap in new[] { 4f, 4.5f })
+            foreach (float gap in new[] { 2.011f, 4f, 8f })
                 Assert.IsFalse(Monster.IsPatternStartDistanceValid(ground, skill, gap, .01f), $"6103 gap {gap}");
             Assert.AreEqual(8f, Monster.NormalizePatternStartDistance(far, 8.01f, .01f), .0001f);
             Assert.IsFalse(Monster.NormalizePatternStartDistance(far, 8.01f, .01f) > far.TriggerValue,
