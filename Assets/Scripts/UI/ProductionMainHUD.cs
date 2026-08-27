@@ -17,7 +17,11 @@ public sealed class ProductionMainHUD : MonoBehaviour
     [SerializeField] private Image monsterPostureFill;
     [Header("Boss")]
     [SerializeField] private CanvasGroup bossGroup;
+    [SerializeField] private Image bossHpBackground;
     [SerializeField] private Image bossHpFill;
+    [SerializeField] private Image bossMpBackground;
+    [SerializeField] private Image bossMpFill;
+    [SerializeField] private Image bossPostureBackground;
     [SerializeField] private Image bossPostureFill;
     [SerializeField] private TMP_Text bossNameText;
     [Header("Stage")]
@@ -40,6 +44,9 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     private void OnEnable()
     {
+        ConfigureBossBackground(bossHpBackground, bossHpFill);
+        ConfigureBossBackground(bossMpBackground, bossMpFill);
+        ConfigureBossBackground(bossPostureBackground, bossPostureFill);
         if (stageProgressText != null) stageProgressText.gameObject.SetActive(false);
         if (!Application.isPlaying) return;
         if (transform.localScale == Vector3.zero) transform.localScale = Vector3.one;
@@ -208,6 +215,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
         if (bossStats != null)
         {
             bossStats.OnHpChanged.RemoveListener(SetBossHp);
+            bossStats.OnMpChanged.RemoveListener(SetBossMp);
             bossStats.OnPostureChanged.RemoveListener(SetBossPosture);
         }
         activeBoss = boss;
@@ -221,6 +229,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
         if (bossNameText != null) bossNameText.SetText(boss != null ? boss.UnitName : string.Empty);
         if (bossStats == null) return;
         bossStats.OnHpChanged.AddListener(SetBossHp);
+        bossStats.OnMpChanged.AddListener(SetBossMp);
         bossStats.OnPostureChanged.AddListener(SetBossPosture);
         RefreshBoss();
     }
@@ -230,6 +239,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
         if (bossNameText != null) bossNameText.SetText(activeBoss != null ? activeBoss.UnitName : string.Empty);
         if (bossStats == null) return;
         SetBossHp(Ratio(bossStats.CurrentHp, bossStats.MaxHp));
+        SetBossMp(Ratio(bossStats.CurrentMp, bossStats.MaxMp));
         SetBossPosture(Ratio(bossStats.CurrentPosture, bossStats.MaxPosture));
     }
 
@@ -261,7 +271,26 @@ public sealed class ProductionMainHUD : MonoBehaviour
     private void SetMonsterHp(float value) => SetFill(monsterHpFill, value);
     private void SetMonsterPosture(float value) => SetFill(monsterPostureFill, value);
     private void SetBossHp(float value) => SetFill(bossHpFill, value);
+    private void SetBossMp(float value) => SetFill(bossMpFill, value);
     private void SetBossPosture(float value) => SetFill(bossPostureFill, value);
+
+    private static void ConfigureBossBackground(Image background, Image fill)
+    {
+        if (background == null || fill == null) return;
+        background.sprite = fill.sprite;
+        background.material = fill.material;
+        background.type = Image.Type.Sliced;
+        background.color = new Color(0f, 0f, 0f, .9f);
+        background.raycastTarget = false;
+        RectTransform backgroundRect = background.rectTransform;
+        RectTransform fillRect = fill.rectTransform;
+        backgroundRect.anchorMin = fillRect.anchorMin;
+        backgroundRect.anchorMax = fillRect.anchorMax;
+        backgroundRect.pivot = fillRect.pivot;
+        backgroundRect.anchoredPosition = fillRect.anchoredPosition;
+        backgroundRect.sizeDelta = fillRect.sizeDelta;
+        background.transform.SetSiblingIndex(Mathf.Max(0, fill.transform.GetSiblingIndex() - 1));
+    }
 
     private void SetStageProgress(uint stageIdx, int visited, int total)
     {

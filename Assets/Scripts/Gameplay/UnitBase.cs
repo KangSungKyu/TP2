@@ -103,7 +103,28 @@ public class UnitBase : MonoBehaviour
     public bool IsAttackMotionBlocked(float velocityX) => motor == null ||
         velocityX < 0f && motor.IsWalledLeft || velocityX > 0f && motor.IsWalledRight;
     public float AttackMotionVelocityX => motor != null ? motor.Velocity.x : 0f;
+    public float AttackMotionVelocityY => motor != null ? motor.Velocity.y : 0f;
     public float AttackMotionSkinWidth => motor != null ? motor.SkinWidth : Physics2D.defaultContactOffset;
+    public bool IsMotorGrounded => motor != null && motor.IsGrounded;
+    public bool TryStartAttackJump(float velocityY, float clearance)
+    {
+        if (motor == null || !motor.IsGrounded || velocityY <= 0f ||
+            !motor.HasVerticalClearance(clearance)) return false;
+        motor.StopHorizontalImmediately();
+        motor.SetVelocityY(velocityY);
+        return true;
+    }
+    public float GetAttackJumpTimeout(float velocityY) => motor != null && motor.Gravity > 0f
+        ? 2f * velocityY / motor.Gravity + 1f : 0f;
+    public bool TryGetGroundedAttackOrigin(out Vector2 origin)
+    {
+        origin = default;
+        Collider2D body = stats != null ? stats.DefenseBodyCollider : null;
+        if (motor == null || !motor.IsGrounded || body == null || !body.enabled || !body.gameObject.activeInHierarchy)
+            return false;
+        origin = new Vector2(body.bounds.center.x, body.bounds.min.y);
+        return true;
+    }
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
 
     /// <summary>

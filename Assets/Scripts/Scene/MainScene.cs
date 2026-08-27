@@ -26,7 +26,7 @@ public class MainScene : MonoBehaviour
             if (builder == null) builder = new GameObject("TilemapStageBuilder").AddComponent<TilemapStageBuilder>();
             builder.DevelopmentPrefabOverride = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Development/Tilemap_Room_PhaseA_1x1.prefab");
-            builder.DevelopmentMonsterUnitIdx = 3105u;
+            builder.DevelopmentMonsterUnitIdx = 3201u;
         }
 #endif
         if (StageManager.Instance != null)

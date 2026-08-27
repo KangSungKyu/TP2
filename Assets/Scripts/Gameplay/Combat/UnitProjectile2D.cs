@@ -17,6 +17,7 @@ namespace Gameplay.Combat
         private float maxDistance;
         private float travelled;
         private float damage;
+        private uint launchSequence;
         private uint hitTick;
         [SerializeField] private bool reflectable;
         private bool reflected;
@@ -46,7 +47,7 @@ namespace Gameplay.Combat
             maxDistance = distance;
             travelled = 0f;
             damage = patternDamage;
-            hitTick = 0;
+            hitTick = ++launchSequence;
             reflected = false;
             returned = false;
             transform.position = position;
@@ -83,7 +84,7 @@ namespace Gameplay.Combat
                     Vector2 contact = Vector2.Lerp(intendedSweep.Previous, intendedSweep.Current, sweptFraction);
                     bool canReflect = TryGetReflectionDirection(sweptTarget, out Vector2 reflectedDirection);
                     CombatStats.DamageResolution result = sweptTarget.Stats.ResolveDamage(damage, false, false, Owner.Stats,
-                        contact, attackSweep: intendedSweep, suppressParryPosture: canReflect);
+                        contact, attackSweep: intendedSweep, suppressParryAttackerConsequences: canReflect);
                     hitTick++;
                     if (result == CombatStats.DamageResolution.Parry && canReflect)
                     {

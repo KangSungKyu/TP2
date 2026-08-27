@@ -22,6 +22,11 @@ public class MonsterPatternDataTable : IDataLoad
         {
             foreach (var item in records)
             {
+                if (!float.IsFinite(item.JumpVelocityY) || item.JumpVelocityY < 0f)
+                {
+                    Debug.LogError($"[MonsterPatternDataTable] Pattern {item.Idx} has invalid jumpvelocityy {item.JumpVelocityY}; row rejected.");
+                    continue;
+                }
                 replacement.Add(item.Idx, item);
             }
         }

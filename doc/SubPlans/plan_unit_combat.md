@@ -62,6 +62,8 @@
 
 현재 Stage 1에는 머리·꼬리를 공격 주체로 쓰는 Unit이 없다. 향후 해당 패턴이 승인될 때 동일 collider role만 추가한다.
 
+Unit `3101` Pattern `6001`/Skill `7008`의 Effect `8015`는 해당 조합만 소비하는 전용 찌르기 Effect다. body world width `1.5m`, Effect width `2.1328125m`, `SpawnPivotX=1.6640625m`를 사용하며 최종 center는 FaceRight `1.81640625m`, FaceLeft `-1.81640625m`다. FaceRight X range는 `[0.75,2.8828125]m`, FaceLeft는 `[-2.8828125,-0.75]m`로 rear edge가 body front에 정확히 접하고 visual·bounds error는 `0`이다. Effect size Y·resource·damage `15`·Skill timing은 변경하지 않는다. PK/FK/compile·제품 Console Error는 `0`; independent QA는 `stale`, `Started=0`으로 `BLOCKED`다.
+
 ### 2.1 Unit3102 Prototype Dummy 공격 계약
 
 | 연결 | 동작 계약 |
@@ -79,11 +81,13 @@
 - 동일 `(sourceId, actionGeneration, tick, target)`은 공격 주체 collider 수와 접촉 횟수에 관계없이 최대 1회 피해를 준다.
 - `hitcount>1`은 서로 다른 tick만 추가 피해를 허용한다. 패링 성공 시 기존 `(sourceId, generation)` 차단으로 후속 tick 전체를 무효화한다.
 - 좌·우 composite 무기와 다중 collider는 같은 source/generation/tick을 공유한다. 투사체는 projectile instance의 source와 tick을 독립 사용한다.
-- 공격 facing은 Startup 시작 pose에서 snapshot하고 Active 종료까지 고정한다. collider scale을 음수로 누적하지 않는다.
+- reservation과 HUD countdown 전체(`AttackMotion + PRE` Telegraph) 동안 target `DefenseBodyCollider` body center를 기준으로 Monster face를 live 갱신한다. `EndAttackTelegraph`, 즉 HUD fill 완료·hide를 유일한 방향 고정 경계로 삼고, 그 직후 root Pattern이 face snapshot을 정확히 1회 capture한다. Telegraph duration `0`이면 즉시 capture한다. 이후 AttackMotion → PRE → Active → Post와 전체 linked chain child는 같은 snapshot을 attack·effect·motion·projectile·visual의 단일 권위로 재사용하며 Monster LateUpdate는 `Unit.FaceDir`와 `SpriteRenderer.flipX`를 고정한다. Telegraph 완료 전에 target·death·collider가 무효가 되면 attack·Effect·damage는 `0`, snapshot 잔류는 `0`이고 Pattern을 종료한다. 정상 종료·cancel·death·groggy·pool return·chunk transition에서 snapshot과 visual lock을 clear하고 Idle에서 live face를 복구한다. Transform/collider negative scale은 금지하고 Player facing에는 적용하지 않는다.
 - fraction이 작은 후보를 우선하며, 정면 접촉에서 차이가 `epsilon = motor.SkinWidth`, motor가 없으면 `Physics2D.defaultContactOffset` 이하일 때만 `Parry > Guard > Body`를 적용한다.
 - Startup부터 overlap하여 마지막 exterior pose가 없으면 Body로 판정한다. pose 합성·역보간·Body collider fallback은 금지한다.
 - 공격마다 마지막 비접촉 exterior pose 1개만 보존하고 Active에서 `exterior → current`를 sweep한다. face flip, teleport, generation 변경, 취소·사망·pool 반환 시 폐기한다.
 - Chase 종료 후 Step/Lunge만 Motor를 소유하며 Active 진입 시 기본 정지한다. 명시된 이동공격만 Active 이동을 유지하고 이중 Motor writer를 금지한다.
+- 일반 AI chase와 Pattern reservation/ChaseTimeout 접근은 scale·offset·좌우 반전이 반영된 양측 `DefenseBodyCollider` world bounds의 가까운 표면 간 gap을 단일 권위로 사용한다. 매 FixedStep `allowed=max(0, surfaceGap-targetWorldWidth)`를 계산해 수평 displacement를 `allowed` 이하로 clamp하고, `allowed==0`이면 velocity와 잔류 motor 입력을 모두 `0`으로 만든다. `contactStopX`·`desiredRootX`를 직접 motor에 기록하는 우회는 금지한다. Active Step/Lunge/Charge와 Player 입력 이동에는 적용하지 않는다. owner 또는 target collider가 누락·비활성인 경우 접근을 취소하고 uint Unit idx를 로그하며 transform pivot 거리 fallback은 금지한다.
+- reservation chase stop main focused는 `2/2 PASS`, compile·제품 Console Error는 `0`이다. independent QA는 `stale`, `Started=0`으로 `BLOCKED`이며 live Play는 미검증이다.
 
 ### 4. 근접·투사체 경계와 강제 종료
 
@@ -99,6 +103,9 @@
 - 별도 manager·유닛별 toggle·매프레임 검색을 금지한다. 공격 주체 공용 component가 bind 시 전역값을 읽고 변경 이벤트 1회에만 반영한다.
 - 시각화 line은 판정 GameObject의 활성 window와 함께 표시·숨김하며, 디버그 OFF여도 실제 collider 활성 규칙과 피해 결과는 변하지 않는다.
 - 비개발 빌드는 debug line/material 생성과 Gizmo 경로를 컴파일·실행하지 않는다.
+- Telegraph HUD는 black alpha `0.9` 배경 위에 기존 fill sprite·material을 재사용하며 별도 renderer/material을 만들지 않는다. 개발 bounds는 동일 renderer에서 `Pre=yellow`, `Active=red`, `Post=cyan`으로 전환하되 피해 query는 Active에서만 실행한다. cancel·death·disable·pool reset 시 renderer를 즉시 숨기고 이전 phase 색상·generation을 폐기한다.
+- Monster overhead HUD는 기존 HP background 1개와 Posture background 1개를 각각 재사용하고 둘 다 black alpha `0.9`로 고정한다. sibling 순서는 `background < fill < text/telegraph`이며 background size와 fill의 `fillAmount`는 서로 독립이다. 최초 bind에서만 참조하고 pool return/re-enable 때 기존 인스턴스를 재사용하여 중복 `0`, 신규 sprite·material·runtime Instantiate `0`을 유지한다. compile Error `0`, 정적 계약 `PASS`; Unity runner 점유로 focused 실행은 `BLOCKED`다.
+- Boss HUD의 HP·MP·Posture·Telegraph는 Fill과 Background가 동일 Rect를 공유하고 Background를 black alpha `0.9`로 고정하며 sibling은 `background < fill`이다. HP `720×20, centerX=0, y=-38`, MP `720×10, centerX=0, y=-62`, Posture `720×10, centerX=0, y=-76`이고 Canvas scale `0.5192708`에서 각 폭은 약 `374px`다. Fill/Background Rect는 완전 동일하며 `fillAmount` 변경에 따른 Rect 변화는 `0`이다. Telegraph는 `320×18`, Y `[-108,-90]`; Posture는 Y `[-86,-76]`으로 Canvas Rect gap `4`, overlap `0`이다. 전 항목은 solid sprite guid `5a5e36b7f1680864fb8ce7fb900245c4`, material `{fileID:0}`을 재사용한다. MP는 boss bind 시 이벤트를 1회 구독하고 scene/boss disable·교체 시 해제하며 `max<=0`이면 fill `0`, MainScene 재진입 시 현재 boss에 1회 재bind한다. compile·제품 Console Error는 `0`; independent QA는 `stale`, `Started=0`으로 `BLOCKED`다.
 
 ### 5. Attach·Visual identity
 
@@ -303,14 +310,14 @@ Idle Pose의 `AttackCollider sibling` 계약을 그대로 적용한다. `bodyPar
 `후퇴/숙임 → KinematicMotor Step/Lunge → Torso collider Active → Recovery`
 
 - 이동 writer는 `KinematicMotor2D` 하나만 사용한다.
-- wall, ledge, SpawnArea 이탈 또는 target crossing이 감지되면 공격 이동과 Active window를 취소한다.
+- wall, ledge, SpawnArea 이탈이 감지되면 공격 이동과 Active window를 취소한다. target crossing은 snapshot 방향을 유지한 채 이동만 안전 clamp하며 방향 변경·Pattern 취소는 `0`이다.
 - teleport 보정, self-contact damage, Body/Defense fallback을 금지한다.
 - 공유 utility Pattern `6002`는 `3101/3103`이 함께 사용하므로 Torso Ram으로 전환하거나 재배정하지 않는다.
 - Torso Ram은 기존 `6010/7007/8019/10002`를 유지하며 신규 Pattern·Skill·Text·Motion row를 만들지 않는다.
 
 #### Unit `3103` 패턴 개편 승인 계약 (2026-08-26)
 
-- `6010 Torso Ram` 예약 band는 양측 `DefenseBodyCollider`의 가까운 표면 간 수평 gap `1.5–10.0m`다. Startup 시작에 target body center/half-width와 facing을 snapshot하며 Active 중 재추적·반전하지 않는다.
+- `6010 Torso Ram` 예약 band는 양측 `DefenseBodyCollider`의 가까운 표면 간 수평 gap `1.5–10.0m`다. HUD Telegraph fill 완료·hide 직후 root가 capture한 target body center/half-width/facing snapshot을 AttackMotion부터 끝까지 사용하며 Active 중 재추적·반전하지 않는다.
 - `6010`은 기존 예약 row `Motion 10003 AcceleratingLunge`를 활성화해 `maxdistance=13.1m`, `maxspeed=24m/s`, `acceleration=48m/s²`, `enabled=1`을 사용한다. Player 폭 `1.0m`, 3103 폭 `1.6m`에서 종점은 `snapshotTargetCenter + facing×(0.5+0.8+0.5)=targetCenter+facing×1.8m`; 마지막 `0.5m`는 target 반대편 표면 이후 overshoot다.
 - gap `g`에서 요구 이동거리는 `g+3.1m`이므로 `1.5–10m` band는 `4.6–13.1m`다. Skill `7007`은 `HitTiming=0.88`, `Pre/Post=0.06/0.06`, `windowStart=0.82s`, Active `0.82–0.94s`다. 최대거리 연속시간 `0.796s` 뒤 FixedStep `0.02s` 1회 안정 여유를 둔다.
 - root telegraph는 이동 전에 정확히 `1.5s` 1회다. 현행 `effectivePreDelay = Pattern.PreDelay - windowStart` 계약에 따라 `6010.predelay=2.32s`로 저장하며, 이동과 합산한 Active 진입은 Pattern 시작 후 `2.32s`다. 종료 즉시 속도 `0`, recovery `0.6s`를 적용한다.
@@ -356,9 +363,33 @@ Motion row는 리소스 직렬화와 실제 궤적 계측이 완료된 뒤 별�
 3. Telegraph·Startup·Recovery에서 collider enabled는 `0`, Active에서만 `1`이다.
 4. 좌우 facing에서 Torso bounds·sweep 거리·피해 결과가 대칭이고 허위 장거리 sweep은 `0`이다.
 5. 15/60 FPS에서 Active window 실행 수와 hit 결과가 동일하며 누락·중복은 `0`이다.
-6. wall·ledge·SpawnArea·target crossing 취소 다음 FixedStep에 Motor velocity, collider, token 잔존은 `0`이다.
+6. wall·ledge·SpawnArea 취소 또는 target crossing 이동 clamp 다음 FixedStep에 Motor velocity, collider, token 잔존은 `0`이다.
 7. pool 재사용 10회 후 collider 기본 OFF, PoseOffset·mirror 누적 오차, 이전 owner/generation 잔존은 모두 `0`이다.
 8. teleport와 self-contact damage 호출은 `0`이며 공유 `6002`의 PK·FK·소비 Unit은 변경되지 않는다.
+
+## Garon(`3201`) 전투 요구 행동 및 Pattern 통합표 (2026-08-27)
+
+가론 전투는 원·중·근거리 전환에 따라 다른 공격을 판독하고, 가드·패링·경로 이탈·점프 중 적절한 방어 수단을 선택하게 한다.
+연속 공격에서는 첫 타 직후 성급하게 반격하지 않고 정박자 후속타가 끝날 때까지 방어하거나 이탈하는 인내를 요구한다.
+각 Pattern의 전조는 피해 판정과 분리해 읽을 수 있어야 하며, 대응 하나를 강제하지 않고 지형과 현재 자세에 맞는 선택을 허용한다.
+Phase 2의 진입 조건과 수치 변화는 정의되어 있지 않으므로 `기획 승인 대기`로 유지하며 임의 적용하지 않는다.
+
+Unit `3201`의 런타임 `DefenseBodyCollider` 권위는 `UnitBaseData.hitboxradius=1`에서 생성되는 `2×4m`, body center는 foot/root보다 `+2m`다. `MoveSpeed`는 `8→4m/s`이며 기본 chase에만 적용하고, `6100` 공격 이동은 `MotionProfile 10003`이 별도로 소유한다. 아래 world center는 body center 기준 FaceRight 값이며 FaceLeft에서는 X 부호만 반전한다.
+
+| Pattern | 거리·선택 | Telegraph | Effect world size·offset | AttackBounds shape·size·center | 근거 | 경계 계약 |
+|---:|---|---:|---|---|---|---|
+| `6100` Charge / `7012` / `8025` | Trigger, CurrentTarget surface gap `>8m` | `1.6s` | impact F4 alpha world Y `[-2,3.46875]m` | Box size `(4,5.46875)m`; center FaceRight `(2.25,0.734375)`, FaceLeft `(-2.25,0.734375)` | 기존 X center의 torso 방향 `25%` 이동; damage `25`, Motion `10003`, mask `3` 불변 | 최초 hostile 접촉 FixedStep에 Active/damage commit; late tick·no contact·Pre damage `0` |
+| `6101→6104` Barrage Chain | Root `6101`만 Random weight `30`, current gap `0–4m`; `6104`는 selector child | Root `1.2s`; Skill Pre `.05625s`, step interval `0.7025s` | `8029→8030`, step별 `4×4m` | step별 Box `4×4m`, center FaceRight `(1.35,0)`, FaceLeft `(-1.35,0)` | Profile `10002`, distance `2.31m`, mask `3`; FK·timing 불변 | root 6101 `EndAttackTelegraph` 직후 snapshot을 6104까지 공유; recovery/post·damage 불변 |
+| `6102` Slam / `7010` / `8026` | Random weight `70`, current gap `0–4m` | `2.0s` | 세로 내려베기 호, face 방향 전방 | Box size `(3.235955056,4)m`, center FaceRight `(1.4561802,0)`, FaceLeft `(-1.4561802,0)` | 기존 X center의 torso 방향 `10%` 이동; Profile `10002`, distance `2.31m`, mask `3` | damage `35`, recovery/post, weight `70` 불변 |
+| `6103` Jump→Land Shockwave / `7013` / `8023` | Trigger, current gap `5–8m` 양끝 포함 | `1.6s`; 종료 프레임에 수직 이륙 | 신규 `AttackEffect_8023.png`, native world `10×1.76m`, bottom-center | Box size `(10,1.76)m`, center `(0,0.88)`, bottom Y `0`; renderer size curve `0` | `8000×176`, 8 frames 각 `1000×176`, PPU `100`; alpha width `100→250→450→700→1000→1000→1000→1000px`, F4 full/F5 hold/F6–7 fade | Resource `1090`·FK·Addressables, jump-land gate·damage `20` 불변 |
+
+Effect center 권위는 `8025=(±2.25,0.734375), size(4,5.46875)`; `8029/8030=(±1.35,0), size(4,4)`; `8026=(±1.4561802,0), size(3.235955056,4)`다. 부호는 FaceRight/FaceLeft 순이며 visual과 Box가 같은 center를 사용한다. `6103`은 신규 `AttackEffect_8023.png`/Resource `1090` 전용 clip을 사용하고 Effect `8015` strip·Sliced renderer 참조는 `0`이다. `8023` native visual·Box는 `(10,1.76)m`, center `(0,0.88)`, bottom Y `0`이며 renderer size animation을 금지한다.
+
+선택 우선순위는 `Trigger → Random → Sequence → Simple`이다. `|gap-8m|<=KinematicMotor2D.SkinWidth(0.01m)`는 `8m`로 정규화한다. 6100의 `DistanceOver`는 strict `>8m`, 6103은 폐구간 `[5,8]`로 정의해 교집합을 `0`으로 만들고 정확히 `8m`는 6103에 귀속한다. `gap<5m`에서는 selector root `6101`과 `6102`만 Random 후보이며 weight 합 `100(30/70)`을 사용하고, linked `6104`는 후보 목록에서 제외한다. Random 선택을 `gap<=4m`로 제한하기 위해 예약 단계의 band 밖 후보 편입은 금지하며 `4<gap<5m`는 일반 chase/idle이다.
+
+6103 latch는 `WaitingForTakeoff → AirborneObserved → LandingCommitted` 단방향이다. JumpStart 뒤 body bottom이 `startBottom+SkinWidth`를 초과하고 grounded `false`가 관측되어야 `AirborneObserved`로 전이한다. 이후 최초 `grounded false→true && velocityY<=0 && support valid`에서만 `LandingCommitted`하고 `8023`과 damage `20`을 각 1회 승인한다. JumpStart 직후 grounded 유지, transient grounded, cancel·ceiling·death·groggy는 Effect·damage `0`이며 latch와 generation을 폐기한다.
+
+`EndAttackTelegraph` 직후 Pattern snapshot·visual facing lock은 main focused `4/4 PASS`, compile·제품 Console Error `0`; independent QA focused `3/3 PASS`, 제품 Error `0`이다. `TestResults.xml` 저장 과정의 인프라 Exception `1건`은 제품 오류가 아니다. Boss HUD/Effect center는 exact Rect/center 전용 Assert가 없어 `PARTIAL`이다.
 
 ### 🧠 [GameDesigner 자율 회고]
 - 기획 무결성 비판: 한 FixedStep sweep은 빠른 회전 무기의 곡선 궤적을 직선으로 근사하므로 blade 끝이 넓은 호를 그리는 공격에서 오탐 또는 누락 가능성이 있다.
@@ -366,3 +397,4 @@ Motion row는 리소스 직렬화와 실제 궤적 계측이 완료된 뒤 별�
 - 2026-08-24 회고: placeholder visual은 제작 편의를 위한 표현일 뿐 Body·Defense·Attack·Projectile collider 권위와 결합하지 않는다. visual 교체가 판정 수치나 책임 경계를 암묵적으로 바꾸지 않도록 실제 bounds와 정수 데이터를 별도로 검증한다.
 - 2026-08-24 Pose 회고: collider proxy 기반 Idle pose는 visual 제작 전 임시 가독성 가설이다. 실제 무기 sprite의 grip·길이·무게중심을 수동 측정하기 전에는 collider 위치나 공격 판정을 pose에 종속시키지 않는다.
 - 2026-08-24 BodyPart 회고: 몸통 공격도 Body·Defense를 편의상 재사용하면 이동·피격·공격 책임이 결합된다. 전용 serialized collider 1개와 Active-only 수명주기로 제한하고 세부 enum·Motion 수치는 실제 계측 전까지 추가하지 않는다.
+- 2026-08-27 Telegraph face snapshot 회고: reservation 직후나 Startup 직전처럼 여러 경계로 표현하면 HUD가 남아 있는 동안 방향이 조기에 고정될 수 있다. HUD fill 완료·hide를 수행하는 `EndAttackTelegraph`만 capture 경계로 두고 root 1회 snapshot을 chain 전체가 재사용한다.

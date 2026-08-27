@@ -211,6 +211,61 @@ namespace QA.Tests
                 Assert.NotNull(fill, $"Unit_{unitIdx}");
                 Assert.AreEqual("Sprite_UI_SolidFill", fill.sprite.name, $"Unit_{unitIdx}");
                 Assert.IsFalse(fill.raycastTarget, $"Unit_{unitIdx}");
+
+                var instance = Object.Instantiate(prefab);
+                try
+                {
+                    var instanceHud = instance.GetComponentInChildren<MonsterOverheadHUD>(true);
+                    var instanceSerialized = new SerializedObject(instanceHud);
+                    foreach (string fieldName in new[] { "hpFill", "postureFill" })
+                    {
+                        var bar = instanceSerialized.FindProperty(fieldName).objectReferenceValue as Image;
+                        Assert.NotNull(bar, $"Unit_{unitIdx}/{fieldName}");
+                        int imageCount = instanceHud.GetComponentsInChildren<Image>(true).Length;
+                        Invoke(instanceHud, "EnsureFillBackground", bar);
+                        Invoke(instanceHud, "EnsureFillBackground", bar);
+                        Assert.AreEqual(imageCount, instanceHud.GetComponentsInChildren<Image>(true).Length,
+                            $"Unit_{unitIdx}/{fieldName} repeated setup must not create objects.");
+                        var background = bar.transform.parent.GetChild(bar.transform.GetSiblingIndex() - 1)
+                            .GetComponent<Image>();
+                        Assert.NotNull(background, $"Unit_{unitIdx}/{fieldName} background");
+                        Assert.AreSame(bar.sprite, background.sprite);
+                        Assert.AreSame(bar.material, background.material);
+                        Assert.AreEqual(new Color(0f, 0f, 0f, .9f), background.color);
+                        Assert.AreEqual(bar.rectTransform.rect.size, background.rectTransform.rect.size);
+                    }
+                }
+                finally { Object.DestroyImmediate(instance); }
+            }
+        }
+
+        [Test]
+        public void OverheadTelegraph_ReusesFillSpriteForBlackBackgroundBehindFill()
+        {
+            var root = new GameObject("TelegraphRoot_QA", typeof(RectTransform), typeof(CanvasGroup));
+            var fillObject = new GameObject("Fill_QA", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            fillObject.transform.SetParent(root.transform, false);
+            var hudObject = new GameObject("Hud_QA");
+            try
+            {
+                var hud = hudObject.AddComponent<MonsterOverheadHUD>();
+                var fill = fillObject.GetComponent<Image>();
+                fill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                SetField(hud, "attackTelegraphGroup", root.GetComponent<CanvasGroup>());
+                SetField(hud, "attackTelegraphFill", fill);
+                Invoke(hud, "EnsureTelegraphBackground");
+
+                var background = root.GetComponent<Image>();
+                Assert.NotNull(background);
+                Assert.AreSame(fill.sprite, background.sprite);
+                Assert.AreEqual(new Color(0f, 0f, 0f, .9f), background.color);
+                Assert.IsFalse(background.raycastTarget);
+                Assert.AreEqual(root.transform.childCount - 1, fill.transform.GetSiblingIndex());
+            }
+            finally
+            {
+                Object.DestroyImmediate(hudObject);
+                Object.DestroyImmediate(root);
             }
         }
 

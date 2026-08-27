@@ -16,11 +16,15 @@ public sealed class MonsterOverheadHUD : MonoBehaviour
     [SerializeField] private Color attackTelegraphActiveColor = Color.red;
 
     private CombatStats stats;
+    private Image attackTelegraphBackground;
     private Monster.AttackTelegraph attackTelegraph;
     private bool hasAttackTelegraph;
 
     private void OnEnable()
     {
+        EnsureTelegraphBackground();
+        EnsureFillBackground(hpFill);
+        EnsureFillBackground(postureFill);
         Monster.AttackTelegraphStarted += OnAttackTelegraphStarted;
         Monster.AttackTelegraphEnded += OnAttackTelegraphEnded;
         SetTelegraphVisible(false);
@@ -108,6 +112,41 @@ public sealed class MonsterOverheadHUD : MonoBehaviour
     private void SetTelegraphVisible(bool visible)
     {
         if (attackTelegraphGroup != null) attackTelegraphGroup.alpha = visible ? 1f : 0f;
+    }
+
+    private void EnsureTelegraphBackground()
+    {
+        if (attackTelegraphGroup == null || attackTelegraphFill == null) return;
+        attackTelegraphBackground = attackTelegraphGroup.GetComponent<Image>();
+        if (attackTelegraphBackground == null)
+            attackTelegraphBackground = attackTelegraphGroup.gameObject.AddComponent<Image>();
+        attackTelegraphBackground.sprite = attackTelegraphFill.sprite;
+        attackTelegraphBackground.type = Image.Type.Sliced;
+        attackTelegraphBackground.color = new Color(0f, 0f, 0f, .9f);
+        attackTelegraphBackground.raycastTarget = false;
+        attackTelegraphFill.transform.SetAsLastSibling();
+    }
+
+    private void EnsureFillBackground(Image fill)
+    {
+        if (fill == null || fill.transform.parent == null || fill.transform.GetSiblingIndex() <= 0) return;
+        Transform backgroundTransform = fill.transform.parent.GetChild(fill.transform.GetSiblingIndex() - 1);
+        Image background = backgroundTransform.GetComponent<Image>();
+        if (background == null) return;
+        background.sprite = fill.sprite;
+        background.material = fill.material;
+        background.type = Image.Type.Sliced;
+        background.color = new Color(0f, 0f, 0f, .9f);
+        background.raycastTarget = false;
+        if (background.rectTransform != null && fill.rectTransform != null)
+        {
+            background.rectTransform.anchorMin = fill.rectTransform.anchorMin;
+            background.rectTransform.anchorMax = fill.rectTransform.anchorMax;
+            background.rectTransform.pivot = fill.rectTransform.pivot;
+            background.rectTransform.anchoredPosition = fill.rectTransform.anchoredPosition;
+            background.rectTransform.sizeDelta = fill.rectTransform.sizeDelta;
+        }
+        backgroundTransform.SetSiblingIndex(fill.transform.GetSiblingIndex() - 1);
     }
 
     private static void SetFill(Image image, float value)

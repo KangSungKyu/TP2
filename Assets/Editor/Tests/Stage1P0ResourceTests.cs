@@ -527,7 +527,7 @@ namespace QA.Tests
         public void NewMonsters_HaveCompleteUniqueImportedAssets()
         {
             AssertMonster(3104, "ShieldSentinel", "Idle", "Move", "Hit", "Death", "Attack6003", "Attack6004");
-            AssertMonster(3105, "OrbitalMarksman", "Idle", "Move", "Hit", "Death", "Attack6005", "Attack6006");
+            AssertMonster(3105, "OrbitalMarksman", "Idle", "Move", "Hit", "Death", "Attack6005");
 
             Assert.AreNotEqual(
                 AssetDatabase.AssetPathToGUID("Assets/Prefabs/Unit_3104.prefab"),

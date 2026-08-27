@@ -51,16 +51,44 @@ namespace QA.Tests
             }
         }
 
-        [TestCase(14f, 7f)]
-        [TestCase(16f, 8f)]
-        public void ReflectableProjectile_FrontParryReflectsOnceWithoutPosture(float damage, float reflectedDamage)
+        [TestCase(14f, 7f, 1f / 15f)]
+        [TestCase(14f, 7f, 1f / 60f)]
+        public void ReflectableProjectile_FrontParryReflectsOnceWithoutPosture(float damage, float reflectedDamage,
+            float fixedDeltaTime)
         {
             Player previousPlayer = Player.Instance;
+            DataTableManager previousData = DataTableManager.Instance;
+            EffectPoolManager previousEffectPool = EffectPoolManager.Instance;
+            float previousFixedDeltaTime = Time.fixedDeltaTime;
+            GameObject dataObject = null, effectPoolObject = null, parryEffect = null, hitEffect = null;
             GameObject ownerObject = null, defenderObject = null, projectileObject = null;
             try
             {
+                Time.fixedDeltaTime = fixedDeltaTime;
+                dataObject = new GameObject("ReflectionData_QA");
+                var dataManager = dataObject.AddComponent<DataTableManager>();
+                SetSingletonInstance(dataManager);
+                var tables = (Dictionary<DataTableType, IDataLoad>)typeof(DataTableManager)
+                    .GetField("dataList", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dataManager);
+                tables[DataTableType.EffectData] = new EffectDataTable();
+                tables[DataTableType.EffectData].LoadData(File.ReadAllText("Assets/Datas/EffectData.csv"));
+                tables[DataTableType.Resource] = new ResourceDataTable();
+                tables[DataTableType.Resource].LoadData(File.ReadAllText("Assets/Datas/ResourceData.csv"));
+
+                effectPoolObject = new GameObject("ReflectionEffects_QA");
+                var effectPool = effectPoolObject.AddComponent<EffectPoolManager>();
+                SetSingletonInstance(effectPool);
+                var pools = (Dictionary<string, Queue<GameObject>>)typeof(EffectPoolManager)
+                    .GetField("poolDict", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(effectPool);
+                parryEffect = new GameObject("Effect_8010");
+                parryEffect.SetActive(false);
+                pools["Effect_8010"] = new Queue<GameObject>(new[] { parryEffect });
+                hitEffect = new GameObject("Effect_8013");
+                hitEffect.SetActive(false);
+                pools["Effect_8013"] = new Queue<GameObject>(new[] { hitEffect });
+
                 ownerObject = new GameObject("ReflectionOwner_QA");
-                ownerObject.transform.position = new Vector3(-10f, 0f);
+                ownerObject.transform.position = new Vector3(-20f, 0f);
                 var ownerBody = ownerObject.AddComponent<BoxCollider2D>();
                 var ownerStats = ownerObject.AddComponent<CombatStats>();
                 var owner = ownerObject.AddComponent<Monster>();
@@ -137,14 +165,46 @@ namespace QA.Tests
                     Physics2D.SyncTransforms();
                 }
                 Assert.AreEqual(100f - reflectedDamage, ownerStats.CurrentHp, .01f);
+                var activeEffects = (HashSet<GameObject>)typeof(EffectPoolManager)
+                    .GetField("activeEffects", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(effectPool);
+                Assert.AreEqual(1, activeEffects.Count(effect => effect != null && effect.name == "Effect_8013"),
+                    "Confirmed reflected body damage must spawn exactly one shared hit response effect.");
                 Assert.IsFalse(projectile.IsReflected, "Pool return must reset reflected state.");
                 Assert.IsTrue(projectile.IsReflectable, "Pool return must preserve prefab-owned reflectable.");
+
+                effectPool.DespawnEffect(hitEffect);
+                defender.SetParrying(true);
+                projectile.Activate(1045u, owner, owner.ActionGeneration, new Vector2(-2f, 0f),
+                    Vector2.right, 150f, 25f, damage);
+                fixedUpdate.Invoke(projectile, null);
+                Physics2D.SyncTransforms();
+                Assert.IsTrue(projectile.IsReflected, "A pooled projectile rental must regain its one reflection.");
+                defender.SetParrying(false);
+                for (int i = 0; i < 20 && projectile.gameObject.activeSelf; i++)
+                {
+                    fixedUpdate.Invoke(projectile, null);
+                    Physics2D.SyncTransforms();
+                }
+                Assert.AreEqual(100f - reflectedDamage * 2f, ownerStats.CurrentHp, .01f,
+                    "A second rental must damage the same monster without stale dedupe or multiplier accumulation.");
+                Assert.AreEqual(1, activeEffects.Count(effect => effect != null && effect.name == "Effect_8013"),
+                    "Each reflected hit must spawn exactly one shared hit response effect.");
+                Assert.AreEqual(0f, ownerStats.CurrentPosture);
+                Assert.AreEqual(0f, defenderStats.CurrentPosture);
+                Assert.IsFalse(projectile.gameObject.activeSelf, "The second reflected hit must return the projectile.");
             }
             finally
             {
+                Time.fixedDeltaTime = previousFixedDeltaTime;
                 if (projectileObject != null) Object.DestroyImmediate(projectileObject);
                 if (defenderObject != null) Object.DestroyImmediate(defenderObject);
                 if (ownerObject != null) Object.DestroyImmediate(ownerObject);
+                if (hitEffect != null) Object.DestroyImmediate(hitEffect);
+                if (parryEffect != null) Object.DestroyImmediate(parryEffect);
+                if (effectPoolObject != null) Object.DestroyImmediate(effectPoolObject);
+                if (dataObject != null) Object.DestroyImmediate(dataObject);
+                SetSingletonInstance(previousEffectPool);
+                SetSingletonInstance(previousData);
                 typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
                     .GetSetMethod(true).Invoke(null, new object[] { previousPlayer });
             }
@@ -186,6 +246,72 @@ namespace QA.Tests
             finally
             {
                 Object.DestroyImmediate(temporary);
+            }
+        }
+
+        [Test]
+        public void StraightProjectile_PreservesInitialNormalizedDirectionAcrossFixedSteps()
+        {
+            Player previousPlayer = Player.Instance;
+            var objects = new List<GameObject>();
+            try
+            {
+                typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
+                    .GetSetMethod(true).Invoke(null, new object[] { null });
+                Monster owner = CreateUnit<Monster>("StraightProjectileOwner_QA", new Vector2(-100f, -100f), objects);
+                var projectileObject = new GameObject("StraightProjectile_QA");
+                objects.Add(projectileObject);
+                projectileObject.AddComponent<BoxCollider2D>().isTrigger = true;
+                var projectile = projectileObject.AddComponent<UnitProjectile2D>();
+                typeof(UnitProjectile2D).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(projectile, null);
+
+                Vector2 expected = new Vector2(3f, 4f).normalized;
+                projectile.Activate(1045u, owner, owner.ActionGeneration, new Vector2(100f, 100f),
+                    new Vector2(3f, 4f), 10f, 100f, 14f);
+                MethodInfo fixedUpdate = typeof(UnitProjectile2D).GetMethod("FixedUpdate",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Vector2 previous = projectile.transform.position;
+                for (int i = 0; i < 4; i++)
+                {
+                    fixedUpdate.Invoke(projectile, null);
+                    Vector2 current = projectile.transform.position;
+                    Assert.Less(Vector2.Distance(expected, (current - previous).normalized), .0001f);
+                    previous = current;
+                }
+            }
+            finally
+            {
+                foreach (GameObject item in objects) if (item != null) Object.DestroyImmediate(item);
+                typeof(Player).GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)
+                    .GetSetMethod(true).Invoke(null, new object[] { previousPlayer });
+            }
+        }
+
+        [Test]
+        public void ProjectileAim_UsesActiveDefenseBodyCenterWithoutPivotFallback()
+        {
+            var target = new GameObject("ProjectileAimTarget_QA");
+            try
+            {
+                target.transform.position = new Vector2(4f, -8f);
+                var body = target.AddComponent<BoxCollider2D>();
+                body.offset = new Vector2(0f, 3f);
+                Physics2D.SyncTransforms();
+                MethodInfo aim = typeof(Monster).GetMethod("TryGetProjectileAimDirection",
+                    BindingFlags.Static | BindingFlags.NonPublic);
+                object[] args = { Vector2.zero, body, Vector2.zero };
+                Assert.IsTrue((bool)aim.Invoke(null, args));
+                Assert.Less(Vector2.Distance(((Vector2)body.bounds.center).normalized, (Vector2)args[2]), .0001f);
+
+                body.enabled = false;
+                args[2] = Vector2.zero;
+                Assert.IsFalse((bool)aim.Invoke(null, args));
+                Assert.AreEqual(Vector2.zero, (Vector2)args[2]);
+            }
+            finally
+            {
+                Object.DestroyImmediate(target);
             }
         }
 
@@ -277,7 +403,7 @@ namespace QA.Tests
                 playerStats.InitStats();
                 generation = GetGeneration(owner);
                 var secondTask = pool.SpawnUnitProjectileAsync(1045, owner, generation, new Vector2(0f, 10f),
-                    Vector2.right, 15f, 25f, 16f).AsTask();
+                    Vector2.right, 15f, 25f, 14f).AsTask();
                 await secondTask;
                 UnitProjectile2D second = secondTask.Result;
                 Assert.AreSame(first, second, "Spawn-return-spawn must reuse identity.");
@@ -287,7 +413,7 @@ namespace QA.Tests
                     fixedUpdate.Invoke(second, null);
                     Physics2D.SyncTransforms();
                 }
-                Assert.AreEqual(84f, playerStats.CurrentHp, 0.01f, "Pattern damage 16 must be authoritative.");
+                Assert.AreEqual(86f, playerStats.CurrentHp, 0.01f, "The single Pattern 6005 damage must remain authoritative.");
                 AssertQueueCount(pool, 1045, 1);
 
                 playerObject.transform.position = new Vector3(100f, 10f);
@@ -295,7 +421,7 @@ namespace QA.Tests
                 Physics2D.SyncTransforms();
                 generation = GetGeneration(owner);
                 var distanceTask = pool.SpawnUnitProjectileAsync(1045, owner, generation, new Vector2(0f, 10f),
-                    Vector2.right, 15f, 25f, 16f).AsTask();
+                    Vector2.right, 15f, 25f, 14f).AsTask();
                 await distanceTask;
                 UnitProjectile2D distanceProjectile = distanceTask.Result;
                 Assert.AreSame(first, distanceProjectile);

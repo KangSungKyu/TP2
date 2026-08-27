@@ -10,8 +10,6 @@ using UnityEngine;
 /// </summary>
 public class SkillExecutor : MonoBehaviour
 {
-    public static SkillExecutor Instance { get; private set; }
-
     // =========================================================================
     // 1. CONST & PRIVATE FIELDS
     // =========================================================================
@@ -26,6 +24,9 @@ public class SkillExecutor : MonoBehaviour
     private readonly HashSet<SkillEffect> activeSkillEffects = new HashSet<SkillEffect>();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     private LineRenderer effectBoundsDebugLine;
+    private static readonly Color PreBoundsColor = Color.yellow;
+    private static readonly Color ActiveBoundsColor = Color.red;
+    private static readonly Color PostBoundsColor = Color.cyan;
 #endif
 
     private sealed class MotionContext
@@ -96,7 +97,9 @@ public class SkillExecutor : MonoBehaviour
         float patternDamage, CancellationToken cancellationToken = default,
         uint attackMotionProfileOverrideIdx = 0, Func<bool> canStartWindow = null,
         Action onFirstSuccessfulHit = null, uint attackPatternIdx = 0,
-        Vector2? initialExteriorPose = null, Func<float> getRecoverySeconds = null)
+        Vector2? initialExteriorPose = null, Func<float> getRecoverySeconds = null,
+        bool? fixedFacingRight = null, float? fixedTargetCenterX = null,
+        float? fixedTargetHalfWidth = null)
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -105,16 +108,19 @@ public class SkillExecutor : MonoBehaviour
             return false;
 
         uint generation = owner.ActionGeneration;
-        bool facingSnapshot = owner.IsFacingRight;
+        bool facingSnapshot = fixedFacingRight ?? owner.IsFacingRight;
+        if (fixedFacingRight.HasValue && owner.IsFacingRight != facingSnapshot)
+            owner.SetFacingRight(facingSnapshot);
         AttackMotionProfileData motion = ResolveAttackMotionProfile(skill, attackMotionProfileOverrideIdx);
-        bool overshootTarget = skill.AttackSubject == AttackSubject.BodyPart &&
-            skill.BodyPartRole == BodyPartRole.Torso;
+        bool overshootTarget = motion != null &&
+            motion.MotionType == AttackMotionType.AcceleratingLunge && motion.Enabled;
         float motionStartX = owner.transform.position.x;
         Collider2D ownerBody = owner.Stats != null ? owner.Stats.DefenseBodyCollider : null;
         float ownerSnapshotHalfWidth = ownerBody != null ? ownerBody.bounds.extents.x : 0f;
         Collider2D targetBody = target != null && target.Stats != null ? target.Stats.DefenseBodyCollider : null;
-        float targetSnapshotX = targetBody != null ? targetBody.bounds.center.x : target != null ? target.transform.position.x : motionStartX;
-        float targetSnapshotHalfWidth = targetBody != null ? targetBody.bounds.extents.x : 0f;
+        float targetSnapshotX = fixedTargetCenterX ?? (targetBody != null
+            ? targetBody.bounds.center.x : target != null ? target.transform.position.x : motionStartX);
+        float targetSnapshotHalfWidth = fixedTargetHalfWidth ?? (targetBody != null ? targetBody.bounds.extents.x : 0f);
         int sourceId = unchecked(owner.GetInstanceID() ^ (int)skillId ^ ((int)attackPatternIdx * 397));
         float elapsed = -Mathf.Max(0f, skill.AttackMotionTime);
         float firstWindowStart = Mathf.Max(0f, skill.HitTimings[0] - skill.HitWindowPre);
@@ -123,6 +129,8 @@ public class SkillExecutor : MonoBehaviour
         var resourceTable = DataTableManager.Instance.GetDB<ResourceDataTable>(DataTableType.Resource);
         var attackEffects = new EffectData[skill.HitTimings.Length];
         var spawnedTicks = new HashSet<(uint ownerUnitIdx, uint generation, uint hitTick, uint effectIdx)>();
+        CombatStats.AttackSweep2D lastActiveSweep = default;
+        bool hasLastActiveSweep = false;
 
         for (uint tick = 0; tick < (uint)attackEffects.Length; tick++)
         {
@@ -153,17 +161,20 @@ public class SkillExecutor : MonoBehaviour
         {
             if (ownerBody == null || !ownerBody.enabled || targetBody == null || !targetBody.enabled)
             {
-                Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Skill {skillId} torso motion requires active owner and target body colliders.");
+                Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Skill {skillId} lunge motion requires active owner and target body colliders.");
                 return false;
             }
             bool previousFacing = facingSnapshot;
-            float deltaX = targetBody.bounds.center.x - ownerBody.bounds.center.x;
-            float directionEpsilon = Mathf.Max(owner.AttackMotionSkinWidth, Physics2D.defaultContactOffset);
-            if (Mathf.Abs(deltaX) > directionEpsilon) facingSnapshot = deltaX > 0f;
+            if (!fixedFacingRight.HasValue)
+            {
+                float deltaX = targetBody.bounds.center.x - ownerBody.bounds.center.x;
+                float directionEpsilon = Mathf.Max(owner.AttackMotionSkinWidth, Physics2D.defaultContactOffset);
+                if (Mathf.Abs(deltaX) > directionEpsilon) facingSnapshot = deltaX > 0f;
+            }
             owner.SetFacingRight(facingSnapshot);
             if (facingSnapshot != previousFacing) initialExteriorPose = null;
-            targetSnapshotX = targetBody.bounds.center.x;
-            targetSnapshotHalfWidth = targetBody.bounds.extents.x;
+            if (!fixedTargetCenterX.HasValue) targetSnapshotX = targetBody.bounds.center.x;
+            if (!fixedTargetHalfWidth.HasValue) targetSnapshotHalfWidth = targetBody.bounds.extents.x;
         }
         float facingSnapshotSign = facingSnapshot ? 1f : -1f;
 
@@ -223,7 +234,7 @@ public class SkillExecutor : MonoBehaviour
 
                 while (elapsed + Mathf.Epsilon < windowStart)
                 {
-                    if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                    if ((fixedFacingRight.HasValue || overshootTarget) && owner.IsFacingRight != facingSnapshot)
                         owner.SetFacingRight(facingSnapshot);
                     SkillMotionPhase phase = elapsed < 0f ? SkillMotionPhase.AttackMotion :
                         elapsed < firstWindowStart ? SkillMotionPhase.Pre : SkillMotionPhase.Active;
@@ -242,7 +253,7 @@ public class SkillExecutor : MonoBehaviour
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                     elapsed += Time.fixedDeltaTime;
                     CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
-                    if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                    if ((fixedFacingRight.HasValue || overshootTarget) && owner.IsFacingRight != facingSnapshot)
                         owner.SetFacingRight(facingSnapshot);
                     if (owner.IsFacingRight != facingSnapshot)
                     {
@@ -251,19 +262,26 @@ public class SkillExecutor : MonoBehaviour
                     }
                     if (!TryCalculateEffectPoseForFacing(owner, attackEffectData, facingSnapshot,
                         out sampledPose, out _)) return false;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    if (TryCreateEffectSweepForFacing(owner, attackEffectData, sampledPose,
+                        sourceId, generation, tick, facingSnapshot, false,
+                        out CombatStats.AttackSweep2D preSweep, out _))
+                        DrawEffectBoundsDebug(owner, preSweep, PreBoundsColor);
+#endif
                     if (overshootTarget && phaseMoves && phase != SkillMotionPhase.Active &&
                         TryCreateEffectSweepForFacing(owner, attackEffectData, previousSampledPose,
                             sourceId, generation, tick, facingSnapshot, exteriorPose.HasValue,
                             out CombatStats.AttackSweep2D motionSweep, out _))
                     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        DrawEffectBoundsDebug(owner, motionSweep);
-#endif
-                        if (!tickHitCommitted)
+                        if (!tickHitCommitted && ApplyAttackSweep(owner, patternDamage, motionSweep))
                         {
-                            tickHitCommitted = ApplyAttackSweep(owner, patternDamage, motionSweep);
-                            if (tickHitCommitted) onFirstSuccessfulHit?.Invoke();
+                            tickHitCommitted = true;
+                            onFirstSuccessfulHit?.Invoke();
                         }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        DrawEffectBoundsDebug(owner, motionSweep,
+                            tickHitCommitted ? ActiveBoundsColor : PreBoundsColor);
+#endif
                     }
                     TryUpdateExteriorPose(target, owner, attackEffectData, facingSnapshot, sampledPose,
                         sourceId, generation, tick, ref exteriorPose, ref exteriorLocked);
@@ -276,7 +294,7 @@ public class SkillExecutor : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (overshootTarget) HideEffectBoundsDebug();
 #endif
-                if (overshootTarget && owner.IsFacingRight != facingSnapshot)
+                if ((fixedFacingRight.HasValue || overshootTarget) && owner.IsFacingRight != facingSnapshot)
                     owner.SetFacingRight(facingSnapshot);
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
                 if (canStartWindow != null && !canStartWindow()) return false;
@@ -287,8 +305,10 @@ public class SkillExecutor : MonoBehaviour
                     out CombatStats.AttackSweep2D sweep, out effectRotation)) return false;
                 Vector2 previousEffectCenter = sweep.Current;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                DrawEffectBoundsDebug(owner, sweep);
+                DrawEffectBoundsDebug(owner, sweep, ActiveBoundsColor);
 #endif
+                lastActiveSweep = sweep;
+                hasLastActiveSweep = true;
 
                 if (!overshootTarget || IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active))
                 {
@@ -319,8 +339,9 @@ public class SkillExecutor : MonoBehaviour
                         out CombatStats.AttackSweep2D movedSweep, out _)) return false;
                     previousEffectCenter = movedSweep.Current;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    DrawEffectBoundsDebug(owner, movedSweep);
+                    DrawEffectBoundsDebug(owner, movedSweep, ActiveBoundsColor);
 #endif
+                    lastActiveSweep = movedSweep;
                     if ((!overshootTarget || IsMotionPhaseEnabled(skill.MotionPhaseMask, SkillMotionPhase.Active)) &&
                         !tickHitCommitted &&
                         ApplyAttackSweep(owner, patternDamage, movedSweep))
@@ -345,6 +366,9 @@ public class SkillExecutor : MonoBehaviour
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
                 recoveryElapsed += Time.fixedDeltaTime;
                 CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (hasLastActiveSweep) DrawEffectBoundsDebug(owner, lastActiveSweep, PostBoundsColor);
+#endif
             }
             return true;
         }
@@ -355,6 +379,28 @@ public class SkillExecutor : MonoBehaviour
 #endif
             owner.StopAttackMotionImmediately();
         }
+    }
+
+    public bool ExecuteLandingHit(uint skillId, UnitBase owner, float damage, uint patternIdx,
+        CancellationToken cancellationToken)
+    {
+        EffectDataTable table = DataTableManager.Instance != null
+            ? DataTableManager.Instance.GetDB<EffectDataTable>(DataTableType.EffectData) : null;
+        if (owner == null || table == null || !table.TryResolveAttackEffect(
+            owner.UnitIdx, patternIdx, skillId, 0u, out EffectData effect) || !effect.HasValidActiveBounds)
+            return false;
+        uint generation = owner.ActionGeneration;
+        bool facing = owner.IsFacingRight;
+        if (!TryCalculateEffectPoseForFacing(owner, effect, facing, out Vector2 position, out _) ||
+            !TryCreateEffectSweepForFacing(owner, effect, position, owner.GetInstanceID(), generation,
+                0u, facing, false, out CombatStats.AttackSweep2D sweep, out _)) return false;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        DrawEffectBoundsDebug(owner, sweep, ActiveBoundsColor);
+#endif
+        ApplyAttackSweep(owner, damage, sweep);
+        SpawnAttackEffectForWindowAsync(effect, owner, generation, facing, effect.Duration,
+            cancellationToken).Forget();
+        return true;
     }
 
     private static bool TryCalculateEffectPose(UnitBase owner, EffectData effect, out Vector2 position,
@@ -384,9 +430,15 @@ public class SkillExecutor : MonoBehaviour
             return false;
         }
         float faceSign = facingRight ? 1f : -1f;
+        Vector2 origin = body.bounds.center;
+        if (effect.PatternIdx == 6103u && !owner.TryGetGroundedAttackOrigin(out origin))
+        {
+            Debug.LogError($"[SkillExecutor] Unit {owner.UnitIdx}/Pattern {effect.PatternIdx}/Skill {effect.SkillIdx}/Effect {effect.Idx} requires grounded support; attack tick cancelled.");
+            return false;
+        }
         Vector2 local = new Vector2(faceSign * effect.SpawnPivotX, effect.SpawnPivotY) +
             new Vector2(faceSign * effect.ActiveCenterX, effect.ActiveCenterY) * effect.Scale;
-        position = (Vector2)body.bounds.center + (Vector2)(rotation * (Vector3)local);
+        position = origin + (Vector2)(rotation * (Vector3)local);
         return true;
     }
 
@@ -463,7 +515,7 @@ public class SkillExecutor : MonoBehaviour
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    private void DrawEffectBoundsDebug(UnitBase owner, CombatStats.AttackSweep2D sweep)
+    private void DrawEffectBoundsDebug(UnitBase owner, CombatStats.AttackSweep2D sweep, Color color)
     {
         if (effectBoundsDebugLine == null)
         {
@@ -481,8 +533,6 @@ public class SkillExecutor : MonoBehaviour
             effectBoundsDebugLine.sortingOrder = existing != null ? existing.sortingOrder + 1 : 100;
         }
 
-        Color color = sweep.Shape == ActiveShape.Circle ? Color.cyan :
-            sweep.Shape == ActiveShape.Capsule ? Color.yellow : Color.red;
         effectBoundsDebugLine.startColor = color;
         effectBoundsDebugLine.endColor = color;
         effectBoundsDebugLine.enabled = true;
@@ -761,7 +811,7 @@ public class SkillExecutor : MonoBehaviour
     public static float CalculateAttackRecoverySeconds(float animationLength, float elapsed, float configuredRecovery) =>
         Mathf.Max(Mathf.Max(0f, configuredRecovery), Mathf.Max(0f, animationLength - Mathf.Max(0f, elapsed)));
 
-    public async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position,
+    public static async UniTask<GameObject> SpawnEffectByEffectIdxAsync(uint effectIdx, Vector3 position,
         Quaternion rotation = default, float durationOverride = -1f)
     {
         if (effectIdx == 0) return null;
@@ -814,7 +864,6 @@ public class SkillExecutor : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
         stats = GetComponent<CombatStats>();
     }
 

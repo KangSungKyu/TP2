@@ -86,16 +86,18 @@ namespace QA.Tests
         [Test]
         public void Test05_MonsterAndBossPatternDataTable_ParsingAndKeyValidity()
         {
-            var csv = new StringBuilder("idx,patternnametextidx,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx,minstartdistance,maxstartdistance,projectileresourceidx,projectilespeed,projectilemaxdistance\n");
+            var csv = new StringBuilder("idx,patternnametextidx,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,jumpvelocityy,skillidx,minstartdistance,maxstartdistance,projectileresourceidx,projectilespeed,projectilemaxdistance\n");
             for (uint idx = 6001; idx <= 6008; idx++)
-                csv.AppendLine($"{idx},2010,1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001,0,0,0,0,0");
+                csv.AppendLine($"{idx},2010,1,3,2.0,100,0.2,0.5,3.0,15,1.0,0,7001,0,0,0,0,0");
             for (uint idx = 6100; idx <= 6103; idx++)
-                csv.AppendLine($"{idx},2010,1,3,2.0,100,0.2,0.5,3.0,15,1.0,7001,0,0,0,0,0");
+                csv.AppendLine($"{idx},2010,1,3,2.0,100,0.2,0.5,3.0,15,1.0,{(idx == 6103 ? "11.255556" : "0")},7001,0,0,0,0,0");
             MonsterPatternDataTable table = new MonsterPatternDataTable();
             table.LoadData(csv.ToString());
             Assert.AreEqual(12, table.GetDataCount(), "일반/가론 패턴 통합 파싱 검증");
             for (uint idx = 6001; idx <= 6008; idx++) Assert.IsTrue(table.TryGetPatternData(idx, out _));
             for (uint idx = 6100; idx <= 6103; idx++) Assert.IsTrue(table.TryGetPatternData(idx, out _));
+            Assert.IsTrue(table.TryGetPatternData(6103, out MonsterPatternData jump));
+            Assert.AreEqual(11.255556f, jump.JumpVelocityY, .000001f);
             Assert.Throws<CsvHelper.HeaderValidationException>(() => new MonsterPatternDataTable().LoadData(
                 "idx,patternnametextidx,executiontype,triggertype,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx\n6005,2016,4,3,10,100,0.6,0.7,2.5,14,1,7002"));
         }
@@ -190,9 +192,9 @@ namespace QA.Tests
         [Test]
         public void MonsterPatternChain_ValidatesAtomicallyAndExcludesChildren()
         {
-            const string header = "idx,patternnametextidx,executiontype,triggertype,triggersubject,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,skillidx,nextpatternidx,minstartdistance,maxstartdistance,projectileresourceidx,projectilespeed,projectilemaxdistance,attackmotionprofileidx\n";
+            const string header = "idx,patternnametextidx,executiontype,triggertype,triggersubject,triggervalue,randomweight,predelay,postdelay,cooldown,damage,chasetimeout,jumpvelocityy,skillidx,nextpatternidx,minstartdistance,maxstartdistance,projectileresourceidx,projectilespeed,projectilemaxdistance,attackmotionprofileidx\n";
             static string Row(uint idx, uint next) =>
-                $"{idx},2010,1,0,0,0,100,0,0,0,10,1,7001,{next},0,2,0,0,0,0\n";
+                $"{idx},2010,1,0,0,0,100,0,0,0,10,1,0,7001,{next},0,2,0,0,0,0\n";
 
             var valid = new MonsterPatternDataTable();
             valid.LoadData(header + Row(6001, 6002) + Row(6002, 6003) + Row(6003, 0));

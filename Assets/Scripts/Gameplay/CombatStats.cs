@@ -363,7 +363,7 @@ public class CombatStats : MonoBehaviour
 
     public DamageResolution ResolveDamage(float amount, bool isGroundAttack = false, bool isJumped = false,
         CombatStats attacker = null, Vector2? attackOrigin = null, float guardAmountMultiplier = 1f,
-        AttackSweep2D? attackSweep = null, bool suppressParryPosture = false)
+        AttackSweep2D? attackSweep = null, bool suppressParryAttackerConsequences = false)
     {
         if (IsDead) return DamageResolution.Ignored;
         if (attackSweep.HasValue)
@@ -435,8 +435,11 @@ public class CombatStats : MonoBehaviour
 
             if (attacker != null)
             {
-                if (!suppressParryPosture) attacker.AddPosture(40f);
-                attacker.GetComponent<Monster>()?.CancelCurrentPattern(PatternCancelReason.Cancelled);
+                if (!suppressParryAttackerConsequences)
+                {
+                    attacker.AddPosture(40f);
+                    attacker.GetComponent<Monster>()?.CancelCurrentPattern(PatternCancelReason.Cancelled);
+                }
             }
             return DamageResolution.Parry;
         }
@@ -674,9 +677,6 @@ public class CombatStats : MonoBehaviour
 
     private void SpawnResponseEffect(uint effectIdx, Vector3 spawnPos)
     {
-        if (SkillExecutor.Instance != null)
-        {
-            SkillExecutor.Instance.SpawnEffectByEffectIdxAsync(effectIdx, spawnPos).Forget();
-        }
+        SkillExecutor.SpawnEffectByEffectIdxAsync(effectIdx, spawnPos).Forget();
     }
 }

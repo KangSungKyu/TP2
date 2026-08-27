@@ -69,12 +69,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Anims
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2294e7eb10bb17f46939170266328347
-    m_Address: OrbitalMarksman_Attack6006
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Anims
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 45c94eb9d4abace4986a2007c0b119dd
     m_Address: WaveHeavyAnimatorController
     m_ReadOnly: 0

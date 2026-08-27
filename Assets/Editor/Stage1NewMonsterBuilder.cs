@@ -11,16 +11,18 @@ public static class Stage1NewMonsterBuilder
     public static void Build()
     {
         BuildMonster(3104, "ShieldSentinel", "Attack6003", "Attack6004");
-        BuildMonster(3105, "OrbitalMarksman", "Attack6005", "Attack6006");
+        BuildMonster(3105, "OrbitalMarksman", "Attack6005");
         AssetDatabase.SaveAssets();
         AddressablePipeline.RegisterAllAddressables();
     }
 
-    private static void BuildMonster(uint unitIdx, string name, string attackA, string attackB)
+    private static void BuildMonster(uint unitIdx, string name, string attackA, string attackB = null)
     {
         string textureRoot = $"Assets/Textures/Characters/Monsters/{name}/{name}_";
         var clips = new Dictionary<string, AnimationClip>();
-        foreach (string action in new[] { "Idle", "Move", "Hit", "Death", attackA, attackB })
+        var actions = new List<string> { "Idle", "Move", "Hit", "Death", attackA };
+        if (!string.IsNullOrEmpty(attackB)) actions.Add(attackB);
+        foreach (string action in actions)
             clips[action] = BuildClip(textureRoot + action + ".png", $"Assets/Anims/Monster/{name}_{action}.anim", action == "Idle" || action == "Move");
 
         string controllerPath = $"Assets/Anims/Monster/{name}AnimatorController.controller";
@@ -36,7 +38,7 @@ public static class Stage1NewMonsterBuilder
         AddState(machine, clips["Hit"], $"{name}_Hit", 5);
         AddState(machine, clips["Death"], $"{name}_Death", 8);
         AddState(machine, clips[attackA], $"{name}_{attackA}", 7);
-        machine.AddState($"{name}_{attackB}").motion = clips[attackB];
+        if (!string.IsNullOrEmpty(attackB)) machine.AddState($"{name}_{attackB}").motion = clips[attackB];
         EditorUtility.SetDirty(controller);
 
         var root = new GameObject($"Unit_{unitIdx}");

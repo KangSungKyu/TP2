@@ -157,6 +157,13 @@ public class KinematicMotor2D : MonoBehaviour
                Mathf.Abs(closest.y - probe.y) <= SkinWidth * 2f;
     }
 
+    public bool HasVerticalClearance(float distance)
+    {
+        if (distance <= 0f || physicsCollider == null || !physicsCollider.enabled) return false;
+        return physicsCollider.Cast(Vector2.up, groundWithPlatformFilter, hitBuffer,
+            distance + SkinWidth) == 0;
+    }
+
     public void SetVelocityY(float vy)
     {
         Velocity = new Vector2(Velocity.x, vy);

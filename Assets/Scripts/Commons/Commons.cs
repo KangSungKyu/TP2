@@ -380,6 +380,9 @@ public class MonsterPatternData
     [Name("chasetimeout")]
     public float ChaseTimeout { get; set; } // 추격 제한 시간 (초)
 
+    [Name("jumpvelocityy")]
+    public float JumpVelocityY { get; set; } // 0=no jump
+
     [Name("skillidx")]
     public uint SkillIdx { get; set; } // 연동 SkillData Idx (Type 7: 7001~)
 
