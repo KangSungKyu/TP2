@@ -2300,6 +2300,66 @@ namespace QA.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator PlayerGroggy_LocksActionsForSharedDurationAndClearsLifecycleState()
+        {
+            var playerObject = new GameObject("PlayerGroggy_QA");
+            playerObject.SetActive(false);
+            try
+            {
+                playerObject.AddComponent<CapsuleCollider2D>();
+                playerObject.AddComponent<Rigidbody2D>();
+                var motor = playerObject.AddComponent<KinematicMotor2D>();
+                var player = playerObject.AddComponent<Player>();
+                playerObject.SetActive(true);
+                typeof(UnitBase).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(player, null);
+                typeof(Player).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(player, null);
+                motor.InitMotor();
+                yield return null;
+
+                CombatStats stats = player.Stats;
+                stats.MaxPosture = 10f;
+                stats.InitStats();
+                stats.SetGuarding(true);
+                stats.SetParrying(true);
+                stats.SetDodging(true);
+                typeof(Player).GetField("isAttacking", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(player, true);
+                motor.SetTargetVelocityX(4f);
+                motor.SetVelocityY(3f);
+                Assert.IsTrue(player.RequestLocalHitStop(1, 1u, 0u));
+
+                stats.AddPosture(10f);
+                Assert.IsTrue(stats.IsGroggy);
+                Assert.AreEqual(3f, (float)typeof(CombatStats).GetField("DefaultGroggyDuration",
+                    BindingFlags.Static | BindingFlags.NonPublic).GetRawConstantValue());
+                Assert.IsFalse(player.IsLocalHitStopped, "Groggy must supersede local hit-stop.");
+                Assert.IsFalse(stats.IsGuarding || stats.IsParrying || stats.IsDodging);
+                Assert.IsFalse((bool)typeof(Player).GetField("isAttacking",
+                    BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player));
+                Assert.AreEqual(Vector2.zero, motor.Velocity);
+                Assert.AreEqual(PlayerState.Hit, player.CurrentState);
+
+                typeof(CombatStats).GetField("groggyTimer", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(stats, 0.01f);
+                yield return null;
+                yield return null;
+                Assert.IsFalse(stats.IsGroggy);
+                Assert.AreEqual(PlayerState.Idle, player.CurrentState);
+
+                stats.AddPosture(10f);
+                Assert.IsTrue(stats.IsGroggy);
+                playerObject.SetActive(false);
+                Assert.IsFalse(stats.IsGroggy, "Disable/pool lifecycle must discard stale groggy state.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
         [Test]
         public void SkillMotionPhaseMask_UsesOneContextAndOneDistanceBudget()
         {

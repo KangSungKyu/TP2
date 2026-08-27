@@ -179,6 +179,8 @@ public class CombatStats : MonoBehaviour
     {
         UnregisterDefenseBody();
         RestoreHitFlash();
+        IsGroggy = false;
+        groggyTimer = 0f;
         SetGuardDebugVisible(false);
     }
 

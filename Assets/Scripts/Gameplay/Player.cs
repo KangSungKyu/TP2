@@ -60,6 +60,7 @@ public class Player : UnitBase
     private bool deathSequenceActive;
     private Collider2D[] deathColliders;
     private uint deathGeneration;
+    private uint actionGeneration;
 
 
     // =========================================================================
@@ -85,6 +86,7 @@ public class Player : UnitBase
     }
     private void OnDisable()
     {
+        CancelPlayerActions();
         ClearLocalHitStop();
         skillExecutor?.CancelActiveEffects();
         Deactivated?.Invoke(this);
@@ -150,7 +152,46 @@ public class Player : UnitBase
         if (stats != null)
         {
             stats.OnDeath.AddListener(Die);
+            stats.OnGroggyState.AddListener(OnGroggyStarted);
+            stats.OnGroggyEnded.AddListener(OnGroggyEnded);
         }
+    }
+
+    private bool CanAct(uint generation) =>
+        generation == actionGeneration && !deathSequenceActive && stats != null && !stats.IsGroggy;
+
+    private void CancelPlayerActions()
+    {
+        actionGeneration++;
+        isAttacking = false;
+        hasQueuedAttack = false;
+        comboStep = 0;
+        currentMoveDir = Vector2.zero;
+        stats?.SetParrying(false);
+        stats?.SetGuarding(false);
+        stats?.SetDodging(false);
+        skillExecutor?.CancelActiveEffects();
+        if (motor != null)
+        {
+            motor.ApplyKnockback(Vector2.zero);
+            motor.StopHorizontalImmediately();
+            motor.SetVelocityY(0f);
+            motor.SetJumpHeld(false);
+        }
+    }
+
+    private void OnGroggyStarted()
+    {
+        if (deathSequenceActive) return;
+        ClearLocalHitStop();
+        CancelPlayerActions();
+        SetState(PlayerState.Hit, true);
+    }
+
+    private void OnGroggyEnded()
+    {
+        if (deathSequenceActive || !isActiveAndEnabled || stats == null || stats.IsDead) return;
+        SetState(PlayerState.Idle, true);
     }
 
     public void Die()
@@ -158,7 +199,7 @@ public class Player : UnitBase
         if (deathSequenceActive) return;
         ClearLocalHitStop();
         deathSequenceActive = true;
-        skillExecutor?.CancelActiveEffects();
+        CancelPlayerActions();
         SetState(PlayerState.Hit, true);
         if (motor != null)
         {
@@ -175,6 +216,7 @@ public class Player : UnitBase
     public void ResetAfterDeath(Vector3 position)
     {
         ClearLocalHitStop();
+        CancelPlayerActions();
         deathGeneration++;
         deathSequenceActive = false;
         if (spriteRenderer != null)
@@ -219,7 +261,7 @@ public class Player : UnitBase
     private void Update()
     {
         var keyboard = Keyboard.current;
-        if (keyboard == null) return;
+        if (keyboard == null || deathSequenceActive || stats == null || stats.IsGroggy) return;
 
         if (wallJumpLockoutTimer > 0f)
         {
@@ -475,7 +517,7 @@ public class Player : UnitBase
             if (!isAttacking)
             {
                 comboStep = 1;
-                PerformAttackStepAsync(this.GetCancellationTokenOnDestroy()).Forget();
+                PerformAttackStepAsync(actionGeneration, this.GetCancellationTokenOnDestroy()).Forget();
             }
             else if (comboStep < 3)
             {
@@ -484,8 +526,9 @@ public class Player : UnitBase
         }
     }
 
-    private async UniTaskVoid PerformAttackStepAsync(CancellationToken cancellationToken)
+    private async UniTaskVoid PerformAttackStepAsync(uint generation, CancellationToken cancellationToken)
     {
+        if (!CanAct(generation)) return;
         isAttacking = true;
         hasQueuedAttack = false;
         
@@ -520,6 +563,7 @@ public class Player : UnitBase
         {
             Debug.LogError($"[Player] Unit idx {UnitIdx} has no SkillExecutor; attack cancelled.");
         }
+        if (!CanAct(generation)) return;
 
         float windowElapsed = 0f;
         float recoveryWindow = skillExecutor != null
@@ -529,6 +573,7 @@ public class Player : UnitBase
 
         while (windowElapsed < recoveryWindow)
         {
+            if (!CanAct(generation)) return;
             windowElapsed += Time.deltaTime;
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
@@ -541,7 +586,7 @@ public class Player : UnitBase
 
         if (nextComboTriggered && comboStep <= 3)
         {
-            PerformAttackStepAsync(cancellationToken).Forget();
+            PerformAttackStepAsync(generation, cancellationToken).Forget();
         }
         else
         {
@@ -555,6 +600,7 @@ public class Player : UnitBase
 
     private async UniTaskVoid GuardParrySequenceAsync(Keyboard keyboard, CancellationToken cancellationToken)
     {
+        uint generation = actionGeneration;
         if (motor != null)
         {
             motor.SetTargetVelocityX(0);
@@ -565,6 +611,7 @@ public class Player : UnitBase
         SetState(PlayerState.Parry);
 
         await UniTask.Delay(150, cancellationToken: cancellationToken);
+        if (!CanAct(generation)) return;
         stats.SetParrying(false);
 
         if (keyboard.spaceKey.isPressed)
@@ -575,6 +622,7 @@ public class Player : UnitBase
             while (keyboard.spaceKey.isPressed && !cancellationToken.IsCancellationRequested)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                if (!CanAct(generation)) return;
             }
 
             stats.SetGuarding(false);
@@ -589,6 +637,7 @@ public class Player : UnitBase
     private async UniTaskVoid DodgeAsync(Vector3 dodgeDir, CancellationToken cancellationToken)
     {
         if (stats.IsDodging || stats.IsGuarding || stats.IsParrying) return;
+        uint generation = actionGeneration;
         stats.SetDodging(true);
         SetState(PlayerState.Dodge);
 
@@ -597,6 +646,7 @@ public class Player : UnitBase
 
         while (elapsed < duration)
         {
+            if (!CanAct(generation)) return;
             elapsed += Time.deltaTime;
 
             if (motor != null)
@@ -616,6 +666,8 @@ public class Player : UnitBase
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
+
+        if (!CanAct(generation)) return;
 
         if (motor != null)
         {
