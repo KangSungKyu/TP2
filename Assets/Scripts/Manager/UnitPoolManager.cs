@@ -104,6 +104,7 @@ public class UnitPoolManager : Singleton<UnitPoolManager>
     public void DespawnUnit(UnitBase unit)
     {
         if (unit == null || unit.gameObject == null) return;
+        unit.ClearLocalHitStop();
 
         if (unit is Monster monster)
         {

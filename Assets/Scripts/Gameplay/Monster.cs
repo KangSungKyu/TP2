@@ -187,6 +187,7 @@ public class Monster : UnitBase
 
     protected virtual void OnDisable()
     {
+        ClearLocalHitStop();
         CancelCurrentPattern(PatternCancelReason.Disabled);
         ActiveMonsters.Remove(this);
         Deactivated?.Invoke(this);
@@ -258,6 +259,7 @@ public class Monster : UnitBase
     public virtual async void Die()
     {
         if (deathSequenceActive) return;
+        ClearLocalHitStop();
         deathSequenceActive = true;
         CancelCurrentPattern(PatternCancelReason.Death);
         SetAnimState(8);
@@ -302,6 +304,7 @@ public class Monster : UnitBase
 
     public void ResetAfterDeath(Vector3 position)
     {
+        ClearLocalHitStop();
         actionGeneration++;
         patternCancellation?.Dispose();
         patternCancellation = null;
@@ -1228,6 +1231,7 @@ public class Monster : UnitBase
         uint cancelledGeneration = actionGeneration++;
         try
         {
+            ClearLocalHitStop();
             patternCancellation?.Cancel();
             patternCancellation?.Dispose();
             patternCancellation = null;

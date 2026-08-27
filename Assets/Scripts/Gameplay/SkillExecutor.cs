@@ -251,6 +251,7 @@ public class SkillExecutor : MonoBehaviour
                     float previousOwnerX = owner.transform.position.x;
                     Vector2 previousSampledPose = sampledPose;
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                    if (owner.IsLocalHitStopped) continue;
                     elapsed += Time.fixedDeltaTime;
                     CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
                     if ((fixedFacingRight.HasValue || overshootTarget) && owner.IsFacingRight != facingSnapshot)
@@ -331,6 +332,7 @@ public class SkillExecutor : MonoBehaviour
                         SkillMotionPhase.Active, lastWindowEnd - elapsed)) return false;
                     float previousOwnerX = owner.transform.position.x;
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                    if (owner.IsLocalHitStopped) continue;
                     elapsed += Time.fixedDeltaTime;
                     CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
                     if (!owner.IsActionGenerationCurrent(generation)) return true;
@@ -364,6 +366,7 @@ public class SkillExecutor : MonoBehaviour
                     SkillMotionPhase.Post, recoverySeconds - recoveryElapsed)) return false;
                 float previousOwnerX = owner.transform.position.x;
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+                if (owner.IsLocalHitStopped) continue;
                 recoveryElapsed += Time.fixedDeltaTime;
                 CompleteMotionStep(motionContext, previousOwnerX, owner.transform.position.x);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -657,14 +660,21 @@ public class SkillExecutor : MonoBehaviour
         var targets = new List<UnitBase>();
         CombatStats.CollectAttackSweepVictims(owner, sweep, targets);
         bool hit = false;
+        bool hitStop = false;
         foreach (UnitBase target in targets)
         {
-            target.Stats.TakeDamage(damage, attacker: owner.Stats, attackOrigin: sweep.Previous,
-                attackSweep: sweep);
+            CombatStats.DamageResolution result = target.Stats.ResolveDamage(damage,
+                attacker: owner.Stats, attackOrigin: sweep.Previous, attackSweep: sweep);
+            hitStop |= ShouldTriggerAttackerHitStop(result);
             hit = true;
         }
+        if (hitStop) owner.RequestLocalHitStop(sweep.SourceId, sweep.Generation, sweep.Tick);
         return hit;
     }
+
+    internal static bool ShouldTriggerAttackerHitStop(CombatStats.DamageResolution result) =>
+        result == CombatStats.DamageResolution.Body || result == CombatStats.DamageResolution.Guard ||
+        result == CombatStats.DamageResolution.Parry;
 
     public bool TryPlaySkillAnimation(Animator animator, uint skillId)
     {

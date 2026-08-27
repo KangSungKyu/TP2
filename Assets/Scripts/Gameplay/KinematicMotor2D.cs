@@ -64,9 +64,11 @@ public class KinematicMotor2D : MonoBehaviour
     private bool isJumpHeld;
     private bool hasHorizontalStopPosition;
     private float horizontalStopPositionX;
+    private UnitBase unit;
 
     public void InitMotor()
     {
+        if (unit == null) unit = GetComponent<UnitBase>();
         if (body == null) body = GetComponent<Rigidbody2D>();
         if (body == null) body = gameObject.AddComponent<Rigidbody2D>();
 
@@ -425,6 +427,7 @@ public class KinematicMotor2D : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (unit != null && unit.IsLocalHitStopped) return;
         SimulateStep(Time.fixedDeltaTime);
     }
 

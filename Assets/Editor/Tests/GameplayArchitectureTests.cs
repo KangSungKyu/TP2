@@ -2220,6 +2220,86 @@ namespace QA.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator AttackerLocalHitStop_UsesResolutionDedupeAndRestoresLocalState()
+        {
+            var ownerObject = new GameObject("AttackerLocalHitStop_QA");
+            float originalTimeScale = Time.timeScale;
+            try
+            {
+                ownerObject.AddComponent<BoxCollider2D>();
+                ownerObject.AddComponent<Rigidbody2D>();
+                var motor = ownerObject.AddComponent<KinematicMotor2D>();
+                var owner = ownerObject.AddComponent<Monster>();
+                typeof(UnitBase).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(owner, null);
+                motor.InitMotor();
+                Animator animator = owner.Animator;
+                animator.speed = 0.75f;
+                float globalTimeScale = Time.timeScale;
+                MethodInfo shouldStop = typeof(SkillExecutor).GetMethod("ShouldTriggerAttackerHitStop",
+                    BindingFlags.Static | BindingFlags.NonPublic);
+                Assert.NotNull(shouldStop);
+                foreach (CombatStats.DamageResolution result in new[]
+                    { CombatStats.DamageResolution.Body, CombatStats.DamageResolution.Guard,
+                      CombatStats.DamageResolution.Parry })
+                    Assert.IsTrue((bool)shouldStop.Invoke(null, new object[] { result }));
+                foreach (CombatStats.DamageResolution result in new[]
+                    { CombatStats.DamageResolution.None, CombatStats.DamageResolution.Ignored,
+                      CombatStats.DamageResolution.Dodge })
+                    Assert.IsFalse((bool)shouldStop.Invoke(null, new object[] { result }));
+
+                Assert.IsTrue(owner.RequestLocalHitStop(10, 20u, 0u));
+                Assert.IsFalse(owner.RequestLocalHitStop(10, 20u, 0u), "Same sweep tick must dedupe.");
+                Assert.IsTrue(owner.RequestLocalHitStop(10, 20u, 1u), "Next multi-hit tick is independent.");
+                Assert.IsTrue(owner.IsLocalHitStopped);
+                Assert.AreEqual(0f, animator.speed);
+                Assert.AreEqual(globalTimeScale, Time.timeScale);
+
+                motor.SetTargetVelocityX(2f);
+                float startedAt = Time.realtimeSinceStartup;
+                float fixedStartedAt = Time.fixedTime;
+                Vector3 stoppedPosition = ownerObject.transform.position;
+                yield return new WaitForFixedUpdate();
+                Assert.AreEqual(stoppedPosition.x, ownerObject.transform.position.x, 0.0001f,
+                    "Motor simulation must not write during hit-stop.");
+                while (owner.IsLocalHitStopped) yield return null;
+                Assert.GreaterOrEqual(Time.realtimeSinceStartup - startedAt, 0.01f);
+                Assert.GreaterOrEqual(Time.fixedTime, fixedStartedAt + Time.fixedDeltaTime);
+                Assert.IsFalse(owner.IsLocalHitStopped);
+                Assert.AreEqual(0.75f, animator.speed);
+                Assert.AreEqual(globalTimeScale, Time.timeScale);
+                yield return new WaitForFixedUpdate();
+                Assert.Greater(ownerObject.transform.position.x, stoppedPosition.x,
+                    "Motor must resume with preserved target velocity.");
+
+                Assert.IsTrue(owner.RequestLocalHitStop(11, 21u, 0u));
+                typeof(Monster).GetMethod("CancelCurrentPattern",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                    .Invoke(owner, new object[] { PatternCancelReason.Death });
+                Assert.IsFalse(owner.IsLocalHitStopped, "Death cancellation must clear stale restore state.");
+
+                Assert.IsTrue(owner.RequestLocalHitStop(12, 22u, 0u));
+                ownerObject.SetActive(false);
+                Assert.IsFalse(owner.IsLocalHitStopped, "Disable/pool lifecycle must clear hit-stop.");
+                ownerObject.SetActive(true);
+
+                string motorSource = File.ReadAllText("Assets/Scripts/Gameplay/KinematicMotor2D.cs");
+                StringAssert.Contains("unit != null && unit.IsLocalHitStopped", motorSource);
+                string executorSource = File.ReadAllText("Assets/Scripts/Gameplay/SkillExecutor.cs");
+                Assert.GreaterOrEqual(Regex.Matches(executorSource,
+                    @"if \(owner\.IsLocalHitStopped\) continue;").Count, 3);
+                StringAssert.DoesNotContain("Time.timeScale =", executorSource);
+                StringAssert.DoesNotContain("RequestLocalHitStop", File.ReadAllText(
+                    "Assets/Scripts/Gameplay/Combat/UnitProjectile2D.cs"));
+            }
+            finally
+            {
+                Time.timeScale = originalTimeScale;
+                Object.DestroyImmediate(ownerObject);
+            }
+        }
+
         [Test]
         public void SkillMotionPhaseMask_UsesOneContextAndOneDistanceBudget()
         {

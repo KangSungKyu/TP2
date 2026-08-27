@@ -85,6 +85,7 @@ public class Player : UnitBase
     }
     private void OnDisable()
     {
+        ClearLocalHitStop();
         skillExecutor?.CancelActiveEffects();
         Deactivated?.Invoke(this);
     }
@@ -155,6 +156,7 @@ public class Player : UnitBase
     public void Die()
     {
         if (deathSequenceActive) return;
+        ClearLocalHitStop();
         deathSequenceActive = true;
         skillExecutor?.CancelActiveEffects();
         SetState(PlayerState.Hit, true);
@@ -172,6 +174,7 @@ public class Player : UnitBase
 
     public void ResetAfterDeath(Vector3 position)
     {
+        ClearLocalHitStop();
         deathGeneration++;
         deathSequenceActive = false;
         if (spriteRenderer != null)

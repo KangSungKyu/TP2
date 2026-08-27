@@ -23,6 +23,7 @@ public class UnitBase : MonoBehaviour
         (this is Player ? FactionType.PlayerAlly : this is Monster ? FactionType.Enemy : FactionType.None);
     public virtual uint ActionGeneration => sharedActionGeneration;
     public bool IsFacingRight { get; private set; } = true;
+    public bool IsLocalHitStopped { get; private set; }
 
 
     // =========================================================================
@@ -38,6 +39,13 @@ public class UnitBase : MonoBehaviour
     protected Rigidbody2D rb2d;
     protected KinematicMotor2D motor;
     private uint sharedActionGeneration;
+    private uint localHitStopRunnerId;
+    private float localHitStopUntilRealtime;
+    private float localHitStopUntilFixedTime;
+    private float animatorSpeedBeforeHitStop = 1f;
+    private int lastHitStopSourceId;
+    private uint lastHitStopGeneration = uint.MaxValue;
+    private uint lastHitStopTick = uint.MaxValue;
 
     protected bool isGrounded => motor != null ? motor.IsGrounded : false;
 
@@ -126,6 +134,56 @@ public class UnitBase : MonoBehaviour
         return true;
     }
     public virtual bool IsActionGenerationCurrent(uint generation) => generation == sharedActionGeneration && isActiveAndEnabled;
+
+    public bool RequestLocalHitStop(int sourceId, uint sourceGeneration, uint tick, float duration = 0.01f)
+    {
+        if (!isActiveAndEnabled || duration <= 0f ||
+            IsLocalHitStopped && lastHitStopSourceId == sourceId &&
+            lastHitStopGeneration == sourceGeneration && lastHitStopTick == tick) return false;
+        lastHitStopSourceId = sourceId;
+        lastHitStopGeneration = sourceGeneration;
+        lastHitStopTick = tick;
+        localHitStopUntilRealtime = Mathf.Max(localHitStopUntilRealtime,
+            Time.realtimeSinceStartup + duration);
+        localHitStopUntilFixedTime = Mathf.Max(localHitStopUntilFixedTime,
+            Time.fixedTime + Time.fixedDeltaTime);
+        if (IsLocalHitStopped) return true;
+        IsLocalHitStopped = true;
+        if (animator != null)
+        {
+            animatorSpeedBeforeHitStop = animator.speed;
+            animator.speed = 0f;
+        }
+        RunLocalHitStopAsync(++localHitStopRunnerId, ActionGeneration).Forget();
+        return true;
+    }
+
+    public void ClearLocalHitStop()
+    {
+        localHitStopRunnerId++;
+        if (IsLocalHitStopped && animator != null) animator.speed = animatorSpeedBeforeHitStop;
+        IsLocalHitStopped = false;
+        localHitStopUntilRealtime = 0f;
+        localHitStopUntilFixedTime = 0f;
+        lastHitStopSourceId = 0;
+        lastHitStopGeneration = uint.MaxValue;
+        lastHitStopTick = uint.MaxValue;
+    }
+
+    private async UniTaskVoid RunLocalHitStopAsync(uint runnerId, uint generation)
+    {
+        try
+        {
+            while (runnerId == localHitStopRunnerId && IsActionGenerationCurrent(generation) &&
+                (Time.realtimeSinceStartup < localHitStopUntilRealtime ||
+                 Time.fixedTime < localHitStopUntilFixedTime))
+                await UniTask.Yield(PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+        }
+        finally
+        {
+            if (runnerId == localHitStopRunnerId) ClearLocalHitStop();
+        }
+    }
 
     /// <summary>
     /// 대상 유닛(target)이 Groggy 상태일 때 공용 처형(Execution) 공격을 가합니다.
