@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -2357,6 +2358,181 @@ namespace QA.Tests
             finally
             {
                 Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [Test]
+        public void PlayerDodgeCharges_ConsumeRechargeAndResetLifecycle()
+        {
+            var playerObject = new GameObject("PlayerDodgeCharges_QA");
+            playerObject.SetActive(false);
+            try
+            {
+                var player = playerObject.AddComponent<Player>();
+                MethodInfo consume = typeof(Player).GetMethod("TryConsumeDodgeCharge",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo advance = typeof(Player).GetMethod("AdvanceDodgeRecharge",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo reset = typeof(Player).GetMethod("ResetDodgeCharges",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                int events = 0;
+                player.OnDodgeChargesChanged += (current, max) =>
+                {
+                    events++;
+                    Assert.That(current, Is.InRange(0, max));
+                    Assert.AreEqual(Player.MaxDodgeCharges, max);
+                };
+
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.AreEqual(0f, player.GetDodgeChargeProgress(0), 0.0001f);
+                advance.Invoke(player, new object[] { 1f });
+                Assert.AreEqual(0.5f, player.GetDodgeChargeProgress(0), 0.0001f);
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.AreEqual(0f, player.GetDodgeChargeProgress(1), 0.0001f);
+                advance.Invoke(player, new object[] { 1f });
+                Assert.AreEqual(2, player.CurrentDodgeCharges, "t0 charge must restore at t2.");
+                Assert.AreEqual(1f, player.GetDodgeChargeProgress(0), 0.0001f);
+                Assert.AreEqual(0.5f, player.GetDodgeChargeProgress(1), 0.0001f);
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                advance.Invoke(player, new object[] { 1f });
+                Assert.AreEqual(2, player.CurrentDodgeCharges, "t1 charge must restore at t3.");
+                advance.Invoke(player, new object[] { 1f });
+                Assert.AreEqual(3, player.CurrentDodgeCharges, "t2 charge must restore at t4.");
+                Assert.AreEqual(6, events, "Each consume/recovery mutation emits once.");
+
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                int beforeRejected = events;
+                Assert.IsFalse((bool)consume.Invoke(player, null));
+                Assert.AreEqual(beforeRejected, events, "Rejected dodge is side-effect free.");
+                advance.Invoke(player, new object[] { 0f });
+                Assert.AreEqual(0, player.CurrentDodgeCharges, "Scaled clock must pause at deltaTime zero.");
+                advance.Invoke(player, new object[] { 2f });
+                Assert.AreEqual(3, player.CurrentDodgeCharges);
+                Assert.AreEqual(beforeRejected + 1, events, "Same-tick expiries emit one aggregate event.");
+
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                int beforeReset = events;
+                reset.Invoke(player, null);
+                Assert.AreEqual(3, player.CurrentDodgeCharges);
+                Assert.AreEqual(beforeReset + 1, events);
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+                int update = source.IndexOf("private void Update()", System.StringComparison.Ordinal);
+                Assert.Less(source.IndexOf("AdvanceDodgeRecharge(Time.deltaTime);", update,
+                    System.StringComparison.Ordinal), source.IndexOf("stats.IsGroggy ||", update,
+                    System.StringComparison.Ordinal), "Groggy/hit-stop must not pause recharge.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator PlayerDodgeRecovery_BlocksForPointOneSecondsAndGroggyCancelsStaleState()
+        {
+            var playerObject = new GameObject("PlayerDodgeRecovery_QA");
+            playerObject.SetActive(false);
+            try
+            {
+                playerObject.AddComponent<CapsuleCollider2D>();
+                playerObject.AddComponent<Rigidbody2D>();
+                var motor = playerObject.AddComponent<KinematicMotor2D>();
+                var player = playerObject.AddComponent<Player>();
+                playerObject.SetActive(true);
+                typeof(UnitBase).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(player, null);
+                motor.InitMotor();
+                player.Stats.MaxPosture = 10f;
+                player.Stats.InitStats();
+                MethodInfo dodge = typeof(Player).GetMethod("DodgeAsync",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo recovering = typeof(Player).GetField("isDodgeRecovering",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+
+                dodge.Invoke(player, new object[] { Vector3.right, System.Threading.CancellationToken.None });
+                Assert.IsTrue(player.Stats.IsDodging);
+                while (player.Stats.IsDodging) yield return null;
+                Assert.IsTrue((bool)recovering.GetValue(player));
+                while ((bool)recovering.GetValue(player)) yield return null;
+                Assert.AreEqual(PlayerState.Idle, player.CurrentState);
+
+                dodge.Invoke(player, new object[] { Vector3.right, System.Threading.CancellationToken.None });
+                while (player.Stats.IsDodging) yield return null;
+                Assert.IsTrue((bool)recovering.GetValue(player));
+                player.Stats.AddPosture(10f);
+                Assert.IsTrue(player.Stats.IsGroggy);
+                Assert.IsFalse((bool)recovering.GetValue(player), "Groggy must cancel stale dodge recovery.");
+
+                string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+                StringAssert.Contains("stats.IsDodging || isDodgeRecovering) return;", source);
+                StringAssert.Contains("while (recoveryElapsed < 0.1f)", source);
+                StringAssert.Contains("recoveryElapsed += Time.deltaTime;", source);
+                StringAssert.DoesNotContain("Time.timeScale =", source);
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+            }
+        }
+
+        [Test]
+        public void MainHudDodgeCharges_BindsEventsAndSerializesThreeBatchedIcons()
+        {
+            var hudObject = new GameObject("DodgeChargeHUD_QA");
+            var playerObject = new GameObject("DodgeChargePlayer_QA");
+            playerObject.SetActive(false);
+            var icons = new UnityEngine.UI.Image[Player.MaxDodgeCharges];
+            try
+            {
+                var hud = hudObject.AddComponent<ProductionMainHUD>();
+                var player = playerObject.AddComponent<Player>();
+                for (int i = 0; i < icons.Length; i++)
+                    icons[i] = new GameObject($"DodgeChargeIcon_{i + 1}").AddComponent<UnityEngine.UI.Image>();
+                typeof(ProductionMainHUD).GetField("dodgeChargeIcons", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(hud, icons);
+                MethodInfo bind = typeof(ProductionMainHUD).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Single(method => method.Name == "BindPlayer" && method.GetParameters()[0].ParameterType == typeof(Player));
+                MethodInfo consume = typeof(Player).GetMethod("TryConsumeDodgeCharge",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+
+                bind.Invoke(hud, new object[] { player });
+                Assert.IsTrue(icons.All(icon => icon.color == Color.white), "Snapshot must show all three charges.");
+                Assert.IsTrue(icons.All(icon => icon.fillAmount == 1f));
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.AreEqual(0f, icons[0].fillAmount);
+                Assert.AreEqual(Color.white, icons[1].color);
+                MethodInfo advance = typeof(Player).GetMethod("AdvanceDodgeRecharge",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo update = typeof(ProductionMainHUD).GetMethod("Update",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                advance.Invoke(player, new object[] { 1f });
+                update.Invoke(hud, null);
+                Assert.AreEqual(.5f, icons[0].fillAmount, .0001f);
+                advance.Invoke(player, new object[] { 1f });
+                Assert.AreEqual(1f, icons[0].fillAmount);
+                Assert.IsFalse((bool)typeof(ProductionMainHUD).GetField("updateDodgeChargeProgress",
+                    BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hud));
+
+                typeof(ProductionMainHUD).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(hud, null);
+                icons[0].color = Color.magenta;
+                Assert.IsTrue((bool)consume.Invoke(player, null));
+                Assert.AreEqual(Color.magenta, icons[0].color, "Disabled HUD must unsubscribe.");
+
+                string scene = File.ReadAllText("Assets/Scenes/MainScene.unity");
+                Assert.AreEqual(3, Regex.Matches(scene, @"m_Name: DodgeChargeIcon_[123]").Count);
+                Assert.AreEqual(3, Regex.Matches(scene, @"m_Name: DodgeChargeBackground_[123]").Count);
+                Assert.AreEqual(3, Regex.Matches(scene,
+                    @"m_Name: DodgeChargeIcon_[123][\s\S]{0,1800}guid: 5a5e36b7f1680864fb8ce7fb900245c4").Count);
+            }
+            finally
+            {
+                foreach (var icon in icons) if (icon != null) Object.DestroyImmediate(icon.gameObject);
+                Object.DestroyImmediate(playerObject);
+                Object.DestroyImmediate(hudObject);
             }
         }
 

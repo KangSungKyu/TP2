@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class Player : UnitBase
 {
+    public const int MaxDodgeCharges = 3;
     public static event Action<Player> Activated;
     public static event Action<Player> Deactivated;
     public static event Action MinimapToggleRequested;
@@ -28,6 +29,8 @@ public class Player : UnitBase
     public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
     public Collider2D MovementCollider => hitCollider;
     public KinematicMotor2D Motor => motor;
+    public int CurrentDodgeCharges { get; private set; } = MaxDodgeCharges;
+    public event Action<int, int> OnDodgeChargesChanged;
 
 
     // =========================================================================
@@ -61,6 +64,11 @@ public class Player : UnitBase
     private Collider2D[] deathColliders;
     private uint deathGeneration;
     private uint actionGeneration;
+    private bool isDodgeRecovering;
+    private readonly float[] dodgeRechargeAt = new float[MaxDodgeCharges];
+    private int dodgeRechargeHead;
+    private int dodgeRechargeCount;
+    private float dodgeRechargeClock;
 
 
     // =========================================================================
@@ -86,6 +94,7 @@ public class Player : UnitBase
     }
     private void OnDisable()
     {
+        ResetDodgeCharges();
         CancelPlayerActions();
         ClearLocalHitStop();
         skillExecutor?.CancelActiveEffects();
@@ -163,6 +172,7 @@ public class Player : UnitBase
     private void CancelPlayerActions()
     {
         actionGeneration++;
+        isDodgeRecovering = false;
         isAttacking = false;
         hasQueuedAttack = false;
         comboStep = 0;
@@ -178,6 +188,54 @@ public class Player : UnitBase
             motor.SetVelocityY(0f);
             motor.SetJumpHeld(false);
         }
+    }
+
+    private bool TryConsumeDodgeCharge()
+    {
+        if (CurrentDodgeCharges <= 0 || dodgeRechargeCount >= MaxDodgeCharges) return false;
+        int tail = (dodgeRechargeHead + dodgeRechargeCount) % MaxDodgeCharges;
+        dodgeRechargeAt[tail] = dodgeRechargeClock + 2f;
+        dodgeRechargeCount++;
+        CurrentDodgeCharges--;
+        OnDodgeChargesChanged?.Invoke(CurrentDodgeCharges, MaxDodgeCharges);
+        return true;
+    }
+
+    public float GetDodgeChargeProgress(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= MaxDodgeCharges) return 0f;
+        for (int i = 0; i < dodgeRechargeCount; i++)
+        {
+            int activeSlot = (dodgeRechargeHead + i) % MaxDodgeCharges;
+            if (activeSlot == slotIndex)
+                return Mathf.Clamp01(1f - (dodgeRechargeAt[activeSlot] - dodgeRechargeClock) / 2f);
+        }
+        return 1f;
+    }
+
+    private void AdvanceDodgeRecharge(float deltaTime)
+    {
+        if (float.IsFinite(deltaTime) && deltaTime > 0f) dodgeRechargeClock += deltaTime;
+        int restored = 0;
+        while (dodgeRechargeCount > 0 && dodgeRechargeClock >= dodgeRechargeAt[dodgeRechargeHead])
+        {
+            dodgeRechargeHead = (dodgeRechargeHead + 1) % MaxDodgeCharges;
+            dodgeRechargeCount--;
+            restored++;
+        }
+        if (restored == 0) return;
+        CurrentDodgeCharges = Mathf.Min(MaxDodgeCharges, CurrentDodgeCharges + restored);
+        OnDodgeChargesChanged?.Invoke(CurrentDodgeCharges, MaxDodgeCharges);
+    }
+
+    private void ResetDodgeCharges()
+    {
+        bool changed = CurrentDodgeCharges != MaxDodgeCharges || dodgeRechargeCount != 0;
+        CurrentDodgeCharges = MaxDodgeCharges;
+        dodgeRechargeHead = 0;
+        dodgeRechargeCount = 0;
+        dodgeRechargeClock = 0f;
+        if (changed) OnDodgeChargesChanged?.Invoke(CurrentDodgeCharges, MaxDodgeCharges);
     }
 
     private void OnGroggyStarted()
@@ -197,6 +255,7 @@ public class Player : UnitBase
     public void Die()
     {
         if (deathSequenceActive) return;
+        ResetDodgeCharges();
         ClearLocalHitStop();
         deathSequenceActive = true;
         CancelPlayerActions();
@@ -215,6 +274,7 @@ public class Player : UnitBase
 
     public void ResetAfterDeath(Vector3 position)
     {
+        ResetDodgeCharges();
         ClearLocalHitStop();
         CancelPlayerActions();
         deathGeneration++;
@@ -260,8 +320,10 @@ public class Player : UnitBase
 
     private void Update()
     {
+        AdvanceDodgeRecharge(Time.deltaTime);
         var keyboard = Keyboard.current;
-        if (keyboard == null || deathSequenceActive || stats == null || stats.IsGroggy) return;
+        if (keyboard == null || deathSequenceActive || stats == null || stats.IsGroggy ||
+            stats.IsDodging || isDodgeRecovering) return;
 
         if (wallJumpLockoutTimer > 0f)
         {
@@ -636,7 +698,7 @@ public class Player : UnitBase
 
     private async UniTaskVoid DodgeAsync(Vector3 dodgeDir, CancellationToken cancellationToken)
     {
-        if (stats.IsDodging || stats.IsGuarding || stats.IsParrying) return;
+        if (stats.IsDodging || stats.IsGuarding || stats.IsParrying || !TryConsumeDodgeCharge()) return;
         uint generation = actionGeneration;
         stats.SetDodging(true);
         SetState(PlayerState.Dodge);
@@ -675,6 +737,16 @@ public class Player : UnitBase
         }
 
         stats.SetDodging(false);
+        isDodgeRecovering = true;
+        float recoveryElapsed = 0f;
+        while (recoveryElapsed < 0.1f)
+        {
+            if (!CanAct(generation)) return;
+            recoveryElapsed += Time.deltaTime;
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
+        if (!CanAct(generation)) return;
+        isDodgeRecovering = false;
         SetState(PlayerState.Idle);
     }
 

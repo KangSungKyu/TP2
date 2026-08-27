@@ -11,6 +11,9 @@ public sealed class ProductionMainHUD : MonoBehaviour
     [SerializeField] private TMP_Text playerHpText;
     [SerializeField] private TMP_Text playerPostureText;
     [SerializeField] private TMP_Text playerMpText;
+    [SerializeField] private Image[] dodgeChargeIcons = new Image[Player.MaxDodgeCharges];
+    [SerializeField] private Color dodgeChargeAvailableColor = Color.white;
+    [SerializeField] private Color dodgeChargeEmptyColor = new Color(.25f, .3f, .38f, .3f);
     [Header("Monster")]
     [SerializeField] private CanvasGroup monsterGroup;
     [SerializeField] private Image monsterHpFill;
@@ -34,6 +37,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
     [SerializeField] private Color attackTelegraphActiveColor = Color.red;
 
     private CombatStats playerStats;
+    private Player player;
     private Monster activeMonster;
     private CombatStats monsterStats;
     private BossMonster activeBoss;
@@ -41,6 +45,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
     private StageManager stageManager;
     private Monster.AttackTelegraph bossAttackTelegraph;
     private bool hasBossAttackTelegraph;
+    private bool updateDodgeChargeProgress;
 
     private void OnEnable()
     {
@@ -70,7 +75,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
         Monster.AttackTelegraphEnded -= OnAttackTelegraphEnded;
         hasBossAttackTelegraph = false;
         SetVisible(attackTelegraphGroup, false);
-        BindPlayer(null);
+        BindPlayer((Player)null);
         BindMonster(null);
         BindBoss(null);
         BindStageManager(null);
@@ -78,6 +83,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
 
     private void Update()
     {
+        if (updateDodgeChargeProgress) UpdateDodgeChargeProgress();
         float now = Time.time;
         bool visible = hasBossAttackTelegraph && activeBoss != null && activeBoss.isActiveAndEnabled &&
             activeBoss.IsActionGenerationCurrent(bossAttackTelegraph.Generation) &&
@@ -120,7 +126,7 @@ public sealed class ProductionMainHUD : MonoBehaviour
     public void BindSceneState()
     {
         SetVisible(monsterGroup, false);
-        BindPlayer(Player.Instance != null ? Player.Instance.Stats : null);
+        BindPlayer(Player.Instance);
         BindStageManager(StageManager.Instance);
         if (stageManager != null) stageManager.PublishProgress();
         foreach (Monster monster in Monster.ActiveMonsters) OnMonsterActivated(monster);
@@ -147,10 +153,53 @@ public sealed class ProductionMainHUD : MonoBehaviour
         RefreshPlayer();
     }
 
-    private void OnPlayerActivated(Player player) => BindPlayer(player != null ? player.Stats : null);
-    private void OnPlayerDeactivated(Player player)
+    private void BindPlayer(Player target)
     {
-        if (player != null && player.Stats == playerStats) BindPlayer(null);
+        if (player == target)
+        {
+            RefreshDodgeCharges();
+            return;
+        }
+        if (player != null) player.OnDodgeChargesChanged -= SetDodgeCharges;
+        player = target;
+        BindPlayer(player != null ? player.Stats : null);
+        if (player != null) player.OnDodgeChargesChanged += SetDodgeCharges;
+        RefreshDodgeCharges();
+    }
+
+    private void OnPlayerActivated(Player target) => BindPlayer(target);
+    private void OnPlayerDeactivated(Player target)
+    {
+        if (target == player) BindPlayer((Player)null);
+    }
+
+    private void RefreshDodgeCharges() => SetDodgeCharges(
+        player != null ? player.CurrentDodgeCharges : 0,
+        player != null ? Player.MaxDodgeCharges : 0);
+
+    private void SetDodgeCharges(int current, int max)
+    {
+        updateDodgeChargeProgress = player != null && current < max;
+        UpdateDodgeChargeProgress();
+    }
+
+    private void UpdateDodgeChargeProgress()
+    {
+        if (dodgeChargeIcons == null)
+        {
+            updateDodgeChargeProgress = false;
+            return;
+        }
+        bool pending = false;
+        for (int i = 0; i < dodgeChargeIcons.Length; i++)
+            if (dodgeChargeIcons[i] != null)
+            {
+                float progress = player != null ? player.GetDodgeChargeProgress(i) : 0f;
+                dodgeChargeIcons[i].fillAmount = progress;
+                dodgeChargeIcons[i].color = progress >= 1f ? dodgeChargeAvailableColor : dodgeChargeEmptyColor;
+                pending |= player != null && progress < 1f;
+            }
+        updateDodgeChargeProgress = pending;
     }
 
     private void RefreshPlayer()
