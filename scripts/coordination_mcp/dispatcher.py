@@ -12,29 +12,48 @@ AGENTS = ROOT / "AGENTS.md"
 MCP_URL = "http://127.0.0.1:8765/mcp"
 UUID_RE = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
 ROLE_RE = re.compile(r"^\* \*\*(.+?)\*\*\s*:\s*(.+)$")
+CLI_RE = re.compile(r"^\s+\* \*\*Antigravity CLI trajectory \(`[^`]+`\)\*\*\s*:\s*`(" + UUID_RE.pattern[2:-2] + r")`")
 
 
 def load_routes(path=AGENTS):
-    routes, seen = {}, set()
+    routes, seen, current = {}, set(), None
     for line in Path(path).read_text(encoding="utf-8").splitlines():
         match = ROLE_RE.match(line)
-        if not match:
+        if match:
+            ids = UUID_RE.findall(match.group(2))
+            if len(ids) < 2:
+                continue
+            if any(value in seen for value in ids):
+                raise ValueError(f"duplicate conversation id in {match.group(1)}")
+            seen.update(ids)
+            current = match.group(1)
+            routes[current] = {"antigravity_ui": tuple(ids[:-1]), "codex": ids[-1], "cli_trajectory": None}
             continue
-        ids = UUID_RE.findall(match.group(2))
-        if len(ids) < 2:
-            continue
-        if any(value in seen for value in ids):
-            raise ValueError(f"duplicate conversation id in {match.group(1)}")
-        seen.update(ids)
-        routes[match.group(1)] = {"antigravity": tuple(ids[:-1]), "codex": ids[-1]}
-    if len(routes) != 8 or any(not value["antigravity"] or not value["codex"] for value in routes.values()):
+        cli = CLI_RE.match(line)
+        if cli and current:
+            value = cli.group(1)
+            if routes[current]["cli_trajectory"] is not None:
+                raise ValueError(f"multiple CLI trajectories in {current}")
+            if any(route["cli_trajectory"] == value for route in routes.values()):
+                raise ValueError(f"duplicate CLI trajectory {value}")
+            routes[current]["cli_trajectory"] = value
+    if len(routes) != 8 or any(not value["antigravity_ui"] or not value["codex"] for value in routes.values()):
         raise ValueError(f"AGENTS.md route mapping incomplete: expected 8 roles, got {len(routes)}")
     return routes
 
 
 def allowed_ids(routes):
     return ({value["codex"] for value in routes.values()},
-            {item for value in routes.values() for item in value["antigravity"]})
+            {value["cli_trajectory"] for value in routes.values() if value["cli_trajectory"]})
+
+
+def validate_target(routes, target):
+    ui_ids = {item for value in routes.values() for item in value["antigravity_ui"]}
+    cli_ids = allowed_ids(routes)[1]
+    if target in ui_ids:
+        raise ValueError("UI Conversation UUID is not an Antigravity CLI trajectory")
+    if target not in cli_ids:
+        raise ValueError("target has no explicit AGENTS.md Antigravity CLI trajectory")
 
 
 def build_prompt(order):
@@ -95,8 +114,7 @@ class Client:
 def dispatch(target, execute=False, executable="agy.exe"):
     routes = load_routes()
     codex_ids, antigravity_ids = allowed_ids(routes)
-    if target not in antigravity_ids:
-        raise ValueError("target conversation is not in AGENTS.md Antigravity allowlist")
+    validate_target(routes, target)
     if not execute:
         sample = {"order_id": "dry-run", "revision": 1, "payload": {"objective": "Read-only status smoke",
             "allowed_files": ["AGENTS.md"], "forbidden_files": ["Assets"], "acceptance": ["Return current status"],

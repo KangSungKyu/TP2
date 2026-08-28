@@ -19,7 +19,8 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 모든 에이전트는 협업, 작업 지시, 브랜치 푸시 및 사후 변경 이력 보고 시 아래의 지정된 고유 대화 세션 식별자를 발신/수신 주소로 인지하고 컨텍스트를 라우팅한다.
 
 * **👑 프로젝트매니저 (PM)** : d4f1e2da-f7e5-4e86-b715-9979775531c1 / 019fd0ab-4bf2-7140-882e-bbba088431a0
-* **💻 메인프로그래머** : bbabc4a9-bfbf-441a-8dc2-3a2746748ce1 / 019fcfdf-4b01-7061-b54a-e03147c3f4b5
+* **💻 메인프로그래머** : Antigravity UI Conversation `bbabc4a9-bfbf-441a-8dc2-3a2746748ce1` / Codex Conversation `019fcfdf-4b01-7061-b54a-e03147c3f4b5`
+  * **Antigravity CLI trajectory (`cli_mainprogrammer`)** : `edb1a3dd-9480-440f-9d90-282e1ec134d4` — UI Conversation과 별도 namespace
 * **📜 게임플레이 기획자** : 96f4c1ce-8240-4eeb-9c13-a83668c9574a / 019fd066-3701-7c40-962e-6e58e2462f1d
 * **📦 시니어 리소스 작업자** : f4f6cc90-75c3-4e62-890c-fcd62e9a47f7 / 019fd06a-df4c-7f60-8332-2ebf5b54f407
 * **🔬 QA 오토메이션 러너** : e1bb1d94-16c8-478e-a32e-c818177dac17 / 019fd0b1-e1e4-7130-983f-677d00d2350e
@@ -28,11 +29,18 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 * **🎨 비주얼 아트 디자이너 (1, 2 통합)** : 63c3f691-87f9-4235-a4f6-b78479705ddb / 0625e4e7-91c3-4cca-bf23-c0844cae8319 / 019fd09b-0439-7133-8d4e-3153a9044a83
 
 ## ⚙️ 2. 데이터 및 아키텍처 하드 제약 조건 (Hard Constraints)
-어떤 LLM 채널(내부 Antigravity 세션 또는 외부 Codex 독립 세션)을 통해 코드를 생산하든 다음 3대 개발 헌법을 절대 위반할 수 없으며, 이를 준수하지 않은 코드는 빌드 파이프라인에서 즉시 제외한다.
+어떤 LLM 채널(내부 Antigravity 세션 또는 외부 Codex 독립 세션)을 통해 코드를 생산하든 다음 개발 헌법을 절대 위반할 수 없으며, 이를 준수하지 않은 코드는 빌드 파이프라인에서 즉시 제외한다.
 
 1. **[String Key 사용 전면 금지]** : 모든 CSV 데이터 파싱 및 런타임 조회 시 문자열 키 사용을 100% 배제하고, 오직 공용 `ResourceData` 테이블의 고유 정수형 `idx` 데이터 구조로만 상호 매핑하라.
 2. **[리소스 로딩 위임]** : 개별 유닛이나 매니저 스크립트가 Addressables API를 직접 호출하는 행위를 전면 금지하며, 에셋 인스턴스화는 프로젝트 공용 `ResourceManager` 및 오브젝트 풀링 시스템으로 100% 위임한다.
 3. **[물리 이동 제약]** : 2D 플랫포머 기동은 유니티 기본 물리(Dynamic)를 차단하고, `FixedUpdate` 물리 루프와 `Collider2D.Cast()`를 적용한 100% 커스텀 운동학 모터(`KinematicMotor2D.cs`) 구조만 고수하여 물리 뚫림을 방어하라.
+4. **[idx 대역 확장 협의]** : 신규 table/row 추가 시 기존 `uint idx` 원칙을 유지하며 다음 절차를 준수한다.
+   1. 기존 `DataTableType`, PK 대역, `idx/1000` routing, FK 참조를 전수 감사한다.
+   2. 충돌·고갈·표현 한계가 예상되면 리소스작업자가 현재 사용 범위, 예상 필요량, 충돌 테이블을 근거로 작성한다.
+   3. 메인프로그래머가 loader/parser/router/enum 호환성과 migration 영향을 검토한다.
+   4. PM 승인 전 임의 `idx` 재사용, 문자열·파일명 routing, header validation 완화, 기존 PK 재번호화를 금지한다.
+   5. 승인 시 `DataTableType`, PK 대역, 문서, CSV, 테스트를 같은 공정에서 동기화한다.
+   6. 기존 규격으로 불가능한 경우 임의 우회하지 않고 메인프로그래머와 대역 확장을 협의한다.
 
 ## 📊 3. 현재 런타임 환경 및 무결성 기준 (Current Baseline)
 * **개발 환경 사양** : Unity 6 (6000.4.8f1)
@@ -51,6 +59,13 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 ### 💻 메인프로그래머
 * **임무** : 코어 게임플레이 아키텍처 및 메커니즘을 구현한다. 태스크 수령 시 아키텍처 볼륨에 따라 CI프로그래머에게 원격 발행 브랜치 개설을 요청하여 작업을 개시한다.
 * **자가 검진 수칙** : 표준 Unity C# 클라이언트 규칙과 업계 최고의 프로그래머 관점에서 자가 코드 리뷰를 수행한다. 가변 저프레임(15 FPS 이하) 스트레스 환경에서의 Null 참조 및 예외 처리 방어 로직(Fault-Tolerance)이 완벽하게 내장되었는지 스스로 비판적으로 점검하고 보완한다.
+
+#### `cli_mainprogrammer` 하위 실행자
+* **소속** : Antigravity 메인프로그래머의 하위 실행자이며 Codex 메인프로그래머와 PM의 승인된 발주를 수행한다.
+* **허용** : Coordination MCP로 claim한 범위 안에서 scoped shell command와 allowlist 파일 수정만 수행한다.
+* **금지** : Git 조작, Unity 프로세스 조작, 하위 agent·conversation 생성.
+* **완료 회수** : 결과는 Coordination MCP `complete_order` 대상으로 보고한다.
+* **재사용** : 자동화마다 새 CLI Conversation을 만들지 않고 역할별 trajectory 1개를 재사용한다.
 
 ### 📜 기획자
 * **임무** : `/doc` 내 기획 자산을 기반으로 레벨 디자인, 룸 시퀀싱, 전투 시스템 수치 밸런싱 명세를 설계한다.

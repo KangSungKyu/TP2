@@ -47,6 +47,7 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 항목 | 현행 사양 | 상태·제약 |
 | :--- | :--- | :--- |
 | 역할 매핑 | `AGENTS.md` 기준 Codex 8 ID, Antigravity 9 ID | 중복·누락 `0` |
+| ID namespace | 메인프로그래머 UI Conversation과 `cli_mainprogrammer` CLI trajectory를 별도 식별 | dispatcher는 CLI trajectory ID만 `agy --conversation`에 전달 |
 | 기본 실행 | dry-run으로 pending과 실행 예정 argv만 검증 | claim·`agy`·complete 수행 `0` |
 | 명시 실행 | `--execute`에서 pending 정확히 1건을 claim한 뒤 `agy` 호출 결과로 complete | 반복 처리·자동 retry 금지 |
 | 프로세스 경계 | argv 배열, `shell=False`, 실행 파일·옵션 allowlist | shell 문자열 조합과 임의 명령 실행 금지 |
@@ -55,6 +56,19 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 실제 smoke | Antigravity CLI 미로그인 및 대상 conversation 조회 실패 | `BLOCKED`; 작업 실행·완료 증거 없음 |
 
 실제 smoke 재시도 조건은 동일 Antigravity 계정 로그인, 대상 Conversation ID 존재 확인, 사용자 명시 승인 세 가지를 모두 충족하는 것이다. 중지 세션 wake, 자동 heartbeat dispatch, 반복 retry는 여전히 미구현이다.
+
+### `cli_mainprogrammer` 등록
+
+| 항목 | 값·계약 |
+| :--- | :--- |
+| 이름 | `cli_mainprogrammer` |
+| CLI trajectory | `edb1a3dd-9480-440f-9d90-282e1ec134d4` |
+| 기존 UI Conversation | `bbabc4a9-bfbf-441a-8dc2-3a2746748ce1`; CLI trajectory와 별도 namespace |
+| 계층 | Antigravity 메인프로그래머 하위 실행자, 상위 승인자는 Codex 메인프로그래머·PM |
+| 실행 경계 | scoped shell·allowlist 파일 수정만 허용; Git·Unity 프로세스·하위 agent/conversation 생성 금지 |
+| 완료 경로 | MCP `complete_order` 회수 대상으로 보고 |
+| 재사용 | 역할별 CLI trajectory 1개를 유지하고 자동화마다 새 Conversation을 생성하지 않음 |
+| 증거 | 역할 초기화 실제 CLI 1회 `SUCCESS / ACCEPTED` |
 
 ## 자동 동기화와 장애 폴백
 
@@ -82,3 +96,4 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 2026-08-27 | 문서작업자 | Codex↔Antigravity 최소 통신 구조·감사/복구 폴백 신규 명세 | 채널 책임 분리, 중복 세션 0, Conversation+Turn dedupe, secret·원문 복제 0 |
 | 2026-08-28 | 문서작업자 | TP2 Coordination MCP 접속·인증·도구·lease·멱등성·권한 경계 동기화 | 격리 테스트 1/1 PASS, 설정 URL 일치, residue 0 |
 | 2026-08-28 | 문서작업자 | Coordination dispatcher dry-run·단발 execute·방어 경계와 smoke BLOCKED 상태 동기화 | 역할 ID 중복·누락 0, synthetic 2/2 PASS, 실제 smoke BLOCKED |
+| 2026-08-28 | 문서작업자 | `cli_mainprogrammer` UI/CLI namespace·권한·재사용·완료 회수 계약 등록 | 역할 초기화 실제 CLI 1회 SUCCESS / ACCEPTED |
