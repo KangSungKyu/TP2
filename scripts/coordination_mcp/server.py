@@ -8,6 +8,17 @@ ROLES = {"codex", "antigravity"}
 TOOLS = ("submit_order", "list_pending", "claim_order", "complete_order", "get_status")
 ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SECRET_KEY_RE = re.compile(r"(?i)(?:^|[_-])(authorization|password|secret|token|api[_-]?key)(?:$|[_-])")
+SECRET_VALUE_RE = re.compile(r"(?i)(?:bearer\s+\S{12,}|sk-[A-Za-z0-9_-]{12,}|(?:password|secret|token|api[_-]?key)\s*[:=]\s*\S{8,})")
+STRING = {"type":"string"}; UINT = {"type":"integer","minimum":1}
+PAYLOAD_SCHEMA = {"type":"object","additionalProperties":False,"required":["source_conversation","target_conversation","objective","allowed_files","forbidden_files","acceptance","base_branch","base_sha","recommended_max_files","max_revision","ruleset_version","ruleset_hash"],"properties":{"source_conversation":STRING,"target_conversation":STRING,"objective":STRING,"allowed_files":{"type":"array","items":STRING,"minItems":1},"forbidden_files":{"type":"array","items":STRING},"acceptance":{"type":"array","items":STRING,"minItems":1},"base_branch":STRING,"base_sha":STRING,"recommended_max_files":UINT,"max_revision":{"type":"integer","const":1},"ruleset_version":STRING,"ruleset_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}}}
+TOOL_SCHEMAS = {
+    "submit_order":{"type":"object","additionalProperties":False,"required":["order_id","idempotency_key","revision","payload"],"properties":{"order_id":STRING,"idempotency_key":STRING,"revision":{"type":"integer","const":1},"payload":PAYLOAD_SCHEMA}},
+    "list_pending":{"type":"object","additionalProperties":False,"required":["target_conversation"],"properties":{"target_conversation":STRING,"limit":{"type":"integer","minimum":1,"maximum":100}}},
+    "claim_order":{"type":"object","additionalProperties":False,"required":["order_id","worker_id","expected_version","lease_seconds"],"properties":{"order_id":STRING,"worker_id":STRING,"expected_version":UINT,"lease_seconds":{"type":"number","minimum":1,"maximum":3600}}},
+    "complete_order":{"type":"object","additionalProperties":False,"required":["order_id","claim_token","expected_version","state","result"],"properties":{"order_id":STRING,"claim_token":STRING,"expected_version":UINT,"state":{"type":"string","enum":["submitted","complete"]},"result":{"type":"object"}}},
+    "get_status":{"type":"object","additionalProperties":False,"required":["order_id"],"properties":{"order_id":STRING}},
+}
 
 
 class RpcError(Exception):
@@ -45,7 +56,7 @@ def path_list(value, name, empty=False):
 
 
 def validate_payload(p):
-    keys = ("source_conversation", "target_conversation", "objective", "allowed_files", "forbidden_files", "acceptance", "base_branch", "base_sha", "recommended_max_files", "max_revision")
+    keys = ("source_conversation", "target_conversation", "objective", "allowed_files", "forbidden_files", "acceptance", "base_branch", "base_sha", "recommended_max_files", "max_revision", "ruleset_version", "ruleset_hash")
     exact(p, keys, "payload")
     for name in ("source_conversation", "target_conversation"): identifier(p[name], name)
     if not isinstance(p["base_branch"], str) or not re.fullmatch(r"[A-Za-z0-9._/-]{1,200}", p["base_branch"]) or ".." in p["base_branch"].split("/"):
@@ -58,7 +69,20 @@ def validate_payload(p):
     if not isinstance(acceptance, list) or not 1 <= len(acceptance) <= 16 or any(not isinstance(x, str) or not x.strip() or len(x) > 500 for x in acceptance): raise RpcError(-32602, "invalid_arguments", "acceptance must contain 1..16 bounded assertions")
     if type(p["recommended_max_files"]) is not int or not 1 <= p["recommended_max_files"] <= 64: raise RpcError(-32602, "invalid_arguments", "invalid recommended_max_files")
     if p["max_revision"] != 1: raise RpcError(-32602, "invalid_arguments", "max_revision must be 1")
+    identifier(p["ruleset_version"], "ruleset_version")
+    if not isinstance(p["ruleset_hash"], str) or not re.fullmatch(r"[0-9a-f]{64}", p["ruleset_hash"]): raise RpcError(-32602, "invalid_arguments", "invalid ruleset_hash")
     return len(allowed) > p["recommended_max_files"]
+
+
+def validate_result(result):
+    raw = json.dumps(result, sort_keys=True, separators=(",", ":"))
+    if len(raw.encode("utf-8")) > 32768: raise RpcError(-32602, "result_oversize", "result exceeds byte limit")
+    def secret(value):
+        if isinstance(value, dict): return any(SECRET_KEY_RE.search(str(k)) or secret(v) for k, v in value.items())
+        if isinstance(value, list): return any(secret(v) for v in value)
+        return isinstance(value, str) and SECRET_VALUE_RE.search(value)
+    if secret(result): raise RpcError(-32602, "sensitive_result", "result contains sensitive material")
+    return raw
 
 
 class Store:
@@ -114,7 +138,7 @@ class Store:
     def complete(self, a):
         exact(a, ("order_id", "claim_token", "expected_version", "state", "result"), "complete_order"); oid, token = identifier(a["order_id"], "order_id"), identifier(a["claim_token"], "claim_token"); version, state, result = a["expected_version"], a["state"], a["result"]
         if type(version) is not int or version < 1 or state not in {"submitted","complete"} or not isinstance(result, dict): raise RpcError(-32602, "invalid_arguments", "invalid completion")
-        raw, now = json.dumps(result, sort_keys=True, separators=(",", ":")), time.time()
+        raw, now = validate_result(result), time.time()
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE"); row = db.execute("SELECT * FROM orders WHERE order_id=?", (oid,)).fetchone()
             if not row: raise RpcError(-32004, "not_found", "order not found")
@@ -122,7 +146,9 @@ class Store:
                 if row["claim_token"] == token and row["state"] == state and row["result_json"] == raw: return {"order": self.public(row), "duplicate": True}
                 raise RpcError(-32010, "duplicate_conflict", "completion differs")
             if row["state"] != "claimed": raise RpcError(-32012, "invalid_state", f"cannot complete {row['state']}")
-            if row["lease_expires"] <= now: self.recover(db, now); raise RpcError(-32013, "expired_lease", "claim expired")
+            if row["lease_expires"] <= now:
+                self.recover(db, now); db.commit()
+                raise RpcError(-32013, "expired_lease", "claim expired")
             if row["claim_token"] != token: raise RpcError(-32014, "invalid_claim_token", "claim token mismatch")
             if row["version"] != version: raise RpcError(-32011, "version_conflict", f"current version {row['version']}")
             db.execute("UPDATE orders SET state=?,version=version+1,result_json=?,updated_at=? WHERE order_id=?", (state, raw, now, oid)); row = db.execute("SELECT * FROM orders WHERE order_id=?", (oid,)).fetchone()
@@ -158,7 +184,7 @@ def handler(store, token):
                 if request["jsonrpc"]!="2.0" or not isinstance(request["params"],dict): raise RpcError(-32600,"invalid_request","invalid JSON-RPC envelope")
                 method, params=request["method"],request["params"]
                 if method=="initialize": result={"protocolVersion":"2025-03-26","capabilities":{"tools":{}},"serverInfo":{"name":"tp2-coordination","version":"1"}}
-                elif method=="tools/list": result={"tools":[{"name":x,"description":x.replace("_"," "),"inputSchema":{"type":"object"}} for x in TOOLS]}
+                elif method=="tools/list": result={"tools":[{"name":x,"description":x.replace("_"," "),"inputSchema":TOOL_SCHEMAS[x]} for x in TOOLS]}
                 elif method=="tools/call":
                     exact(params,("name","arguments"),"tools/call"); name,args=params["name"],params["arguments"]
                     if name not in TOOLS or not isinstance(args,dict): raise RpcError(-32601,"unknown_tool",f"unknown tool {name}")

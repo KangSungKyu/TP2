@@ -66,6 +66,8 @@ The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do
 * **금지** : Git 조작, Unity 프로세스 조작, 하위 agent·conversation 생성.
 * **완료 회수** : 결과는 Coordination MCP `complete_order` 대상으로 보고한다.
 * **재사용** : 자동화마다 새 CLI Conversation을 만들지 않고 역할별 trajectory 1개를 재사용한다.
+* **저비용 컨텍스트** : 역할 초기화는 최초 1회만 수행하고, 이후에는 compact ruleset의 version/hash와 발주별 objective·allowlist·acceptance·delta만 전달한다. 전체 `AGENTS.md`나 프로젝트 문서를 반복 주입하지 않는다.
+* **완료 게이트** : 작업자는 적용한 ruleset version/hash를 echo해야 하며 불일치, `BLOCKED`, `FAILED` 결과는 `complete_order`로 완료 처리하지 않는다. lease 만료 후 안전하게 재회수한다.
 
 ### 📜 기획자
 * **임무** : `/doc` 내 기획 자산을 기반으로 레벨 디자인, 룸 시퀀싱, 전투 시스템 수치 밸런싱 명세를 설계한다.

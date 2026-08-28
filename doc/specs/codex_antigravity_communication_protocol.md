@@ -70,6 +70,34 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 재사용 | 역할별 CLI trajectory 1개를 유지하고 자동화마다 새 Conversation을 생성하지 않음 |
 | 증거 | 역할 초기화 실제 CLI 1회 `SUCCESS / ACCEPTED` |
 
+### E2E·저비용 ruleset 계약
+
+지속 CLI Conversation에는 역할을 최초 1회만 주입한다. 이후 발주는 compact ruleset의 `version`·SHA-256 `hash`와 해당 작업의 `objective`·`allowed_files`·`acceptance`·`delta`만 전달하며, 전체 `AGENTS.md`나 `doc/` 내용을 반복 주입하지 않는다. 작업자는 적용한 version/hash를 결과에 echo해야 하고, 어느 하나라도 불일치하면 완료 처리를 금지한다.
+
+| 항목 | 완료 게이트·경계 |
+| :--- | :--- |
+| 실제 E2E | MCP 발주→claim→동일 CLI Conversation 실행→완료 회수 `1/1 PASS` |
+| 독립 리뷰 환류 | Codex 독립 리뷰 후 동일 Conversation에 delta feedback 1회 전달 `SUCCESS` |
+| worker 결과 | `SUCCESS`, nonempty summary, 고정 schema, 최대 `32 KiB`, secret 미포함을 모두 검증 |
+| 프로세스 출력 | `agy` stdout 최대 `64 KiB`; raw 대화 원문은 저장하지 않음 |
+| 실패 상태 | `BLOCKED`·`FAILED` 또는 ruleset echo 불일치는 complete 금지; lease 만료 뒤 pending으로 재회수 |
+| 실행 진입점 | `scripts/coordination_mcp/run.ps1`을 portable 진입점으로 사용 |
+| 보류 | 역할별 세분화 인증, Windows process-tree 종료의 동적 검증 |
+
+#### MCP 도구 `inputSchema`
+
+모든 도구는 object 입력, `additionalProperties: false`를 적용한다.
+
+| 도구 | 필수 입력 | 선택 입력·제약 |
+| :--- | :--- | :--- |
+| `submit_order` | `order_id`, `idempotency_key`, `revision=1`, `payload` | payload 필수: `source_conversation`, `target_conversation`, `objective`, `allowed_files`(1+), `forbidden_files`, `acceptance`(1+), `base_branch`, `base_sha`, `recommended_max_files`(uint), `max_revision=1`, `ruleset_version`, `ruleset_hash`(64자 소문자 hex) |
+| `list_pending` | `target_conversation` | `limit` 1..100 |
+| `claim_order` | `order_id`, `worker_id`, `expected_version`(uint), `lease_seconds` | `lease_seconds` 1..3600 |
+| `complete_order` | `order_id`, `claim_token`, `expected_version`(uint), `state`, `result` | `state`는 `submitted` 또는 `complete`; result object 최대 `32 KiB`, secret 금지 |
+| `get_status` | `order_id` | 없음 |
+
+검증 결과는 Coordination MCP QA `5/5 PASS`다. 이 결과는 현재 E2E·schema·ruleset 경계를 증명하지만, 보류된 인증 세분화나 Windows process-tree 동적 검증을 완료한 것으로 간주하지 않는다.
+
 ## 자동 동기화와 장애 폴백
 
 | 장애 | 1차 조치 | 폴백 | 금지 |
@@ -97,3 +125,4 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 2026-08-28 | 문서작업자 | TP2 Coordination MCP 접속·인증·도구·lease·멱등성·권한 경계 동기화 | 격리 테스트 1/1 PASS, 설정 URL 일치, residue 0 |
 | 2026-08-28 | 문서작업자 | Coordination dispatcher dry-run·단발 execute·방어 경계와 smoke BLOCKED 상태 동기화 | 역할 ID 중복·누락 0, synthetic 2/2 PASS, 실제 smoke BLOCKED |
 | 2026-08-28 | 문서작업자 | `cli_mainprogrammer` UI/CLI namespace·권한·재사용·완료 회수 계약 등록 | 역할 초기화 실제 CLI 1회 SUCCESS / ACCEPTED |
+| 2026-08-28 | 문서작업자 | Coordination MCP E2E·compact ruleset·worker 검증·5개 inputSchema 동기화 | 실제 E2E 1/1 PASS, 동일 Conversation delta feedback SUCCESS, QA 5/5 PASS |

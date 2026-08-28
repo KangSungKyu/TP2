@@ -36,11 +36,13 @@ class CoordinationMcpTest(unittest.TestCase):
     def call(self,name,args,role="codex"): return self.request("tools/call",{"name":name,"arguments":args},role)
     @staticmethod
     def payload(files=None,limit=2):
-        return {"source_conversation":"source:synthetic","target_conversation":"target:synthetic","objective":"Synthetic bounded coordination test","allowed_files":files or ["Assets/A.cs"],"forbidden_files":["Assets/B.cs"],"acceptance":["synthetic pass"],"base_branch":"codex/synthetic","base_sha":"c051cdd","recommended_max_files":limit,"max_revision":1}
+        return {"source_conversation":"source:synthetic","target_conversation":"target:synthetic","objective":"Synthetic bounded coordination test","allowed_files":files or ["Assets/A.cs"],"forbidden_files":["Assets/B.cs"],"acceptance":["synthetic pass"],"base_branch":"codex/synthetic","base_sha":"c051cdd","recommended_max_files":limit,"max_revision":1,"ruleset_version":"test-v1","ruleset_hash":"a"*64}
     def test_full_contract(self):
         health=urllib.request.Request(self.url+"/health",headers={"Authorization":"Bearer "+self.token,"X-TP2-Role":"codex"}); self.assertEqual(json.loads(urllib.request.urlopen(health).read())["host"],HOST)
         self.assertEqual(self.request("initialize",{},"codex")["result"]["serverInfo"]["name"],"tp2-coordination"); self.assertEqual(self.request("initialize",{},"antigravity")["result"]["serverInfo"]["name"],"tp2-coordination")
-        self.assertEqual(tuple(x["name"] for x in self.request("tools/list",{})["result"]["tools"]),TOOLS)
+        schemas=self.request("tools/list",{})["result"]["tools"]; self.assertEqual(tuple(x["name"] for x in schemas),TOOLS)
+        for tool in schemas:
+            self.assertFalse(tool["inputSchema"]["additionalProperties"]); self.assertTrue(tool["inputSchema"]["required"]); self.assertTrue(tool["inputSchema"]["properties"])
         submit={"order_id":"synthetic-1","idempotency_key":"idem-1","revision":1,"payload":self.payload()}
         self.assertFalse(self.call("submit_order",submit)["result"]["structuredContent"]["duplicate"]); self.assertTrue(self.call("submit_order",submit)["result"]["structuredContent"]["duplicate"])
         self.assertEqual(len(self.call("list_pending",{"target_conversation":"target:synthetic"})["result"]["structuredContent"]["orders"]),1)
@@ -58,7 +60,16 @@ class CoordinationMcpTest(unittest.TestCase):
         try: db.execute("UPDATE orders SET lease_expires=0 WHERE order_id='synthetic-3'"); db.commit()
         finally: db.close()
         expired=self.call("complete_order",{"order_id":"synthetic-3","claim_token":stale["claim_token"],"expected_version":2,"state":"complete","result":{}}); self.assertEqual(expired["error"]["data"]["type"],"expired_lease")
+        db=sqlite3.connect(self.db)
+        try: self.assertEqual(db.execute("SELECT state,version,claim_token,lease_expires FROM orders WHERE order_id='synthetic-3'").fetchone(),("pending",3,None,None))
+        finally: db.close()
         self.assertEqual(self.call("get_status",{"order_id":"synthetic-3"})["result"]["structuredContent"]["order"]["state"],"pending")
+        fourth={"order_id":"synthetic-4","idempotency_key":"idem-4","revision":1,"payload":self.payload()}; self.call("submit_order",fourth)
+        fourth_claim=self.call("claim_order",{"order_id":"synthetic-4","worker_id":"worker","expected_version":1,"lease_seconds":30})["result"]["structuredContent"]
+        rejected=self.call("complete_order",{"order_id":"synthetic-4","claim_token":fourth_claim["claim_token"],"expected_version":2,"state":"complete","result":{"summary":"token=RAW_SECRET_MARKER_123456"}}); self.assertEqual(rejected["error"]["data"]["type"],"sensitive_result")
+        db=sqlite3.connect(self.db)
+        try: self.assertEqual(db.execute("SELECT state,result_json FROM orders WHERE order_id='synthetic-4'").fetchone(),("claimed",None))
+        finally: db.close()
         self.stop(); self.start(); self.assertEqual(self.call("get_status",{"order_id":"synthetic-1"})["result"]["structuredContent"]["order"]["state"],"complete"); self.assertEqual(self.server.server_address[0],HOST)
 
 
