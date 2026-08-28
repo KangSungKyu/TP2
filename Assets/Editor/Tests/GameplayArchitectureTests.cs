@@ -14,7 +14,7 @@ namespace QA.Tests
     public class GameplayArchitectureTests
     {
         [Test]
-        public void PlayerAttackRecovery_DefenseCancelUsesPlayerGenerationAndRejectsBlockedStates()
+        public void PlayerAttackPreAndRecovery_DefenseCancelRejectsActiveAndBlockedStates()
         {
             FieldInfo instance = typeof(Player).GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
             Player previousInstance = Player.Instance;
@@ -29,13 +29,18 @@ namespace QA.Tests
                 Assert.IsNotNull(stats, "Fixture Player must complete UnitBase.Awake instead of hitting the singleton guard.");
                 var flags = BindingFlags.Instance | BindingFlags.NonPublic;
                 FieldInfo attacking = typeof(Player).GetField("isAttacking", flags);
-                FieldInfo recovering = typeof(Player).GetField("isAttackRecovering", flags);
-                MethodInfo canCancel = typeof(Player).GetMethod("CanCancelAttackRecoveryForDefense", flags);
+                FieldInfo active = typeof(Player).GetField("isAttackWindowActive", flags);
+                MethodInfo canCancel = typeof(Player).GetMethod("CanCancelAttackForDefense", flags);
                 MethodInfo cancel = typeof(Player).GetMethod("CancelPlayerActions", flags);
 
                 attacking.SetValue(player, true);
-                recovering.SetValue(player, true);
-                Assert.IsTrue((bool)canCancel.Invoke(player, null));
+                active.SetValue(player, false);
+                Assert.IsTrue((bool)canCancel.Invoke(player, null), "Pre must cancel.");
+
+                active.SetValue(player, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Active attack window must not cancel.");
+                active.SetValue(player, false);
+                Assert.IsTrue((bool)canCancel.Invoke(player, null), "Post/recovery must cancel.");
 
                 uint generation = player.ActionGeneration;
                 cancel.Invoke(player, null);
@@ -43,14 +48,21 @@ namespace QA.Tests
                 Assert.IsFalse(player.IsActionGenerationCurrent(generation));
 
                 attacking.SetValue(player, true);
-                recovering.SetValue(player, false);
-                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Pre/Active must not cancel.");
-                recovering.SetValue(player, true);
+                active.SetValue(player, false);
                 typeof(UnitBase).GetField("<IsLocalHitStopped>k__BackingField", flags).SetValue(player, true);
                 Assert.IsFalse((bool)canCancel.Invoke(player, null), "Hit-stop must win.");
                 typeof(UnitBase).GetField("<IsLocalHitStopped>k__BackingField", flags).SetValue(player, false);
                 typeof(CombatStats).GetField("<IsGroggy>k__BackingField", flags).SetValue(stats, true);
                 Assert.IsFalse((bool)canCancel.Invoke(player, null), "Groggy must win.");
+                typeof(CombatStats).GetField("<IsGroggy>k__BackingField", flags).SetValue(stats, false);
+                typeof(CombatStats).GetField("<IsDodging>k__BackingField", flags).SetValue(stats, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Dodge must win.");
+                typeof(CombatStats).GetField("<IsDodging>k__BackingField", flags).SetValue(stats, false);
+                typeof(Player).GetField("<IsJumping>k__BackingField", flags).SetValue(player, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Airborne attacks must not cancel into defense.");
+                typeof(Player).GetField("<IsJumping>k__BackingField", flags).SetValue(player, false);
+                typeof(Player).GetField("deathSequenceActive", flags).SetValue(player, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Death must win.");
             }
             finally
             {
@@ -59,8 +71,7 @@ namespace QA.Tests
             }
 
             string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
-            Assert.Less(source.IndexOf("await skillExecutor.ExecuteSkillHitsAsync", System.StringComparison.Ordinal),
-                source.IndexOf("isAttackRecovering = true", System.StringComparison.Ordinal));
+            StringAssert.Contains("if (generation == actionGeneration) isAttackWindowActive = active;", source);
             StringAssert.Contains("CancelPlayerActions();\n            GuardParrySequenceAsync", source.Replace("\r\n", "\n"));
         }
 

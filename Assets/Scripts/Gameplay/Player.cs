@@ -44,7 +44,7 @@ public class Player : UnitBase
     // 콤보 공격 관련 변수
     private int comboStep = 0; // 0: 공격안함, 1: 1타, 2: 2타, 3: 3타
     private bool isAttacking = false;
-    private bool isAttackRecovering;
+    private bool isAttackWindowActive;
     private bool hasQueuedAttack = false;
     private float comboWindow = 0.5f;
 
@@ -178,7 +178,7 @@ public class Player : UnitBase
         actionGeneration++;
         isDodgeRecovering = false;
         isAttacking = false;
-        isAttackRecovering = false;
+        isAttackWindowActive = false;
         hasQueuedAttack = false;
         comboStep = 0;
         currentMoveDir = Vector2.zero;
@@ -560,7 +560,7 @@ public class Player : UnitBase
     {
         if (isAttacking)
         {
-            if (!keyboard.spaceKey.wasPressedThisFrame || !CanCancelAttackRecoveryForDefense()) return;
+            if (!keyboard.spaceKey.wasPressedThisFrame || !CanCancelAttackForDefense()) return;
             CancelPlayerActions();
             GuardParrySequenceAsync(keyboard, this.GetCancellationTokenOnDestroy()).Forget();
             return;
@@ -583,8 +583,8 @@ public class Player : UnitBase
         }
     }
 
-    private bool CanCancelAttackRecoveryForDefense() =>
-        isAttacking && isAttackRecovering && !IsJumping && !deathSequenceActive && stats != null &&
+    private bool CanCancelAttackForDefense() =>
+        isAttacking && !isAttackWindowActive && !IsJumping && !deathSequenceActive && stats != null &&
         !stats.IsDead && !stats.IsGroggy && !stats.IsDodging && !IsLocalHitStopped &&
         !stats.IsInHitReaction && (motor == null || !motor.IsPassingThrough);
 
@@ -637,7 +637,11 @@ public class Player : UnitBase
 
         if (skillExecutor != null)
         {
-            await skillExecutor.ExecuteSkillHitsAsync(currentSkillId, this, null, 15f * comboStep, cancellationToken);
+            await skillExecutor.ExecuteSkillHitsAsync(currentSkillId, this, null, 15f * comboStep,
+                cancellationToken, onAttackWindowStateChanged: active =>
+                {
+                    if (generation == actionGeneration) isAttackWindowActive = active;
+                });
         }
         else
         {
@@ -650,8 +654,6 @@ public class Player : UnitBase
             ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, comboWindow)
             : comboWindow;
         bool nextComboTriggered = false;
-        isAttackRecovering = true;
-
         while (windowElapsed < recoveryWindow)
         {
             if (!CanAct(generation)) return;
@@ -659,7 +661,6 @@ public class Player : UnitBase
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
-        isAttackRecovering = false;
         if (hasQueuedAttack)
         {
             nextComboTriggered = true;

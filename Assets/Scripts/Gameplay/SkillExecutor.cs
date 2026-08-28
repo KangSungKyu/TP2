@@ -99,7 +99,7 @@ public class SkillExecutor : MonoBehaviour
         Action onFirstSuccessfulHit = null, uint attackPatternIdx = 0,
         Vector2? initialExteriorPose = null, Func<float> getRecoverySeconds = null,
         bool? fixedFacingRight = null, float? fixedTargetCenterX = null,
-        float? fixedTargetHalfWidth = null)
+        float? fixedTargetHalfWidth = null, Action<bool> onAttackWindowStateChanged = null)
     {
         var table = DataTableManager.Instance != null
             ? DataTableManager.Instance.GetDB<SkillDataTable>(DataTableType.Skill) : null;
@@ -299,6 +299,7 @@ public class SkillExecutor : MonoBehaviour
                     owner.SetFacingRight(facingSnapshot);
                 if (!owner.IsActionGenerationCurrent(generation)) return true;
                 if (canStartWindow != null && !canStartWindow()) return false;
+                onAttackWindowStateChanged?.Invoke(true);
 
                 Vector2 activePrevious = overshootTarget ? sampledPose : exteriorPose ?? sampledPose;
                 if (!TryCreateEffectSweepForFacing(owner, attackEffectData, activePrevious,
@@ -352,6 +353,7 @@ public class SkillExecutor : MonoBehaviour
                         onFirstSuccessfulHit?.Invoke();
                     }
                 }
+                onAttackWindowStateChanged?.Invoke(false);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 HideEffectBoundsDebug();
 #endif
@@ -377,6 +379,7 @@ public class SkillExecutor : MonoBehaviour
         }
         finally
         {
+            onAttackWindowStateChanged?.Invoke(false);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             HideEffectBoundsDebug();
 #endif
