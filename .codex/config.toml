@@ -1,0 +1,7 @@
+[mcp_servers.tp2_coordination]
+url = "http://127.0.0.1:8765/mcp"
+bearer_token_env_var = "TP2_COORDINATION_TOKEN"
+http_headers = { "X-TP2-Role" = "codex" }
+enabled_tools = ["submit_order", "list_pending", "claim_order", "complete_order", "get_status"]
+startup_timeout_sec = 10
+tool_timeout_sec = 30

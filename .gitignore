@@ -61,3 +61,7 @@ __pycache__/
 # Crash reports & local dumps
 sysinfo.txt
 test_out*.log
+
+# TP2 coordination MCP local runtime only
+/scripts/coordination_mcp/*.sqlite*
+/scripts/coordination_mcp/.env

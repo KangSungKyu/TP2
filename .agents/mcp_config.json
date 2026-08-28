@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "tp2_coordination": {
+      "url": "http://127.0.0.1:8765/mcp",
+      "headers": {
+        "Authorization": "Bearer ${TP2_COORDINATION_TOKEN}",
+        "X-TP2-Role": "antigravity"
+      }
+    }
+  }
+}

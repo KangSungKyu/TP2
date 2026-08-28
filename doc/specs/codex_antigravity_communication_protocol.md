@@ -26,6 +26,22 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 
 실시간 제어는 공식 Conversation ID만 사용한다. Google Sheets·문서·Git 표는 완료 결과를 찾고 복구하는 채널이며 새 지시를 암묵적으로 실행시키는 채널이 아니다. 외부 AI 파일 발주는 시각 자산처럼 세션 밖 인수물이 필요한 경우에만 추가한다.
 
+## TP2 Coordination MCP 현행 계약
+
+| 항목 | 현행 사양 | 경계 |
+| :--- | :--- | :--- |
+| 접속 | 로컬 전용 `http://127.0.0.1:8765/mcp` | 외부 인터페이스 공개 금지 |
+| 인증 | `TP2_COORDINATION_TOKEN` 환경변수 | 토큰 값은 설정·문서·로그에 기록 금지 |
+| 도구 | `submit_order`, `list_pending`, `claim_order`, `complete_order`, `get_status` | 발주 상태 저장·조회·claim·완료 기록만 수행 |
+| 작업량 힌트 | `recommended_max_files` | 초과 시 soft warning만 반환하며 발주·claim을 차단하지 않음 |
+| 실행 권한 | Antigravity가 승인된 scoped shell command를 실행할 수 있음 | Git merge·push와 Unity 직접 실행은 권한 밖 |
+| 동시성 | SQLite `version`, `claim_token`, lease로 claim 소유권 검증 | 만료 lease는 `pending`으로 복구하고 stale token 완료를 거부 |
+| 멱등성 | 동일 idempotency key의 `submit_order`와 동일 claim 결과의 `complete_order` 재호출을 중복으로 처리 | payload·revision 또는 완료 결과가 다른 재사용은 성공으로 간주하지 않음 |
+
+현재 Coordination MCP는 Codex와 Antigravity가 같은 발주 상태를 안전하게 저장·회수하기 위한 감사 가능한 queue다. 중지된 세션 wake, `agy` 실행, 실제 Conversation ID로 prompt dispatch는 구현하지 않았으며 별도 승인·QA가 필요한 후속 게이트다. 따라서 MCP에 발주가 저장됐다는 사실만으로 대상 세션이 실행됐다고 판정하지 않는다.
+
+검증 기준은 격리 테스트 `1/1 PASS`, Antigravity 설정 URL과 서버 bind URL 일치, 테스트 DB·프로세스 residue `0`이다.
+
 ## 자동 동기화와 장애 폴백
 
 | 장애 | 1차 조치 | 폴백 | 금지 |
@@ -35,6 +51,7 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 외부 AI 부분 완료·검증 실패 | pending 유지, Status를 IN_PROGRESS/BLOCKED로 갱신 | 결과·위험을 qa_notes 초안에 보존 | complete 이동, pending 중복본 유지 |
 | Git 미발행·미병합 | CI에 실제 branch/commit/dirty 상태 전달 | PM/CI table에 대기 상태 기록 | 문서작업자의 Git 조작, commit 추정 |
 | 대화 이력과 Git 결과 불일치 | Git diff·commit과 QA 산출물을 우선 재감사 | Conversation/Turn 요약을 정정하되 원문은 복제하지 않음 | 수치 추정, 성공 과장 |
+| Coordination MCP 정지·접속 실패 | 발주 원문과 idempotency key를 보존하고 제품 작업은 계속 | 서버 복구 후 `get_status`로 확인하고 미등록 발주만 재제출 | 새 세션 생성, 중복 dispatch, 토큰 기록 |
 
 ## 불변 규칙
 
@@ -49,3 +66,4 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 최근 수정 일시 | 수정자 (역할) | 수정 및 추가된 파일/메서드 명세 | QA 검증 통과 기준 (Assert) |
 | :--- | :--- | :--- | :--- |
 | 2026-08-27 | 문서작업자 | Codex↔Antigravity 최소 통신 구조·감사/복구 폴백 신규 명세 | 채널 책임 분리, 중복 세션 0, Conversation+Turn dedupe, secret·원문 복제 0 |
+| 2026-08-28 | 문서작업자 | TP2 Coordination MCP 접속·인증·도구·lease·멱등성·권한 경계 동기화 | 격리 테스트 1/1 PASS, 설정 URL 일치, residue 0 |
