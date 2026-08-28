@@ -24,17 +24,35 @@ namespace QA.Tests
             {
                 playerObject.AddComponent<Rigidbody2D>();
                 playerObject.AddComponent<CapsuleCollider2D>();
+                KinematicMotor2D motor = playerObject.AddComponent<KinematicMotor2D>();
+                motor.InitMotor();
                 Player player = playerObject.AddComponent<Player>();
                 CombatStats stats = playerObject.GetComponent<CombatStats>();
                 Assert.IsNotNull(stats, "Fixture Player must complete UnitBase.Awake instead of hitting the singleton guard.");
+                Assert.AreSame(motor, player.Motor, "Player Awake must cache the initialized fixture motor.");
                 var flags = BindingFlags.Instance | BindingFlags.NonPublic;
                 FieldInfo attacking = typeof(Player).GetField("isAttacking", flags);
                 FieldInfo active = typeof(Player).GetField("isAttackWindowActive", flags);
                 MethodInfo canCancel = typeof(Player).GetMethod("CanCancelAttackForDefense", flags);
                 MethodInfo cancel = typeof(Player).GetMethod("CancelPlayerActions", flags);
 
+                typeof(Player).GetField("<IsJumping>k__BackingField", flags).SetValue(player, false);
+                typeof(Player).GetField("deathSequenceActive", flags).SetValue(player, false);
+                typeof(UnitBase).GetField("<IsLocalHitStopped>k__BackingField", flags).SetValue(player, false);
+                typeof(CombatStats).GetField("<IsGroggy>k__BackingField", flags).SetValue(stats, false);
+                typeof(CombatStats).GetField("<IsDodging>k__BackingField", flags).SetValue(stats, false);
+                typeof(CombatStats).GetField("<IsDead>k__BackingField", flags).SetValue(stats, false);
+                typeof(CombatStats).GetField("hitFlashRenderer", flags).SetValue(stats, null);
+                typeof(KinematicMotor2D).GetField("isPassThroughActive", flags).SetValue(motor, false);
                 attacking.SetValue(player, true);
                 active.SetValue(player, false);
+                Assert.IsFalse(player.IsJumping);
+                Assert.IsFalse(stats.IsDead);
+                Assert.IsFalse(stats.IsGroggy);
+                Assert.IsFalse(stats.IsDodging);
+                Assert.IsFalse(stats.IsInHitReaction);
+                Assert.IsFalse(player.IsLocalHitStopped);
+                Assert.IsFalse(motor.IsPassingThrough);
                 Assert.IsTrue((bool)canCancel.Invoke(player, null), "Pre must cancel.");
 
                 active.SetValue(player, true);

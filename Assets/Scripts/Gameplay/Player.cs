@@ -609,6 +609,7 @@ public class Player : UnitBase
     private async UniTaskVoid PerformAttackStepAsync(uint generation, CancellationToken cancellationToken)
     {
         if (!CanAct(generation)) return;
+        isAttackWindowActive = false;
         isAttacking = true;
         hasQueuedAttack = false;
         
