@@ -202,7 +202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPointMarker
   EnableSpawn: 1
   Type: 2
-  MonsterId: 3104
+  MonsterId: 3102
 --- !u!1 &5204048572134635951
 GameObject:
   m_ObjectHideFlags: 0
