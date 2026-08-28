@@ -75,6 +75,7 @@ public class CombatStats : MonoBehaviour
     public bool IsJumped { get; private set; }
     public bool IsGroggy { get; private set; }
     public bool IsDead { get; private set; }
+    public bool IsInHitReaction => hitFlashRenderer != null;
     public Collider2D DefenseBodyCollider => defenseBodyCollider;
 
     public UnityEvent<float> OnHpChanged;

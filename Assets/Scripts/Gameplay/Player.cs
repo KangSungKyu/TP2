@@ -25,6 +25,7 @@ public class Player : UnitBase
     public float DodgeDashSpeed = 12f;
 
     public bool IsJumping { get; private set; }
+    public override uint ActionGeneration => actionGeneration;
 
     public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
     public Collider2D MovementCollider => hitCollider;
@@ -43,6 +44,7 @@ public class Player : UnitBase
     // 콤보 공격 관련 변수
     private int comboStep = 0; // 0: 공격안함, 1: 1타, 2: 2타, 3: 3타
     private bool isAttacking = false;
+    private bool isAttackRecovering;
     private bool hasQueuedAttack = false;
     private float comboWindow = 0.5f;
 
@@ -169,11 +171,14 @@ public class Player : UnitBase
     private bool CanAct(uint generation) =>
         generation == actionGeneration && !deathSequenceActive && stats != null && !stats.IsGroggy;
 
+    public override bool IsActionGenerationCurrent(uint generation) => CanAct(generation) && isActiveAndEnabled;
+
     private void CancelPlayerActions()
     {
         actionGeneration++;
         isDodgeRecovering = false;
         isAttacking = false;
+        isAttackRecovering = false;
         hasQueuedAttack = false;
         comboStep = 0;
         currentMoveDir = Vector2.zero;
@@ -341,6 +346,7 @@ public class Player : UnitBase
         }
 
         HandleDefensiveActions(keyboard);
+        if (stats.IsGuarding || stats.IsParrying) return;
         HandleBasicAttack(keyboard);
         HandleExecutionAction(keyboard);
         HandleSkills(keyboard);
@@ -552,7 +558,14 @@ public class Player : UnitBase
 
     private void HandleDefensiveActions(Keyboard keyboard)
     {
-        if (isAttacking || stats.IsDodging || stats.IsGuarding || stats.IsParrying ||
+        if (isAttacking)
+        {
+            if (!keyboard.spaceKey.wasPressedThisFrame || !CanCancelAttackRecoveryForDefense()) return;
+            CancelPlayerActions();
+            GuardParrySequenceAsync(keyboard, this.GetCancellationTokenOnDestroy()).Forget();
+            return;
+        }
+        if (stats.IsDodging || stats.IsGuarding || stats.IsParrying ||
             (motor != null && motor.IsPassingThrough)) return;
 
         if (keyboard.spaceKey.wasPressedThisFrame && !IsJumping)
@@ -569,6 +582,11 @@ public class Player : UnitBase
             DodgeAsync(dodgeDir, this.GetCancellationTokenOnDestroy()).Forget();
         }
     }
+
+    private bool CanCancelAttackRecoveryForDefense() =>
+        isAttacking && isAttackRecovering && !IsJumping && !deathSequenceActive && stats != null &&
+        !stats.IsDead && !stats.IsGroggy && !stats.IsDodging && !IsLocalHitStopped &&
+        !stats.IsInHitReaction && (motor == null || !motor.IsPassingThrough);
 
     private void HandleBasicAttack(Keyboard keyboard)
     {
@@ -632,6 +650,7 @@ public class Player : UnitBase
             ? skillExecutor.GetAttackRecoverySeconds(animator, animationStartedAt, comboWindow)
             : comboWindow;
         bool nextComboTriggered = false;
+        isAttackRecovering = true;
 
         while (windowElapsed < recoveryWindow)
         {
@@ -640,6 +659,7 @@ public class Player : UnitBase
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
+        isAttackRecovering = false;
         if (hasQueuedAttack)
         {
             nextComboTriggered = true;

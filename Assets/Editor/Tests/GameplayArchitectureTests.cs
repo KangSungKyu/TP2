@@ -14,6 +14,57 @@ namespace QA.Tests
     public class GameplayArchitectureTests
     {
         [Test]
+        public void PlayerAttackRecovery_DefenseCancelUsesPlayerGenerationAndRejectsBlockedStates()
+        {
+            FieldInfo instance = typeof(Player).GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+            Player previousInstance = Player.Instance;
+            instance.SetValue(null, null);
+            GameObject playerObject = new GameObject("RecoveryDefensePlayer");
+            try
+            {
+                playerObject.AddComponent<Rigidbody2D>();
+                playerObject.AddComponent<CapsuleCollider2D>();
+                Player player = playerObject.AddComponent<Player>();
+                CombatStats stats = playerObject.GetComponent<CombatStats>();
+                Assert.IsNotNull(stats, "Fixture Player must complete UnitBase.Awake instead of hitting the singleton guard.");
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                FieldInfo attacking = typeof(Player).GetField("isAttacking", flags);
+                FieldInfo recovering = typeof(Player).GetField("isAttackRecovering", flags);
+                MethodInfo canCancel = typeof(Player).GetMethod("CanCancelAttackRecoveryForDefense", flags);
+                MethodInfo cancel = typeof(Player).GetMethod("CancelPlayerActions", flags);
+
+                attacking.SetValue(player, true);
+                recovering.SetValue(player, true);
+                Assert.IsTrue((bool)canCancel.Invoke(player, null));
+
+                uint generation = player.ActionGeneration;
+                cancel.Invoke(player, null);
+                Assert.AreNotEqual(generation, player.ActionGeneration);
+                Assert.IsFalse(player.IsActionGenerationCurrent(generation));
+
+                attacking.SetValue(player, true);
+                recovering.SetValue(player, false);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Pre/Active must not cancel.");
+                recovering.SetValue(player, true);
+                typeof(UnitBase).GetField("<IsLocalHitStopped>k__BackingField", flags).SetValue(player, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Hit-stop must win.");
+                typeof(UnitBase).GetField("<IsLocalHitStopped>k__BackingField", flags).SetValue(player, false);
+                typeof(CombatStats).GetField("<IsGroggy>k__BackingField", flags).SetValue(stats, true);
+                Assert.IsFalse((bool)canCancel.Invoke(player, null), "Groggy must win.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(playerObject);
+                instance.SetValue(null, previousInstance);
+            }
+
+            string source = File.ReadAllText("Assets/Scripts/Gameplay/Player.cs");
+            Assert.Less(source.IndexOf("await skillExecutor.ExecuteSkillHitsAsync", System.StringComparison.Ordinal),
+                source.IndexOf("isAttackRecovering = true", System.StringComparison.Ordinal));
+            StringAssert.Contains("CancelPlayerActions();\n            GuardParrySequenceAsync", source.Replace("\r\n", "\n"));
+        }
+
+        [Test]
         public void EffectDrivenAttackBounds_ResolveExactTickBeforeSharedFallback()
         {
             const string header = "idx,effectnametextidx,prefabidx,duration,scale,loopcount,spawnpivotx,spawnpivoty,activecenterx,activecentery,activesizex,activesizey,activeshape,unitidx,patternidx,skillidx,hittick\n";

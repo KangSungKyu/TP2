@@ -73,7 +73,7 @@ def load_ruleset(path=RULESET):
 def build_prompt(order):
     payload = order["payload"]
     return "\n".join((
-        "TP2 Coordination MCP read-only order.",
+        "TP2 Coordination MCP order.",
         f"Order: {order['order_id']} revision {order['revision']}",
         f"Objective: {payload['objective']}",
         f"Allowed files (read-only scope): {json.dumps(payload['allowed_files'], ensure_ascii=False)}",
@@ -82,7 +82,7 @@ def build_prompt(order):
         f"Base: {payload['base_branch']} @ {payload['base_sha']}",
         f"Ruleset: {payload['ruleset_version']} sha256:{payload['ruleset_hash']}",
         "Return one JSON object with status, summary, evidence, applied_ruleset_version, and applied_ruleset_hash.",
-        "Do not modify files, Git, Unity, settings, sessions, or external state. Do not create sub-agents.",
+        "Modify only allowed files when the objective requires it. Do not modify forbidden files, Git, Unity, settings, sessions, or external state. Do not create sub-agents.",
     ))
 
 

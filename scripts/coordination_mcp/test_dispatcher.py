@@ -26,6 +26,8 @@ class DispatcherTest(unittest.TestCase):
         self.assertFalse(isinstance(args, str)); self.assertEqual(args[1:3], ["--conversation", target]); self.assertIn("x; Remove-Item *", args)
         version, digest = dispatcher.load_ruleset()
         worker = {"status":"SUCCESS","summary":"reviewed","evidence":[],"applied_ruleset_version":version,"applied_ruleset_hash":digest}
+        prompt=dispatcher.build_prompt({"order_id":"x","revision":1,"payload":{"objective":"edit","allowed_files":["Assets/A.cs"],"forbidden_files":[],"acceptance":["pass"],"base_branch":"portfolio","base_sha":"c051cdd","ruleset_version":version,"ruleset_hash":digest}})
+        self.assertNotIn("read-only order",prompt); self.assertIn("Modify only allowed files",prompt)
         success = lambda value: json.dumps({"status":"SUCCESS","response":value},ensure_ascii=False).encode("utf-8")
         self.assertLessEqual(len(dispatcher.RULESET.read_text(encoding="utf-8").splitlines()),100)
         self.assertEqual((version,digest),dispatcher.load_ruleset())
