@@ -38,9 +38,23 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | 동시성 | SQLite `version`, `claim_token`, lease로 claim 소유권 검증 | 만료 lease는 `pending`으로 복구하고 stale token 완료를 거부 |
 | 멱등성 | 동일 idempotency key의 `submit_order`와 동일 claim 결과의 `complete_order` 재호출을 중복으로 처리 | payload·revision 또는 완료 결과가 다른 재사용은 성공으로 간주하지 않음 |
 
-현재 Coordination MCP는 Codex와 Antigravity가 같은 발주 상태를 안전하게 저장·회수하기 위한 감사 가능한 queue다. 중지된 세션 wake, `agy` 실행, 실제 Conversation ID로 prompt dispatch는 구현하지 않았으며 별도 승인·QA가 필요한 후속 게이트다. 따라서 MCP에 발주가 저장됐다는 사실만으로 대상 세션이 실행됐다고 판정하지 않는다.
+현재 Coordination MCP는 Codex와 Antigravity가 같은 발주 상태를 안전하게 저장·회수하기 위한 감사 가능한 queue다. 1단계의 상태 저장·회수 계약은 유지하며, 2단계 dispatcher가 제한된 `agy` 단발 실행 경로를 추가했다. MCP에 발주가 저장됐다는 사실만으로 대상 세션이 실행됐다고 판정하지 않는다.
 
 검증 기준은 격리 테스트 `1/1 PASS`, Antigravity 설정 URL과 서버 bind URL 일치, 테스트 DB·프로세스 residue `0`이다.
+
+### 2단계 dispatcher 상태
+
+| 항목 | 현행 사양 | 상태·제약 |
+| :--- | :--- | :--- |
+| 역할 매핑 | `AGENTS.md` 기준 Codex 8 ID, Antigravity 9 ID | 중복·누락 `0` |
+| 기본 실행 | dry-run으로 pending과 실행 예정 argv만 검증 | claim·`agy`·complete 수행 `0` |
+| 명시 실행 | `--execute`에서 pending 정확히 1건을 claim한 뒤 `agy` 호출 결과로 complete | 반복 처리·자동 retry 금지 |
+| 프로세스 경계 | argv 배열, `shell=False`, 실행 파일·옵션 allowlist | shell 문자열 조합과 임의 명령 실행 금지 |
+| 실패 방어 | timeout, nonzero exit, invalid JSON을 성공 완료와 분리 | 실패 결과를 정상 dispatch로 기록 금지 |
+| 합성 QA | dispatcher 격리 테스트 `2/2 PASS` | 실제 계정·conversation 전달 증거를 대체하지 않음 |
+| 실제 smoke | Antigravity CLI 미로그인 및 대상 conversation 조회 실패 | `BLOCKED`; 작업 실행·완료 증거 없음 |
+
+실제 smoke 재시도 조건은 동일 Antigravity 계정 로그인, 대상 Conversation ID 존재 확인, 사용자 명시 승인 세 가지를 모두 충족하는 것이다. 중지 세션 wake, 자동 heartbeat dispatch, 반복 retry는 여전히 미구현이다.
 
 ## 자동 동기화와 장애 폴백
 
@@ -67,3 +81,4 @@ TP2의 실시간 작업 지시와 비동기 감사·복구를 분리하고, 공�
 | :--- | :--- | :--- | :--- |
 | 2026-08-27 | 문서작업자 | Codex↔Antigravity 최소 통신 구조·감사/복구 폴백 신규 명세 | 채널 책임 분리, 중복 세션 0, Conversation+Turn dedupe, secret·원문 복제 0 |
 | 2026-08-28 | 문서작업자 | TP2 Coordination MCP 접속·인증·도구·lease·멱등성·권한 경계 동기화 | 격리 테스트 1/1 PASS, 설정 URL 일치, residue 0 |
+| 2026-08-28 | 문서작업자 | Coordination dispatcher dry-run·단발 execute·방어 경계와 smoke BLOCKED 상태 동기화 | 역할 ID 중복·누락 0, synthetic 2/2 PASS, 실제 smoke BLOCKED |

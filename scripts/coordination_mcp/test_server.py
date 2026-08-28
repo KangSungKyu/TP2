@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import server as coordination_server
 
 HOST, TOOLS = coordination_server.HOST, coordination_server.TOOLS
